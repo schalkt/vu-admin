@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+    integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+    integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.31/vue.global.min.js"
+    integrity="sha512-uFfFhP36JMGvEaE2jlZ8Hprsae8dNhmM7ZioMF8Wy8/z2ZtRq1FF+znjWOYeU3hpDenXQoCih190zwwoZ/9EbQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+
+<body>
+  
+  <div class="container my-5" id="app">
+    <vu-admin :entity="'demo'"></vu-admin>
+  </div>
+
+  <script src="./entity-demo.js"></script>
+  <script src="./../dist/vu-admin.umd.js"></script>
+  <script>
+
+    const app = Vue.createApp();
+    app.component('vu-admin', VuAdmin.VuAdmin);
+    app.mount('#app');
+
+  </script>
+
+</body>
+
+</html>

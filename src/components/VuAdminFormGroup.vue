@@ -1,0 +1,245 @@
+<template>
+  <div v-cloak v-if="item && group.fields">
+    <div class="form-group pb-3" v-for="field in group.fields" :key="field">
+      <span v-if="field.label">
+        <label
+          v-if="['html', 'image'].indexOf(field.type) < 0"
+          v-cloak
+          class="form-label text-secondary mb-1"
+        >
+          ${ field.label }
+          <span class="badge text-secondary fw-light" v-if="field.maxlength">
+            ${ item[field.name] ? item[field.name].length : 0 } / ${
+            field.maxlength }
+          </span>
+        </label>
+        <label
+          v-else
+          v-cloak
+          class="form-label text-secondary mb-1"
+          :for="formid + '_' + field.name"
+        >
+          ${ field.label }
+        </label>
+      </span>
+
+      <div class="input-group">
+        <span
+          v-if="field.prefix"
+          class="input-group-text"
+          v-html="field.prefix"
+        ></span>
+
+        <input
+          v-if="field.type == 'text'"
+          class="form-control"
+          type="text"
+          :name="field.name"
+          :id="formid + '_' + field.name"
+          v-model="item[field.name]"
+          :minlength="field.minlength"
+          :maxlength="field.maxlength"
+          :placeholder="field.placeholder ? field.placeholder : ''"
+          :readonly="field.readonly"
+          :required="field.required"
+        />
+
+        <input
+          v-if="field.type == 'number'"
+          class="form-control"
+          type="number"
+          :name="field.name"
+          :id="formid + '_' + field.name"
+          v-model="item[field.name]"
+          :min="field.min"
+          :max="field.max"
+          :placeholder="field.placeholder ? field.placeholder : ''"
+          :readonly="field.readonly"
+          :required="field.required"
+        />
+
+        <input
+          v-if="field.type == 'date'"
+          class="form-control"
+          type="date"
+          :name="field.name"
+          :id="formid + '_' + field.name"
+          v-model="item[field.name]"
+          :readonly="field.readonly"
+          :required="field.required"
+        />
+
+        <input
+          v-if="field.type == 'email'"
+          autocomplete="on"
+          class="form-control"
+          type="email"
+          :name="field.name"
+          :id="formid + '_' + field.name"
+          v-model="item[field.name]"
+          :minlength="field.minlength"
+          :maxlength="field.maxlength"
+          :placeholder="field.placeholder ? field.placeholder : ''"
+          :readonly="field.readonly"
+          :required="field.required"
+        />
+
+        <select
+          v-if="field.type == 'select'"
+          class="form-select"
+          :name="field.name"
+          :id="formid + '_' + field.name"
+          v-model="item[field.name]"
+          :readonly="field.readonly"
+          :required="field.required"
+        >
+          <option
+            class=""
+            v-for="option in selectOptions(field.options, field)"
+            :key="option"
+            :value="option.value"
+          >
+            ${ option.label }
+          </option>
+        </select>
+
+        <textarea
+          v-if="field.type == 'textarea'"
+          class="form-control"
+          :name="field.name"
+          :id="formid + '_' + field.name"
+          v-model="item[field.name]"
+          :rows="field.rows"
+          :minlength="field.minlength"
+          :maxlength="field.maxlength"
+          :placeholder="field.placeholder ? field.placeholder : ''"
+          :readonly="field.readonly"
+          :required="field.required"
+        >
+        </textarea>
+
+        <span
+          v-if="field.suffix"
+          class="input-group-text"
+          v-html="field.suffix"
+        ></span>
+      </div>
+
+      <html-editor
+        v-if="field.type == 'html'"
+        v-model="item[field.name]"
+      ></html-editor>
+      <image-upload
+        v-if="field.type == 'image'"
+        v-model="item[field.name]"
+        :params="field.params"
+      ></image-upload>
+
+      <span v-if="field.type == 'xaddresses'">
+        <div v-if="item[field.name]">
+          <div v-for="address in item[field.name]" :key="address">
+            ${ address }
+            <label
+              class="form-label text-secondary mb-1"
+              :for="formid + '_' + field.name"
+            >
+              ${ field.label }
+            </label>
+            <input
+              class="form-control"
+              type="text"
+              :name="field.name"
+              :id="formid + '_' + field.name"
+              v-model="address.country"
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-sm btn-secondary"
+          @click="insertAddress(field.name)"
+        >
+          Add
+        </button>
+      </span>
+
+      <div class="p-1">
+        <i class="text-muted" v-html="field.description"></i>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+import { HtmlEditor } from "./VuAdminHtmlEditor.vue";
+import { ImageUpload } from "./VuAdminImageUpload.vue";
+
+const VuAdminFormGroup = {
+  props: ["modelValue", "group", "formid"],
+  data: function () {
+    return {
+      item: null,
+    };
+  },
+  created() {},
+  mounted() {
+    this.item = this.modelValue;
+  },
+  watch: {
+    modelValue(newValue) {
+      this.item = this.modelValue;
+    },
+  },
+  methods: {
+    selectOptions(options, field) {
+      if (typeof options === "function") {
+        return options(this.item, field, this);
+      } else {
+        return options;
+      }
+    },
+
+    renderOptions(items, valueField, labelField) {
+      let options = [];
+
+      if (!items || !items.length) {
+        return [];
+      }
+
+      for (let item of items) {
+        options.push({
+          value: item[valueField],
+          label: item[labelField] ? item[labelField] : item[valueField],
+        });
+      }
+
+      return options;
+    },
+
+    insertAddress(fieldName) {
+      if (!this.item[fieldName]) {
+        this.item[fieldName] = [];
+      }
+
+      this.item[fieldName].push({
+        country: undefined,
+        zipcode: undefined,
+        city: undefined,
+        street_name: undefined,
+        street_type: undefined,
+        house_number: undefined,
+      });
+
+      // console.log(this.item[fieldName]);
+    },
+  },
+  components: {
+    HtmlEditor,
+    ImageUpload,
+  },
+};
+
+export { VuAdminFormGroup };
+</script>
