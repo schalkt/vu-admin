@@ -1,5 +1,5 @@
 const api = {
-	url: 'http://localhost:52000/vuapi',
+	url: 'http://localhost:52000/vuapi/checks',
 	options: {
 		mode: "cors",
 		cache: "no-cache",
@@ -9,17 +9,23 @@ const api = {
 		user: 'nruser',
 		password: 'RwenE3BEx5Jl'
 	},
+	input: {
+		item: 'item',
+		items: 'items'
+	},
 };
 
 const translate = {
 	'Columns': 'Oszlopok',
 	'all': 'összesen',
 	'page': 'oldal',
+	'row': 'sor',
 	'Visible all': 'Mind látható',
 	'Hidden all': 'Mind rejtett',
 	'=': 'Egyenlő',
 	'>': 'Nagyobb mint',
-	'<': 'Kisebb mint'
+	'<': 'Kisebb mint',
+	'Are you sure you want to delete all selected items?': 'Biztos hogy törölni akarod az összes kiválasztott elemet?'
 };
 
 const methods = {
@@ -54,15 +60,23 @@ const methods = {
 
 const table = {
 	title: 'E-fiók ellenőrzések',
+	class: 'table-hover table-responsive table-sm',
+	theme: 'dark',
 	page: {
 		current: 1,
 		limit: 10,
-		limits: undefined,
-		pagination: 5,
+		limits: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000],
+		pagination: 10,
 	},
 	header: {
-		class: 'text-center bg-secondary border rounded',
+		class: 'text-center border rounded mt-2',
 		buttons: [
+			{
+				action: 'columns',
+				title: 'Oszlopok',
+				class: 'btn btn-sm btn-outline-dark m-1',
+				icon: 'bi bi-table',
+			},
 			{
 				action: 'reload',
 				title: 'Újratöltés',
@@ -74,6 +88,24 @@ const table = {
 				title: 'Új',
 				class: 'btn btn-sm btn-warning m-1',
 				icon: 'bi bi-plus-circle',
+			},
+			{
+				action: 'export',
+				params: {
+					export: 'default'
+				},
+				title: 'Export',
+				class: 'btn btn-sm btn-primary m-1',
+				icon: 'bi bi-download',
+			},
+			{
+				action: function (item, data) {
+					alert('Hi');
+					console.log(item, data);
+				},
+				title: 'Send',
+				class: 'btn btn-sm btn-dark m-1',
+				icon: 'bi bi-envelope',
 			}
 		]
 	},
@@ -88,6 +120,11 @@ const table = {
 			fixed: true,
 			idx: 1
 		},
+		'states.recording.anyagok_bekuldve.changed': {
+			dir: 'DESC',
+			fixed: false,
+			idx: 2
+		}
 	},
 	columns: [
 		{
@@ -95,7 +132,7 @@ const table = {
 			click: 'select',
 			index: true,
 			sortable: false,
-			width: '7%',
+			_width: '7%',
 			title: '#',
 			class: 'text-nowrap',
 		},
@@ -119,7 +156,8 @@ const table = {
 				default: 2024,
 				operator: '=',
 				operators: false,
-				buttonx: false
+				buttonx: false,
+				fixed: true,
 				// operators: [{
 				// 	label: '=',
 				// 	value: '='
@@ -141,7 +179,7 @@ const table = {
 			width: '10%',
 			filter: {
 				type: 'number',
-				default: 7,
+				default: 6,
 				operator: '=',
 				buttonx: false,
 				// operators: [{
@@ -161,15 +199,15 @@ const table = {
 		{
 			name: 'status',
 			title: 'Státusz',
-			template: function (item) {
+			template: function (status) {
 
 				let map = {
-					0: 'Új',
-					1: 'Aktív',
-					9: 'Törölt'
+					0: '<span class="badge bg-warning text-dark">Új</span>',
+					1: '<span class="badge bg-success text-light">Aktív</span>',
+					9: '<span class="badge bg-danger text-light">Törölt</span>',
 				}
 
-				return map[item.status];
+				return map[status];
 
 			},
 			filter: {
@@ -197,8 +235,12 @@ const table = {
 		{
 			name: 'client.name',
 			title: 'Ügyfél',
+			filter: {
+				type: 'text',
+			},
 			input: {
 				type: 'text',
+				bulkactions: true,
 				autosave: true,
 				onchange: function (value, column, item) {
 					console.log(value, column, item);
@@ -208,6 +250,31 @@ const table = {
 		{
 			name: 'states.general.repi_konyvelese.value',
 			title: 'Repi könyvelése',
+			filter: {
+				type: 'select',
+				options: [
+					{
+						label: 'Mind',
+						value: undefined,
+					},
+					{
+						label: 'Nincs megadva',
+						value: null
+					},
+					{
+						label: 'Szükséges',
+						value: 0.1,
+					},
+					{
+						label: 'Nem szükséges',
+						value: 1.1,
+					},
+					{
+						label: 'Kész van',
+						value: 1.0,
+					}
+				],
+			},
 			input: {
 				type: 'select',
 				options: [
@@ -228,6 +295,42 @@ const table = {
 						value: 1.0,
 					}
 				],
+				bulkactions: true,
+				autosave: true,
+				onchange: function (value, column, item) {
+					console.log(value, column, item);
+				}
+
+			}
+		},
+		{
+			name: 'states.recording.anyagok_bekuldve.changed',
+			title: 'Anyagok beküldve',
+			filter: {
+				type: 'datetime-local',
+				operator: '>',
+				default: '2024-07-20 00:00:00',
+				_operators: true,
+				operators: [
+					{
+						label: '>',
+						value: '>'
+					},
+					{
+						label: '<',
+						value: '<'
+					}
+				],
+				onchange: function (filter) {
+
+					return Math.round((new Date(filter.value)).getTime() / 1000);
+					//return Math.round((new Date(filter.value + ' 00:00:00')).getTime() / 1000);
+
+				}
+			},
+			input: {
+				type: 'datetime-local',
+				bulkactions: true,
 				autosave: true,
 				onchange: function (value, column, item) {
 					console.log(value, column, item);
@@ -276,6 +379,20 @@ const table = {
 					class: 'btn btn-sm btn-secondary m-1',
 					icon: 'bi bi-pencil-square',
 				},
+				{
+					action: 'delete',
+					title: '',
+					class: 'btn btn-sm btn-danger m-1',
+					icon: 'bi bi-trash',
+				},
+				{
+					action: 'save',
+					title: '',
+					class: 'btn btn-sm btn-primary m-1',
+					icon: 'bi bi-save',
+				},
+			],
+			bulkbuttons: [
 				{
 					action: 'delete',
 					title: '',
@@ -357,7 +474,7 @@ const table = {
 		],
 		raw: function (item) {
 			return [
-				'<div class="m-1 p-2 bg-secondary text-dark d-flex align-items-center justify-content-center">',
+				'<div class="my-1 p-2 bg-secondary text-dark d-flex align-items-center justify-content-center">',
 				'<small class="me-4"><strong class="me-2">Azonosító</strong><span>' + item['_id'] + '</span></small>',
 				'<small class="me-4"><strong class="me-2">Létrehozva</strong><span>' + (new Date(item['date_created_at'])).toLocaleString('hu-HU') + '</span></small>',
 				'<small class="me-4"><strong class="me-2">Módosítva</strong><span>' + (new Date(item['date_updated_at'])).toLocaleString('hu-HU') + '</span></small>',
@@ -468,14 +585,18 @@ const form = {
 
 export default {
 	pkey: '_id',
+	class: 'p-3 rounded',
 	api: api,
 	translate: translate,
+	methods: methods,
+	table: table,
+	form: form,
 	events: {
 		loadeditems: function (items) { },
 		loadeditem: function (item) { },
 		savingitem: function (item) { },
+		savingitems: function (item) { },
 	},
-	methods: methods,
 	converts: {
 		in: [{
 			method: 'convertDateIn',
@@ -494,8 +615,5 @@ export default {
 			]
 		}],
 	},
-	table: table,
-	form: form
-
 };
 

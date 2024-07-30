@@ -1,9 +1,18 @@
 <template>
-  <div v-cloak v-if="settings && settings.table" class="table-container">
+  <div
+    v-cloak
+    v-if="settings && settings.table"
+    class="table-container"
+    :class="[settings.class]"
+    :data-bs-theme="[settings.table.theme]"
+  >
     <div class="table-title">
       <div class="d-flex align-items-center justify-content-between">
         <div class="d-inline-block">
-          <h5 class="card-title d-inline">${ settings.table.title }</h5>
+          
+          <h5 class="card-title d-inline-block mb-2" v-if="settings.table.title">
+            ${ settings.table.title }
+          </h5>
 
           <div
             v-show="wait.table"
@@ -15,114 +24,120 @@
         </div>
 
         <div class="d-inline-block" v-if="messages.length">
-          <small
-            class="border rounded px-1 mx-1 fw-light text-info"
-            v-for="msg in messages"
-            :key="msg"
-          >
-            ${ msg.msg }
+          <small class="d-inline-block px-1 mx-1" v-if="message">
+            <span :class="['text-' + message.priority]">
+              <strong>${ message.msg }</strong>
+            </span>
           </small>
-        </div>
-      </div>
 
-      <div class="table-header" :class="[settings.table.header.class]">
-        <div class="d-inline-block">
-          <div class="dropdown m-1 d-inline-block">
+          <div class="dropdown d-inline-block">
             <button
+              class="btn btn-sm dropdown-toggle"
+              :class="['btn-' + messages[0].priority]"
               type="button"
-              class="btn btn-sm btn-dark dropdown-toggle"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <span v-cloak v-show="page.from > 0" class="text-muted mx-1"
-                >${ page.from }-${ page.to }
-              </span>
-              <span class="text-light mx-1"
-                >( ${ translate('all') }
-                <strong>${ page.items }</strong> )</span
-              >
-              ${ page.limit }
-              <span class="text-muted">/ ${ translate('page') }</span>
+              ${ messages.length } üzenet
             </button>
-            <ul class="dropdown-menu text-end">
-              <li>
+            <ul class="dropdown-menu text-start">
+              <li v-for="message in messages" :key="message">
                 <span
-                  class="dropdown-item cursor-pointer"
-                  v-for="limit in settings.table.page.limits"
-                  :key="limit"
-                  :class="{ 'fw-bold text-white': page.limit == limit }"
-                  @click="setPageLimit(limit)"
-                  >${ limit }
+                  class="dropdown-item"
+                  :class="['text-' + message.priority]"
+                >
+                  <small class="me-2 text-muted">${ message.datetime }</small>
+                  <strong>${ message.msg }</strong>
                 </span>
               </li>
             </ul>
           </div>
-
-          <div class="dropdown m-1 d-inline-block">
-            <button
-              type="button"
-              class="btn btn-sm btn-outline-dark dropdown-toggle"
-              data-bs-toggle="dropdown"
-              data-bs-auto-close="outside"
-              aria-expanded="false"
-            >
-              <span
-                v-cloak
-                v-show="settings.table.columns.length > 0"
-                class="mx-1"
-                >${ translate('Columns') }</span
-              >
-            </button>
-            <ul class="dropdown-menu text-end">
-              <li>
-                <span
-                  class="dropdown-item cursor-pointer"
-                  v-for="column in settings.table.columns"
-                  :key="column"
-                  @click="toggleColumn(column)"
-                >
-                  <small class="badge text-secondary">${ column.name }</small>${
-                  column.title }
-                  <i v-if="!column.hidden" class="bi bi-check text-info"></i>
-                  <i v-if="column.hidden" class="bi bi-x text-danger"></i>
-                </span>
-              </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li>
-                <span
-                  class="dropdown-item cursor-pointer"
-                  @click="toggleColumn(true)"
-                  >${ translate('Visible all') }</span
-                >
-              </li>
-              <li>
-                <span
-                  class="dropdown-item cursor-pointer"
-                  @click="toggleColumn(false)"
-                  >${ translate('Hidden all') }</span
-                >
-              </li>
-            </ul>
-          </div>
         </div>
-
-        <span v-if="settings.table.header">
-          <button
-            v-for="button in settings.table.header.buttons"
-            :key="button.action"
-            type="button"
-            :class="[button.class]"
-            @click="tableAction(button.action, item, index, $event)"
-          >
-            <i :class="[button.icon]"></i> ${ button.title }
-          </button>
-        </span>
       </div>
     </div>
 
+    <div
+      v-if="settings.table.header"
+      class="table-header"
+      :class="[settings.table.header.class]"
+    >
+      <span
+        v-for="button in settings.table.header.buttons"
+        :key="button.action"
+      >
+        <button
+          v-if="button.action !== 'columns'"
+          type="button"
+          :class="[button.class]"
+          @click="tableAction(button, items, null, $event)"
+        >
+          <i :class="[button.icon]"></i>
+          ${ button.title } ${ button.action === 'export' && selected.length ?
+          'selected' : ''}
+        </button>
+
+        <div class="dropdown d-inline-block" v-if="button.action === 'columns'">
+          <button
+            type="button"
+            :class="[button.class]"
+            class="dropdown-toggle"
+            data-bs-toggle="dropdown"
+            data-bs-auto-close="outside"
+            aria-expanded="false"
+          >
+            <span
+              v-cloak
+              v-show="settings.table.columns.length > 0"
+              class="mx-1"
+            >
+              <i :class="[button.icon]"></i> ${ translate('Columns') }</span
+            >
+          </button>
+          <ul class="dropdown-menu text-end">
+            <li>
+              <span
+                class="dropdown-item cursor-pointer"
+                v-for="column in settings.table.columns"
+                :key="column"
+                @click="toggleColumn(column)"
+              >
+                <small class="badge text-secondary">${ column.name }</small>${
+                column.title }
+
+                <i
+                  v-if="!column.hidden"
+                  class="bi bi-check-square ms-2 text-info"
+                ></i>
+                <i
+                  v-if="column.hidden"
+                  class="bi bi-x-square ms-2 text-danger"
+                ></i>
+              </span>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <span
+                class="dropdown-item cursor-pointer"
+                @click="toggleColumn(true)"
+                >${ translate('Visible all') }</span
+              >
+            </li>
+            <li>
+              <span
+                class="dropdown-item cursor-pointer"
+                @click="toggleColumn(false)"
+                >${ translate('Hidden all') }</span
+              >
+            </li>
+          </ul>
+        </div>
+      </span>
+    </div>
+
     <table
-      v-if="settings.table"
-      class="table table-hover table-responsive table-sm my-4"
+      v-if="settings.table"      
+      class="table mt-2"
+      :class="[settings.table.class]"
     >
       <thead>
         <tr>
@@ -140,7 +155,7 @@
               @click="sortTable(column)"
               >${ column.title }
               <span
-                class="badge bg-dark p-1"
+                class="badge p-1"
                 v-if="
                   page.order[column.name] &&
                   page.order[column.name].dir === 'ASC'
@@ -154,7 +169,7 @@
                 1 }
               </span>
               <span
-                class="badge bg-dark p-1"
+                class="badge p-1"
                 v-if="
                   page.order[column.name] &&
                   page.order[column.name].dir === 'DESC'
@@ -174,7 +189,7 @@
                 <button
                   type="button"
                   :class="[button.class]"
-                  @click="tableAction(button.action, item, index, $event)"
+                  @click="tableAction(button, items, null, $event)"
                 >
                   <i :class="[button.icon]"></i> ${ button.title }
                 </button>
@@ -192,14 +207,16 @@
           >
             <div class="d-inline-block w-100 px-1" v-if="column.index">
               <span
-                v-if="column.index"
                 class="cursor-pointer badge border text-secondary py-1 px-2 me-1 my-2 w-100"
                 v-cloak
-                :class="{ 'bg-info text-dark': selected.length > 0 }"
-                @click="toggleSelectedAll()"
+                :class="{ 'bg-info text-dark': haveSelectedRowInPage() }"
+                @click="toggleSelectedRowInPage()"
               >
-                ${ selected.length ? selected.length : '' }
-                <i v-show="!selected.length" class="bi bi-check-all"></i>
+                <i
+                  v-show="!haveSelectedRowInPage()"
+                  class="bi bi-check-all"
+                ></i>
+                <i v-show="haveSelectedRowInPage()" class="bi bi-x-lg"></i>
               </span>
             </div>
 
@@ -210,6 +227,10 @@
               >
                 <input
                   type="text"
+                  :class="{
+                    'text-light': column.filter.fixed,
+                    'text-warning': !column.filter.fixed,
+                  }"
                   class="form-control form-control-sm text-warning"
                   v-model="column.filter.value"
                   @keyup.enter="reloadTable()"
@@ -267,6 +288,12 @@
                   type="number"
                   class="form-control text-warning"
                   v-model="column.filter.value"
+                  :disabled="column.filter.fixed"
+                  :class="{
+                    'text-light': column.filter.fixed,
+                    'text-warning': !column.filter.fixed,
+                  }"
+                  @change="reloadTable()"
                   @keyup.enter="reloadTable()"
                 />
 
@@ -301,6 +328,69 @@
                   </option>
                 </select>
               </div>
+
+              <div
+                v-if="
+                  column.filter.type == 'datetime-local' ||
+                  column.filter.type == 'date'
+                "
+                class="input-group input-group-sm my-1"
+              >
+                <select
+                  v-if="column.filter.operators == true"
+                  v-model="column.filter.operator"
+                  @change="reloadTable()"
+                  class="form-select form-select-sm"
+                >
+                  <option value="=">${ translate('=') }</option>
+                  <option value=">">${ translate('>') }</option>
+                  <option value="<">${ translate('<') }</option>
+                </select>
+
+                <select
+                  v-if="
+                    column.filter.operators &&
+                    column.filter.operators.length > 0
+                  "
+                  v-model="column.filter.operator"
+                  @change="reloadTable()"
+                  class="form-select form-select-sm"
+                >
+                  <option
+                    v-for="operator in column.filter.operators"
+                    :key="operator"
+                    :value="operator.value"
+                  >
+                    ${ translate(operator.label) }
+                  </option>
+                </select>
+
+                <input
+                  :type="column.filter.type"
+                  :class="{
+                    'text-light': column.filter.fixed,
+                    'text-warning': !column.filter.fixed,
+                  }"
+                  class="form-control form-control-sm text-warning"
+                  v-model="column.filter.value"
+                  @change="reloadTable()"
+                  @keyup.enter="reloadTable()"
+                />
+
+                <button
+                  class="btn btn-outline-secondary"
+                  :disabled="!column.filter.value"
+                  @click="
+                    column.filter.value = undefined;
+                    reloadTable();
+                  "
+                >
+                  <i
+                    class="bi bi-x"
+                    :class="{ 'text-warning': column.filter.value }"
+                  ></i>
+                </button>
+              </div>
             </div>
 
             <span v-if="column.filterbuttons">
@@ -308,7 +398,7 @@
                 <button
                   type="button"
                   :class="[button.class]"
-                  @click="tableAction(button.action, item, index, $event)"
+                  @click="tableAction(button, items, null, $event)"
                 >
                   <i :class="[button.icon]"></i> ${ button.title }
                 </button>
@@ -327,7 +417,7 @@
               :data-label="column.title"
               :width="column.width"
               :class="column.class"
-              @click="tableAction(column.click, item, index, $event)"
+              @click="tableAction(column, item, index, $event)"
             >
               <div class="d-inline-block w-100 px-1" v-if="column.index">
                 <span
@@ -337,7 +427,8 @@
                       selected.indexOf(item[settings.pkey]) >= 0,
                   }"
                   v-html="index + 1 + (page.current - 1) * page.limit"
-                ></span>
+                >
+                </span>
               </div>
 
               <span v-if="!column.template && !column.input">
@@ -345,13 +436,17 @@
               </span>
               <span
                 v-if="column.template"
-                v-html="tableCellTemplate(column.template, item, index)"
+                v-html="tableCellTemplate(column.template, item, index, column)"
               >
               </span>
               <span v-if="column.input">
                 <input
-                  v-if="['text', 'number'].indexOf(column.input.type) >= 0"
-                  type="column.input.type"
+                  v-if="
+                    ['text', 'number', 'date', 'datetime-local'].indexOf(
+                      column.input.type
+                    ) >= 0
+                  "
+                  :type="column.input.type"
                   class="form-control form-control-sm text-info"
                   @change="
                     onInputChange(item[column.name], column, item, index)
@@ -382,13 +477,15 @@
                   <button
                     type="button"
                     :class="[button.class]"
-                    @click="tableAction(button.action, item, index, $event)"
+                    @click="tableAction(button, item, index, $event)"
                   >
                     <i v-if="button.icon" :class="[button.icon]"></i>
 
                     <span
                       v-if="button.template"
-                      v-html="tableCellTemplate(button.template, item, index)"
+                      v-html="
+                        tableCellTemplate(button.template, item, index, column)
+                      "
                     ></span>
                     <span v-else>${ button.title }</span>
                   </button>
@@ -451,12 +548,86 @@
           </tr>
         </template>
       </tbody>
+      <tfoot>
+        <tr v-if="selected.length > 0" class="table-bulk border-info">
+          <td
+            v-for="column in settings.table.columns"
+            :style="[column.hidden ? 'display: none' : '']"
+            :key="column.name"
+            :data-label="column.title"
+            :width="column.width"
+            :class="column.class"
+          >
+            <div class="d-inline-block w-100 px-1" v-if="column.index">
+              <span
+                v-cloak
+                class="cursor-pointer d-inline-block badge py-1 px-2 me-1 my-2 w-100 bg-info text-dark"
+                @click="toggleSelectedAll()"
+              >
+                ${ selected.length }
+              </span>
+            </div>
+
+            <span v-if="column.input && column.input.bulkactions">
+              <input
+                v-if="['text', 'number'].indexOf(column.input.type) >= 0"
+                type="column.input.type"
+                class="form-control form-control-sm text-info"
+                @change="
+                  onBulkInputChange(bulkitem[column.name], bulkitem, column)
+                "
+                v-model="bulkitem[column.name]"
+              />
+
+              <select
+                v-if="column.input.type == 'select'"
+                class="form-select form-select-sm text-info"
+                @change="
+                  onBulkInputChange(bulkitem[column.name], bulkitem, column)
+                "
+                v-model="bulkitem[column.name]"
+              >
+                <option
+                  v-for="option in column.input.options"
+                  :value="option.value"
+                  :key="option"
+                >
+                  ${ option.label }
+                </option>
+              </select>
+            </span>
+
+            <span v-if="column.bulkbuttons">
+              <span v-for="button in column.bulkbuttons" :key="button.action">
+                <button
+                  type="button"
+                  :class="[button.class]"
+                  @click="
+                    tableBulkAction(button.action, bulkitem, column, $event)
+                  "
+                >
+                  <i v-if="button.icon" :class="[button.icon]"></i>
+
+                  <span
+                    v-if="button.template"
+                    v-html="
+                      tableCellTemplate(button.template, bulkitem, null, column)
+                    "
+                  ></span>
+                  <span v-else>${ button.title }</span>
+                </button>
+              </span>
+            </span>
+          </td>
+        </tr>
+      </tfoot>
     </table>
 
     <VuAdminTablePagination
       :settings="settings"
       :page="page"
       @setPage="setPage"
+      @setPageLimit="setPageLimit"
       @translate="translate"
     ></VuAdminTablePagination>
 
@@ -647,6 +818,7 @@ export default {
       items: {},
       selected: [],
       details: [],
+      bulkitem: {},
       page: {
         current: 1,
         limit: 10,
@@ -666,6 +838,8 @@ export default {
       modalElement: null,
       modalWindow: null,
       messages: [],
+      message: null,
+      messageTimeOut: null,
     };
   },
 
@@ -689,11 +863,6 @@ export default {
 
     if (!this.settings.table.header) {
       this.settings.table.header = {};
-    }
-
-    if (!this.settings.table.header || !this.settings.table.header.class) {
-      this.settings.table.header.class =
-        "d-flex align-items-center justify-content-between bg-secondary border rounded";
     }
 
     // this.modalElement.addEventListener('hide.bs.modal', event => {
@@ -759,8 +928,8 @@ export default {
       }
     },
 
-    reloadTable() {
-      this.fetchTable({ entity: this.settings.entity });
+    reloadTable(params) {
+      this.fetchTable(params);
     },
 
     calcPage() {
@@ -793,6 +962,13 @@ export default {
       this.page.from =
         this.page.current * this.page.limit - this.page.limit + 1;
       this.page.to = this.page.current * this.page.limit;
+
+      // console.log(
+      //   this.page,
+      //   this.page.current,
+      //   this.page.limit,
+      //   this.page.current * this.page.limit
+      // );
 
       if (this.items && this.items.length < this.page.limit) {
         this.page.to = this.page.from + this.items.length - 1;
@@ -838,18 +1014,24 @@ export default {
       }
     },
 
-    tableCellTemplate(fn, item, index) {
+    tableCellTemplate(fn, item, index, column) {
       try {
-        return fn(item, index);
+        return fn(item[column.name], item, index, column);
       } catch (e) {
         return e.message;
       }
     },
 
-    tableAction(action, item, index, event) {
+    tableAction(button, item, index, event) {
       if (event) {
         event.stopPropagation();
       }
+
+      let action = button.action
+        ? button.action
+        : button.click
+        ? button.click
+        : null;
 
       if (action && typeof action !== "string") {
         action(item, this);
@@ -882,25 +1064,59 @@ export default {
           break;
 
         case "save":
-          this.saveItem(item, () => {
-            this.addMessage(
-              "#" + (index + 1) + " " + this.translate("saved"),
-              2500
-            );
-          });
+          this.saveItem(
+            item,
+            () => {
+              this.addMessage(
+                "#" + (index + 1) + " " + this.translate("saved"),
+                2500
+              );
+            },
+            button.params
+          );
 
           break;
 
         case "create":
-          this.createItem(item);
+          this.createItem(item, button.params);
           break;
 
         case "delete":
-          this.deleteItem(item);
+          this.deleteItem(item, button.params);
           break;
 
         case "reload":
-          this.reloadTable();
+          this.reloadTable(button.params);
+          break;
+
+        case "export":
+          this.exportTable(button.params);
+          break;
+      }
+    },
+
+    tableBulkAction(action, items, column, event) {
+      if (event) {
+        event.stopPropagation();
+      }
+
+      if (action && typeof action !== "string") {
+        action(item, this);
+        return;
+      }
+
+      switch (action) {
+        case "save":
+          this.saveBulk(() => {
+            this.addMessage(this.translate("saved all selected items"), 2500);
+          });
+
+          break;
+
+        case "delete":
+          this.deleteItems(this.selected, (response) => {
+            this.selected = [];
+          });
           break;
       }
     },
@@ -948,31 +1164,38 @@ export default {
 
     getOrdersForFetch() {
       let order = [];
+      let haveOrder = false;
 
       for (let key of Object.keys(this.page.order)) {
+        haveOrder = true;
         order[this.page.order[key].idx] = {
           key: key,
           dir: this.page.order[key].dir,
         };
       }
 
-      return order;
+      return haveOrder ? order : null;
     },
 
     getFiltersForFetch() {
       let filter = {};
+      let haveFilter = false;
 
       for (let column of this.settings.table.columns) {
         if (column.filter && column.filter.value !== undefined) {
+          haveFilter = true;
+
           filter[column.name] = {
             type: column.filter.type,
-            value: column.filter.value,
+            value: column.filter.onchange
+              ? column.filter.onchange(column.filter)
+              : column.filter.value,
             operator: column.filter.operator,
           };
         }
       }
 
-      return filter;
+      return haveFilter ? filter : null;
     },
 
     getRelationsForFetch() {
@@ -994,7 +1217,7 @@ export default {
       return relations;
     },
 
-    async fetchTable() {
+    async fetchTable(paramsData) {
       try {
         this.errors = null;
         this.wait.table = true;
@@ -1003,25 +1226,35 @@ export default {
         let relations = this.getRelationsForFetch();
         let order = this.getOrdersForFetch();
 
-        const params = new URLSearchParams({
-          page: this.page.current,
-          limit: this.page.limit,
-          order: JSON.stringify(order),
-          filter: JSON.stringify(filter),
-        });
+        paramsData = paramsData ? paramsData : {};
+        paramsData.page = this.page.current;
+        paramsData.limit = this.page.limit;
+
+        if (filter !== null) {
+          paramsData.filter = JSON.stringify(filter);
+        }
+
+        if (order !== null) {
+          paramsData.order = JSON.stringify(order);
+        }
+
+        if (this.settings.events && this.settings.events.tableBeforeLoad) {
+          this.settings.events.tableBeforeLoad(paramsData, this.settings);
+        }
+
+        const params = new URLSearchParams(paramsData);
 
         let options = prepareFetchOptions("GET", this.settings);
-        let url =
-          this.settings.api.url +
-          "/" +
-          this.settings.entity +
-          "?" +
-          params.toString();
+        let url = this.settings.api.url + "?" + params.toString();
 
         const response = await fetch(url, options);
 
-        if (!response.ok) {
-          throw new Error("Hiba történt a blog bejegyzések lekérése közben.");
+        // console.log(response);
+
+        if (response.status !== 200) {
+          throw new Error(
+            this.translate("Response status: " + response.status)
+          );
         }
 
         const data = await getResponseJson(response);
@@ -1033,6 +1266,10 @@ export default {
           return;
         }
 
+        if (this.settings.events && this.settings.events.tableAfterLoad) {
+          this.settings.events.tableAfterLoad(data, response);
+        }
+
         if (data.page) {
           this.page.all = data.page.all;
           this.page.items = data.page.items;
@@ -1040,11 +1277,17 @@ export default {
           this.calcPage();
         }
 
+        let items = this.settings.api.input.items
+          ? data[this.settings.api.input.items]
+          : data;
+
+        //console.log(items);
+
         // load relations
         for (let key of Object.keys(relations)) {
           relations[key].ids = [];
 
-          for (let item of data.items) {
+          for (let item of items) {
             let local = item[relations[key].local];
 
             if (local) {
@@ -1052,18 +1295,20 @@ export default {
             }
           }
 
-          await this.fetchRelation(relations[key], data.items);
+          await this.fetchRelation(relations[key], items);
         }
 
-        if (data.items) {
+        if (items) {
           // this.items = data.items;
-          this.items = flattenArrayObjects(data.items);
+          this.items = flattenArrayObjects(items);
           this.convertsIn(this.items);
         }
 
         this.wait.table = false;
       } catch (error) {
         console.error(error.message);
+
+        this.addMessage(error.message, 3500, "danger");
         this.wait.table = false;
       }
     },
@@ -1103,18 +1348,14 @@ export default {
         // console.log(this.settings.api.url + '/' + relation.entity + '?' + params.toString());
         // return;
         let options = prepareFetchOptions("GET", this.settings);
+        let url = this.settings.api.url + "?" + params.toString();
 
-        const response = await fetch(
-          this.settings.api.url +
-            "/" +
-            relation.entity +
-            "?" +
-            params.toString(),
-          options
-        );
+        const response = await fetch(url, options);
 
-        if (!response.ok) {
-          throw new Error("Hiba történt a blog bejegyzések lekérése közben.");
+        if (response.status !== 200) {
+          throw new Error(
+            this.translate("Response status: " + response.status)
+          );
         }
 
         const data = await getResponseJson(response);
@@ -1155,16 +1396,15 @@ export default {
         this.errors = null;
         this.wait.form = true;
 
-        const response = await fetch(
-          this.settings.api.url +
-            "/" +
-            this.settings.entity +
-            "/" +
-            item[this.settings.pkey]
-        );
+        let options = prepareFetchOptions("GET", this.settings);
+        let url = this.settings.api.url + "/" + item[this.settings.pkey];
 
-        if (!response.ok) {
-          throw new Error("Hiba történt a blog bejegyzések lekérése közben.");
+        const response = await fetch(url, options);
+
+        if (response.status !== 200) {
+          throw new Error(
+            this.translate("Response status: " + response.status)
+          );
         }
 
         const data = await response.json();
@@ -1200,7 +1440,7 @@ export default {
       }
     },
 
-    async deleteItem(item) {
+    async deleteItem(item, paramsData) {
       try {
         this.errors = null;
 
@@ -1220,22 +1460,72 @@ export default {
 
         this.wait.form = true;
 
-        const response = await fetch(
-          this.settings.api.url +
-            "/" +
-            this.settings.entity +
-            "/" +
-            item[this.settings.pkey],
-          {
-            method: "DELETE",
-          }
-        );
+        paramsData = paramsData ? paramsData : {};
 
-        if (!response.ok) {
-          throw new Error("Hiba történt a bejegyzés törlése közben.");
+        const params = new URLSearchParams(paramsData);
+
+        let options = prepareFetchOptions("DELETE", this.settings);
+        let url =
+          this.settings.api.url +
+          "/" +
+          item[this.settings.pkey] +
+          "?" +
+          params.toString();
+
+        const response = await fetch(url, options);
+
+        if (response.status !== 200) {
+          throw new Error(
+            this.translate("Response status: " + response.status)
+          );
         }
 
         this.modalWindow.hide();
+
+        this.reloadTable();
+        this.wait.form = false;
+      } catch (error) {
+        console.error(error.message);
+        this.wait.form = false;
+      }
+    },
+
+    async deleteItems(ids, callback) {
+      try {
+        this.errors = null;
+
+        if (!ids) {
+          return;
+        }
+
+        const confirmed = confirm(
+          this.translate("Are you sure you want to delete all selected items?")
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        this.wait.form = true;
+
+        let options = prepareFetchOptions("DELETE", this.settings);
+        let url = this.settings.api.url;
+
+        options.body = JSON.stringify({
+          ids: ids,
+        });
+
+        const response = await fetch(url, options);
+
+        if (response.status !== 200) {
+          throw new Error(
+            this.translate("Response status: " + response.status)
+          );
+        }
+
+        if (callback) {
+          callback(response);
+        }
 
         this.reloadTable();
         this.wait.form = false;
@@ -1272,7 +1562,7 @@ export default {
       }
     },
 
-    async saveItem(input, callback) {
+    async saveItem(input, callback, paramsData) {
       try {
         this.errors = null;
         this.wait.form = true;
@@ -1302,13 +1592,15 @@ export default {
           item: unflattenObject(item),
         });
 
-        const response = await fetch(
+        paramsData = paramsData ? paramsData : {};
+
+        const params = new URLSearchParams(paramsData);
+        let url =
           this.settings.api.url +
-            "/" +
-            this.settings.entity +
-            (primaryId ? "/" + primaryId : ""),
-          options
-        ).catch((err) => {
+          (primaryId ? "/" + primaryId : "") +
+          (params ? "?" + params.toString() : "");
+
+        const response = await fetch(url, options).catch((err) => {
           console.error(err.message);
         });
 
@@ -1323,6 +1615,58 @@ export default {
         if (callback) {
           callback(data);
         }
+      } catch (error) {
+        console.error(error.message);
+
+        this.errors = {
+          "": [
+            {
+              message: error.message,
+              value: null,
+            },
+          ],
+        };
+
+        this.wait.form = false;
+      }
+    },
+
+    async saveBulk(callback) {
+      try {
+        this.errors = null;
+        this.wait.form = true;
+
+        let options = prepareFetchOptions("PUT", this.settings);
+
+        let item = Object.assign({}, this.bulkitem);
+        this.convertsOut([item]);
+        item = unflattenObject(item);
+
+        options.body = JSON.stringify({
+          item: item,
+          ids: this.selected,
+        });
+
+        let url = this.settings.api.url;
+
+        const response = await fetch(url, options).catch((err) => {
+          console.error(err.message);
+        });
+
+        const data = await getResponseJson(response);
+        this.errors = getResponseErrors(response, data);
+        this.wait.form = false;
+
+        if (this.errors) {
+          return;
+        }
+
+        if (callback) {
+          callback(data);
+        }
+
+        // this.selected = [];
+        this.reloadTable();
       } catch (error) {
         console.error(error.message);
 
@@ -1373,6 +1717,38 @@ export default {
       }
     },
 
+    toggleSelectedRowInPage() {
+      if (this.haveSelectedRowInPage()) {
+        for (let item of this.items) {
+          let idx = this.selected.indexOf(item[this.settings.pkey]);
+
+          if (idx >= 0) {
+            this.selected.splice(idx, 1);
+          }
+        }
+      } else {
+        for (let item of this.items) {
+          if (this.selected.indexOf(item[this.settings.pkey]) < 0) {
+            this.selected.push(item[this.settings.pkey]);
+          }
+        }
+      }
+    },
+
+    haveSelectedRowInPage() {
+      if (!this.items || !this.items.length) {
+        return false;
+      }
+
+      for (let item of this.items) {
+        if (this.selected.indexOf(item[this.settings.pkey]) >= 0) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+
     toggleDetail(index) {
       let idx = this.details.indexOf(index);
 
@@ -1380,6 +1756,85 @@ export default {
         this.details.splice(idx, 1);
       } else {
         this.details.push(index);
+      }
+    },
+
+    async exportTable(paramsData) {
+      if (this.selected.length > 0) {
+      } else {
+      }
+
+      try {
+        paramsData.limit = ".";
+
+        let filter = this.getFiltersForFetch();
+        // let relations = this.getRelationsForFetch();
+        let order = this.getOrdersForFetch();
+
+        if (filter !== null) {
+          paramsData.filter = JSON.stringify(filter);
+        }
+
+        if (order !== null) {
+          paramsData.order = JSON.stringify(order);
+        }
+
+        if (this.settings.events && this.settings.events.tableBeforeLoad) {
+          this.settings.events.tableBeforeLoad(paramsData, this.settings);
+        }
+
+        const params = new URLSearchParams(paramsData);
+
+        let options = prepareFetchOptions("GET", this.settings);
+        let url = this.settings.api.url + "?" + params.toString();
+
+        const response = await fetch(url, options);
+
+        // console.log(response);
+
+        if (response.status !== 200) {
+          throw new Error(
+            this.translate("Response status: " + response.status)
+          );
+        }
+
+        const data = await getResponseJson(response);
+        this.errors = getResponseErrors(response, data);
+
+        if (this.errors || !data) {
+          console.log(this.errors);
+          return;
+        }
+
+        if (this.settings.events && this.settings.events.tableAfterLoad) {
+          this.settings.events.tableAfterLoad(data, response);
+        }
+
+        // // load relations
+        // for (let key of Object.keys(relations)) {
+        //   relations[key].ids = [];
+
+        //   for (let item of items) {
+        //     let local = item[relations[key].local];
+
+        //     if (local) {
+        //       relations[key].ids.push(local);
+        //     }
+        //   }
+
+        //   await this.fetchRelation(relations[key], items);
+        // }
+
+        // if (items) {
+        //   // this.items = data.items;
+        //   items = flattenArrayObjects(items);
+        //   this.convertsIn(items);
+        //   items = unflattenObjects(items)
+        // }
+      } catch (error) {
+        console.error(error.message);
+
+        this.addMessage(error.message, 3500, "danger");
       }
     },
 
@@ -1402,23 +1857,45 @@ export default {
       }
     },
 
-    addMessage(msg, timeout) {
+    onBulkInputChange(value, bulkitem, column) {
+      if (!column || !column.input) {
+        return;
+      }
+
+      if (column.input.onchange) {
+        column.input.onchange(value, column);
+      }
+    },
+
+    addMessage(msg, timeout, priority) {
+      clearTimeout(this.messageTimeout);
+
       const uid = Date.now() + Math.random().toString(36).substring(2, 9);
 
-      let message = {
+      this.message = {
         uid: uid,
         msg: msg,
         timeout: timeout !== undefined ? timeout : 2500,
+        datetime: new Date().toLocaleString("hu-HU"),
+        priority: priority ? priority : "info",
       };
 
-      this.messages.push(message);
+      this.messages.unshift(this.message);
 
-      setTimeout(() => {
-        let index = this.messages.findIndex((m) => m.uid === uid);
-        if (index !== -1) {
-          this.messages.splice(index, 1);
+      this.messageTimeOut = setTimeout(() => {
+        this.message = null;
+
+        // let index = this.messages.findIndex((m) => m.uid === uid);
+
+        // if (index !== -1) {
+
+        //   //this.messages[index].hidden = true;
+        // }
+
+        if (this.messages.length > 10) {
+          this.messages.splice(10);
         }
-      }, message.timeout);
+      }, this.message.timeout);
     },
 
     translate(key) {
@@ -1473,8 +1950,69 @@ export default {
 };
 </script>
 
+
 <style lang="scss" scoped>
 .cursor-pointer {
   cursor: pointer;
 }
+
+[data-bs-theme="light"] {
+  .table-title {
+    color: var(--bs-dark);
+  }
+  .table-header {
+    user-select: none;
+    background-color: var(--bs-light);
+    color: var(--bs-dark);
+  }
+  .table-bulk {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+  }
+}
+
+[data-bs-theme="dark"] {
+  background-color: var(--bs-dark);
+
+  .table-title {
+    color: var(--bs-light);
+  }
+  .table-header {
+    user-select: none;
+    background-color: var(--bs-secondary);
+    color: var(--bs-light);
+  }
+  .table-bulk {
+    td {
+    }
+  }
+}
 </style>
+
+
+<!-- :root {
+  --bs-blue: #0d6efd;
+  --bs-indigo: #6610f2;
+  --bs-purple: #6f42c1;
+  --bs-pink: #d63384;
+  --bs-red: #dc3545;
+  --bs-orange: #fd7e14;
+  --bs-yellow: #ffc107;
+  --bs-green: #198754;
+  --bs-teal: #20c997;
+  --bs-cyan: #0dcaf0;
+  --bs-white: #fff;
+  --bs-gray: #6c757d;
+  --bs-gray-dark: #343a40;
+  --bs-primary: #0d6efd;
+  --bs-secondary: #6c757d;
+  --bs-success: #198754;
+  --bs-info: #0dcaf0;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --bs-light: #f8f9fa;
+  --bs-dark: #212529;
+  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+} -->

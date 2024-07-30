@@ -35,16 +35,17 @@ export default {
     };
   },
   mounted() {
-   
     if (window.entities && window.entities[this.entity]) {
       this.settings = window.entities[this.entity];
       this.settings.entity = this.entity;
+
+      if (this.settings.init) {
+        this.settings.init(this.settings);
+      }
     }
   },
 
-  created() {
-    
-  },
+  created() {},
   methods: {
     itemIsModified() {
       let original = JSON.stringify(this.itemOriginal);
@@ -74,12 +75,9 @@ export default {
         this.itemOriginal = Object.assign({}, this.item);
       }, 100);
     },
-
-
-
   },
   components: {
-    VuAdminTable,    
+    VuAdminTable,
   },
 };
 </script>

@@ -1,10 +1,34 @@
 export default {
-	pkey: 'id',
+	pkey: 'id',	
 	api: {
-		url: 'http://supercms.vi/szerk/api'
+		url: 'http://supercms.vi/szerk/api/post',
+		input: {
+			item: 'item',
+			items: 'items'
+		}
+	},
+	translate: {
+		'First' : 'Első',
+		'Prev': 'Előző',
+		'Next': 'Következő',
+		'Last': 'Utolsó',
+		'Columns': 'Oszlopok',
+		'all': 'összesen',
+		'page': 'oldal',
+		'Visible all': 'Mind látható',
+		'Hidden all': 'Mind rejtett',
+		'row': 'sor',
+		'=': 'Egyenlő',
+		'>': 'Nagyobb mint',
+		'<': 'Kisebb mint'
 	},
 	table: {
-		title: 'Posztok',
+		title: '',
+		theme: 'light',
+		header: {
+			class: '',
+			buttons: []
+		},
 		page: {
 			current: 2,
 			limit: 5,
@@ -36,6 +60,7 @@ export default {
 			{
 				name: 'id',
 				title: 'ID',
+				width: '5%',
 				filter: {
 					type: 'number',
 					operator: '='
@@ -44,7 +69,8 @@ export default {
 			{
 				name: 'status',
 				title: 'Státusz',
-				template: function (item) {
+				width: '15%',
+				xtemplate: function (status) {
 
 					let map = {
 						0: 'Új',
@@ -52,7 +78,7 @@ export default {
 						9: 'Törölt'
 					}
 
-					return map[item.status];
+					return map[status];
 
 				},
 				filter: {
@@ -75,7 +101,30 @@ export default {
 							label: 'Törölt'
 						}
 					]
+				},
+				input: {
+					type: 'select',
+					options: [
+						{
+							value: 0,
+							label: 'Új'
+						},
+						{
+							value: 1,
+							label: 'Aktív'
+						},
+						{
+							value: 9,
+							label: 'Törölt'
+						}
+					],
+					autosave: true,
+					onchange: function (value, column, item) {
+						console.log(value, column, item);
+					}
+	
 				}
+
 			},
 			{
 				name: 'language',
@@ -83,6 +132,10 @@ export default {
 				filter: {
 					type: 'select',
 					options: [
+						{
+							value: undefined,
+							label: 'Mind'
+						},
 						{
 							'label': 'Magyar',
 							'value': 'hu'
@@ -97,27 +150,27 @@ export default {
 			{
 				name: 'images',
 				title: 'Képek',
-				template: function (item) {
+				template: function (images) {
 
-					if (!item.images || !item.images.length) {
+					if (!images || !images.length) {
 						return;
 					}
 
-					let images = [];
-					let img = item.images[0];
+					let elements = [];
+					let img = images[0];
 					let baseUrl = 'http://supercms.vi/';
 
 					// for (let img of item.images) {
 
 					if (img.types && img.types.large) {
-						images.push(
+						elements.push(
 							'<a target="_blank" href="' + baseUrl + (img.types.large.url ? img.types.large.url : img.types.large.data) + '"><img height="50" width="auto" class="" src="' + baseUrl + (img.types.tiny.url ? img.types.tiny.url : img.types.tiny.data) + '" alt="' + img.title + '" /></a>'
 						);
 					}
 
 					// }
 
-					return images.join(' ');
+					return elements.join(' ');
 
 				}
 			},

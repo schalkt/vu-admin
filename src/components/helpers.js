@@ -1,6 +1,7 @@
 
 export function getResponseErrors(response, data) {
-    if (!response.ok || (response.status >= 400 && response.status <= 511)) {
+    if (response.status >= 400 && response.status <= 511) {
+        
         if (data.errors) {
             return data.errors;
         } else {
@@ -46,6 +47,9 @@ export function prepareFetchOptions(method, settings) {
     if (api.auth) {
         if (api.auth.type == 'Basic' && api.auth.user) {
             api.options.headers['Authorization'] = "Basic " + btoa(api.auth.user + ":" + api.auth.password);
+        }
+        if (api.auth.type == 'Bearer' && api.auth.token) {
+            api.options.headers['Authorization'] = "Bearer " + api.auth.token;
         }
     }
 
