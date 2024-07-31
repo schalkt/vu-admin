@@ -9,8 +9,10 @@
     <div class="table-title">
       <div class="d-flex align-items-center justify-content-between">
         <div class="d-inline-block">
-          
-          <h5 class="card-title d-inline-block mb-2" v-if="settings.table.title">
+          <h5
+            class="card-title d-inline-block mb-2"
+            v-if="settings.table.title"
+          >
             ${ settings.table.title }
           </h5>
 
@@ -66,14 +68,13 @@
         :key="button.action"
       >
         <button
-          v-if="button.action !== 'columns'"
+          v-if="button.action !== 'columns' && !button.dropdowns"
           type="button"
           :class="[button.class]"
           @click="tableAction(button, items, null, $event)"
         >
           <i :class="[button.icon]"></i>
-          ${ button.title } ${ button.action === 'export' && selected.length ?
-          'selected' : ''}
+          ${ button.title }
         </button>
 
         <div class="dropdown d-inline-block" v-if="button.action === 'columns'">
@@ -94,11 +95,9 @@
             >
           </button>
           <ul class="dropdown-menu text-end">
-            <li>
+            <li v-for="column in settings.table.columns" :key="column">
               <span
                 class="dropdown-item cursor-pointer"
-                v-for="column in settings.table.columns"
-                :key="column"
                 @click="toggleColumn(column)"
               >
                 <small class="badge text-secondary">${ column.name }</small>${
@@ -131,11 +130,38 @@
             </li>
           </ul>
         </div>
+
+        <div class="dropdown d-inline-block" v-cloak v-if="button.dropdowns">
+          <button
+            type="button"
+            :class="[button.class]"
+            class="dropdown-toggle"
+            data-bs-toggle="dropdown"
+            data-bs-auto-close="outside"
+            aria-expanded="false"
+          >
+            <span class="mx-1">
+              <i :class="[button.icon]"></i> ${ translate(button.title) }
+            </span>
+          </button>
+          <ul class="dropdown-menu text-end">
+            <li v-for="dropdown in button.dropdowns" :key="dropdown">
+              <span
+                class="dropdown-item cursor-pointer"
+                :class="[button.class]"
+                @click="tableAction(dropdown, items, null, $event)"
+              >
+                <i class="me-2" :class="[button.icon]"></i>
+                ${ dropdown.title }
+              </span>
+            </li>
+          </ul>
+        </div>
       </span>
     </div>
 
     <table
-      v-if="settings.table"      
+      v-if="settings.table"
       class="table mt-2"
       :class="[settings.table.class]"
     >
@@ -289,6 +315,8 @@
                   class="form-control text-warning"
                   v-model="column.filter.value"
                   :disabled="column.filter.fixed"
+                  :min="column.filter.min"
+                  :max="column.filter.max"
                   :class="{
                     'text-light': column.filter.fixed,
                     'text-warning': !column.filter.fixed,
@@ -568,11 +596,19 @@
               </span>
             </div>
 
-            <span v-if="column.input && column.input.bulkactions">
+            <div
+              v-if="column.input && column.input.bulkactions"
+              class="input-group input-group-sm my-1"
+            >
               <input
-                v-if="['text', 'number'].indexOf(column.input.type) >= 0"
-                type="column.input.type"
+                v-if="
+                  ['text', 'number', 'date', 'datetime-local'].indexOf(
+                    column.input.type
+                  ) >= 0
+                "
+                :type="column.input.type"
                 class="form-control form-control-sm text-info"
+                :disabled="bulkinputs.indexOf(column.name) < 0"
                 @change="
                   onBulkInputChange(bulkitem[column.name], bulkitem, column)
                 "
@@ -582,6 +618,7 @@
               <select
                 v-if="column.input.type == 'select'"
                 class="form-select form-select-sm text-info"
+                :disabled="bulkinputs.indexOf(column.name) < 0"
                 @change="
                   onBulkInputChange(bulkitem[column.name], bulkitem, column)
                 "
@@ -595,13 +632,25 @@
                   ${ option.label }
                 </option>
               </select>
-            </span>
+
+              <span
+                class="input-group-text cursor-pointer"
+                @click="ifBulkInputClick(column)"
+              >
+                <i
+                  v-if="bulkitem[column.name] === undefined"
+                  class="bi bi-check-square text-danger"
+                ></i>
+                <i v-else class="bi bi-check-square text-success"></i>
+              </span>
+            </div>
 
             <span v-if="column.bulkbuttons">
               <span v-for="button in column.bulkbuttons" :key="button.action">
                 <button
                   type="button"
                   :class="[button.class]"
+                  :disabled="button.action === 'save' && !this.bulkinputs.length"
                   @click="
                     tableBulkAction(button.action, bulkitem, column, $event)
                   "
@@ -799,6 +848,8 @@ import {
   flattenObject,
   unflattenObject,
   translate,
+  convertToCSV,
+  downloadCSV,
 } from "./helpers";
 import { VuAdminFormGroup } from "./VuAdminFormGroup.vue";
 import VuAdminTablePagination from "./VuAdminTablePagination.vue";
@@ -819,6 +870,7 @@ export default {
       selected: [],
       details: [],
       bulkitem: {},
+      bulkinputs: [],
       page: {
         current: 1,
         limit: 10,
@@ -1636,11 +1688,20 @@ export default {
         this.errors = null;
         this.wait.form = true;
 
-        let options = prepareFetchOptions("PUT", this.settings);
+        let item = {};
 
-        let item = Object.assign({}, this.bulkitem);
+        for (let field in this.bulkitem) {
+          if (this.bulkinputs.indexOf(field) >= 0) {
+            item[field] = this.bulkitem[field];
+          }
+        }
+
         this.convertsOut([item]);
-        item = unflattenObject(item);
+        //item = unflattenObject(item);
+
+        // console.log(item);
+
+        let options = prepareFetchOptions("PUT", this.settings);
 
         options.body = JSON.stringify({
           item: item,
@@ -1733,6 +1794,10 @@ export default {
           }
         }
       }
+
+      if (!this.selected.length) {
+        this.bulkitem = {};
+      }
     },
 
     haveSelectedRowInPage() {
@@ -1760,16 +1825,20 @@ export default {
     },
 
     async exportTable(paramsData) {
-      if (this.selected.length > 0) {
-      } else {
-      }
-
       try {
         paramsData.limit = ".";
 
         let filter = this.getFiltersForFetch();
         // let relations = this.getRelationsForFetch();
         let order = this.getOrdersForFetch();
+
+        if (this.selected.length > 0) {
+          filter[this.settings.pkey] = {
+            type: "string",
+            value: this.selected,
+            operator: "in",
+          };
+        }
 
         if (filter !== null) {
           paramsData.filter = JSON.stringify(filter);
@@ -1809,6 +1878,15 @@ export default {
         if (this.settings.events && this.settings.events.tableAfterLoad) {
           this.settings.events.tableAfterLoad(data, response);
         }
+
+        let items = flattenArrayObjects(data);
+        this.convertsIn(items);
+        let csvString = convertToCSV(
+          items,
+          this.settings.table.exports[paramsData.type].fields
+        );
+
+        downloadCSV(csvString, this.settings.entity + ".csv");
 
         // // load relations
         // for (let key of Object.keys(relations)) {
@@ -1864,6 +1942,24 @@ export default {
 
       if (column.input.onchange) {
         column.input.onchange(value, column);
+      }
+    },
+
+    ifBulkInputClick(column) {
+      let idx = this.bulkinputs.indexOf(column.name);
+
+      if (idx < 0) {
+        this.bulkinputs.push(column.name);
+      } else {
+        this.bulkinputs.splice(idx, 1);
+      }
+
+      let bulkvalue = this.bulkitem[column.name];
+
+      if (bulkvalue === undefined) {
+        this.bulkitem[column.name] = null;
+      } else {
+        this.bulkitem[column.name] = undefined;
       }
     },
 

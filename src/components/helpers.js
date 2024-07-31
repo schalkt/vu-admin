@@ -1,7 +1,7 @@
 
 export function getResponseErrors(response, data) {
     if (response.status >= 400 && response.status <= 511) {
-        
+
         if (data.errors) {
             return data.errors;
         } else {
@@ -105,4 +105,42 @@ export function translate(key, translates) {
     }
 
     return translates[key];
+}
+
+export function convertToCSV(array, fields, delimiter = ';') {
+
+    const headers = fields.map(field => field.title).join(delimiter);
+    const rows = array.map(obj =>
+        fields.map(field => {
+
+            let value = obj[field.name];
+
+            if (field.template) {
+                return field.template(value);
+            }
+
+            return value !== undefined ? value : '';
+
+        }).join(delimiter)
+    );
+
+    return [headers, ...rows].join('\n');
+
+}
+
+
+export function downloadCSV(csvContent, filename = 'export.csv') {
+    
+    csvContent = '\uFEFF' + csvContent;
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    URL.revokeObjectURL(url);
+
 }

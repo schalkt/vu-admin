@@ -1,5 +1,5 @@
 const api = {
-	url: 'http://localhost:52000/vuapi/checks',
+	url: 'http://localhost:52000/vuapi/efiok/checks',
 	options: {
 		mode: "cors",
 		cache: "no-cache",
@@ -58,6 +58,42 @@ const methods = {
 	}
 };
 
+const exports = {
+	default: {
+		type: 'csv',
+		fields: [{
+			name: 'year',
+			title: 'Év'
+		},
+		{
+			name: 'month',
+			title: 'Hónap'
+		},
+		{
+			name: 'status',
+			title: 'Státusz',
+			template: (value) => value === 1 ? 'new' : value === 2 ? 'active' : 'unknown'
+		},
+		{
+			name: 'client.name',
+			title: 'Ügyfél'
+		},
+		{
+			name: 'client.accounting.company.name',
+			title: 'Könyvelő cég'
+		},
+		{
+			name: 'client.taxform',
+			title: 'Adózási forma'
+		},
+		{
+			name: 'sum.overall.ready',
+			title: 'Kész'
+		}
+		]
+	}
+}
+
 const table = {
 	title: 'E-fiók ellenőrzések',
 	class: 'table-hover table-responsive table-sm',
@@ -68,6 +104,7 @@ const table = {
 		limits: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000],
 		pagination: 10,
 	},
+	exports: exports,
 	header: {
 		class: 'text-center border rounded mt-2',
 		buttons: [
@@ -90,15 +127,6 @@ const table = {
 				icon: 'bi bi-plus-circle',
 			},
 			{
-				action: 'export',
-				params: {
-					export: 'default'
-				},
-				title: 'Export',
-				class: 'btn btn-sm btn-primary m-1',
-				icon: 'bi bi-download',
-			},
-			{
 				action: function (item, data) {
 					alert('Hi');
 					console.log(item, data);
@@ -106,7 +134,22 @@ const table = {
 				title: 'Send',
 				class: 'btn btn-sm btn-dark m-1',
 				icon: 'bi bi-envelope',
-			}
+			},
+			{
+				title: 'Exportálás',
+				class: 'btn btn-sm btn-primary m-1',
+				icon: 'bi bi-download',
+				dropdowns: [{
+					action: 'export',
+					params: {
+						export: true,
+						type: 'default',
+					},
+					title: 'Export',
+					class: 'btn btn-sm btn-primary m-1',
+					icon: 'bi bi-download',
+				}]				
+			}			
 		]
 	},
 	order: {
@@ -154,6 +197,8 @@ const table = {
 			filter: {
 				type: 'number',
 				default: 2024,
+				min: 1990,
+				max: 2030,
 				operator: '=',
 				operators: false,
 				buttonx: false,
@@ -180,6 +225,8 @@ const table = {
 			filter: {
 				type: 'number',
 				default: 6,
+				min: 1,
+				max: 12,
 				operator: '=',
 				buttonx: false,
 				// operators: [{
@@ -309,7 +356,7 @@ const table = {
 			filter: {
 				type: 'datetime-local',
 				operator: '>',
-				default: '2024-07-20 00:00:00',
+				default: '2024-07-12 00:00:00',
 				_operators: true,
 				operators: [
 					{
