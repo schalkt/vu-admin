@@ -43,7 +43,7 @@ export default {
 
 	},
 	table: {
-		title: 'Products',
+		title: 'Lorem',
 		page: {			
 			limit: 5,
 			limits: [5, 10, 20, 50],

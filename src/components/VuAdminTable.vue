@@ -91,8 +91,11 @@
               v-show="settings.table.columns.length > 0"
               class="mx-1"
             >
-              <i :class="[button.icon]"></i> ${ translate('Columns') }</span
-            >
+              <i :class="[button.icon]"></i> ${ translate('Columns') }
+              <span v-if="countHiddenColumns()">
+                ( ${ countHiddenColumns() } ${ translate('hidden') } )
+              </span>
+            </span>
           </button>
           <ul class="dropdown-menu text-end">
             <li v-for="column in settings.table.columns" :key="column">
@@ -639,9 +642,9 @@
               >
                 <i
                   v-if="bulkitem[column.name] === undefined"
-                  class="bi bi-check-square text-danger"
+                  class="bi bi-square text-secondary"
                 ></i>
-                <i v-else class="bi bi-check-square text-success"></i>
+                <i v-else class="bi bi-check-square text-warning"></i>
               </span>
             </div>
 
@@ -650,7 +653,9 @@
                 <button
                   type="button"
                   :class="[button.class]"
-                  :disabled="button.action === 'save' && !this.bulkinputs.length"
+                  :disabled="
+                    button.action === 'save' && !this.bulkinputs.length
+                  "
                   @click="
                     tableBulkAction(button.action, bulkitem, column, $event)
                   "
@@ -841,7 +846,7 @@ ${ item }
 <script>
 import { Modal } from "bootstrap";
 import {
-  getResponseErrors,
+  login,
   getResponseJson,
   prepareFetchOptions,
   flattenArrayObjects,
@@ -936,6 +941,15 @@ export default {
     this.formId = "form_" + this.settings.entity + "_" + uid;
     this.modalId = "modal_" + this.settings.entity + "_" + uid;
 
+
+    if (this.settings.api.auth && this.settings.api.auth.type == "Login") {
+
+      console.log(this.settings.api.auth);
+
+      login(this.settings.api.auth.url, this.settings.api.auth.username, this.settings.api.auth.password);
+
+    }
+
     this.resetTable();
   },
   mounted() {
@@ -954,6 +968,11 @@ export default {
     },
 
     resetFilter(reload) {
+
+      if (!this.settings.table.column) {
+        return;
+      }
+
       for (let column of this.settings.table.columns) {
         if (column.filter) {
           column.filter.value =
@@ -1310,9 +1329,9 @@ export default {
         }
 
         const data = await getResponseJson(response);
-        this.errors = getResponseErrors(response, data);
+        let error = this.getResponseErrors(response, data);
 
-        if (this.errors || !data) {
+        if (error || !data) {
           console.log(this.errors);
           this.wait.table = false;
           return;
@@ -1411,9 +1430,9 @@ export default {
         }
 
         const data = await getResponseJson(response);
-        this.errors = getResponseErrors(response, data);
+        const error = this.getResponseErrors(response, data);
 
-        if (this.errors || !data) {
+        if (error || !data) {
           console.log(this.errors);
           return;
         }
@@ -1616,7 +1635,8 @@ export default {
 
     async saveItem(input, callback, paramsData) {
       try {
-        this.errors = null;
+        // this.errors = null;
+
         this.wait.form = true;
 
         let item = Object.assign({}, input);
@@ -1645,22 +1665,25 @@ export default {
         });
 
         paramsData = paramsData ? paramsData : {};
-
         const params = new URLSearchParams(paramsData);
+        let paramsString = params.toString();
+
         let url =
           this.settings.api.url +
           (primaryId ? "/" + primaryId : "") +
-          (params ? "?" + params.toString() : "");
+          (paramsString ? "?" + paramsString : "");
 
         const response = await fetch(url, options).catch((err) => {
-          console.error(err.message);
+          // console.error(err.message);
+          this.addMessage(err.message, 3500, "danger");
         });
 
         const data = await getResponseJson(response);
-        this.errors = getResponseErrors(response, data);
+        const error = this.getResponseErrors(response, data);
         this.wait.form = false;
 
-        if (this.errors) {
+        if (error) {
+          console.log(this.errors);
           return;
         }
 
@@ -1669,15 +1692,16 @@ export default {
         }
       } catch (error) {
         console.error(error.message);
+        this.addMessage(error.message, 3500, "danger");
 
-        this.errors = {
-          "": [
-            {
-              message: error.message,
-              value: null,
-            },
-          ],
-        };
+        // this.errors = {
+        //   "": [
+        //     {
+        //       message: error.message,
+        //       value: null,
+        //     },
+        //   ],
+        // };
 
         this.wait.form = false;
       }
@@ -1685,7 +1709,8 @@ export default {
 
     async saveBulk(callback) {
       try {
-        this.errors = null;
+        // this.errors = null;
+
         this.wait.form = true;
 
         let item = {};
@@ -1712,13 +1737,14 @@ export default {
 
         const response = await fetch(url, options).catch((err) => {
           console.error(err.message);
+          this.addMessage(err.message, 3500, "danger", err);
         });
 
         const data = await getResponseJson(response);
-        this.errors = getResponseErrors(response, data);
+        const error = this.getResponseErrors(response, data);
         this.wait.form = false;
 
-        if (this.errors) {
+        if (error) {
           return;
         }
 
@@ -1730,18 +1756,33 @@ export default {
         this.reloadTable();
       } catch (error) {
         console.error(error.message);
-
-        this.errors = {
-          "": [
-            {
-              message: error.message,
-              value: null,
-            },
-          ],
-        };
-
+        this.addMessage(error.message, 3500, "danger", error);
         this.wait.form = false;
       }
+    },
+
+    getResponseErrors(response, data) {
+      if (response.status >= 400 && response.status <= 511) {
+        if (data.errors) {
+          for (let error of data.errors) {
+            this.addMessage(error.message, 3500, "danger", error);
+          }
+        } else if (data.error) {
+          this.addMessage(data.error, 3500, "danger", response);
+        } else {
+          this.addMessage(response.statusText, 3500, "danger", response);
+        }
+
+        return true;
+      }
+
+      return false;
+    },
+
+    countHiddenColumns() {
+      return this.settings.table.columns.filter(
+        (element) => element.hidden === true
+      ).length;
     },
 
     toggleColumn(column) {
@@ -1868,10 +1909,9 @@ export default {
         }
 
         const data = await getResponseJson(response);
-        this.errors = getResponseErrors(response, data);
+        let error = this.getResponseErrors(response, data);
 
-        if (this.errors || !data) {
-          console.log(this.errors);
+        if (error || !data) {
           return;
         }
 
@@ -1963,7 +2003,7 @@ export default {
       }
     },
 
-    addMessage(msg, timeout, priority) {
+    addMessage(msg, timeout, priority, details) {
       clearTimeout(this.messageTimeout);
 
       const uid = Date.now() + Math.random().toString(36).substring(2, 9);
@@ -1974,6 +2014,7 @@ export default {
         timeout: timeout !== undefined ? timeout : 2500,
         datetime: new Date().toLocaleString("hu-HU"),
         priority: priority ? priority : "info",
+        details: details,
       };
 
       this.messages.unshift(this.message);

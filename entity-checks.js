@@ -20,6 +20,7 @@ const translate = {
 	'all': 'összesen',
 	'page': 'oldal',
 	'row': 'sor',
+	'hidden': 'rejtett',
 	'Visible all': 'Mind látható',
 	'Hidden all': 'Mind rejtett',
 	'=': 'Egyenlő',

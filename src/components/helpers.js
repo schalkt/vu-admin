@@ -1,22 +1,4 @@
 
-export function getResponseErrors(response, data) {
-    if (response.status >= 400 && response.status <= 511) {
-
-        if (data.errors) {
-            return data.errors;
-        } else {
-            return {
-                "": [
-                    {
-                        message: response.statusText,
-                        value: null,
-                    },
-                ],
-            };
-        }
-    }
-}
-
 export async function getResponseJson(response) {
     try {
         return await response.json();
@@ -50,6 +32,10 @@ export function prepareFetchOptions(method, settings) {
         }
         if (api.auth.type == 'Bearer' && api.auth.token) {
             api.options.headers['Authorization'] = "Bearer " + api.auth.token;
+        }
+        if (api.auth.type == 'Cookie') {
+            api.options.credentials = 'include';
+            // api.options.headers['Cookie'] = "";
         }
     }
 
@@ -130,7 +116,7 @@ export function convertToCSV(array, fields, delimiter = ';') {
 
 
 export function downloadCSV(csvContent, filename = 'export.csv') {
-    
+
     csvContent = '\uFEFF' + csvContent;
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

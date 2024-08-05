@@ -6,7 +6,7 @@
     </div>
     <div class="col-md-8">
       <vu-admin :entity="'checks'" />
-    </div>
+    </div>    
     <div class="col-md-12">
       <vu-admin :entity="'lorem'" />
     </div>
