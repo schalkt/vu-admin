@@ -1,3 +1,7 @@
+<template>
+	<div ref="editor"></div>
+</template>
+
 <script>
 
 import Quill from "quill";
@@ -53,6 +57,6 @@ const HtmlEditor = {
   },
 };
 
-export { HtmlEditor };
+export default HtmlEditor;
 
 </script>

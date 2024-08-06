@@ -4,7 +4,7 @@
     v-if="settings && settings.table"
     class="table-container"
     :class="[settings.class]"
-    :data-bs-theme="[settings.table.theme]"
+    :data-bs-theme="[settings.theme]"
   >
     <div class="table-title">
       <div class="d-flex align-items-center justify-content-between">
@@ -695,14 +695,14 @@
             :id="formId"
             class="form"
             @submit.prevent="submitItem"
-            :class="{ wait: wait.form }"
+            :class="{ wait: wait.form }"            
           >
             <div class="modal-header">
               <h5 class="modal-title">
                 Szerkesztés
-                <span v-cloak v-if="item" class="text-muted"
-                  >( <span class="text-info">${ item.id }</span> )</span
-                >
+                <small v-cloak v-if="item" class="text-muted fw-normal">
+                  ( <span class="text-info">${ item[settings.pkey] }</span> )
+                  </small>
                 <div
                   v-show="wait.form"
                   class="spinner-border spinner-border-sm text-info mx-2"
@@ -728,6 +728,71 @@
                 aria-label="Close"
               ></button>
             </div>
+
+            <div
+              class="modal-header d-flex justify-content-between"
+              v-cloak
+              v-if="item"
+            >
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary m-1"
+                  @click="reloadItem()"
+                  :disabled="!item.id"
+                >
+                  <i class="bi bi-arrow-clockwise"></i> Újratöltés
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-warning m-1"
+                  @click="createItem()"
+                >
+                  <i class="bi bi-plus-circle"></i> Új
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-warning m-1"
+                  @click="copyItem()"
+                >
+                  <i class="bi bi-copy"></i> Másolat
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-danger m-1"
+                  @click="deleteItem()"
+                  :disabled="!item.id"
+                >
+                  <i class="bi bi-trash"></i> Törlés
+                </button>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-secondary m-1"
+                  data-bs-dismiss="modal"
+                >
+                  <i class="bi bi-x"></i> Bezárás
+                </button>
+
+                <button type="submit" class="btn btn-primary m-1">
+                  <i class="bi bi-save"></i> Mentés
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-success m-1"
+                  @click="submitAndClose"
+                >
+                  <i class="bi bi-save"></i> Ment és bezár
+                </button>
+              </div>
+            </div>
+
             <div class="modal-body custom-scroll">
               <div class="row" v-if="settings.form">
                 <div
@@ -746,6 +811,7 @@
                     v-model="item"
                     :group="group"
                     :formid="formId"
+                    :settings="settings"
                   ></VuAdminFormGroup>
                 </div>
               </div>
@@ -765,13 +831,6 @@
                   </div>
                 </div>
               </div>
-
-              <div class="mt-3 mb-3"></div>
-
-              <pre>
-${ item }
-</pre
-              >
             </div>
             <div
               class="modal-footer d-flex justify-content-between"
@@ -846,7 +905,6 @@ ${ item }
 <script>
 import { Modal } from "bootstrap";
 import {
-  login,
   getResponseJson,
   prepareFetchOptions,
   flattenArrayObjects,
@@ -856,7 +914,7 @@ import {
   convertToCSV,
   downloadCSV,
 } from "./helpers";
-import { VuAdminFormGroup } from "./VuAdminFormGroup.vue";
+import VuAdminFormGroup from "./VuAdminFormGroup.vue";
 import VuAdminTablePagination from "./VuAdminTablePagination.vue";
 
 export default {
@@ -865,7 +923,7 @@ export default {
     settings: Object,
   },
   components: {
-    // VuAdminFormGroup,
+    VuAdminFormGroup,
     VuAdminTablePagination,
   },
   data() {
@@ -904,7 +962,7 @@ export default {
     // console.log(this.page, this.settings.table.page);
 
     if (!this.settings.table) {
-      // console.log(window.entities, this.settings.entity, this.settings.table);
+      // console.log(window.VuEntities, this.settings.entity, this.settings.table);
       return false;
     }
 
@@ -921,6 +979,33 @@ export default {
     if (!this.settings.table.header) {
       this.settings.table.header = {};
     }
+
+    if (!this.settings.api) {
+      this.settings.api = {};
+    }
+
+    if (!this.settings.table.api) {
+      this.settings.table.api = {};
+    }
+
+    if (!this.settings.form) {
+      this.settings.form = {};
+    }
+
+    if (!this.settings.form.api) {
+      this.settings.form.api = {};
+    }
+
+    this.settings.table.api = Object.assign(
+      {},
+      this.settings.api,
+      this.settings.table.api
+    );
+    this.settings.form.api = Object.assign(
+      {},
+      this.settings.api,
+      this.settings.form.api
+    );
 
     // this.modalElement.addEventListener('hide.bs.modal', event => {
 
@@ -940,16 +1025,6 @@ export default {
 
     this.formId = "form_" + this.settings.entity + "_" + uid;
     this.modalId = "modal_" + this.settings.entity + "_" + uid;
-
-
-    if (this.settings.api.auth && this.settings.api.auth.type == "Login") {
-
-      console.log(this.settings.api.auth);
-
-      login(this.settings.api.auth.url, this.settings.api.auth.username, this.settings.api.auth.password);
-
-    }
-
     this.resetTable();
   },
   mounted() {
@@ -968,8 +1043,7 @@ export default {
     },
 
     resetFilter(reload) {
-
-      if (!this.settings.table.column) {
+      if (!this.settings.table.columns) {
         return;
       }
 
@@ -1316,7 +1390,7 @@ export default {
         const params = new URLSearchParams(paramsData);
 
         let options = prepareFetchOptions("GET", this.settings);
-        let url = this.settings.api.url + "?" + params.toString();
+        let url = this.settings.table.api.url + "?" + params.toString();
 
         const response = await fetch(url, options);
 
@@ -1348,8 +1422,8 @@ export default {
           this.calcPage();
         }
 
-        let items = this.settings.api.input.items
-          ? data[this.settings.api.input.items]
+        let items = this.settings.table.api.input.items
+          ? data[this.settings.table.api.input.items]
           : data;
 
         //console.log(items);
@@ -1419,7 +1493,7 @@ export default {
         // console.log(this.settings.api.url + '/' + relation.entity + '?' + params.toString());
         // return;
         let options = prepareFetchOptions("GET", this.settings);
-        let url = this.settings.api.url + "?" + params.toString();
+        let url = this.settings.table.api.url + "?" + params.toString();
 
         const response = await fetch(url, options);
 
@@ -1468,7 +1542,7 @@ export default {
         this.wait.form = true;
 
         let options = prepareFetchOptions("GET", this.settings);
-        let url = this.settings.api.url + "/" + item[this.settings.pkey];
+        let url = this.settings.form.api.url + "/" + item[this.settings.pkey];
 
         const response = await fetch(url, options);
 
@@ -1500,7 +1574,7 @@ export default {
         }
 
         if (data.item) {
-          this.item = data.item;
+          this.item = flattenObject(data.item);
           this.itemOriginal = Object.assign({}, data.item);
         }
 
@@ -1537,7 +1611,7 @@ export default {
 
         let options = prepareFetchOptions("DELETE", this.settings);
         let url =
-          this.settings.api.url +
+          this.settings.form.api.url +
           "/" +
           item[this.settings.pkey] +
           "?" +
@@ -1580,7 +1654,7 @@ export default {
         this.wait.form = true;
 
         let options = prepareFetchOptions("DELETE", this.settings);
-        let url = this.settings.api.url;
+        let url = this.settings.table.api.url;
 
         options.body = JSON.stringify({
           ids: ids,
@@ -1639,7 +1713,27 @@ export default {
 
         this.wait.form = true;
 
-        let item = Object.assign({}, input);
+        let item = {};
+
+        if (
+          this.settings.form.api.output &&
+          this.settings.form.api.output.fields
+        ) {
+          for (let field in input) {
+            if (this.settings.form.api.output.fields.includes(field)) {
+              item[field] = input[field];
+            }
+          }
+        } else {
+          Object.assign(item, input);
+        }
+
+        // const item = Object.keys(input)
+        //   .filter((key) => this.settings.api.output.fields.includes(key))
+        //   .reduce((obj, key) => {
+        //     obj[key] = input[key];
+        //     return obj;
+        //   }, {});
 
         // const formData = new FormData();
 
@@ -1661,7 +1755,9 @@ export default {
         this.convertsOut([item]);
 
         options.body = JSON.stringify({
-          item: unflattenObject(item),
+          item: !this.settings.form.api.output.flatten
+            ? unflattenObject(item)
+            : item,
         });
 
         paramsData = paramsData ? paramsData : {};
@@ -1669,7 +1765,7 @@ export default {
         let paramsString = params.toString();
 
         let url =
-          this.settings.api.url +
+          this.settings.form.api.url +
           (primaryId ? "/" + primaryId : "") +
           (paramsString ? "?" + paramsString : "");
 
@@ -1716,12 +1812,25 @@ export default {
         let item = {};
 
         for (let field in this.bulkitem) {
-          if (this.bulkinputs.indexOf(field) >= 0) {
+          if (
+            this.bulkinputs.indexOf(field) >= 0 &&
+            this.settings.table.api.output.fields.includes(field)
+          ) {
             item[field] = this.bulkitem[field];
           }
         }
 
+        // const item = Object.keys(this.bulkitem)
+        //   .filter((key) => this.settings.api.output.fields.includes(key))
+        //   .filter((key) => this.bulkinputs.indexOf(key) >= 0)
+        //   .map((obj, key) => {
+        //     obj[key] = this.bulkitem[key];
+        //     return obj;
+        //   }, {});
+
         this.convertsOut([item]);
+
+        // unflatten nem kell a Mongo miatt, de mi van ha a backend mysql? akkor a json úgy is egy mező
         //item = unflattenObject(item);
 
         // console.log(item);
@@ -1733,7 +1842,7 @@ export default {
           ids: this.selected,
         });
 
-        let url = this.settings.api.url;
+        let url = this.settings.table.api.url;
 
         const response = await fetch(url, options).catch((err) => {
           console.error(err.message);
@@ -1896,7 +2005,7 @@ export default {
         const params = new URLSearchParams(paramsData);
 
         let options = prepareFetchOptions("GET", this.settings);
-        let url = this.settings.api.url + "?" + params.toString();
+        let url = this.settings.table.api.url + "?" + params.toString();
 
         const response = await fetch(url, options);
 
@@ -2122,6 +2231,10 @@ export default {
   .table-bulk {
     td {
     }
+  }
+
+  .modal-title {
+    color: var(--bs-light);
   }
 }
 </style>

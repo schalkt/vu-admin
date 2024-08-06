@@ -13,6 +13,18 @@ const api = {
 		item: 'item',
 		items: 'items'
 	},
+	output: {
+		item: 'item',
+		flatten: true,
+		fields: [
+			'_id',
+			'status',
+			'client.name',
+			'client.taxform',
+			'states.general.repi_konyvelese.value',
+			'states.recording.anyagok_bekuldve.changed'
+		]
+	}
 };
 
 const translate = {
@@ -97,11 +109,13 @@ const exports = {
 
 const table = {
 	title: 'E-fiók ellenőrzések',
-	class: 'table-hover table-responsive table-sm',
-	theme: 'dark',
+	class: 'table-hover table-responsive table-sm',	
+	api: {
+		url: 'http://localhost:52000/vuapi/efiok/checks',
+	},	
 	page: {
 		current: 1,
-		limit: 10,
+		limit: 15,
 		limits: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000],
 		pagination: 10,
 	},
@@ -130,7 +144,7 @@ const table = {
 			{
 				action: function (item, data) {
 					alert('Hi');
-					console.log(item, data);
+					// console.log(item, data);
 				},
 				title: 'Send',
 				class: 'btn btn-sm btn-dark m-1',
@@ -149,8 +163,8 @@ const table = {
 					title: 'Export',
 					class: 'btn btn-sm btn-primary m-1',
 					icon: 'bi bi-download',
-				}]				
-			}			
+				}]
+			}
 		]
 	},
 	order: {
@@ -161,7 +175,7 @@ const table = {
 		},
 		'month': {
 			dir: 'DESC',
-			fixed: true,
+			fixed: false,
 			idx: 1
 		},
 		'states.recording.anyagok_bekuldve.changed': {
@@ -225,7 +239,7 @@ const table = {
 			width: '10%',
 			filter: {
 				type: 'number',
-				default: 6,
+				default: 7,
 				min: 1,
 				max: 12,
 				operator: '=',
@@ -281,17 +295,35 @@ const table = {
 			}
 		},
 		{
+			name: 'client.taxform',
+			title: 'Adózás',
+			filter: {
+				type: 'text',
+				operator: '%'
+			}			,
+			input: {
+				type: 'text',
+				bulkactions: true,
+				autosave: true,
+				onchange: function (value, column, item) {
+					// console.log(value, column, item);
+				}
+			},
+		},
+		{
 			name: 'client.name',
 			title: 'Ügyfél',
 			filter: {
 				type: 'text',
+				default: 'sch',
+				operator: '%'
 			},
 			input: {
 				type: 'text',
 				bulkactions: true,
 				autosave: true,
 				onchange: function (value, column, item) {
-					console.log(value, column, item);
+					// console.log(value, column, item);
 				}
 			},
 		},
@@ -357,8 +389,7 @@ const table = {
 			filter: {
 				type: 'datetime-local',
 				operator: '>',
-				default: '2024-07-12 00:00:00',
-				_operators: true,
+				_default: '2024-07-12 00:00:00',
 				operators: [
 					{
 						label: '>',
@@ -461,7 +492,7 @@ const table = {
 		fields: [
 			{
 				name: 'client.accounting.company.name',
-				label: 'Cégnév',
+				label: 'Könyvelő',
 				input: {
 					type: 'text',
 					autosave: true,
@@ -532,7 +563,7 @@ const table = {
 	}
 };
 
-const form = {
+const form = {	
 	groups: [
 		{
 			fields: [
@@ -541,6 +572,10 @@ const form = {
 					name: 'status',
 					label: 'Státusz',
 					options: [
+						{
+							value: undefined,
+							label: ''
+						},
 						{
 							value: 0,
 							label: 'Új'
@@ -554,34 +589,13 @@ const form = {
 							label: 'Törölt'
 						}
 					]
-				},
-				{
-					type: 'select',
-					name: 'language',
-					label: 'Nyelv',
-					required: true,
-					options: [
-						{
-							value: 'hu',
-							label: 'Magyar'
-						},
-						{
-							value: 'en',
-							label: 'Angol'
-						}
-					]
-				},
+				},				
 				{
 					type: 'text',
-					name: 'title',
-					label: 'Cím',
+					name: 'client.name',
+					label: 'Ügyfél',
 					required: true,
-				},
-				{
-					type: 'text',
-					name: 'slug',
-					label: 'Url cím'
-				},
+				},				
 				{
 					type: 'image',
 					name: 'images',
@@ -615,16 +629,11 @@ const form = {
 							},
 						},
 					}
-				},
+				},				
 				{
 					type: 'html',
-					name: 'lead',
-					label: 'Bevezető'
-				},
-				{
-					type: 'html',
-					name: 'body',
-					label: 'Tartalom'
+					name: 'client.description',
+					label: 'Ügyfél leírása'
 				},
 			]
 		}
@@ -634,6 +643,7 @@ const form = {
 export default {
 	pkey: '_id',
 	class: 'p-3 rounded',
+	theme: 'dark',
 	api: api,
 	translate: translate,
 	methods: methods,

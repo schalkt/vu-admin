@@ -125,17 +125,18 @@
         ></span>
       </div>
 
-      <html-editor
+      <HtmlEditor
         v-if="field.type == 'html'"
         v-model="item[field.name]"
-      ></html-editor>
-      <image-upload
+      ></HtmlEditor>
+
+      <ImageUpload
         v-if="field.type == 'image'"
         v-model="item[field.name]"
         :params="field.params"
-      ></image-upload>
+      ></ImageUpload>
 
-      <span v-if="field.type == 'xaddresses'">
+      <span v-if="field.type == 'addresses'">
         <div v-if="item[field.name]">
           <div v-for="address in item[field.name]" :key="address">
             ${ address }
@@ -168,19 +169,29 @@
         <i class="text-muted" v-html="field.description"></i>
       </div>
     </div>
+
+    <pre class="bg-light text-dark">
+      ${ item }
+    </pre>
+
   </div>
 </template>
 
-
 <script>
-import { HtmlEditor } from "./VuAdminHtmlEditor.vue";
-import { ImageUpload } from "./VuAdminImageUpload.vue";
+import { translate } from "./helpers";
+import HtmlEditor from "./VuAdminHtmlEditor.vue";
+import ImageUpload from "./VuAdminImageUpload.vue";
 
 const VuAdminFormGroup = {
-  props: ["modelValue", "group", "formid"],
+  props: {
+    modelValue: Object,
+    group: Object,
+    formid: String,
+    settings: Object,
+  },
   data: function () {
     return {
-      item: null,
+      item: {},
     };
   },
   created() {},
@@ -241,5 +252,21 @@ const VuAdminFormGroup = {
   },
 };
 
-export { VuAdminFormGroup };
+export default VuAdminFormGroup;
 </script>
+
+
+<style lang="scss" scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
+
+[data-bs-theme="light"] {
+ 
+}
+
+[data-bs-theme="dark"] {
+ 
+}
+</style>
+

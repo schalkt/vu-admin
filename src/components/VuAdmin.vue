@@ -35,8 +35,8 @@ export default {
     };
   },
   mounted() {
-    if (window.entities && window.entities[this.entity]) {
-      this.settings = window.entities[this.entity];
+    if (window.VuEntities && window.VuEntities[this.entity]) {
+      this.settings = window.VuEntities[this.entity];
       this.settings.entity = this.entity;
 
       if (this.settings.init) {

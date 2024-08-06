@@ -1,4 +1,4 @@
-window.entities = {
+window.VuEntities = {
 	demo: {
 		pkey: 'id',
 		api: {

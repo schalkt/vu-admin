@@ -1,3 +1,195 @@
+<template>
+
+	<div class="vsa-upload" :class="{wait : wait}">
+
+		<div v-cloak v-if="editfile && editfile.types" class="vsa-image-editor p-2 text-center text-light">
+
+			<div class="row">
+			<div class="col-md-3" v-for="(type, index) in editfile.types" :key="index">
+
+				<span class="badge bg-dark text-light fw-light mx-1 text-uppercase">${ type.convert.replace(/.*\//, '') }</span>
+				<span class="badge bg-dark text-light fw-light mx-1">${ type.width } x ${ type.height }</span>
+				<span class="badge bg-dark text-light fw-light mx-1">~${ this.round(type.bytes) }</span>
+
+				<img v-cloak v-if="type" class="img-thumbnail rounded" :src="type.url ? type.url : type.data">
+
+			</div>
+
+		</div>
+
+
+
+			<input type="text" class="form-control form-control-sm w-100 mt-1" v-model="editfile.title" @change="slug(index)" />
+
+			<div class="row g-1">
+				<div class="col-md-6">
+					<button type="button" class="btn btn-sm btn-outline-danger mt-1 w-100" @click="editfile = null">
+						Close
+					</button>
+				</div>
+				<div class="col-md-6">
+					<button type="button" class="btn btn-sm btn-outline-danger mt-1 w-100" @click="remove(index)">
+						Remove
+					</button>
+				</div>
+				<div class="col-md-6">
+					<button v-if="type && !type.url" type="button" class="btn btn-sm btn-outline-light mt-1 w-100" @click="download(index, params)">
+						Download
+					</button>
+					<a v-if="type && type.url" type="button" class="btn btn-sm btn-outline-light mt-1 w-100" :href="type.url">
+						Download
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="row g-1" v-if="files && files.length">
+
+			<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3" v-for="(file, index) in files" :key="index">
+				<div class="vsa-image-container border border-secondary rounded p-2 h-100 position-relative">
+
+					<div v-if="file.types && file.types[params.thumbnail]" class="w-100 h-100 d-flex align-items-center">
+
+						<div class="vsa-image-info position-absolute start-0 bottom-0 end-0 p-2 text-center text-light">
+
+							{# <span v-if="file.resized" class="badge bg-warning text-dark m-1">resized</span> #}
+
+							{# <div class="" v-for="(type, index) in file.types" :key="index">
+
+								<span class="badge bg-dark text-light fw-light mx-1 text-uppercase">${ type.convert.replace('image/', '') }</span>
+								<span class="badge bg-dark text-light fw-light mx-1">${ type.width } x ${ type.height }</span>
+								<span class="badge bg-dark text-light fw-light mx-1">~${ this.round(type.bytes) }</span>
+
+							</div> #}
+
+							<strong class="bg-dark text-light rounded p-0 px-2 mb-1">#${ index + 1 }</strong>
+
+							<div class="text-center mt-2">
+
+								<button title="Delete the image" type="button" class="btn btn-sm btn-outline-danger mx-1 d-inline-block" @click="remove(index)">
+									<i class="bi bi-trash"></i>
+								</button>
+
+								<button title="Download the image" v-if="file && file.types && file.uploaded" type="button" class="btn btn-sm btn-outline-light mx-1"
+									@click="download(index, params)">
+									<i class="bi bi-download"></i>
+								</button>
+
+								<a title="Open in new tab" v-if="file && file.types && file.uploaded" class="btn btn-sm btn-outline-light mx-1" target="_blank" :href="file.types[params.download].url ? file.types[params.download].url : file.types[params.download].data">
+									<i class="bi bi-box-arrow-up-right"></i>
+								</a>
+
+								<button v-if="file.video && !file.uploaded" type="button" class="btn btn-sm btn-outline-warning mx-1" @click="seekRandom(file)">
+									Seek
+								</button>
+
+								<button v-if="params.editor" type="button" class="btn btn-sm btn-outline-warning mx-1" @click="editfile = file">
+									<i v-if="file.video" class="bi bi-film"></i>
+									<i v-else class="bi bi-image"></i>
+								</button>
+
+							</div>
+
+							<div class="text-light fw-light text-nowrap">
+								${ file.title }
+							</div>
+
+						</div>
+
+						<div class="vsa-image-frame w-100 text-center">
+							<img class="img-fluid rounded" :src="file.types[params.thumbnail].url ? file.types[params.thumbnail].url : file.types[params.thumbnail].data"
+							:alt="file.name">
+						</div>
+
+					</div>
+
+					<div v-else class="w-100 h-100 vsa-image-loading d-flex align-items-center justify-content-center">
+						<span></span>
+					</div>
+
+				</div>
+			</div>
+			<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="border border-secondary rounded p-2 h-100">
+
+					<label :for="uploadId" :class="{disabled : files && (params.limit <= files.length)}"
+						class="btn btn-dark cursor-pointer h-100 w-100 d-flex align-items-center justify-content-center">
+						<span>
+
+							<span class="display-3 d-block">+</span>
+
+							<small class="fw-light">
+
+								<div class="fs-4" v-if="files && (params.limit > files.length)">
+									${ params.text }
+								</div>
+
+								<div v-else class="fs-6 text-warning">
+									You have reached the number of files you can upload
+								</div>
+
+							</small>
+
+						</span>
+
+					</label>
+
+				</div>
+			</div>
+			<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3">
+				<div class="border border-secondary rounded p-2 h-100">
+
+					<div class="text-center h-100 w-100 d-flex align-items-center justify-content-center">
+						<small class="fw-light">
+							<div class="mt-1" v-if="params.limit">
+								uploaded <span class="badge bg-dark border border-secondary text-info mx-1">${ files.length }</span>
+								/ <span class="badge bg-dark border border-secondary text-info mx-1">${ params.limit }</span>
+								<span v-if="this.bytes" class="badge bg-dark border border-secondary text-info mx-1">~${ this.round(this.bytes) }</span>
+							</div>
+							<div class="mt-1" v-if="params.accept">
+								accept only
+								<span class="badge bg-dark border border-secondary text-info mx-1" v-for="ext in params.accept" :key="ext">${
+									ext.replace(/.*\//,'') }
+								</span>
+							</div>
+							<div v-if="params.presets">
+                <div class="mt-1" v-for="(preset, index) in params.presets" :key="index"></div>
+
+								preset
+
+								<span class="badge bg-dark border border-secondary text-info mx-1">
+									${ index }
+								</span>
+
+								<span class="badge bg-dark border border-secondary text-info mx-1">
+									${ preset.width } x ${preset.height }
+								</span>
+
+								<span class="badge bg-dark border border-secondary text-info mx-1">
+									${ preset.convert.replace(/.*\//,'') }
+								</span>
+
+							</div>
+
+
+							<button v-if="files.length" type="button" class="btn btn-sm btn-danger mt-2 p-0 px-3" @click="resetConfirm">
+								remove all images
+							</button>
+
+						</small>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<input v-cloak v-if="uploadId" multiple style="opacity:0; height: 1px; width: 1px;" :id="uploadId" type="file" :accept="params.accept.join(',')"
+			@change="handleFileChange" />
+
+	</div>
+
+</template>
+
 <script>
 const ImageUpload = {  
   props: ["params", "modelValue"],
@@ -288,5 +480,5 @@ const ImageUpload = {
   },
 };
 
-export { ImageUpload };
+export default ImageUpload;
 </script>

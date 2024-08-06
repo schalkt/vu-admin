@@ -17,14 +17,16 @@ export default {
 	events: {
 		tableBeforeLoad: function (query) {
 
-			console.log(query);			
+			//console.log(query);			
+			
 			query.skip =  (query.page - 1) * query.limit;
 			delete query.page;
 
 		},
 		tableAfterLoad: function (data, response) {
 
-			console.log(data);
+			// console.log(data);
+
 			data.page = {
 				all: Math.round(data.total / data.limit),
 				current: null,				
@@ -39,7 +41,7 @@ export default {
 	},
 	init: function (settings) {
 		
-		console.log(settings);
+		//console.log(settings);
 
 	},
 	table: {
