@@ -1,3 +1,18 @@
+export function getValueOrFunction(object, params) {
+    try {
+        
+        if (typeof object === 'string') {
+            return object;
+        }
+
+        if (typeof object === 'function') {
+            return object(params);
+        }
+
+    } catch (error) {
+        return null;
+    }
+}
 
 export async function getResponseJson(response) {
     try {

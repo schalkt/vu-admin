@@ -29,11 +29,10 @@ export default {
 			class: '',
 			buttons: []
 		},
-		page: {
-			current: 2,
-			limit: 5,
-			limits: [2, 4, 20],
-			pagination: 5,
+		pagination: {
+			limit: 2,
+			limits: [2, 5, 10],
+			size: 4
 		},
 		order: {
 			'id': {

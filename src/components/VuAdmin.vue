@@ -55,26 +55,6 @@ export default {
 
       return original !== current;
     },
-
-    createItem() {
-      this.errors = null;
-      this.item = {};
-      this.modalWindow.show();
-
-      setTimeout(() => {
-        this.itemOriginal = Object.assign({}, this.item);
-      }, 100);
-    },
-
-    copyItem() {
-      this.errors = null;
-      this.item[this.settings.pkey] = undefined;
-      this.modalWindow.show();
-
-      setTimeout(() => {
-        this.itemOriginal = Object.assign({}, this.item);
-      }, 100);
-    },
   },
   components: {
     VuAdminTable,

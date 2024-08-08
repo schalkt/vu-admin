@@ -6,6 +6,7 @@
     :class="[settings.class]"
     :data-bs-theme="[settings.theme]"
   >
+    <div class="overlay" :class="{ blocked: ui.block.table }"></div>
     <div class="table-title">
       <div class="d-flex align-items-center justify-content-between">
         <div class="d-inline-block">
@@ -17,7 +18,7 @@
           </h5>
 
           <div
-            v-show="wait.table"
+            v-show="ui.wait.table"
             class="spinner-border spinner-border-sm text-info mx-2"
             role="status"
           >
@@ -91,7 +92,7 @@
               v-show="settings.table.columns.length > 0"
               class="mx-1"
             >
-              <i :class="[button.icon]"></i> ${ translate('Columns') }
+              <i :class="[button.icon]"></i> ${ translate(button.title) }
               <span v-if="countHiddenColumns()">
                 ( ${ countHiddenColumns() } ${ translate('hidden') } )
               </span>
@@ -103,8 +104,9 @@
                 class="dropdown-item cursor-pointer"
                 @click="toggleColumn(column)"
               >
-                <small class="badge text-secondary">${ column.name }</small>${
-                column.title }
+                <small class="badge text-secondary fw-normal"
+                  >${ column.name }</small
+                >${ column.title }
 
                 <i
                   v-if="!column.hidden"
@@ -165,7 +167,7 @@
 
     <table
       v-if="settings.table"
-      class="table mt-2"
+      class="table mb-0"
       :class="[settings.table.class]"
     >
       <thead>
@@ -186,30 +188,30 @@
               <span
                 class="badge p-1"
                 v-if="
-                  page.order[column.name] &&
-                  page.order[column.name].dir === 'ASC'
+                  config.order[column.name] &&
+                  config.order[column.name].dir === 'ASC'
                 "
                 :class="{
-                  'text-light': page.order[column.name].fixed,
-                  'text-warning': !page.order[column.name].fixed,
+                  'text-light': config.order[column.name].fixed,
+                  'text-warning': !config.order[column.name].fixed,
                 }"
               >
-                <i class="bi bi-arrow-down"></i>${ page.order[column.name].idx +
-                1 }
+                <i class="bi bi-arrow-down"></i>${ config.order[column.name].idx
+                + 1 }
               </span>
               <span
                 class="badge p-1"
                 v-if="
-                  page.order[column.name] &&
-                  page.order[column.name].dir === 'DESC'
+                  config.order[column.name] &&
+                  config.order[column.name].dir === 'DESC'
                 "
                 :class="{
-                  'text-light': page.order[column.name].fixed,
-                  'text-warning': !page.order[column.name].fixed,
+                  'text-light': config.order[column.name].fixed,
+                  'text-warning': !config.order[column.name].fixed,
                 }"
               >
-                <i class="bi bi-arrow-up"></i>${ page.order[column.name].idx + 1
-                }
+                <i class="bi bi-arrow-up"></i>${ config.order[column.name].idx +
+                1 }
               </span>
             </span>
 
@@ -267,6 +269,7 @@
 
                 <button
                   class="btn btn-outline-secondary"
+                  v-if="column.filter.buttonx && column.filter.buttonx != false"
                   :disabled="!column.filter.value"
                   @click="
                     column.filter.value = undefined;
@@ -292,7 +295,9 @@
                 >
                   <option value="=">${ translate('=') }</option>
                   <option value=">">${ translate('>') }</option>
+                  <option value=">=">${ translate('>=') }</option>
                   <option value="<">${ translate('<') }</option>
+                  <option value="<=">${ translate('<=') }</option>
                 </select>
 
                 <select
@@ -375,7 +380,9 @@
                 >
                   <option value="=">${ translate('=') }</option>
                   <option value=">">${ translate('>') }</option>
+                  <option value=">=">${ translate('>=') }</option>
                   <option value="<">${ translate('<') }</option>
+                  <option value="<=">${ translate('<=') }</option>
                 </select>
 
                 <select
@@ -457,7 +464,11 @@
                     'border-info text-info':
                       selected.indexOf(item[settings.pkey]) >= 0,
                   }"
-                  v-html="index + 1 + (page.current - 1) * page.limit"
+                  v-html="
+                    index +
+                    1 +
+                    (config.pagination.page - 1) * config.pagination.limit
+                  "
                 >
                 </span>
               </div>
@@ -470,7 +481,18 @@
                 v-html="tableCellTemplate(column.template, item, index, column)"
               >
               </span>
-              <span v-if="column.input">
+              <div v-if="column.input" class="input-group input-group-sm">
+                <span
+                  v-if="column.input.prefix"
+                  class="input-group-text"
+                  v-html="
+                    getValueOrFunction(column.input.prefix, {
+                      column: column,
+                      item: item,
+                    })
+                  "
+                ></span>
+
                 <input
                   v-if="
                     ['text', 'number', 'date', 'datetime-local'].indexOf(
@@ -479,6 +501,7 @@
                   "
                   :type="column.input.type"
                   class="form-control form-control-sm text-info"
+                  :class="column.input.class"
                   @change="
                     onInputChange(item[column.name], column, item, index)
                   "
@@ -488,6 +511,7 @@
                 <select
                   v-if="column.input.type == 'select'"
                   class="form-select form-select-sm text-info"
+                  :class="column.input.class"
                   @change="
                     onInputChange(item[column.name], column, item, index)
                   "
@@ -501,7 +525,18 @@
                     ${ option.label }
                   </option>
                 </select>
-              </span>
+
+                <span
+                  v-if="column.input.suffix"
+                  class="input-group-text"
+                  v-html="
+                    getValueOrFunction(column.input.suffix, {
+                      column: column,
+                      item: item,
+                    })
+                  "
+                ></span>
+              </div>
 
               <span v-if="column.rowbuttons">
                 <span v-for="button in column.rowbuttons" :key="button.action">
@@ -540,10 +575,10 @@
                 :key="field"
               >
                 <div class="row g-3 align-items-center">
-                  <div class="col-5 text-end">
+                  <div class="col text-end" :class="[field.class]">
                     <label class="col-form-label">${ field.label }</label>
                   </div>
-                  <div class="col-7">
+                  <div class="col" :class="[field.input.class]">
                     <input
                       :type="field.input.type"
                       v-if="['select'].indexOf(field.input.type) < 0"
@@ -611,6 +646,7 @@
                 "
                 :type="column.input.type"
                 class="form-control form-control-sm text-info"
+                :class="column.input.class"
                 :disabled="bulkinputs.indexOf(column.name) < 0"
                 @change="
                   onBulkInputChange(bulkitem[column.name], bulkitem, column)
@@ -621,6 +657,7 @@
               <select
                 v-if="column.input.type == 'select'"
                 class="form-select form-select-sm text-info"
+                :class="column.input.class"
                 :disabled="bulkinputs.indexOf(column.name) < 0"
                 @change="
                   onBulkInputChange(bulkitem[column.name], bulkitem, column)
@@ -679,7 +716,7 @@
 
     <VuAdminTablePagination
       :settings="settings"
-      :page="page"
+      :config="config"
       @setPage="setPage"
       @setPageLimit="setPageLimit"
       @translate="translate"
@@ -695,16 +732,29 @@
             :id="formId"
             class="form"
             @submit.prevent="submitItem"
-            :class="{ wait: wait.form }"            
+            :class="{ wait: ui.wait.form }"
           >
+            <div class="overlay" :class="{ blocked: ui.block.form }"></div>
             <div class="modal-header">
               <h5 class="modal-title">
-                Szerkesztés
-                <small v-cloak v-if="item" class="text-muted fw-normal">
-                  ( <span class="text-info">${ item[settings.pkey] }</span> )
-                  </small>
+                <span
+                  v-if="
+                    settings.form.title &&
+                    typeof settings.form.title == 'function'
+                  "
+                  v-html="settings.form.title(item, settings)"
+                ></span>
+                <span
+                  v-if="
+                    settings.form.title &&
+                    typeof settings.form.title == 'string'
+                  "
+                  >${ translate(settings.form.title) }</span
+                >
+                <span v-if="!settings.form.title">${ translate('Edit') }</span>
+
                 <div
-                  v-show="wait.form"
+                  v-show="ui.wait.form"
                   class="spinner-border spinner-border-sm text-info mx-2"
                   role="status"
                 >
@@ -737,11 +787,11 @@
               <div>
                 <button
                   type="button"
-                  class="btn btn-outline-secondary m-1"
+                  class="btn btn-secondary m-1"
                   @click="reloadItem()"
-                  :disabled="!item.id"
+                  :disabled="!item[settings.pkey]"
                 >
-                  <i class="bi bi-arrow-clockwise"></i> Újratöltés
+                  <i class="bi bi-arrow-clockwise"></i> ${ translate('Reload') }
                 </button>
 
                 <button
@@ -749,7 +799,7 @@
                   class="btn btn-outline-warning m-1"
                   @click="createItem()"
                 >
-                  <i class="bi bi-plus-circle"></i> Új
+                  <i class="bi bi-plus-circle"></i> ${ translate('New') }
                 </button>
 
                 <button
@@ -757,16 +807,16 @@
                   class="btn btn-outline-warning m-1"
                   @click="copyItem()"
                 >
-                  <i class="bi bi-copy"></i> Másolat
+                  <i class="bi bi-copy"></i> ${ translate('Copy') }
                 </button>
 
                 <button
                   type="button"
                   class="btn btn-danger m-1"
                   @click="deleteItem()"
-                  :disabled="!item.id"
+                  :disabled="!item[settings.pkey]"
                 >
-                  <i class="bi bi-trash"></i> Törlés
+                  <i class="bi bi-trash"></i> ${ translate('Delete') }
                 </button>
               </div>
 
@@ -776,11 +826,11 @@
                   class="btn btn-secondary m-1"
                   data-bs-dismiss="modal"
                 >
-                  <i class="bi bi-x"></i> Bezárás
+                  <i class="bi bi-x"></i> ${ translate('Close') }
                 </button>
 
                 <button type="submit" class="btn btn-primary m-1">
-                  <i class="bi bi-save"></i> Mentés
+                  <i class="bi bi-save"></i> ${ translate('Save') }
                 </button>
 
                 <button
@@ -788,7 +838,7 @@
                   class="btn btn-success m-1"
                   @click="submitAndClose"
                 >
-                  <i class="bi bi-save"></i> Ment és bezár
+                  <i class="bi bi-save"></i> ${ translate('Save and close') }
                 </button>
               </div>
             </div>
@@ -840,11 +890,11 @@
               <div>
                 <button
                   type="button"
-                  class="btn btn-outline-secondary m-1"
+                  class="btn btn-secondary m-1"
                   @click="reloadItem()"
-                  :disabled="!item.id"
+                  :disabled="!item[settings.pkey]"
                 >
-                  <i class="bi bi-arrow-clockwise"></i> Újratöltés
+                  <i class="bi bi-arrow-clockwise"></i> ${ translate('Reload') }
                 </button>
 
                 <button
@@ -852,7 +902,7 @@
                   class="btn btn-outline-warning m-1"
                   @click="createItem()"
                 >
-                  <i class="bi bi-plus-circle"></i> Új
+                  <i class="bi bi-plus-circle"></i> ${ translate('New') }
                 </button>
 
                 <button
@@ -860,16 +910,16 @@
                   class="btn btn-outline-warning m-1"
                   @click="copyItem()"
                 >
-                  <i class="bi bi-copy"></i> Másolat
+                  <i class="bi bi-copy"></i> ${ translate('Copy') }
                 </button>
 
                 <button
                   type="button"
                   class="btn btn-danger m-1"
                   @click="deleteItem()"
-                  :disabled="!item.id"
+                  :disabled="!item[settings.pkey]"
                 >
-                  <i class="bi bi-trash"></i> Törlés
+                  <i class="bi bi-trash"></i> ${ translate('Delete') }
                 </button>
               </div>
 
@@ -879,11 +929,11 @@
                   class="btn btn-secondary m-1"
                   data-bs-dismiss="modal"
                 >
-                  <i class="bi bi-x"></i> Bezárás
+                  <i class="bi bi-x"></i> ${ translate('Close') }
                 </button>
 
                 <button type="submit" class="btn btn-primary m-1">
-                  <i class="bi bi-save"></i> Mentés
+                  <i class="bi bi-save"></i> ${ translate('Save') }
                 </button>
 
                 <button
@@ -891,11 +941,14 @@
                   class="btn btn-success m-1"
                   @click="submitAndClose"
                 >
-                  <i class="bi bi-save"></i> Ment és bezár
+                  <i class="bi bi-save"></i> ${ translate('Save and close') }
                 </button>
               </div>
             </div>
           </form>
+          <pre class="bg-light text-dark" v-if="settings.debug">
+            ${ item }
+          </pre>
         </div>
       </div>
     </div>
@@ -905,6 +958,7 @@
 <script>
 import { Modal } from "bootstrap";
 import {
+  getValueOrFunction,
   getResponseJson,
   prepareFetchOptions,
   flattenArrayObjects,
@@ -930,24 +984,35 @@ export default {
     return {
       item: {},
       items: {},
-      selected: [],
-      details: [],
+      selected: [], // config alá menjen, hogy a localStorage -ba mentsük el ezt is
+      details: [], // ez hol van használva?
       bulkitem: {},
       bulkinputs: [],
-      page: {
-        current: 1,
-        limit: 10,
-        pagination: 10,
-        all: null,
-        items: null,
-        numbers: [],
+      config: {
+        pagination: {
+          total: undefined,
+          page: 1,
+          skip: 0,
+          limit: 10,
+          limits: [10, 20, 50, 100],
+          size: 10,
+          items: null,
+          pages: null,
+          numbers: [],
+        },
         order: {},
         filter: {},
         orderIndex: 1,
       },
-      wait: {
-        table: false,
-        form: false,
+      ui: {
+        wait: {
+          table: false,
+          form: false,
+        },
+        block: {
+          table: false,
+          form: false,
+        },
       },
       modalId: null,
       modalElement: null,
@@ -959,21 +1024,26 @@ export default {
   },
 
   created() {
-    // console.log(this.page, this.settings.table.page);
-
     if (!this.settings.table) {
-      // console.log(window.VuEntities, this.settings.entity, this.settings.table);
       return false;
     }
 
-    if (this.settings.table.page) {
-      this.page.pagination = this.settings.table.page.pagination;
-    } else {
-      this.settings.table.page = {};
+    if (this.settings.table.pagination) {
+      this.config.pagination = Object.assign(
+        {},
+        this.config.pagination,
+        this.settings.table.pagination
+      );
     }
 
-    if (!this.settings.table.page.limits) {
-      this.settings.table.page.limits = [10, 20, 50, 100];
+    this.setPage(this.config.pagination.page, false);
+
+    if (this.settings.table.order) {
+      this.config.order = Object.assign(
+        {},
+        this.config.order,
+        this.settings.table.order
+      );
     }
 
     if (!this.settings.table.header) {
@@ -1009,7 +1079,7 @@ export default {
 
     // this.modalElement.addEventListener('hide.bs.modal', event => {
 
-    // 	if (!this.wait.form && this.itemIsModified()) {
+    // 	if (!this.ui.wait.form && this.itemIsModified()) {
 
     // 		const confirmed = confirm('Are you sure?');
 
@@ -1033,10 +1103,30 @@ export default {
   },
 
   methods: {
-    resetTable() {
-      this.page.limit = this.settings.table.page.limit;
+    tableWait(block) {
+      this.ui.wait.table = true;
+      this.ui.block.table = block;
+    },
 
-      // console.log(this.page, this.settings.table.page);
+    tableNoWait() {
+      this.ui.wait.table = false;
+      this.ui.block.table = false;
+    },
+
+    formWait(block) {
+      this.ui.wait.form = true;
+      this.ui.block.form = block;
+    },
+
+    formNoWait() {
+      this.ui.wait.form = false;
+      this.ui.block.form = false;
+    },
+
+    resetTable() {
+      if (this.settings.table.pagination) {
+        this.config.pagination.limit = this.settings.table.pagination.limit;
+      }
 
       this.resetFilter();
       this.resetOrder(true);
@@ -1064,7 +1154,7 @@ export default {
 
     resetOrder(reload) {
       if (this.settings.table.order) {
-        this.page.order = Object.assign({}, this.settings.table.order);
+        this.config.order = Object.assign({}, this.settings.table.order);
       }
 
       if (reload) {
@@ -1077,71 +1167,129 @@ export default {
       this.fetchTable(params);
     },
 
-    calcPage() {
-      let from = Math.floor((this.page.pagination - 1) / 2);
-      let start = this.page.current - from;
+    createItem() {
+      this.errors = null;
+      this.item = this.settings.form.default ? this.settings.form.default : {};
+      this.modalWindow.show();
 
-      if (this.page.all !== null) {
-        if (this.page.current > this.page.all) {
-          this.page.current = this.page.all;
-        }
-
-        if (this.page.current < 1) {
-          this.page.current = 1;
-        }
-
-        if (start + this.page.pagination > this.page.all) {
-          start = this.page.all - this.page.pagination + 1;
-        }
-      }
-
-      if (start < 1) {
-        start = 1;
-      }
-
-      this.page.numbers = Array.from(
-        { length: this.page.pagination },
-        (_, index) => start + index
-      );
-
-      this.page.from =
-        this.page.current * this.page.limit - this.page.limit + 1;
-      this.page.to = this.page.current * this.page.limit;
-
-      // console.log(
-      //   this.page,
-      //   this.page.current,
-      //   this.page.limit,
-      //   this.page.current * this.page.limit
-      // );
-
-      if (this.items && this.items.length < this.page.limit) {
-        this.page.to = this.page.from + this.items.length - 1;
-      }
+      setTimeout(() => {
+        this.itemOriginal = Object.assign({}, this.item);
+      }, 100);
     },
 
-    setPage(page) {
+    copyItem() {
+      this.errors = null;
+      this.item[this.settings.pkey] = undefined;
+      this.modalWindow.show();
+
+      setTimeout(() => {
+        this.itemOriginal = Object.assign({}, this.item);
+      }, 100);
+    },
+
+    calcPage() {
+      if (
+        this.config.pagination.items === null ||
+        this.config.pagination.items === undefined
+      ) {
+        return;
+      }
+
+      if (
+        this.config.pagination.total !== null &&
+        this.config.pagination.total !== undefined
+      ) {
+        this.config.pagination.pages = Math.ceil(
+          this.config.pagination.total / this.config.pagination.limit
+        );
+      }
+
+      if (this.config.pagination.pages !== null) {
+        let from = Math.floor((this.config.pagination.size - 1) / 2);
+        let start = this.config.pagination.page - from;
+
+        if (this.config.pagination.page > this.config.pagination.pages) {
+          this.config.pagination.page = this.config.pagination.pages;
+        }
+
+        if (this.config.pagination.page < 1) {
+          this.config.pagination.page = 1;
+        }
+
+        if (
+          start + this.config.pagination.size >
+          this.config.pagination.pages
+        ) {
+          start =
+            this.config.pagination.pages - this.config.pagination.size + 1;
+        }
+
+        if (start < 1) {
+          start = 1;
+        }
+
+        this.config.pagination.numbers = Array.from(
+          { length: this.config.pagination.size },
+          (_, index) => start + index
+        );
+      }
+
+      // this.config.pagination.from =
+      //   this.config.pagination.page * this.config.pagination.limit -
+      //   this.config.pagination.limit +
+      //   1;
+      // this.config.pagination.to =
+      //   this.config.pagination.page * this.config.pagination.limit;
+
+      // if (this.items && this.items.length < this.config.pagination.limit) {
+      //   this.config.pagination.to =
+      //     this.config.pagination.from + this.items.length - 1;
+      // }
+
+      this.config.pagination.from = this.config.pagination.skip + 1;
+
+      this.config.pagination.to =
+        this.config.pagination.skip +
+        (this.config.pagination.items !== null
+          ? this.config.pagination.items
+          : this.config.pagination.limit);
+    },
+
+    setPage(page, reload) {
+      reload = reload !== undefined ? reload : true;
+
       if (page < 1) {
         page = 1;
       }
 
-      if (page > this.page.all) {
-        page = this.page.all;
+      if (
+        this.config.pagination.pages !== null &&
+        this.config.pagination.pages !== undefined
+      ) {
+        if (page > this.config.pagination.pages) {
+          page = this.config.pagination.pages;
+        }
       }
 
-      if (this.page.current != page) {
-        this.page.current = page;
+      this.config.pagination.skip = (page - 1) * this.config.pagination.limit;        
+
+      if (this.config.pagination.page != page && reload) {
+        this.config.pagination.page = page;
         this.reloadTable();
       }
     },
 
     setPageLimit(limit) {
-      if (limit != this.page.limit) {
-        this.page.current = 1;
-        this.page.limit = limit;
+      if (limit != this.config.pagination.limit) {
+        this.config.pagination.limit = limit;
+        this.setPage(1);
         this.calcPage();
         this.reloadTable();
       }
+    },
+
+    getValueOrFunction(object, params) {
+      return getValueOrFunction(object, params);
     },
 
     tableCellValue(path, item) {
@@ -1271,7 +1419,10 @@ export default {
     },
 
     sortTable(column) {
-      if (this.page.order[column.name] && this.page.order[column.name].fixed) {
+      if (
+        this.config.order[column.name] &&
+        this.config.order[column.name].fixed
+      ) {
         return;
       }
 
@@ -1280,23 +1431,23 @@ export default {
       }
 
       if (
-        this.page.order[column.name] === undefined ||
-        this.page.order[column.name] === null
+        this.config.order[column.name] === undefined ||
+        this.config.order[column.name] === null
       ) {
-        this.page.order[column.name] = {
+        this.config.order[column.name] = {
           dir: "ASC",
-          idx: this.page.orderIndex++,
+          idx: this.config.orderIndex++,
         };
-      } else if (this.page.order[column.name].dir === "ASC") {
-        this.page.order[column.name] = {
+      } else if (this.config.order[column.name].dir === "ASC") {
+        this.config.order[column.name] = {
           dir: "DESC",
-          idx: this.page.orderIndex++,
+          idx: this.config.orderIndex++,
         };
       } else {
-        delete this.page.order[column.name];
+        delete this.config.order[column.name];
       }
 
-      let sortedEntries = Object.entries(this.page.order).sort(
+      let sortedEntries = Object.entries(this.config.order).sort(
         (a, b) => a[1].idx - b[1].idx
       );
 
@@ -1311,11 +1462,11 @@ export default {
       let order = [];
       let haveOrder = false;
 
-      for (let key of Object.keys(this.page.order)) {
+      for (let key of Object.keys(this.config.order)) {
         haveOrder = true;
-        order[this.page.order[key].idx] = {
+        order[this.config.order[key].idx] = {
           key: key,
-          dir: this.page.order[key].dir,
+          dir: this.config.order[key].dir,
         };
       }
 
@@ -1365,26 +1516,42 @@ export default {
     async fetchTable(paramsData) {
       try {
         this.errors = null;
-        this.wait.table = true;
+
+        this.tableWait(true);
 
         let filter = this.getFiltersForFetch();
         let relations = this.getRelationsForFetch();
         let order = this.getOrdersForFetch();
 
         paramsData = paramsData ? paramsData : {};
-        paramsData.page = this.page.current;
-        paramsData.limit = this.page.limit;
 
-        if (filter !== null) {
-          paramsData.filter = JSON.stringify(filter);
+        if (
+          this.config.pagination.page !== null &&
+          this.config.pagination.page !== undefined
+        ) {
+          paramsData.page = this.config.pagination.page;
         }
 
-        if (order !== null) {
-          paramsData.order = JSON.stringify(order);
+        if (
+          this.config.pagination.limit !== null &&
+          this.config.pagination.limit !== undefined
+        ) {
+          paramsData.limit = this.config.pagination.limit;
         }
 
-        if (this.settings.events && this.settings.events.tableBeforeLoad) {
-          this.settings.events.tableBeforeLoad(paramsData, this.settings);
+        paramsData.filter = filter;
+        paramsData.order = order;
+
+        if (this.settings.events && this.settings.events.beforeItemsLoad) {
+          this.settings.events.beforeItemsLoad(paramsData, this.settings);
+        }
+
+        if (paramsData.filter) {
+          paramsData.filter = JSON.stringify(paramsData.filter);
+        }
+
+        if (paramsData.order) {
+          paramsData.order = JSON.stringify(paramsData.order);
         }
 
         const params = new URLSearchParams(paramsData);
@@ -1407,19 +1574,12 @@ export default {
 
         if (error || !data) {
           console.log(this.errors);
-          this.wait.table = false;
+          this.tableNoWait();
           return;
         }
 
-        if (this.settings.events && this.settings.events.tableAfterLoad) {
-          this.settings.events.tableAfterLoad(data, response);
-        }
-
-        if (data.page) {
-          this.page.all = data.page.all;
-          this.page.items = data.page.items;
-          this.page.current = data.page.current;
-          this.calcPage();
+        if (this.settings.events && this.settings.events.afterItemsLoad) {
+          this.settings.events.afterItemsLoad(data, response);
         }
 
         let items = this.settings.table.api.input.items
@@ -1427,6 +1587,15 @@ export default {
           : data;
 
         //console.log(items);
+
+        if (data.total) {
+          this.config.pagination.total = data.total;
+          // this.config.pagination.pages = data.config.pagination.pages;
+          // this.config.pagination.page = data.config.pagination.page;
+        }
+
+        this.config.pagination.items = items.length;
+        this.calcPage();
 
         // load relations
         for (let key of Object.keys(relations)) {
@@ -1449,12 +1618,12 @@ export default {
           this.convertsIn(this.items);
         }
 
-        this.wait.table = false;
+        this.tableNoWait();
       } catch (error) {
         console.error(error.message);
 
         this.addMessage(error.message, 3500, "danger");
-        this.wait.table = false;
+        this.tableNoWait();
       }
     },
 
@@ -1539,7 +1708,8 @@ export default {
     async fetchItem(item) {
       try {
         this.errors = null;
-        this.wait.form = true;
+
+        this.formWait(true);
 
         let options = prepareFetchOptions("GET", this.settings);
         let url = this.settings.form.api.url + "/" + item[this.settings.pkey];
@@ -1573,15 +1743,19 @@ export default {
           }
         }
 
+        if (this.settings.events && this.settings.events.afterItemLoad) {
+          this.settings.events.afterItemLoad(data.item);
+        }
+
         if (data.item) {
           this.item = flattenObject(data.item);
           this.itemOriginal = Object.assign({}, data.item);
         }
 
-        this.wait.form = false;
+        this.formNoWait();
       } catch (error) {
         console.error(error.message);
-        this.wait.form = false;
+        this.formNoWait();
       }
     },
 
@@ -1603,7 +1777,7 @@ export default {
           return;
         }
 
-        this.wait.form = true;
+        this.formWait(true);
 
         paramsData = paramsData ? paramsData : {};
 
@@ -1628,10 +1802,10 @@ export default {
         this.modalWindow.hide();
 
         this.reloadTable();
-        this.wait.form = false;
+        this.formNoWait();
       } catch (error) {
         console.error(error.message);
-        this.wait.form = false;
+        this.formNoWait();
       }
     },
 
@@ -1651,7 +1825,7 @@ export default {
           return;
         }
 
-        this.wait.form = true;
+        this.tableWait(true);
 
         let options = prepareFetchOptions("DELETE", this.settings);
         let url = this.settings.table.api.url;
@@ -1673,10 +1847,10 @@ export default {
         }
 
         this.reloadTable();
-        this.wait.form = false;
+        this.tableNoWait();
       } catch (error) {
         console.error(error.message);
-        this.wait.form = false;
+        this.tableNoWait();
       }
     },
 
@@ -1686,8 +1860,10 @@ export default {
 
     async submitItem(closeModal) {
       this.saveItem(this.item, (data) => {
-        this.item = data.item;
-        this.itemOriginal = Object.assign({}, data.item);
+        if (data.item) {
+          this.item = flattenObject(data.item);
+          this.itemOriginal = Object.assign({}, data.item);
+        }
 
         if (closeModal === true) {
           this.modalWindow.hide();
@@ -1711,7 +1887,12 @@ export default {
       try {
         // this.errors = null;
 
-        this.wait.form = true;
+        this.tableWait();
+        this.formWait(true);
+
+        if (this.settings.events && this.settings.events.beforeItemSave) {
+          this.settings.events.beforeItemSave(input);
+        }
 
         let item = {};
 
@@ -1754,11 +1935,17 @@ export default {
 
         this.convertsOut([item]);
 
-        options.body = JSON.stringify({
-          item: !this.settings.form.api.output.flatten
-            ? unflattenObject(item)
-            : item,
-        });
+        if (!this.settings.form.api.output.flatten || !primaryId) {
+          item = unflattenObject(item);
+        }
+
+        if (!this.settings.form.api.output.item) {
+          options.body = JSON.stringify(item);
+        } else {
+          options.body = JSON.stringify({
+            item: item,
+          });
+        }
 
         paramsData = paramsData ? paramsData : {};
         const params = new URLSearchParams(paramsData);
@@ -1776,7 +1963,9 @@ export default {
 
         const data = await getResponseJson(response);
         const error = this.getResponseErrors(response, data);
-        this.wait.form = false;
+
+        this.formNoWait();
+        this.tableNoWait();
 
         if (error) {
           console.log(this.errors);
@@ -1799,7 +1988,8 @@ export default {
         //   ],
         // };
 
-        this.wait.form = false;
+        this.formNoWait();
+        this.tableNoWait();
       }
     },
 
@@ -1807,9 +1997,13 @@ export default {
       try {
         // this.errors = null;
 
-        this.wait.form = true;
+        this.tableWait(true);
 
         let item = {};
+
+        if (this.settings.events && this.settings.events.beforeBulkSave) {
+          this.settings.events.beforeBulkSave(this.bulkitem);
+        }
 
         for (let field in this.bulkitem) {
           if (
@@ -1851,7 +2045,8 @@ export default {
 
         const data = await getResponseJson(response);
         const error = this.getResponseErrors(response, data);
-        this.wait.form = false;
+
+        this.tableNoWait();
 
         if (error) {
           return;
@@ -1865,8 +2060,9 @@ export default {
         this.reloadTable();
       } catch (error) {
         console.error(error.message);
+
         this.addMessage(error.message, 3500, "danger", error);
-        this.wait.form = false;
+        this.tableNoWait();
       }
     },
 
@@ -1990,16 +2186,19 @@ export default {
           };
         }
 
-        if (filter !== null) {
-          paramsData.filter = JSON.stringify(filter);
+        paramsData.filter = filter;
+        paramsData.order = order;
+
+        if (this.settings.events && this.settings.events.beforeItemsLoad) {
+          this.settings.events.beforeItemsLoad(paramsData, this.settings);
         }
 
-        if (order !== null) {
-          paramsData.order = JSON.stringify(order);
+        if (paramsData.filter) {
+          paramsData.filter = JSON.stringify(paramsData.filter);
         }
 
-        if (this.settings.events && this.settings.events.tableBeforeLoad) {
-          this.settings.events.tableBeforeLoad(paramsData, this.settings);
+        if (paramsData.order) {
+          paramsData.order = JSON.stringify(paramsData.order);
         }
 
         const params = new URLSearchParams(paramsData);
@@ -2024,8 +2223,8 @@ export default {
           return;
         }
 
-        if (this.settings.events && this.settings.events.tableAfterLoad) {
-          this.settings.events.tableAfterLoad(data, response);
+        if (this.settings.events && this.settings.events.afterItemLoad) {
+          this.settings.events.afterItemLoad(data, response);
         }
 
         let items = flattenArrayObjects(data);
@@ -2196,13 +2395,52 @@ export default {
 };
 </script>
 
-
 <style lang="scss" scoped>
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.21;
+  }
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
 
+.table-container,
+form {
+  position: relative;
+}
+
+.overlay {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  opacity: 0;
+  display: none;
+
+  &.blocked {
+    display: block;
+    animation-name: fadeIn;
+    animation-duration: 2s;
+    animation-delay: 0.77s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-direction: normal;
+  }
+}
+
 [data-bs-theme="light"] {
+  .overlay {
+    background-color: rgb(255, 255, 255);
+  }
+
   .table-title {
     color: var(--bs-dark);
   }
@@ -2220,6 +2458,10 @@ export default {
 [data-bs-theme="dark"] {
   background-color: var(--bs-dark);
 
+  .overlay {
+    background-color: rgb(0, 0, 0);
+  }
+
   .table-title {
     color: var(--bs-light);
   }
@@ -2228,13 +2470,44 @@ export default {
     background-color: var(--bs-secondary);
     color: var(--bs-light);
   }
-  .table-bulk {
-    td {
-    }
-  }
 
   .modal-title {
     color: var(--bs-light);
+  }
+}
+
+/* Mobil stílusok */
+@media screen and (max-width: 600px) {
+  .table-responsive {
+    border: 0;
+  }
+
+  .table-responsive thead {
+    display: none;
+  }
+
+  .table-responsive tr {
+    margin-bottom: 20px;
+    display: block;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .table-responsive td {
+    display: block;
+    text-align: right;
+    border-bottom: 1px dotted #ccc;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  .table-responsive td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 40%;
+    padding-left: 5px;
+    font-weight: lighter;
+    text-align: left;
   }
 }
 </style>

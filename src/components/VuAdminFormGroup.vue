@@ -18,8 +18,8 @@
           v-cloak
           class="form-label text-secondary mb-1"
           :for="formid + '_' + field.name"
+          v-html="getValueOrFunction(field.label, { field: field, item: item })"
         >
-          ${ field.label }
         </label>
       </span>
 
@@ -33,6 +33,7 @@
         <input
           v-if="field.type == 'text'"
           class="form-control"
+          :class="[field.class]"
           type="text"
           :name="field.name"
           :id="formid + '_' + field.name"
@@ -47,6 +48,7 @@
         <input
           v-if="field.type == 'number'"
           class="form-control"
+          :class="[field.class]"
           type="number"
           :name="field.name"
           :id="formid + '_' + field.name"
@@ -61,6 +63,7 @@
         <input
           v-if="field.type == 'date'"
           class="form-control"
+          :class="[field.class]"
           type="date"
           :name="field.name"
           :id="formid + '_' + field.name"
@@ -73,6 +76,7 @@
           v-if="field.type == 'email'"
           autocomplete="on"
           class="form-control"
+          :class="[field.class]"
           type="email"
           :name="field.name"
           :id="formid + '_' + field.name"
@@ -87,6 +91,7 @@
         <select
           v-if="field.type == 'select'"
           class="form-select"
+          :class="[field.class]"
           :name="field.name"
           :id="formid + '_' + field.name"
           v-model="item[field.name]"
@@ -106,6 +111,7 @@
         <textarea
           v-if="field.type == 'textarea'"
           class="form-control"
+          :class="[field.class]"
           :name="field.name"
           :id="formid + '_' + field.name"
           v-model="item[field.name]"
@@ -128,11 +134,13 @@
       <HtmlEditor
         v-if="field.type == 'html'"
         v-model="item[field.name]"
+        :class="[field.class]"
       ></HtmlEditor>
 
       <ImageUpload
         v-if="field.type == 'image'"
         v-model="item[field.name]"
+        :class="[field.class]"
         :params="field.params"
       ></ImageUpload>
 
@@ -169,16 +177,11 @@
         <i class="text-muted" v-html="field.description"></i>
       </div>
     </div>
-
-    <pre class="bg-light text-dark">
-      ${ item }
-    </pre>
-
   </div>
 </template>
 
 <script>
-import { translate } from "./helpers";
+import { translate, getValueOrFunction } from "./helpers";
 import HtmlEditor from "./VuAdminHtmlEditor.vue";
 import ImageUpload from "./VuAdminImageUpload.vue";
 
@@ -204,6 +207,10 @@ const VuAdminFormGroup = {
     },
   },
   methods: {
+    getValueOrFunction(object, params) {
+      return getValueOrFunction(object, params);
+    },
+
     selectOptions(options, field) {
       if (typeof options === "function") {
         return options(this.item, field, this);
@@ -257,16 +264,15 @@ export default VuAdminFormGroup;
 
 
 <style lang="scss" scoped>
+
 .cursor-pointer {
   cursor: pointer;
 }
 
 [data-bs-theme="light"] {
- 
 }
 
 [data-bs-theme="dark"] {
- 
 }
 </style>
 

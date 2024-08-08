@@ -23,7 +23,12 @@ export default defineConfig({
       output: {
         globals: {
           vue: 'Vue'
-        }
+        },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name == 'style.css')
+            return 'vu-admin.css';
+          return assetInfo.name;
+        },
       }
     }
   }

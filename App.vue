@@ -8,7 +8,7 @@
       <vu-admin :entity="'checks'" />
     </div>    
     <div class="col-md-12">
-      <vu-admin :entity="'_lorem'" />
+      <vu-admin :entity="'lorem'" />
     </div>
   </div>
 </div>

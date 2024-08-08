@@ -15,29 +15,22 @@ export default {
 		}
 	},
 	events: {
-		tableBeforeLoad: function (query) {
+		beforeItemsLoad: function (query) {
 
-			//console.log(query);			
+			// console.log(query);			
 			
-			query.skip =  (query.page - 1) * query.limit;
+			if (query.page) {
+				query.skip =  (query.page - 1) * query.limit;				
+			} else {
+				query.skip = 0;
+			}	
+
 			delete query.page;
 
 		},
-		tableAfterLoad: function (data, response) {
+		afterItemsLoad: function (data, response) {						
 
-			// console.log(data);
-
-			data.page = {
-				all: Math.round(data.total / data.limit),
-				current: null,				
-				items: data.total,
-				limit: data.limit,
-				// page: data.skip + 1
-			};
-
-		},
-		tableBeforeSave: function () {},
-		tableAfterSave: function () {},		
+		}
 	},
 	init: function (settings) {
 		
@@ -46,10 +39,10 @@ export default {
 	},
 	table: {
 		title: 'Lorem',
-		page: {			
+		_pagination: {			
 			limit: 5,
 			limits: [5, 10, 20, 50],
-			pagination: 10,			
+			size: 10,			
 		},
 		columns: [
 			{

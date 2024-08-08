@@ -1,3 +1,5 @@
+import { readonly } from "vue";
+
 const api = {
 	url: 'http://localhost:52000/vuapi/efiok/checks',
 	options: {
@@ -18,11 +20,15 @@ const api = {
 		flatten: true,
 		fields: [
 			'_id',
+			'year',
+			'month',
 			'status',
 			'client.name',
 			'client.taxform',
+			'client.description',
 			'states.general.repi_konyvelese.value',
-			'states.recording.anyagok_bekuldve.changed'
+			'states.recording.anyagok_bekuldve.changed',
+			'images'
 		]
 	}
 };
@@ -35,9 +41,11 @@ const translate = {
 	'hidden': 'rejtett',
 	'Visible all': 'Mind látható',
 	'Hidden all': 'Mind rejtett',
-	'=': 'Egyenlő',
-	'>': 'Nagyobb mint',
-	'<': 'Kisebb mint',
+	// '=': 'Egyenlő',
+	// '>': 'Nagyobb',
+	// '>=': 'Nagyobb vagy egyenlő',
+	// '<': 'Kisebb',
+	// '<=': 'Kisebb vagy egyenlő',
 	'Are you sure you want to delete all selected items?': 'Biztos hogy törölni akarod az összes kiválasztott elemet?'
 };
 
@@ -109,15 +117,13 @@ const exports = {
 
 const table = {
 	title: 'E-fiók ellenőrzések',
-	class: 'table-hover table-responsive table-sm',	
+	class: 'table-hover table-responsive table-sm',
 	api: {
 		url: 'http://localhost:52000/vuapi/efiok/checks',
-	},	
-	page: {
-		current: 1,
-		limit: 15,
-		limits: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000],
-		pagination: 10,
+	},
+	pagination: {		
+		limit: 10,
+		limits: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000],		
 	},
 	exports: exports,
 	header: {
@@ -242,7 +248,8 @@ const table = {
 				default: 7,
 				min: 1,
 				max: 12,
-				operator: '=',
+				operator: '>=',
+				operators: true,
 				buttonx: false,
 				// operators: [{
 				// 	label: '=',
@@ -300,11 +307,11 @@ const table = {
 			filter: {
 				type: 'text',
 				operator: '%'
-			}			,
+			},
 			input: {
 				type: 'text',
 				bulkactions: true,
-				autosave: true,
+				autosave: true,			
 				onchange: function (value, column, item) {
 					// console.log(value, column, item);
 				}
@@ -492,6 +499,7 @@ const table = {
 		fields: [
 			{
 				name: 'client.accounting.company.name',
+				class: 'col-md-3',
 				label: 'Könyvelő',
 				input: {
 					type: 'text',
@@ -501,6 +509,7 @@ const table = {
 			{
 				name: 'client.accounting.company.address_formatted',
 				label: 'Cím',
+				class: 'col-md-3',
 				input: {
 					type: 'text',
 					autosave: true,
@@ -509,6 +518,7 @@ const table = {
 			{
 				name: 'states.recording.anyagok_bekuldve.changed',
 				label: 'Anyagok beküldve',
+				class: 'col-md-3',
 				input: {
 					type: 'datetime-local',
 					autosave: true,
@@ -520,6 +530,7 @@ const table = {
 			{
 				name: 'states.recording.vevo.changed',
 				label: 'Vevő változott',
+				class: 'col-md-3',
 				input: {
 					type: 'datetime-local',
 					autosave: true,
@@ -531,6 +542,7 @@ const table = {
 			{
 				name: 'status',
 				label: 'Státusz',
+				class: 'col-md-3',
 				input: {
 					type: 'select',
 					autosave: true,
@@ -563,9 +575,23 @@ const table = {
 	}
 };
 
-const form = {	
+const form = {
+	title: function (item) {
+
+		return [
+			(item['client.name'] ? item['client.name'] : null),
+			(item.year ? ('<small class="fw-lighter fs-6 mx-3">' + item.year + '-' + item.month + '</small>') : null),
+			(item._id ? ('<small class="text-muted fs-6 fw-normal">( <span class="text-info">' + item['_id'] + '</span> )</small>') : null)
+		].join(' . ');
+	},
+	default: {
+		year: 2024,
+		month: 7
+	},
 	groups: [
 		{
+			title: 'Alapadtok',
+			class: 'col-md-6',
 			fields: [
 				{
 					type: 'select',
@@ -589,13 +615,21 @@ const form = {
 							label: 'Törölt'
 						}
 					]
-				},				
+				},
+				{
+					type: 'number',
+					class: 'bg-black',
+					readonly: true,
+					name: 'year',
+					label: 'Év',
+					required: true,
+				},
 				{
 					type: 'text',
 					name: 'client.name',
 					label: 'Ügyfél',
 					required: true,
-				},				
+				},
 				{
 					type: 'image',
 					name: 'images',
@@ -629,7 +663,83 @@ const form = {
 							},
 						},
 					}
-				},				
+				},
+				{
+					type: 'html',
+					name: 'client.description',
+					label: function (params) {
+						return params.item['client.name'] + ' leírása';
+					}
+				},
+			]
+		},
+		{
+			title: 'Részletes adatok',
+			class: 'col-md-6',
+			fields: [
+				{
+					type: 'select',
+					name: 'status',
+					label: 'Státusz',
+					options: [
+						{
+							value: undefined,
+							label: ''
+						},
+						{
+							value: 0,
+							label: 'Új'
+						},
+						{
+							value: 1,
+							label: 'Aktív'
+						},
+						{
+							value: 9,
+							label: 'Törölt'
+						}
+					]
+				},
+				{
+					type: 'text',
+					name: 'client.name',
+					label: 'Ügyfél',
+					required: true,
+				},
+				{
+					type: 'image',
+					name: 'images',
+					label: 'Képek',
+					required: false,
+					params: {
+						limit: 2,
+						text: 'Click here to upload',
+						accept: ["image/png", "image/jpeg", "image/webp"],
+						thumbnail: 'small',
+						download: 'large',
+						editor: false,
+						presets: {
+							large: {
+								width: 960,
+								height: 540,
+								convert: "image/webp",
+								quality: 0.8
+							},
+							small: {
+								width: 300,
+								height: 150,
+								convert: "image/webp",
+								quality: 0.7
+							},
+							tiny: {
+								width: 150,
+								height: 90,
+								convert: "image/webp",
+								quality: 0.6
+							},
+						},
+					}
+				},
 				{
 					type: 'html',
 					name: 'client.description',
@@ -644,16 +754,23 @@ export default {
 	pkey: '_id',
 	class: 'p-3 rounded',
 	theme: 'dark',
+	debug: true,
 	api: api,
 	translate: translate,
 	methods: methods,
 	table: table,
 	form: form,
 	events: {
-		loadeditems: function (items) { },
-		loadeditem: function (item) { },
-		savingitem: function (item) { },
-		savingitems: function (item) { },
+		beforeItemsLoad: function (query) { },
+
+		afterItemsLoad: function (items) { },
+		afterItemLoad: function (item) { },
+
+		beforeItemSave: function (item) { },
+		afterItemSave: function (item) { },
+
+		beforeBulkSave: function (bulkitem) { },
+		afterBulkSave: function (bulkitem) { },
 	},
 	converts: {
 		in: [{
