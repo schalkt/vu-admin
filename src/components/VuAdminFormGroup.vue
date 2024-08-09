@@ -264,15 +264,12 @@ export default VuAdminFormGroup;
 
 
 <style lang="scss" scoped>
+.vu-admin {
+  [data-bs-theme="light"] {
+  }
 
-.cursor-pointer {
-  cursor: pointer;
-}
-
-[data-bs-theme="light"] {
-}
-
-[data-bs-theme="dark"] {
+  [data-bs-theme="dark"] {
+  }
 }
 </style>
 

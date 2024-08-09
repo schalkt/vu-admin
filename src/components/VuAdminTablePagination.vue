@@ -49,7 +49,7 @@
     </div>
 
     <ul class="pagination pagination-sm m-1">
-      <li class="page-item" v-if="config.pagination.total">
+      <li class="page-item">
         <a
           class="page-link cursor-pointer"
           :class="{ disabled: firstDisabled() }"
@@ -153,55 +153,70 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-nav {
-  user-select: none;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-[data-bs-theme="light"] {
+.vu-admin {
   nav {
-    // background-color: var(--bs-dark);
-    // color: var(--bs-light);
+    user-select: none;
 
     li a {
-      background-color: var(--bs-light);
-      color: var(--bs-dark);
-
-      &.disabled {
-        opacity: 0.42;
         background-color: var(--bs-light);
-        color: var(--bs-secondary);
+        color: var(--bs-dark);
+
+        &.disabled {
+          opacity: 0.42;
+          background-color: var(--bs-light);
+          color: var(--bs-secondary);
+        }
+
+        &.current {
+          background-color: var(--bs-secondary);
+          color: var(--bs-light);
+        }
       }
 
-      &.current {
-        background-color: var(--bs-secondary);
-        color: var(--bs-light);
+  }
+
+  [data-bs-theme="light"] {
+    nav {
+      // background-color: var(--bs-dark);
+      // color: var(--bs-light);
+
+      li a {
+        background-color: var(--bs-light);
+        color: var(--bs-dark);
+
+        &.disabled {
+          opacity: 0.42;
+          background-color: var(--bs-light);
+          color: var(--bs-secondary);
+        }
+
+        &.current {
+          background-color: var(--bs-secondary);
+          color: var(--bs-light);
+        }
       }
     }
   }
-}
 
-[data-bs-theme="dark"] {
-  nav {
-    background-color: var(--bs-dark);
-    color: var(--bs-light);
-
-    li a {
+  [data-bs-theme="dark"] {
+    nav {
       background-color: var(--bs-dark);
       color: var(--bs-light);
 
-      &.disabled {
-        opacity: 0.42;
-        background-color: var(--bs-secondary);
+      li a {
+        background-color: var(--bs-dark);
         color: var(--bs-light);
-      }
 
-      &.current {
-        background-color: var(--bs-light);
-        color: var(--bs-secondary);
+        &.disabled {
+          opacity: 0.42;
+          background-color: var(--bs-secondary);
+          color: var(--bs-light);
+        }
+
+        &.current {
+          background-color: var(--bs-light);
+          color: var(--bs-secondary);
+        }
       }
     }
   }

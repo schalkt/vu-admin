@@ -2,12 +2,12 @@
   <div
     v-cloak
     v-if="settings && settings.table"
-    class="table-container"
+    class="vua-table-container"
     :class="[settings.class]"
     :data-bs-theme="[settings.theme]"
   >
-    <div class="overlay" :class="{ blocked: ui.block.table }"></div>
-    <div class="table-title">
+    <div class="vua-overlay" :class="{ blocked: ui.block.table }"></div>
+    <div class="vua-table-title">
       <div class="d-flex align-items-center justify-content-between">
         <div class="d-inline-block">
           <h5
@@ -61,7 +61,7 @@
 
     <div
       v-if="settings.table.header"
-      class="table-header"
+      class="vua-table-header"
       :class="[settings.table.header.class]"
     >
       <span
@@ -98,24 +98,24 @@
               </span>
             </span>
           </button>
-          <ul class="dropdown-menu text-end">
+          <ul class="dropdown-menu">
             <li v-for="column in settings.table.columns" :key="column">
               <span
                 class="dropdown-item cursor-pointer"
                 @click="toggleColumn(column)"
               >
-                <small class="badge text-secondary fw-normal"
-                  >${ column.name }</small
-                >${ column.title }
-
                 <i
                   v-if="!column.hidden"
-                  class="bi bi-check-square ms-2 text-info"
+                  class="bi bi-check-square me-2 text-info"
                 ></i>
                 <i
                   v-if="column.hidden"
-                  class="bi bi-x-square ms-2 text-danger"
+                  class="bi bi-x-square me-2 text-danger"
                 ></i>
+                ${ column.title }
+                <small class="badge text-secondary fw-normal"
+                  >${ column.name }</small
+                >
               </span>
             </li>
             <li><hr class="dropdown-divider" /></li>
@@ -149,7 +149,7 @@
               <i :class="[button.icon]"></i> ${ translate(button.title) }
             </span>
           </button>
-          <ul class="dropdown-menu text-end">
+          <ul class="dropdown-menu">
             <li v-for="dropdown in button.dropdowns" :key="dropdown">
               <span
                 class="dropdown-item cursor-pointer"
@@ -640,7 +640,7 @@
         </template>
       </tbody>
       <tfoot>
-        <tr v-if="selected.length > 0" class="table-bulk border-info">
+        <tr v-if="selected.length > 0" class="vua-table-bulk border-info">
           <td
             v-for="column in settings.table.columns"
             :style="[column.hidden ? 'display: none' : '']"
@@ -758,8 +758,9 @@
             class="form"
             @submit.prevent="submitItem"
             :class="{ wait: ui.wait.form }"
+            :data-bs-theme="[settings.theme]"
           >
-            <div class="overlay" :class="{ blocked: ui.block.form }"></div>
+            <div class="vua-overlay" :class="{ blocked: ui.block.form }"></div>
             <div class="modal-header">
               <h5 class="modal-title">
                 <span
@@ -1538,7 +1539,7 @@ export default {
       return relations;
     },
 
-    async fetchTable(paramsData) {
+    async fetchTable(urlParams) {
       try {
         this.errors = null;
 
@@ -1548,38 +1549,38 @@ export default {
         let relations = this.getRelationsForFetch();
         let order = this.getOrdersForFetch();
 
-        paramsData = paramsData ? paramsData : {};
+        urlParams = urlParams ? urlParams : {};
 
         if (
           this.config.pagination.page !== null &&
           this.config.pagination.page !== undefined
         ) {
-          paramsData.page = this.config.pagination.page;
+          urlParams.page = this.config.pagination.page;
         }
 
         if (
           this.config.pagination.limit !== null &&
           this.config.pagination.limit !== undefined
         ) {
-          paramsData.limit = this.config.pagination.limit;
+          urlParams.limit = this.config.pagination.limit;
         }
 
-        paramsData.filter = filter;
-        paramsData.order = order;
+        urlParams.filter = filter;
+        urlParams.order = order;
 
         if (this.settings.events && this.settings.events.beforeItemsLoad) {
-          this.settings.events.beforeItemsLoad(paramsData, this.settings);
+          this.settings.events.beforeItemsLoad(urlParams, this.settings);
         }
 
-        if (paramsData.filter) {
-          paramsData.filter = JSON.stringify(paramsData.filter);
+        if (urlParams.filter) {
+          urlParams.filter = JSON.stringify(urlParams.filter);
         }
 
-        if (paramsData.order) {
-          paramsData.order = JSON.stringify(paramsData.order);
+        if (urlParams.order) {
+          urlParams.order = JSON.stringify(urlParams.order);
         }
 
-        const params = new URLSearchParams(paramsData);
+        const params = new URLSearchParams(urlParams);
 
         let options = prepareFetchOptions("GET", this.settings);
         let url = this.settings.table.api.url + "?" + params.toString();
@@ -1784,7 +1785,7 @@ export default {
       }
     },
 
-    async deleteItem(item, paramsData) {
+    async deleteItem(item, urlParams) {
       try {
         this.errors = null;
 
@@ -1804,9 +1805,9 @@ export default {
 
         this.formWait(true);
 
-        paramsData = paramsData ? paramsData : {};
+        urlParams = urlParams ? urlParams : {};
 
-        const params = new URLSearchParams(paramsData);
+        const params = new URLSearchParams(urlParams);
 
         let options = prepareFetchOptions("DELETE", this.settings);
         let url =
@@ -1908,17 +1909,17 @@ export default {
       }
     },
 
-    async saveItem(input, callback, paramsData) {
+    async saveItem(input, callback, urlParams) {
       try {
         // this.errors = null;
 
         this.tableWait();
         this.formWait(true);
 
-        paramsData = paramsData ? paramsData : {};
+        urlParams = urlParams ? urlParams : {};
 
         if (this.settings.events && this.settings.events.beforeItemSave) {
-          this.settings.events.beforeItemSave(input, paramsData);
+          this.settings.events.beforeItemSave(input, urlParams);
         }
 
         let item = {};
@@ -1973,8 +1974,8 @@ export default {
             item: item,
           });
         }
-        
-        const params = new URLSearchParams(paramsData);
+
+        const params = new URLSearchParams(urlParams);
         let paramsString = params.toString();
 
         let url =
@@ -2196,9 +2197,9 @@ export default {
       }
     },
 
-    async exportTable(paramsData) {
+    async exportTable(urlParams) {
       try {
-        paramsData.limit = ".";
+        urlParams.limit = ".";
 
         let filter = this.getFiltersForFetch();
         // let relations = this.getRelationsForFetch();
@@ -2212,22 +2213,22 @@ export default {
           };
         }
 
-        paramsData.filter = filter;
-        paramsData.order = order;
+        urlParams.filter = filter;
+        urlParams.order = order;
 
         if (this.settings.events && this.settings.events.beforeItemsLoad) {
-          this.settings.events.beforeItemsLoad(paramsData, this.settings);
+          this.settings.events.beforeItemsLoad(urlParams, this.settings);
         }
 
-        if (paramsData.filter) {
-          paramsData.filter = JSON.stringify(paramsData.filter);
+        if (urlParams.filter) {
+          urlParams.filter = JSON.stringify(urlParams.filter);
         }
 
-        if (paramsData.order) {
-          paramsData.order = JSON.stringify(paramsData.order);
+        if (urlParams.order) {
+          urlParams.order = JSON.stringify(urlParams.order);
         }
 
-        const params = new URLSearchParams(paramsData);
+        const params = new URLSearchParams(urlParams);
 
         let options = prepareFetchOptions("GET", this.settings);
         let url = this.settings.table.api.url + "?" + params.toString();
@@ -2257,7 +2258,7 @@ export default {
         this.convertsIn(items);
         let csvString = convertToCSV(
           items,
-          this.settings.table.exports[paramsData.type].fields
+          this.settings.table.exports[urlParams.type].fields
         );
 
         downloadCSV(csvString, this.settings.entity + ".csv");
@@ -2422,146 +2423,117 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0.21;
-  }
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.table-container,
-form {
-  position: relative;
-}
-
-.overlay {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 9999;
-  opacity: 0;
-  display: none;
-
-  &.blocked {
-    display: block;
-    animation-name: fadeIn;
-    animation-duration: 2s;
-    animation-delay: 0.77s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-    animation-direction: normal;
-  }
-}
-
-[data-bs-theme="light"] {
-  .overlay {
-    background-color: rgb(255, 255, 255);
+.vu-admin {
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0.21;
+    }
   }
 
-  .table-title {
-    color: var(--bs-dark);
-  }
-  .table-header {
-    user-select: none;
-    background-color: var(--bs-light);
-    color: var(--bs-dark);
-  }
-  .table-bulk {
-    background-color: var(--bs-dark);
-    color: var(--bs-light);
-  }
-}
-
-[data-bs-theme="dark"] {
-  background-color: var(--bs-dark);
-
-  .overlay {
-    background-color: rgb(0, 0, 0);
-  }
-
-  .table-title {
-    color: var(--bs-light);
-  }
-  .table-header {
-    user-select: none;
-    background-color: var(--bs-secondary);
-    color: var(--bs-light);
-  }
-
-  .modal-title {
-    color: var(--bs-light);
-  }
-}
-
-/* Mobil stílusok */
-@media screen and (max-width: 600px) {
-  .table-responsive {
-    border: 0;
-  }
-
-  .table-responsive thead {
-    display: none;
-  }
-
-  .table-responsive tr {
-    margin-bottom: 20px;
-    display: block;
-    border-bottom: 2px solid #ddd;
-  }
-
-  .table-responsive td {
-    display: block;
-    text-align: right;
-    border-bottom: 1px dotted #ccc;
+  .vua-table-container,
+  form {
     position: relative;
-    padding-left: 50%;
   }
 
-  .table-responsive td::before {
-    content: attr(data-label);
+  .vua-overlay {
+    content: "";
     position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
     left: 0;
-    width: 40%;
-    padding-left: 5px;
-    font-weight: lighter;
-    text-align: left;
+    z-index: 9999;
+    opacity: 0;
+    display: none;
+
+    &.blocked {
+      display: block;
+      animation-name: fadeIn;
+      animation-duration: 2s;
+      animation-delay: 0.77s;
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
+      animation-direction: normal;
+    }
+  }
+
+  [data-bs-theme="light"] {
+    .vua-overlay {
+      background-color: rgb(255, 255, 255);
+    }
+
+    .vua-table-title {
+      color: var(--bs-dark);
+    }
+    .vua-table-header {
+      user-select: none;
+      background-color: var(--bs-light);
+      color: var(--bs-dark);
+    }
+    .vua-table-bulk {
+      background-color: var(--bs-dark);
+      color: var(--bs-light);
+    }
+  }
+
+  [data-bs-theme="dark"] {
+    background-color: var(--bs-dark);
+
+    .vua-overlay {
+      background-color: rgb(0, 0, 0);
+    }
+
+    .vua-table-title {
+      color: var(--bs-light);
+    }
+    .vua-table-header {
+      user-select: none;
+      background-color: var(--bs-secondary);
+      color: var(--bs-light);
+    }
+
+    .modal-title {
+      color: var(--bs-light);
+    }
+  }
+
+  /* Mobil stílusok */
+  @media screen and (max-width: 600px) {
+    .vua-table-responsive {
+      border: 0;
+    }
+
+    .vua-table-responsive thead {
+      display: none;
+    }
+
+    .vua-table-responsive tr {
+      margin-bottom: 20px;
+      display: block;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .vua-table-responsive td {
+      display: block;
+      text-align: right;
+      border-bottom: 1px dotted #ccc;
+      position: relative;
+      padding-left: 50%;
+    }
+
+    .table-responsive td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0;
+      width: 40%;
+      padding-left: 5px;
+      font-weight: lighter;
+      text-align: left;
+    }
   }
 }
 </style>
 
-
-<!-- :root {
-  --bs-blue: #0d6efd;
-  --bs-indigo: #6610f2;
-  --bs-purple: #6f42c1;
-  --bs-pink: #d63384;
-  --bs-red: #dc3545;
-  --bs-orange: #fd7e14;
-  --bs-yellow: #ffc107;
-  --bs-green: #198754;
-  --bs-teal: #20c997;
-  --bs-cyan: #0dcaf0;
-  --bs-white: #fff;
-  --bs-gray: #6c757d;
-  --bs-gray-dark: #343a40;
-  --bs-primary: #0d6efd;
-  --bs-secondary: #6c757d;
-  --bs-success: #198754;
-  --bs-info: #0dcaf0;
-  --bs-warning: #ffc107;
-  --bs-danger: #dc3545;
-  --bs-light: #f8f9fa;
-  --bs-dark: #212529;
-  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
-} -->

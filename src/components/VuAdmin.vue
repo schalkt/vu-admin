@@ -1,5 +1,10 @@
 <template>
-  <div v-cloak v-if="entity && settings.table">
+  <div
+    v-cloak
+    v-if="entity && settings.table"
+    class="vu-admin"
+    :data-bs-theme="[settings.theme]"
+  >
     <vu-admin-table :settings="settings"></vu-admin-table>
   </div>
 </template>
@@ -42,6 +47,11 @@ export default {
       if (this.settings.init) {
         this.settings.init(this.settings);
       }
+
+      if (!this.settings.theme) {
+        const theme = document.documentElement.getAttribute("data-bs-theme");
+        this.settings.theme = theme ? theme : "light";
+      }
     }
   },
 
@@ -62,5 +72,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.vu-admin {
+  .cursor-pointer {
+    cursor: pointer;
+  }
+}
 </style>

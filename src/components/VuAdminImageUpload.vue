@@ -611,100 +611,88 @@ export default ImageUpload;
 </script>
 
 <style lang="scss" scoped>
-.vsa-upload {
-  position: relative;
-
-  @keyframes vsa-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .vsa-image-editor {
-    opacity: 1;
-    position: fixed;
-    top: 5%;
-    right: 5%;
-    bottom: 5%;
-    left: 5%;
-    // transition: all 0.21s;
-    // transform: translateY(20px);
-    z-index: 500;
-    background-color: #212121;
-  }
-
-  .vsa-image-info {
-    opacity: 0;
-    overflow: hidden;
-    transition: all 0.21s;
-    transform: translateY(20px);
-    z-index: 50;
-    background: linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 0.9) 25%,
-      rgba(0, 0, 0, 0) 100%
-    );
-  }
-
-  .vsa-image-loading span {
-    width: 50px;
-    height: 50px;
-    border: 2px solid rgba(0, 0, 0, 0.21);
-    border-left-color: #777;
-    border-radius: 50%;
-    animation: vsa-spin 1s linear infinite;
-  }
-
-  .vsa-image-container {
-    perspective: 1000px;
+.vu-admin {
+  .vsa-upload {
     position: relative;
-    min-height: 120px;
 
-    .vsa-image-frame.fullscreen {
-      position: fixed !important;
-      top: 2%;
-      right: 2%;
-      bottom: 2%;
-      left: 2%;
-      z-index: 99999;
+    @keyframes vsa-spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
 
-    img {
-      z-index: 100;
-      background-color: black;
+    .vsa-image-editor {
+      opacity: 1;
+      position: fixed;
+      top: 5%;
+      right: 5%;
+      bottom: 5%;
+      left: 5%;
+      // transition: all 0.21s;
+      // transform: translateY(20px);
+      z-index: 500;
+      background-color: #212121;
     }
 
-    &:hover {
-      .vsa-image-info {
-        opacity: 1;
-        transform: translateY(0px);
-        overflow: hidden;
-        z-index: 100;
+    .vsa-image-info {
+      opacity: 0;
+      overflow: hidden;
+      transition: all 0.21s;
+      transform: translateY(20px);
+      z-index: 50;
+      background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.9) 25%,
+        rgba(0, 0, 0, 0) 100%
+      );
+    }
+
+    .vsa-image-loading span {
+      width: 50px;
+      height: 50px;
+      border: 2px solid rgba(0, 0, 0, 0.21);
+      border-left-color: #777;
+      border-radius: 50%;
+      animation: vsa-spin 1s linear infinite;
+    }
+
+    .vsa-image-container {
+      perspective: 1000px;
+      position: relative;
+      min-height: 120px;
+
+      .vsa-image-frame.fullscreen {
+        position: fixed !important;
+        top: 2%;
+        right: 2%;
+        bottom: 2%;
+        left: 2%;
+        z-index: 99999;
       }
 
       img {
-        opacity: 0.99;
-        // filter: grayscale(0.21);
-        transition: all 0.21s;
-        z-index: 50;
+        z-index: 100;
+        background-color: black;
+      }
+
+      &:hover {
+        .vsa-image-info {
+          opacity: 1;
+          transform: translateY(0px);
+          overflow: hidden;
+          z-index: 100;
+        }
+
+        img {
+          opacity: 0.99;
+          // filter: grayscale(0.21);
+          transition: all 0.21s;
+          z-index: 50;
+        }
       }
     }
-  }
-}
-
-[data-bs-theme="light"] {
-  .ql-container .ql-snow {
-    color: var(--bs-dark) !important;
-  }
-  .ql-editor {
-    color: var(--bs-light) !important;
-  }
-}
-
-[data-bs-theme="dark"] {
-  .ql-editor-container {
-    color: var(--bs-light) !important;
+   
   }
 }
 </style>

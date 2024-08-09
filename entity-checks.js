@@ -765,12 +765,12 @@ export default {
 	table: table,
 	form: form,
 	events: {
-		beforeItemsLoad: function (query) { },
+		beforeItemsLoad: function (urlParams) { },
 
 		afterItemsLoad: function (items) { },
 		afterItemLoad: function (item) { },
 
-		beforeItemSave: function (item) { },
+		beforeItemSave: function (item, urlParams) { },
 		afterItemSave: function (item) { },
 
 		beforeBulkSave: function (bulkitem) { },

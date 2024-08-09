@@ -75,18 +75,20 @@ export default HtmlEditor;
 
 
 <style lang="scss" scoped>
-[data-bs-theme="light"] {
-  .ql-container .ql-snow {
-    color: var(--bs-dark) !important;
+.vu-admin {
+  [data-bs-theme="light"] {
+    .ql-container .ql-snow {
+      color: var(--bs-dark) !important;
+    }
+    .ql-editor {
+      color: var(--bs-light) !important;
+    }
   }
-  .ql-editor {
-    color: var(--bs-light) !important;
-  }
-}
 
-[data-bs-theme="dark"] {
-  .ql-editor-container {
-    color: var(--bs-light) !important;
+  [data-bs-theme="dark"] {
+    .ql-editor-container {
+      color: var(--bs-light) !important;
+    }
   }
 }
 </style>
