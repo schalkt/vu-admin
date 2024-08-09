@@ -121,9 +121,9 @@ const table = {
 	api: {
 		url: 'http://localhost:52000/vuapi/efiok/checks',
 	},
-	pagination: {		
+	pagination: {
 		limit: 10,
-		limits: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000],		
+		limits: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000],
 	},
 	exports: exports,
 	header: {
@@ -217,13 +217,14 @@ const table = {
 			width: '10%',
 			filter: {
 				type: 'number',
+				class: 'd-flex align-items-center justify-content-center',
 				default: 2024,
 				min: 1990,
 				max: 2030,
 				operator: '=',
 				operators: false,
 				buttonx: false,
-				fixed: true,
+				fixed: true,				
 				// operators: [{
 				// 	label: '=',
 				// 	value: '='
@@ -311,7 +312,7 @@ const table = {
 			input: {
 				type: 'text',
 				bulkactions: true,
-				autosave: true,			
+				autosave: true,
 				onchange: function (value, column, item) {
 					// console.log(value, column, item);
 				}
@@ -430,6 +431,23 @@ const table = {
 			sortable: false,
 			width: '10%',
 			class: 'text-end text-nowrap',
+			filter: {
+				class: 'text-end text-nowrap w-100',
+				buttons: [
+					{
+						action: 'resetdetails',
+						xtitle: 'Mind becsuk',
+						class: 'btn btn-sm btn-secondary bg-dark text-warning m-1',
+						icon: 'bi bi-chevron-compact-up',
+					},
+					{
+						action: 'resetfilters',
+						// title: 'Alapértelmezés',
+						class: 'btn btn-sm btn-secondary bg-dark text-warning m-1',
+						icon: 'bi bi-x',
+					},
+				],
+			},
 			headerbuttons: [
 				{
 					action: 'resetorders',
@@ -437,21 +455,7 @@ const table = {
 					class: 'btn btn-sm btn-secondary bg-dark text-warning m-1',
 					icon: 'bi bi-x',
 				},
-			],
-			filterbuttons: [
-				{
-					action: 'resetdetails',
-					xtitle: 'Mind becsuk',
-					class: 'btn btn-sm btn-secondary bg-dark text-warning m-1',
-					icon: 'bi bi-chevron-compact-up',
-				},
-				{
-					action: 'resetfilters',
-					// title: 'Alapértelmezés',
-					class: 'btn btn-sm btn-secondary bg-dark text-warning m-1',
-					icon: 'bi bi-x',
-				},
-			],
+			],			
 			rowbuttons: [
 				{
 					action: 'details',

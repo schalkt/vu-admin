@@ -234,9 +234,11 @@
             :style="[column.hidden ? 'display: none' : '']"
             :key="column"
             :width="column.width"
-            :class="column.class"
           >
-            <div class="d-inline-block w-100 px-1" v-if="column.index">
+            <div
+              class="d-inline-block w-100 px-1"
+              v-if="column.index && column.click"
+            >
               <span
                 class="cursor-pointer badge border text-secondary py-1 px-2 me-1 my-2 w-100"
                 v-cloak
@@ -251,7 +253,15 @@
               </span>
             </div>
 
-            <div class="d-inline-block" v-if="column.filter">
+            <div
+              class="d-inline-block"
+              v-if="column.filter"
+              :class="
+                getValueOrFunction(column.filter.class, {
+                  column: column,
+                })
+              "
+            >
               <div
                 v-if="column.filter.type == 'text'"
                 class="input-group input-group-sm my-1"
@@ -429,19 +439,29 @@
                   ></i>
                 </button>
               </div>
-            </div>
 
-            <span v-if="column.filterbuttons">
-              <span v-for="button in column.filterbuttons" :key="button.action">
-                <button
-                  type="button"
-                  :class="[button.class]"
-                  @click="tableAction(button, items, null, $event)"
+              <span
+                v-if="column.filter.buttons"
+                :class="
+                  getValueOrFunction(column.filter.buttons, {
+                    column: column,
+                  })
+                "
+              >
+                <span
+                  v-for="button in column.filter.buttons"
+                  :key="button.action"
                 >
-                  <i :class="[button.icon]"></i> ${ button.title }
-                </button>
+                  <button
+                    type="button"
+                    :class="[button.class]"
+                    @click="tableAction(button, items, null, $event)"
+                  >
+                    <i :class="[button.icon]"></i> ${ button.title }
+                  </button>
+                </span>
               </span>
-            </span>
+            </div>
           </th>
         </tr>
       </thead>
@@ -454,7 +474,12 @@
               :key="column.name"
               :data-label="column.title"
               :width="column.width"
-              :class="column.class"
+              :class="
+                getValueOrFunction(column.class, {
+                  column: column,
+                  item: item,
+                })
+              "
               @click="tableAction(column, item, index, $event)"
             >
               <div class="d-inline-block w-100 px-1" v-if="column.index">
@@ -1271,7 +1296,7 @@ export default {
         }
       }
 
-      this.config.pagination.skip = (page - 1) * this.config.pagination.limit;        
+      this.config.pagination.skip = (page - 1) * this.config.pagination.limit;
 
       if (this.config.pagination.page != page && reload) {
         this.config.pagination.page = page;
@@ -1890,8 +1915,10 @@ export default {
         this.tableWait();
         this.formWait(true);
 
+        paramsData = paramsData ? paramsData : {};
+
         if (this.settings.events && this.settings.events.beforeItemSave) {
-          this.settings.events.beforeItemSave(input);
+          this.settings.events.beforeItemSave(input, paramsData);
         }
 
         let item = {};
@@ -1946,8 +1973,7 @@ export default {
             item: item,
           });
         }
-
-        paramsData = paramsData ? paramsData : {};
+        
         const params = new URLSearchParams(paramsData);
         let paramsString = params.toString();
 
