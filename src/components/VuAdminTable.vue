@@ -14,7 +14,7 @@
             class="card-title d-inline-block mb-2"
             v-if="settings.table.title"
           >
-            ${ settings.table.title }
+            {{  settings.table.title  }}
           </h5>
 
           <div
@@ -29,7 +29,7 @@
         <div class="d-inline-block" v-if="messages.length">
           <small class="d-inline-block px-1 mx-1" v-if="message">
             <span :class="['text-' + message.priority]">
-              <strong>${ message.msg }</strong>
+              <strong>{{  message.msg  }}</strong>
             </span>
           </small>
 
@@ -41,7 +41,7 @@
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              ${ messages.length } üzenet
+              {{  messages.length  }} üzenet
             </button>
             <ul class="dropdown-menu text-start">
               <li v-for="message in messages" :key="message">
@@ -49,8 +49,8 @@
                   class="dropdown-item"
                   :class="['text-' + message.priority]"
                 >
-                  <small class="me-2 text-muted">${ message.datetime }</small>
-                  <strong>${ message.msg }</strong>
+                  <small class="me-2 text-muted">{{  message.datetime  }}</small>
+                  <strong>{{  message.msg  }}</strong>
                 </span>
               </li>
             </ul>
@@ -83,7 +83,7 @@
                 : getButtonIconClassByAction(button.action),
             ]"
           ></i>              
-          ${ translate(button.title) }           
+          {{  translate(button.title)  }}           
         </button>
 
         <div class="dropdown d-inline-block" v-if="button.action === 'columns'">
@@ -111,9 +111,9 @@
                     : getButtonIconClassByAction(button.action),
                 ]"
               ></i>
-              ${ translate(button.title) }
+              {{  translate(button.title)  }}
               <span v-if="countHiddenColumns()">
-                ( ${ countHiddenColumns() } ${ translate('hidden') } )
+                ( {{  countHiddenColumns()  }} {{  translate('hidden')  }} )
               </span>
             </span>
           </button>
@@ -131,9 +131,9 @@
                   v-if="column.hidden"
                   class="bi bi-x-square me-2 text-danger"
                 ></i>
-                ${ column.title }
+                {{  column.title  }}
                 <small class="badge text-secondary fw-normal"
-                  >${ column.name }</small
+                  >{{  column.name  }}</small
                 >
               </span>
             </li>
@@ -142,14 +142,14 @@
               <span
                 class="dropdown-item cursor-pointer"
                 @click="toggleColumn(true)"
-                >${ translate('Visible all') }</span
+                >{{  translate('Visible all')  }}</span
               >
             </li>
             <li>
               <span
                 class="dropdown-item cursor-pointer"
                 @click="toggleColumn(false)"
-                >${ translate('Hidden all') }</span
+                >{{  translate('Hidden all')  }}</span
               >
             </li>
           </ul>
@@ -165,7 +165,7 @@
             aria-expanded="false"
           >
             <span class="mx-1">
-              <i :class="[button.icon]"></i> ${ translate(button.title) }
+              <i :class="[button.icon]"></i> {{  translate(button.title)  }}
             </span>
           </button>
           <ul class="dropdown-menu">
@@ -176,7 +176,7 @@
                 @click="tableAction(dropdown, items, null, $event)"
               >
                 <i class="me-2" :class="[button.icon]"></i>
-                ${ translate(dropdown.title) }
+                {{  translate(dropdown.title)  }}
               </span>
             </li>
           </ul>
@@ -203,9 +203,9 @@
               class="d-inline-block no-select text-nowrap"
               :class="{ 'cursor-pointer': isSortable(column) }"
               @click="sortTable(column)"
-              >${ (column.header && column.header.title !== undefined) ?
+              >{{ (column.header && column.header.title !== undefined) ?
               column.header.title : (column.title ? column.title :
-              translate(column.name)) }
+              translate(column.name)) }}
               <span
                 class="badge p-1"
                 v-if="
@@ -217,8 +217,8 @@
                   'text-warning': !config.order[column.name].fixed,
                 }"
               >
-                <i class="bi bi-arrow-down"></i>${ config.order[column.name].idx
-                + 1 }
+                <i class="bi bi-arrow-down"></i>{{ config.order[column.name].idx
+                + 1 }}
               </span>
               <span
                 class="badge p-1"
@@ -231,8 +231,8 @@
                   'text-warning': !config.order[column.name].fixed,
                 }"
               >
-                <i class="bi bi-arrow-up"></i>${ config.order[column.name].idx +
-                1 }
+                <i class="bi bi-arrow-up"></i>{{ config.order[column.name].idx +
+                1 }}
               </span>
             </span>
 
@@ -255,7 +255,7 @@
                       : getButtonIconClassByAction(button.action),
                   ]"
                 ></i>
-                ${ translate(button.title) }
+                {{  translate(button.title)  }}
               </button>
             </span>
           </th>
@@ -327,11 +327,11 @@
                 @change="reloadTable()"
                 class="form-select form-select-sm"
               >
-                <option value="=">${ translate('=') }</option>
-                <option value=">">${ translate('>') }</option>
-                <option value=">=">${ translate('>=') }</option>
-                <option value="<">${ translate('<') }</option>
-                <option value="<=">${ translate('<=') }</option>
+                <option value="=">{{  translate('=')  }}</option>
+                <option value=">">{{  translate('>')  }}</option>
+                <option value=">=">{{  translate('>=')  }}</option>
+                <option value="<">{{  translate('<')  }}</option>
+                <option value="<=">{{  translate('<=')  }}</option>
               </select>
 
               <select
@@ -347,7 +347,7 @@
                   :key="operator"
                   :value="operator.value"
                 >
-                  ${ operator.label }
+                  {{  operator.label  }}
                 </option>
               </select>
 
@@ -393,7 +393,7 @@
                   :key="option"
                   :value="option.value"
                 >
-                  ${ translate(option.label) }
+                  {{  translate(option.label)  }}
                 </option>
               </select>
             </div>
@@ -412,11 +412,11 @@
                 @change="reloadTable()"
                 class="form-select form-select-sm"
               >
-                <option value="=">${ translate('=') }</option>
-                <option value=">">${ translate('>') }</option>
-                <option value=">=">${ translate('>=') }</option>
-                <option value="<">${ translate('<') }</option>
-                <option value="<=">${ translate('<=') }</option>
+                <option value="=">{{  translate('=')  }}</option>
+                <option value=">">{{  translate('>')  }}</option>
+                <option value=">=">{{  translate('>=')  }}</option>
+                <option value="<">{{  translate('<')  }}</option>
+                <option value="<=">{{  translate('<=')  }}</option>
               </select>
 
               <select
@@ -432,7 +432,7 @@
                   :key="operator"
                   :value="operator.value"
                 >
-                  ${ translate(operator.label) }
+                  {{  translate(operator.label)  }}
                 </option>
               </select>
 
@@ -491,7 +491,7 @@
                         : getButtonIconClassByAction(button.action),
                     ]"
                   ></i>
-                  ${ translate(button.title) }
+                  {{  translate(button.title)  }}
                 </button>
               </span>
             </span>
@@ -532,7 +532,7 @@
               </div>
 
               <span v-if="!column.template && !column.input">
-                ${ tableCellValue(column.name, item, index) }
+                {{  tableCellValue(column.name, item, index)  }}
               </span>
               <span
                 v-if="column.template"
@@ -580,7 +580,7 @@
                     :value="option.value"
                     :key="option"
                   >
-                    ${ translate(option.label) }
+                    {{  translate(option.label)  }}
                   </option>
                 </select>
 
@@ -622,7 +622,7 @@
                         tableCellTemplate(button.template, item, index, column)
                       "
                     ></span>
-                    <span v-else>${ translate(button.title) }</span>
+                    <span v-else>{{  translate(button.title)  }}</span>
                   </button>
                 </span>
               </span>
@@ -645,7 +645,7 @@
               >
                 <div class="row g-3 align-items-center">
                   <div class="col text-end" :class="[field.class]">
-                    <label class="col-form-label">${ field.label }</label>
+                    <label class="col-form-label">{{  field.label  }}</label>
                   </div>
                   <div class="col" :class="[field.input.class]">
                     <input
@@ -671,7 +671,7 @@
                         :value="option.value"
                         :key="option"
                       >
-                        ${ translate(option.label) }
+                        {{  translate(option.label)  }}
                       </option>
                     </select>
                   </div>
@@ -699,7 +699,7 @@
                 class="cursor-pointer d-inline-block badge py-1 px-2 me-1 my-2 w-100 bg-info text-dark"
                 @click="toggleSelectedAll()"
               >
-                ${ selected.length }
+                {{  selected.length  }}
               </span>
             </div>
 
@@ -738,7 +738,7 @@
                   :value="option.value"
                   :key="option"
                 >
-                  ${ translate(option.label) }                  
+                  {{  translate(option.label)  }}                  
                 </option>
               </select>
 
@@ -786,7 +786,7 @@
                     "
                   ></span>
                   <span v-else>
-                    ${ translate(button.title) }
+                    {{  translate(button.title)  }}
                   </span>
                 </button>
               </span>
@@ -833,9 +833,9 @@
                     settings.form.title &&
                     typeof settings.form.title == 'string'
                   "
-                  >${ translate(settings.form.title) }</span
+                  >{{  translate(settings.form.title)  }}</span
                 >
-                <span v-if="!settings.form.title">${ translate('Edit') }</span>
+                <span v-if="!settings.form.title">{{  translate('Edit')  }}</span>
 
                 <div
                   v-show="ui.wait.form"
@@ -875,7 +875,7 @@
                   @click="reloadItem()"
                   :disabled="!item[settings.pkey]"
                 >
-                  <i class="bi bi-arrow-clockwise"></i> ${ translate('Reload') }
+                  <i class="bi bi-arrow-clockwise"></i> {{  translate('Reload')  }}
                 </button>
 
                 <button
@@ -883,7 +883,7 @@
                   class="btn btn-outline-warning m-1"
                   @click="createItem()"
                 >
-                  <i class="bi bi-plus-circle"></i> ${ translate('New') }
+                  <i class="bi bi-plus-circle"></i> {{  translate('New')  }}
                 </button>
 
                 <button
@@ -891,7 +891,7 @@
                   class="btn btn-outline-warning m-1"
                   @click="copyItem()"
                 >
-                  <i class="bi bi-copy"></i> ${ translate('Copy') }
+                  <i class="bi bi-copy"></i> {{  translate('Copy')  }}
                 </button>
 
                 <button
@@ -900,7 +900,7 @@
                   @click="deleteItem()"
                   :disabled="!item[settings.pkey]"
                 >
-                  <i class="bi bi-trash"></i> ${ translate('Delete') }
+                  <i class="bi bi-trash"></i> {{  translate('Delete')  }}
                 </button>
               </div>
 
@@ -910,11 +910,11 @@
                   class="btn btn-secondary m-1"
                   data-bs-dismiss="modal"
                 >
-                  <i class="bi bi-x"></i> ${ translate('Close') }
+                  <i class="bi bi-x"></i> {{  translate('Close')  }}
                 </button>
 
                 <button type="submit" class="btn btn-primary m-1">
-                  <i class="bi bi-save"></i> ${ translate('Save') }
+                  <i class="bi bi-save"></i> {{  translate('Save')  }}
                 </button>
 
                 <button
@@ -922,7 +922,7 @@
                   class="btn btn-success m-1"
                   @click="submitAndClose"
                 >
-                  <i class="bi bi-save"></i> ${ translate('Save and close') }
+                  <i class="bi bi-save"></i> {{  translate('Save and close')  }}
                 </button>
               </div>
             </div>
@@ -936,7 +936,7 @@
                   :key="group"
                 >
                   <h2 class="form-row-title mb-4 fw-lighter">
-                    ${ group.title }
+                    {{  group.title  }}
                   </h2>
 
                   <VuAdminFormGroup
@@ -961,7 +961,7 @@
 
                 <div v-for="errorgroup in errors" :key="errorgroup">
                   <div v-for="error in errorgroup" :key="error">
-                    <span class="text-danger"> ${ error.message } </span>
+                    <span class="text-danger"> {{  error.message  }} </span>
                   </div>
                 </div>
               </div>
@@ -978,7 +978,7 @@
                   @click="reloadItem()"
                   :disabled="!item[settings.pkey]"
                 >
-                  <i class="bi bi-arrow-clockwise"></i> ${ translate('Reload') }
+                  <i class="bi bi-arrow-clockwise"></i> {{  translate('Reload')  }}
                 </button>
 
                 <button
@@ -986,7 +986,7 @@
                   class="btn btn-outline-warning m-1"
                   @click="createItem()"
                 >
-                  <i class="bi bi-plus-circle"></i> ${ translate('New') }
+                  <i class="bi bi-plus-circle"></i> {{  translate('New')  }}
                 </button>
 
                 <button
@@ -994,7 +994,7 @@
                   class="btn btn-outline-warning m-1"
                   @click="copyItem()"
                 >
-                  <i class="bi bi-copy"></i> ${ translate('Copy') }
+                  <i class="bi bi-copy"></i> {{  translate('Copy')  }}
                 </button>
 
                 <button
@@ -1003,7 +1003,7 @@
                   @click="deleteItem()"
                   :disabled="!item[settings.pkey]"
                 >
-                  <i class="bi bi-trash"></i> ${ translate('Delete') }
+                  <i class="bi bi-trash"></i> {{  translate('Delete')  }}
                 </button>
               </div>
 
@@ -1013,11 +1013,11 @@
                   class="btn btn-secondary m-1"
                   data-bs-dismiss="modal"
                 >
-                  <i class="bi bi-x"></i> ${ translate('Close') }
+                  <i class="bi bi-x"></i> {{  translate('Close')  }}
                 </button>
 
                 <button type="submit" class="btn btn-primary m-1">
-                  <i class="bi bi-save"></i> ${ translate('Save') }
+                  <i class="bi bi-save"></i> {{  translate('Save')  }}
                 </button>
 
                 <button
@@ -1025,13 +1025,13 @@
                   class="btn btn-success m-1"
                   @click="submitAndClose"
                 >
-                  <i class="bi bi-save"></i> ${ translate('Save and close') }
+                  <i class="bi bi-save"></i> {{  translate('Save and close')  }}
                 </button>
               </div>
             </div>
           </form>
           <pre class="bg-light text-dark" v-if="settings.debug">
-            ${ item }
+            {{  item  }}
           </pre>
         </div>
       </div>
@@ -2080,7 +2080,7 @@ export default {
         // const formData = new FormData();
 
         // this.files.forEach((file, index) => {
-        // 	formData.append(`file${index}`, file);
+        // 	formData.append(`file{{ index }}`, file);
         // });
 
         // formData.append("json", JSON.stringify({

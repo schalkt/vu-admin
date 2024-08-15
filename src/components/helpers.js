@@ -120,28 +120,30 @@ export function unflattenObject(data) {
 
 export function translate(key, translates, vars, language) {
 
+    const replaceVars = (value, vars) => {
+
+        if (!value || !vars) return value;
+
+        return value.replace(/{\s*(.*?)\s*}/g, (match, p1) => {
+            return vars[p1] ? vars[p1] : '';
+        });
+    }
+
     if (!translates) {
-        return key;
+        return replaceVars(key, vars);
     }
 
     language = language ? language : document.documentElement.lang;
 
     if (!language || !translates[language]) {
-        return key;
+        return replaceVars(key, vars);
     }
 
     if (!translates[language][key]) {
-        return key;
+        return replaceVars(key, vars);
     }
 
-    let translated = translates[language][key];
-    vars = vars || {};
-    
-    // translated = translated.replace(/{\s*(.*?)\s*}/g, (match, p1) => {
-    //     return vars[p1] ? vars[p1] : '';
-    // });    
-
-    return translated;
+    return replaceVars(translates[language][key]);
 
 }
 

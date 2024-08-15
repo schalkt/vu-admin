@@ -13,13 +13,13 @@
             :key="index"
           >
             <span class="badge bg-dark text-light fw-light mx-1 text-uppercase"
-              >${ type.convert.replace(/.*\//, '') }</span
+              >{{  type.convert.replace(/.*\//, '')  }}</span
             >
             <span class="badge bg-dark text-light fw-light mx-1"
-              >${ type.width } x ${ type.height }</span
+              >{{  type.width  }} x {{  type.height  }}</span
             >
             <span class="badge bg-dark text-light fw-light mx-1"
-              >~${ this.round(type.bytes) }</span
+              >~{{  this.round(type.bytes)  }}</span
             >
 
             <img
@@ -102,19 +102,19 @@
                 <div class="" v-for="(type, index) in file.types" :key="index">
                   <span
                     class="badge bg-dark text-light fw-light mx-1 text-uppercase"
-                    >${ type.convert.replace('image/', '') }</span
+                    >{{  type.convert.replace('image/', '')  }}</span
                   >
                   <span class="badge bg-dark text-light fw-light mx-1"
-                    >${ type.width } x ${ type.height }</span
+                    >{{  type.width  }} x {{  type.height  }}</span
                   >
                   <span class="badge bg-dark text-light fw-light mx-1"
-                    >~${ this.round(type.bytes) }</span
+                    >~{{  this.round(type.bytes)  }}</span
                   >
                 </div>
                 #}
 
                 <strong class="bg-dark text-light rounded p-0 px-2 mb-1"
-                  >#${ index + 1 }</strong
+                  >#{{  index + 1  }}</strong
                 >
 
                 <div class="text-center mt-2">
@@ -172,7 +172,7 @@
                 </div>
 
                 <div class="text-light fw-light text-nowrap">
-                  ${ file.title }
+                  {{  file.title  }}
                 </div>
               </div>
 
@@ -212,7 +212,7 @@
 
                 <small class="fw-light">
                   <div class="fs-4" v-if="files && params.limit > files.length">
-                    ${ params.text }
+                    {{  params.text  }}
                   </div>
 
                   <div v-else class="fs-6 text-warning">
@@ -234,17 +234,17 @@
                   uploaded
                   <span
                     class="badge bg-dark border border-secondary text-info mx-1"
-                    >${ files.length }</span
+                    >{{  files.length  }}</span
                   >
                   /
                   <span
                     class="badge bg-dark border border-secondary text-info mx-1"
-                    >${ params.limit }</span
+                    >{{  params.limit  }}</span
                   >
                   <span
                     v-if="this.bytes"
                     class="badge bg-dark border border-secondary text-info mx-1"
-                    >~${ this.round(this.bytes) }</span
+                    >~{{  this.round(this.bytes)  }}</span
                   >
                 </div>
                 <div class="mt-1" v-if="params.accept">
@@ -253,7 +253,7 @@
                     class="badge bg-dark border border-secondary text-info mx-1"
                     v-for="ext in params.accept"
                     :key="ext"
-                    >${ ext.replace(/.*\//,'') }
+                    >{{  ext.replace(/.*\//,'')  }}
                   </span>
                 </div>
                 <div v-if="params.presets">
@@ -267,19 +267,19 @@
                     <span
                       class="badge bg-dark border border-secondary text-info mx-1"
                     >
-                      ${ index }
+                      {{  index  }}
                     </span>
 
                     <span
                       class="badge bg-dark border border-secondary text-info mx-1"
                     >
-                      ${ preset.width } x ${preset.height }
+                      {{  preset.width  }} x {{ preset.height  }}
                     </span>
 
                     <span
                       class="badge bg-dark border border-secondary text-info mx-1"
                     >
-                      ${ preset.convert.replace(/.*\//,'') }
+                      {{  preset.convert.replace(/.*\//,'')  }}
                     </span>
                   </div>
                 </div>

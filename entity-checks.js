@@ -37,6 +37,9 @@ const api = {
 const translate = {
 	hu: {
 		'Reload': 'Frissítés {var1}',
+	},
+	hu2: {
+		'Reload': 'Frissítés {var1}',
 	}
 };
 
@@ -60,7 +63,7 @@ const methods = {
 				hour12: false
 			});
 
-			return `${formattedDate} ${formattedTime}`;
+			return `{{ formattedDate }} {{ formattedTime }}`;
 		} else {
 			return null;
 		}

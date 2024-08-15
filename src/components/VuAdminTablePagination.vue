@@ -15,10 +15,10 @@
         >
           <span v-cloak v-show="config.pagination.from > 0" class="mx-1">
             <strong
-              >${ config.pagination.from }-${ config.pagination.to }</strong
+              >{{  config.pagination.from  }}-{{  config.pagination.to  }}</strong
             >
             <span v-if="config.pagination.total">
-              / ${ config.pagination.total }
+              / {{  config.pagination.total  }}
             </span>
           </span>
         </button>
@@ -31,9 +31,9 @@
               :class="{ selected: config.pagination.limit == limit }"
               @click="setPageLimit(limit)"
             >
-              <strong>${ limit }</strong>
+              <strong>{{  limit  }}</strong>
               <small class="ms-2"
-                >${ translate('row') }/${ translate('page') }</small
+                >{{  translate('row')  }}/{{  translate('page')  }}</small
               >
               <i
                 v-if="config.pagination.limit == limit"
@@ -62,9 +62,9 @@
           class="page-link cursor-pointer"
           :class="{ disabled: firstDisabled() }"
           @click="setPage(1)"
-          aria-label="${ translate('First') }"
+          aria-label="{{  translate('First')  }}"
         >
-          <span aria-hidden="true">${ translate('First') }</span>
+          <span aria-hidden="true">{{  translate('First')  }}</span>
         </a>
       </li>
       <li class="page-item">
@@ -72,9 +72,9 @@
           class="page-link cursor-pointer"
           :class="{ disabled: prevDisabled() }"
           @click="setPage(config.pagination.page - 1)"
-          aria-label="${ translate('Prev') }"
+          aria-label="{{  translate('Prev')  }}"
         >
-          <span aria-hidden="true">${ translate('Prev') }</span>
+          <span aria-hidden="true">{{  translate('Prev')  }}</span>
         </a>
       </li>
       <li
@@ -89,7 +89,7 @@
             current: number == config.pagination.page,
           }"
           @click="setPage(number)"
-          >${ number }</a
+          >{{  number  }}</a
         >
       </li>
 
@@ -98,10 +98,10 @@
           class="page-link cursor-pointer"
           :class="{ disabled: nextDisabled() }"
           @click="setPage(config.pagination.page + 1)"
-          aria-label="${ translate('Next') }"
+          aria-label="{{  translate('Next')  }}"
         >
           <span aria-hidden="true"
-            ><span aria-hidden="true">${ translate('Next') }</span></span
+            ><span aria-hidden="true">{{  translate('Next')  }}</span></span
           >
         </a>
       </li>
@@ -110,9 +110,9 @@
           class="page-link cursor-pointer"
           :class="{ disabled: lastDisabled() }"
           @click="setPage(config.pagination.total)"
-          aria-label="${ translate('Last') }"
+          aria-label="{{  translate('Last')  }}"
         >
-          <span aria-hidden="true">${ translate('Last') }</span>
+          <span aria-hidden="true">{{  translate('Last')  }}</span>
         </a>
       </li>
     </ul>

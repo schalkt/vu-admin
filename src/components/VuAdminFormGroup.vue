@@ -7,10 +7,9 @@
           v-cloak
           class="form-label text-secondary mb-1"
         >
-          ${ field.label }
+          {{  field.label  }}
           <span class="badge text-secondary fw-light" v-if="field.maxlength">
-            ${ item[field.name] ? item[field.name].length : 0 } / ${
-            field.maxlength }
+            {{  item[field.name] ? item[field.name].length : 0  }} / {{ field.maxlength }}
           </span>
         </label>
         <label
@@ -104,7 +103,7 @@
             :key="option"
             :value="option.value"
           >
-            ${ option.label }
+            {{  option.label  }}
           </option>
         </select>
 
@@ -147,12 +146,12 @@
       <span v-if="field.type == 'addresses'">
         <div v-if="item[field.name]">
           <div v-for="address in item[field.name]" :key="address">
-            ${ address }
+            {{  address  }}
             <label
               class="form-label text-secondary mb-1"
               :for="formid + '_' + field.name"
             >
-              ${ field.label }
+              {{  field.label  }}
             </label>
             <input
               class="form-control"
