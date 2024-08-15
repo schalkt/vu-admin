@@ -4,6 +4,7 @@
     aria-label="Page navigation"
     class="mt-2 d-flex align-items-center justify-content-between"
   >
+
     <div>
       <div class="dropdown d-inline-block m-1">
         <button
@@ -45,6 +46,13 @@
             </span>
           </li>
         </ul>
+      </div>      
+      <div        
+        v-show="ui && ui.wait.table"
+        class="spinner-border spinner-border-sm text-info mx-2"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
 
@@ -117,9 +125,10 @@ import { translate } from "./helpers";
 export default {
   name: "VuAdminTablePagination",
   emits: ["setPage", "setPageLimit", "translate"],
-  props: {
+  props: {   
     config: Object,
     settings: Object,
+    ui: Object,
   },
   methods: {
     setPage(page) {
@@ -158,21 +167,20 @@ export default {
     user-select: none;
 
     li a {
+      background-color: var(--bs-light);
+      color: var(--bs-dark);
+
+      &.disabled {
+        opacity: 0.42;
         background-color: var(--bs-light);
-        color: var(--bs-dark);
-
-        &.disabled {
-          opacity: 0.42;
-          background-color: var(--bs-light);
-          color: var(--bs-secondary);
-        }
-
-        &.current {
-          background-color: var(--bs-secondary);
-          color: var(--bs-light);
-        }
+        color: var(--bs-secondary);
       }
 
+      &.current {
+        background-color: var(--bs-secondary);
+        color: var(--bs-light);
+      }
+    }
   }
 
   [data-bs-theme="light"] {

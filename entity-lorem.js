@@ -1,48 +1,57 @@
 export default {
+	
+	// set the primary key field
 	pkey: 'id',
+
+	// Bootstrap theme 
+	theme: 'dark',
+
+	__class: 'mt-2 p-2 rounded',
+	init: function (settings) {
+
+		console.log(settings);
+
+	},
 	api: {
 		url: 'https://dummyjson.com/products',
+		auth: {
+			type: 'Bearer',
+			token: 'token-123456789',
+		},
 		options: {
 			mode: "cors",
 		},
 		input: {
+			// when item is null -> item = response.data
+			// when item is a string -> item = response.data[input.item]
+			// when item is a function -> item = input.item(data, response)
 			item: null,
-			items: 'products'
+
+			// when items is null -> items = response.data
+			// when items is a string -> items = response.data[input.items]
+			// when items is a function -> items = input.items(data, response)
+			items: 'products',
+
+			// when total is a string -> total = response.data[input.total]
+			total: 'count',
+
+			// when total is a function -> total = input.total(data, response)
+			total: (data, response) => {
+				return data.total || data.count || data.all || response.headers.get('X-Total');
+			}
+
 		},
-		auth: {
-			type: 'Bearer',
-			token: 'token-erhee',
-		}
 	},
 	events: {
-		beforeItemsLoad: function (query) {
-
-			// console.log(query);			
-			
-			if (query.page) {
-				query.skip =  (query.page - 1) * query.limit;				
-			} else {
-				query.skip = 0;
-			}	
-
-			delete query.page;
-
-		},
-		afterItemsLoad: function (data, response) {						
-
-		}
-	},
-	init: function (settings) {
-		
-		//console.log(settings);
-
+		beforeItemsLoad: function (query) { },
+		afterItemsLoad: function (data, response) { }
 	},
 	table: {
-		title: 'Lorem',
-		_pagination: {			
+		title: 'Dummy JSON Products',
+		pagination: {
 			limit: 5,
 			limits: [5, 10, 20, 50],
-			size: 10,			
+			size: 10,
 		},
 		columns: [
 			{
@@ -97,7 +106,7 @@ export default {
 				title: 'Tags',
 				template: function (tags, index, item, column) {
 
-					return '<span class="badge bg-info text-dark me-1">' + tags.join('</span><span class="badge bg-info text-dark me-1">') + '</span>';
+					return '<span class="badge border border-secondary text-info fw-light me-1">' + tags.join('</span><span class="badge border border-secondary text-info fw-light me-1">') + '</span>';
 
 				}
 			},

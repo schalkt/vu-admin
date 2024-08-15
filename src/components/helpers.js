@@ -1,6 +1,6 @@
 export function getValueOrFunction(object, params) {
     try {
-        
+
         if (typeof object === 'string') {
             return object;
         }
@@ -22,9 +22,7 @@ export async function getResponseJson(response) {
     }
 }
 
-export function prepareFetchOptions(method, settings) {
-
-    let api = settings.api;
+export function prepareFetchOptions(method, api, options) {
 
     if (!api.options) {
         api.options = {};
@@ -57,7 +55,31 @@ export function prepareFetchOptions(method, settings) {
     api.options.body = undefined;
     api.options.method = method;
 
+    if (options) {
+        Object.assign(api.options, options);
+    }
+
+    if (api.debug) {
+        console.log('FETCH OPTIONS', api.options);
+    }
+
     return api.options;
+
+}
+
+export function prepareFetchUrl(method, api, id, urlParams) {
+
+
+    if (urlParams.filter) {
+        urlParams.filter = JSON.stringify(urlParams.filter);
+    }
+
+    if (urlParams.order) {
+        urlParams.order = JSON.stringify(urlParams.order);
+    }
+
+    const haveParams = urlParams && Object.keys(urlParams).length;
+    return api.url + (id ? '/' + id : '') + (haveParams ? "?" + (new URLSearchParams(urlParams)).toString() : '');
 
 }
 
@@ -96,16 +118,31 @@ export function unflattenObject(data) {
     return result;
 }
 
-export function translate(key, translates) {
+export function translate(key, translates, vars, language) {
+
     if (!translates) {
         return key;
     }
 
-    if (!translates[key]) {
+    language = language ? language : document.documentElement.lang;
+
+    if (!language || !translates[language]) {
         return key;
     }
 
-    return translates[key];
+    if (!translates[language][key]) {
+        return key;
+    }
+
+    let translated = translates[language][key];
+    vars = vars || {};
+    
+    // translated = translated.replace(/{\s*(.*?)\s*}/g, (match, p1) => {
+    //     return vars[p1] ? vars[p1] : '';
+    // });    
+
+    return translated;
+
 }
 
 export function convertToCSV(array, fields, delimiter = ';') {
@@ -143,5 +180,11 @@ export function downloadCSV(csvContent, filename = 'export.csv') {
     a.click();
 
     URL.revokeObjectURL(url);
+
+}
+
+export function array_unique(array) {
+
+    return [... new Set(array)];
 
 }

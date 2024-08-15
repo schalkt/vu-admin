@@ -18,7 +18,7 @@
           </h5>
 
           <div
-            v-show="ui.wait.table"
+            v-show="ui.wait.table && settings.table.title"
             class="spinner-border spinner-border-sm text-info mx-2"
             role="status"
           >
@@ -60,28 +60,40 @@
     </div>
 
     <div
-      v-if="settings.table.header"
-      class="vua-table-header"
-      :class="[settings.table.header.class]"
+      v-if="settings.table.control"
+      class="vua-table-control"
+      :class="[settings.table.control.class]"
     >
       <span
-        v-for="button in settings.table.header.buttons"
+        v-for="button in settings.table.control.buttons"
         :key="button.action"
       >
         <button
           v-if="button.action !== 'columns' && !button.dropdowns"
           type="button"
-          :class="[button.class]"
+          :class="[
+            button.class ? button.class : getButtonClassByAction(button.action),
+          ]"
           @click="tableAction(button, items, null, $event)"
         >
-          <i :class="[button.icon]"></i>
-          ${ button.title }
+          <i
+            :class="[
+              button.icon
+                ? button.icon
+                : getButtonIconClassByAction(button.action),
+            ]"
+          ></i>              
+          ${ translate(button.title) }           
         </button>
 
         <div class="dropdown d-inline-block" v-if="button.action === 'columns'">
           <button
             type="button"
-            :class="[button.class]"
+            :class="[
+              button.class
+                ? button.class
+                : getButtonClassByAction(button.action),
+            ]"
             class="dropdown-toggle"
             data-bs-toggle="dropdown"
             data-bs-auto-close="outside"
@@ -92,7 +104,14 @@
               v-show="settings.table.columns.length > 0"
               class="mx-1"
             >
-              <i :class="[button.icon]"></i> ${ translate(button.title) }
+              <i
+                :class="[
+                  button.icon
+                    ? button.icon
+                    : getButtonIconClassByAction(button.action),
+                ]"
+              ></i>
+              ${ translate(button.title) }
               <span v-if="countHiddenColumns()">
                 ( ${ countHiddenColumns() } ${ translate('hidden') } )
               </span>
@@ -157,7 +176,7 @@
                 @click="tableAction(dropdown, items, null, $event)"
               >
                 <i class="me-2" :class="[button.icon]"></i>
-                ${ dropdown.title }
+                ${ translate(dropdown.title) }
               </span>
             </li>
           </ul>
@@ -178,13 +197,15 @@
             :style="[column.hidden ? 'display: none' : '']"
             :key="column"
             :width="column.width"
-            :class="column.class"
+            :class="[column.header ? column.header.class : '']"
           >
             <span
-              class="d-block no-select text-nowrap"
+              class="d-inline-block no-select text-nowrap"
               :class="{ 'cursor-pointer': isSortable(column) }"
               @click="sortTable(column)"
-              >${ column.title }
+              >${ (column.header && column.header.title !== undefined) ?
+              column.header.title : (column.title ? column.title :
+              translate(column.name)) }
               <span
                 class="badge p-1"
                 v-if="
@@ -215,25 +236,37 @@
               </span>
             </span>
 
-            <span v-if="column.headerbuttons">
-              <span v-for="button in column.headerbuttons" :key="button.action">
-                <button
-                  type="button"
-                  :class="[button.class]"
-                  @click="tableAction(button, items, null, $event)"
-                >
-                  <i :class="[button.icon]"></i> ${ button.title }
-                </button>
-              </span>
+            <span v-if="column.header && column.header.buttons">
+              <button
+                v-for="button in column.header.buttons"
+                :key="button.action"
+                type="button"
+                :class="[
+                  button.class
+                    ? button.class
+                    : getButtonClassByAction(button.action),
+                ]"
+                @click="tableAction(button, items, null, $event)"
+              >
+                <i
+                  :class="[
+                    button.icon
+                      ? button.icon
+                      : getButtonIconClassByAction(button.action),
+                  ]"
+                ></i>
+                ${ translate(button.title) }
+              </button>
             </span>
           </th>
         </tr>
-        <tr>
+        <tr v-if="countFilters()">
           <th
             v-for="column in settings.table.columns"
             :style="[column.hidden ? 'display: none' : '']"
             :key="column"
             :width="column.width"
+            :class="[column.filter ? column.filter.class : '']"
           >
             <div
               class="d-inline-block w-100 px-1"
@@ -254,214 +287,214 @@
             </div>
 
             <div
-              class="d-inline-block"
-              v-if="column.filter"
+              v-if="column.filter && column.filter.type == 'text'"
+              class="input-group input-group-sm my-1"
+            >
+              <input
+                type="text"
+                :class="{
+                  'text-light': column.filter.fixed,
+                  'text-warning': !column.filter.fixed,
+                }"
+                class="form-control form-control-sm text-warning"
+                v-model="column.filter.value"
+                @keyup.enter="reloadTable()"
+              />
+
+              <button
+                class="btn btn-outline-secondary"
+                v-if="column.filter.buttonx && column.filter.buttonx != false"
+                :disabled="!column.filter.value"
+                @click="
+                  column.filter.value = undefined;
+                  reloadTable();
+                "
+              >
+                <i
+                  class="bi bi-x"
+                  :class="{ 'text-warning': column.filter.value }"
+                ></i>
+              </button>
+            </div>
+
+            <div
+              v-if="column.filter && column.filter.type == 'number'"
+              class="input-group input-group-sm my-1"
+            >
+              <select
+                v-if="column.filter.operators == true"
+                v-model="column.filter.operator"
+                @change="reloadTable()"
+                class="form-select form-select-sm"
+              >
+                <option value="=">${ translate('=') }</option>
+                <option value=">">${ translate('>') }</option>
+                <option value=">=">${ translate('>=') }</option>
+                <option value="<">${ translate('<') }</option>
+                <option value="<=">${ translate('<=') }</option>
+              </select>
+
+              <select
+                v-if="
+                  column.filter.operators && column.filter.operators.length > 0
+                "
+                v-model="column.filter.operator"
+                @change="reloadTable()"
+                class="form-select form-select-sm"
+              >
+                <option
+                  v-for="operator in column.filter.operators"
+                  :key="operator"
+                  :value="operator.value"
+                >
+                  ${ operator.label }
+                </option>
+              </select>
+
+              <input
+                type="number"
+                class="form-control text-warning"
+                v-model="column.filter.value"
+                :disabled="column.filter.fixed"
+                :min="column.filter.min"
+                :max="column.filter.max"
+                :class="{
+                  'text-light': column.filter.fixed,
+                  'text-warning': !column.filter.fixed,
+                }"
+                @change="reloadTable()"
+                @keyup.enter="reloadTable()"
+              />
+
+              <button
+                v-if="column.filter.buttonx && column.filter.buttonx != false"
+                class="btn btn-outline-secondary"
+                :disabled="!column.filter.value"
+                @click="
+                  column.filter.value = undefined;
+                  reloadTable();
+                "
+              >
+                <i
+                  class="bi bi-x"
+                  :class="{ 'text-warning': column.filter.value }"
+                ></i>
+              </button>
+            </div>
+
+            <div v-if="column.filter && column.filter.type == 'select'">
+              <select
+                v-model="column.filter.value"
+                @change="reloadTable()"
+                class="form-select form-select-sm my-1 text-warning"
+              >
+                <option
+                  v-for="option in column.filter.options"
+                  :key="option"
+                  :value="option.value"
+                >
+                  ${ translate(option.label) }
+                </option>
+              </select>
+            </div>
+
+            <div
+              v-if="
+                column.filter &&
+                (column.filter.type == 'datetime-local' ||
+                  column.filter.type == 'date')
+              "
+              class="input-group input-group-sm my-1"
+            >
+              <select
+                v-if="column.filter.operators == true"
+                v-model="column.filter.operator"
+                @change="reloadTable()"
+                class="form-select form-select-sm"
+              >
+                <option value="=">${ translate('=') }</option>
+                <option value=">">${ translate('>') }</option>
+                <option value=">=">${ translate('>=') }</option>
+                <option value="<">${ translate('<') }</option>
+                <option value="<=">${ translate('<=') }</option>
+              </select>
+
+              <select
+                v-if="
+                  column.filter.operators && column.filter.operators.length > 0
+                "
+                v-model="column.filter.operator"
+                @change="reloadTable()"
+                class="form-select form-select-sm"
+              >
+                <option
+                  v-for="operator in column.filter.operators"
+                  :key="operator"
+                  :value="operator.value"
+                >
+                  ${ translate(operator.label) }
+                </option>
+              </select>
+
+              <input
+                :type="column.filter.type"
+                :class="{
+                  'text-light': column.filter.fixed,
+                  'text-warning': !column.filter.fixed,
+                }"
+                class="form-control form-control-sm text-warning"
+                v-model="column.filter.value"
+                @change="reloadTable()"
+                @keyup.enter="reloadTable()"
+              />
+
+              <button
+                class="btn btn-outline-secondary"
+                :disabled="!column.filter.value"
+                @click="
+                  column.filter.value = undefined;
+                  reloadTable();
+                "
+              >
+                <i
+                  class="bi bi-x"
+                  :class="{ 'text-warning': column.filter.value }"
+                ></i>
+              </button>
+            </div>
+
+            <span
+              v-if="column.filter && column.filter.buttons"
               :class="
-                getValueOrFunction(column.filter.class, {
+                getValueOrFunction(column.filter.buttons, {
                   column: column,
                 })
               "
             >
-              <div
-                v-if="column.filter.type == 'text'"
-                class="input-group input-group-sm my-1"
-              >
-                <input
-                  type="text"
-                  :class="{
-                    'text-light': column.filter.fixed,
-                    'text-warning': !column.filter.fixed,
-                  }"
-                  class="form-control form-control-sm text-warning"
-                  v-model="column.filter.value"
-                  @keyup.enter="reloadTable()"
-                />
-
-                <button
-                  class="btn btn-outline-secondary"
-                  v-if="column.filter.buttonx && column.filter.buttonx != false"
-                  :disabled="!column.filter.value"
-                  @click="
-                    column.filter.value = undefined;
-                    reloadTable();
-                  "
-                >
-                  <i
-                    class="bi bi-x"
-                    :class="{ 'text-warning': column.filter.value }"
-                  ></i>
-                </button>
-              </div>
-
-              <div
-                v-if="column.filter.type == 'number'"
-                class="input-group input-group-sm my-1"
-              >
-                <select
-                  v-if="column.filter.operators == true"
-                  v-model="column.filter.operator"
-                  @change="reloadTable()"
-                  class="form-select form-select-sm"
-                >
-                  <option value="=">${ translate('=') }</option>
-                  <option value=">">${ translate('>') }</option>
-                  <option value=">=">${ translate('>=') }</option>
-                  <option value="<">${ translate('<') }</option>
-                  <option value="<=">${ translate('<=') }</option>
-                </select>
-
-                <select
-                  v-if="
-                    column.filter.operators &&
-                    column.filter.operators.length > 0
-                  "
-                  v-model="column.filter.operator"
-                  @change="reloadTable()"
-                  class="form-select form-select-sm"
-                >
-                  <option
-                    v-for="operator in column.filter.operators"
-                    :key="operator"
-                    :value="operator.value"
-                  >
-                    ${ operator.label }
-                  </option>
-                </select>
-
-                <input
-                  type="number"
-                  class="form-control text-warning"
-                  v-model="column.filter.value"
-                  :disabled="column.filter.fixed"
-                  :min="column.filter.min"
-                  :max="column.filter.max"
-                  :class="{
-                    'text-light': column.filter.fixed,
-                    'text-warning': !column.filter.fixed,
-                  }"
-                  @change="reloadTable()"
-                  @keyup.enter="reloadTable()"
-                />
-
-                <button
-                  v-if="column.filter.buttonx && column.filter.buttonx != false"
-                  class="btn btn-outline-secondary"
-                  :disabled="!column.filter.value"
-                  @click="
-                    column.filter.value = undefined;
-                    reloadTable();
-                  "
-                >
-                  <i
-                    class="bi bi-x"
-                    :class="{ 'text-warning': column.filter.value }"
-                  ></i>
-                </button>
-              </div>
-
-              <div v-if="column.filter.type == 'select'">
-                <select
-                  v-model="column.filter.value"
-                  @change="reloadTable()"
-                  class="form-select form-select-sm my-1 text-warning"
-                >
-                  <option
-                    v-for="option in column.filter.options"
-                    :key="option"
-                    :value="option.value"
-                  >
-                    ${ option.label }
-                  </option>
-                </select>
-              </div>
-
-              <div
-                v-if="
-                  column.filter.type == 'datetime-local' ||
-                  column.filter.type == 'date'
-                "
-                class="input-group input-group-sm my-1"
-              >
-                <select
-                  v-if="column.filter.operators == true"
-                  v-model="column.filter.operator"
-                  @change="reloadTable()"
-                  class="form-select form-select-sm"
-                >
-                  <option value="=">${ translate('=') }</option>
-                  <option value=">">${ translate('>') }</option>
-                  <option value=">=">${ translate('>=') }</option>
-                  <option value="<">${ translate('<') }</option>
-                  <option value="<=">${ translate('<=') }</option>
-                </select>
-
-                <select
-                  v-if="
-                    column.filter.operators &&
-                    column.filter.operators.length > 0
-                  "
-                  v-model="column.filter.operator"
-                  @change="reloadTable()"
-                  class="form-select form-select-sm"
-                >
-                  <option
-                    v-for="operator in column.filter.operators"
-                    :key="operator"
-                    :value="operator.value"
-                  >
-                    ${ translate(operator.label) }
-                  </option>
-                </select>
-
-                <input
-                  :type="column.filter.type"
-                  :class="{
-                    'text-light': column.filter.fixed,
-                    'text-warning': !column.filter.fixed,
-                  }"
-                  class="form-control form-control-sm text-warning"
-                  v-model="column.filter.value"
-                  @change="reloadTable()"
-                  @keyup.enter="reloadTable()"
-                />
-
-                <button
-                  class="btn btn-outline-secondary"
-                  :disabled="!column.filter.value"
-                  @click="
-                    column.filter.value = undefined;
-                    reloadTable();
-                  "
-                >
-                  <i
-                    class="bi bi-x"
-                    :class="{ 'text-warning': column.filter.value }"
-                  ></i>
-                </button>
-              </div>
-
               <span
-                v-if="column.filter.buttons"
-                :class="
-                  getValueOrFunction(column.filter.buttons, {
-                    column: column,
-                  })
-                "
+                v-for="button in column.filter.buttons"
+                :key="button.action"
               >
-                <span
-                  v-for="button in column.filter.buttons"
-                  :key="button.action"
+                <button
+                  type="button"
+                  :class="[
+                    button.class
+                      ? button.class
+                      : getButtonClassByAction(button.action),
+                  ]"
+                  @click="tableAction(button, items, null, $event)"
                 >
-                  <button
-                    type="button"
-                    :class="[button.class]"
-                    @click="tableAction(button, items, null, $event)"
-                  >
-                    <i :class="[button.icon]"></i> ${ button.title }
-                  </button>
-                </span>
+                  <i
+                    :class="[
+                      button.icon
+                        ? button.icon
+                        : getButtonIconClassByAction(button.action),
+                    ]"
+                  ></i>
+                  ${ translate(button.title) }
+                </button>
               </span>
-            </div>
+            </span>
           </th>
         </tr>
       </thead>
@@ -472,7 +505,7 @@
               v-for="column in settings.table.columns"
               :style="[column.hidden ? 'display: none' : '']"
               :key="column.name"
-              :data-label="column.title"
+              :data-label="column.title ? column.title : translate(column.name)"
               :width="column.width"
               :class="
                 getValueOrFunction(column.class, {
@@ -547,7 +580,7 @@
                     :value="option.value"
                     :key="option"
                   >
-                    ${ option.label }
+                    ${ translate(option.label) }
                   </option>
                 </select>
 
@@ -563,14 +596,25 @@
                 ></span>
               </div>
 
-              <span v-if="column.rowbuttons">
-                <span v-for="button in column.rowbuttons" :key="button.action">
+              <span v-if="column.buttons">
+                <span v-for="button in column.buttons" :key="button.action">
                   <button
                     type="button"
-                    :class="[button.class]"
+                    :class="[
+                      button.class
+                        ? button.class
+                        : getButtonClassByAction(button.action),
+                    ]"
                     @click="tableAction(button, item, index, $event)"
                   >
-                    <i v-if="button.icon" :class="[button.icon]"></i>
+                    <i
+                      v-if="button.icon !== null"
+                      :class="[
+                        button.icon
+                          ? button.icon
+                          : getButtonIconClassByAction(button.action),
+                      ]"
+                    ></i>
 
                     <span
                       v-if="button.template"
@@ -578,7 +622,7 @@
                         tableCellTemplate(button.template, item, index, column)
                       "
                     ></span>
-                    <span v-else>${ button.title }</span>
+                    <span v-else>${ translate(button.title) }</span>
                   </button>
                 </span>
               </span>
@@ -627,7 +671,7 @@
                         :value="option.value"
                         :key="option"
                       >
-                        ${ option.label }
+                        ${ translate(option.label) }
                       </option>
                     </select>
                   </div>
@@ -660,7 +704,7 @@
             </div>
 
             <div
-              v-if="column.input && column.input.bulkactions"
+              v-if="column.input && column.bulk && column.bulk.enabled"
               class="input-group input-group-sm my-1"
             >
               <input
@@ -694,7 +738,7 @@
                   :value="option.value"
                   :key="option"
                 >
-                  ${ option.label }
+                  ${ translate(option.label) }                  
                 </option>
               </select>
 
@@ -714,7 +758,11 @@
               <span v-for="button in column.bulkbuttons" :key="button.action">
                 <button
                   type="button"
-                  :class="[button.class]"
+                  :class="[
+                    button.class
+                      ? button.class
+                      : getButtonClassByAction(button.action),
+                  ]"
                   :disabled="
                     button.action === 'save' && !this.bulkinputs.length
                   "
@@ -722,7 +770,14 @@
                     tableBulkAction(button.action, bulkitem, column, $event)
                   "
                 >
-                  <i v-if="button.icon" :class="[button.icon]"></i>
+                  <i
+                    v-if="button.icon !== null"
+                    :class="[
+                      button.icon
+                        ? button.icon
+                        : getButtonIconClassByAction(button.action),
+                    ]"
+                  ></i>
 
                   <span
                     v-if="button.template"
@@ -730,7 +785,9 @@
                       tableCellTemplate(button.template, bulkitem, null, column)
                     "
                   ></span>
-                  <span v-else>${ button.title }</span>
+                  <span v-else>
+                    ${ translate(button.title) }
+                  </span>
                 </button>
               </span>
             </span>
@@ -742,6 +799,7 @@
     <VuAdminTablePagination
       :settings="settings"
       :config="config"
+      :ui="ui"
       @setPage="setPage"
       @setPageLimit="setPageLimit"
       @translate="translate"
@@ -984,8 +1042,10 @@
 <script>
 import { Modal } from "bootstrap";
 import {
+  array_unique,
   getValueOrFunction,
   getResponseJson,
+  prepareFetchUrl,
   prepareFetchOptions,
   flattenArrayObjects,
   flattenObject,
@@ -1021,7 +1081,7 @@ export default {
           skip: 0,
           limit: 10,
           limits: [10, 20, 50, 100],
-          size: 10,
+          size: 5,
           items: null,
           pages: null,
           numbers: [],
@@ -1079,6 +1139,16 @@ export default {
     if (!this.settings.api) {
       this.settings.api = {};
     }
+
+    this.settings.api = Object.assign(
+      {
+        url: null,
+        input: {},
+        output: {},
+        options: {},
+      },
+      this.settings.api
+    );
 
     if (!this.settings.table.api) {
       this.settings.table.api = {};
@@ -1149,6 +1219,12 @@ export default {
       this.ui.block.form = false;
     },
 
+    countFilters() {
+      return this.settings.table.columns.filter(
+        (column) => column.filter && !column.hidden
+      ).length;
+    },
+
     resetTable() {
       if (this.settings.table.pagination) {
         this.config.pagination.limit = this.settings.table.pagination.limit;
@@ -1166,8 +1242,13 @@ export default {
       for (let column of this.settings.table.columns) {
         if (column.filter) {
           column.filter.value =
-            column.filter.default !== undefined
-              ? column.filter.default
+            column.filter.default_value !== undefined
+              ? column.filter.default_value
+              : undefined;
+
+          column.filter.operator =
+            column.filter.default_operator !== undefined
+              ? column.filter.default_operator
               : undefined;
         }
       }
@@ -1181,6 +1262,8 @@ export default {
     resetOrder(reload) {
       if (this.settings.table.order) {
         this.config.order = Object.assign({}, this.settings.table.order);
+      } else {
+        this.config.order = {};
       }
 
       if (reload) {
@@ -1318,8 +1401,52 @@ export default {
       return getValueOrFunction(object, params);
     },
 
+    getButtonClassByAction(action) {
+      switch (action) {
+        case "resetorders":
+        case "resetfilters":
+          return "btn btn-sm btn-outline-warning text-nowrap mx-1";
+        case "resetdetails":
+          return "btn btn-sm btn-outline-warning text-nowrap mx-1";
+        case "edit":
+          return "btn btn-sm btn-primary text-nowrap mx-1";
+        case "save":
+          return "btn btn-sm btn-primary text-nowrap mx-1";
+        case "delete":
+          return "btn btn-sm btn-danger text-nowrap mx-1";
+        case "details":
+          return "btn btn-sm btn-outline-secondary text-light text-nowrap mx-1";
+        case "columns":
+          return "btn btn-sm btn-outline-dark text-nowrap mx-1";
+      }
+    },
+
+    getButtonIconClassByAction(action) {
+      switch (action) {
+        case "resetorders":
+        case "resetfilters":
+          return "bi bi-x";
+        case "resetdetails":
+          return "bi bi-chevron-compact-up";
+        case "edit":
+          return "bi bi-pencil-square";
+        case "save":
+          return "bi bi-save";
+        case "delete":
+          return "bi bi-trash";
+        case "details":
+          return "bi bi-chevron-compact-down";
+        case "columns":
+          return "bi bi-table";
+      }
+    },
+
     tableCellValue(path, item) {
       try {
+        if (path === undefined || item === undefined) {
+          return;
+        }
+
         if (item[path] !== undefined) {
           return item[path];
         }
@@ -1545,11 +1672,9 @@ export default {
 
         this.tableWait(true);
 
-        let filter = this.getFiltersForFetch();
-        let relations = this.getRelationsForFetch();
-        let order = this.getOrdersForFetch();
-
         urlParams = urlParams ? urlParams : {};
+        urlParams.filter = this.getFiltersForFetch();
+        urlParams.order = this.getOrdersForFetch();      
 
         if (
           this.config.pagination.page !== null &&
@@ -1565,29 +1690,18 @@ export default {
           urlParams.limit = this.config.pagination.limit;
         }
 
-        urlParams.filter = filter;
-        urlParams.order = order;
+        if (urlParams.page && urlParams.limit) {
+          urlParams.skip = (urlParams.page - 1) * urlParams.limit;
+        }
 
         if (this.settings.events && this.settings.events.beforeItemsLoad) {
           this.settings.events.beforeItemsLoad(urlParams, this.settings);
         }
 
-        if (urlParams.filter) {
-          urlParams.filter = JSON.stringify(urlParams.filter);
-        }
-
-        if (urlParams.order) {
-          urlParams.order = JSON.stringify(urlParams.order);
-        }
-
-        const params = new URLSearchParams(urlParams);
-
-        let options = prepareFetchOptions("GET", this.settings);
-        let url = this.settings.table.api.url + "?" + params.toString();
-
-        const response = await fetch(url, options);
-
-        // console.log(response);
+        const response = await fetch(
+          prepareFetchUrl("GET", this.settings.table.api, null, urlParams),
+          prepareFetchOptions("GET", this.settings.api)
+        );
 
         if (response.status !== 200) {
           throw new Error(
@@ -1608,20 +1722,32 @@ export default {
           this.settings.events.afterItemsLoad(data, response);
         }
 
-        let items = this.settings.table.api.input.items
-          ? data[this.settings.table.api.input.items]
-          : data;
+        let items;
+
+        if (this.settings.table.api.input.items) {
+          items =
+            typeof this.settings.table.api.input.items === "string"
+              ? data[this.settings.table.api.input.items]
+              : this.settings.table.api.input.items(data, response);
+        } else {
+          items = data;
+        }
 
         //console.log(items);
 
-        if (data.total) {
+        if (this.settings.table.api.input.total) {
+          this.config.pagination.total =
+            typeof this.settings.table.api.input.total === "string"
+              ? data[this.settings.table.api.input.total]
+              : this.settings.table.api.input.total(data, response);
+        } else if (data.total) {
           this.config.pagination.total = data.total;
-          // this.config.pagination.pages = data.config.pagination.pages;
-          // this.config.pagination.page = data.config.pagination.page;
         }
 
         this.config.pagination.items = items.length;
         this.calcPage();
+
+        let relations = this.getRelationsForFetch();             
 
         // load relations
         for (let key of Object.keys(relations)) {
@@ -1634,6 +1760,8 @@ export default {
               relations[key].ids.push(local);
             }
           }
+
+          relations[key].ids = array_unique(relations[key].ids);
 
           await this.fetchRelation(relations[key], items);
         }
@@ -1681,16 +1809,12 @@ export default {
           searchParams.filter = JSON.stringify(filter);
         }
 
-        // this.errors = null;
+        let settings = window.VuEntities[relation.entity];
 
-        const params = new URLSearchParams(searchParams);
-
-        // console.log(this.settings.api.url + '/' + relation.entity + '?' + params.toString());
-        // return;
-        let options = prepareFetchOptions("GET", this.settings);
-        let url = this.settings.table.api.url + "?" + params.toString();
-
-        const response = await fetch(url, options);
+        const response = await fetch(
+          prepareFetchUrl("GET", settings.api, null, searchParams),
+          prepareFetchOptions("GET", settings.api)
+        );
 
         if (response.status !== 200) {
           throw new Error(
@@ -1706,16 +1830,25 @@ export default {
           return;
         }
 
+        if (settings.api.input.items) {
+          relation.items =
+            typeof settings.api.input.items === "string"
+              ? data[settings.api.input.items]
+              : settings.api.input.items(data, response);
+        } else {
+          relation.items = data;
+        }
+
         if (items && items[0]) {
           for (let item of items) {
             if (item[relation.local]) {
-              item[relation.entity] = data.items.find((current, index, arr) => {
-                return current[relation.foreign] === item[relation.local];
-              });
+              item[relation.entity] = relation.items.find(
+                (current, index, arr) => {
+                  return current[relation.foreign] === item[relation.local];
+                }
+              );
             }
           }
-        } else {
-          relation.items = data.items;
         }
       } catch (error) {
         console.error(error.message);
@@ -1737,10 +1870,14 @@ export default {
 
         this.formWait(true);
 
-        let options = prepareFetchOptions("GET", this.settings);
-        let url = this.settings.form.api.url + "/" + item[this.settings.pkey];
-
-        const response = await fetch(url, options);
+        const response = await fetch(
+          prepareFetchUrl(
+            "GET",
+            this.settings.form.api,
+            item[this.settings.pkey]
+          ),
+          prepareFetchOptions("GET", this.settings.api)
+        );
 
         if (response.status !== 200) {
           throw new Error(
@@ -1805,19 +1942,15 @@ export default {
 
         this.formWait(true);
 
-        urlParams = urlParams ? urlParams : {};
-
-        const params = new URLSearchParams(urlParams);
-
-        let options = prepareFetchOptions("DELETE", this.settings);
-        let url =
-          this.settings.form.api.url +
-          "/" +
-          item[this.settings.pkey] +
-          "?" +
-          params.toString();
-
-        const response = await fetch(url, options);
+        const response = await fetch(
+          prepareFetchUrl(
+            "DELETE",
+            this.settings.form.api,
+            item[this.settings.pkey],
+            urlParams
+          ),
+          prepareFetchOptions("DELETE", this.settings.api)
+        );
 
         if (response.status !== 200) {
           throw new Error(
@@ -1853,14 +1986,14 @@ export default {
 
         this.tableWait(true);
 
-        let options = prepareFetchOptions("DELETE", this.settings);
-        let url = this.settings.table.api.url;
-
-        options.body = JSON.stringify({
-          ids: ids,
-        });
-
-        const response = await fetch(url, options);
+        const response = await fetch(
+          prepareFetchUrl("DELETE", this.settings.table.api),
+          prepareFetchOptions("DELETE", this.settings.api, {
+            body: JSON.stringify({
+              ids: ids,
+            }),
+          })
+        );
 
         if (response.status !== 200) {
           throw new Error(
@@ -1955,11 +2088,7 @@ export default {
         // }));
 
         let primaryId = item[this.settings.pkey];
-
-        let options = prepareFetchOptions(
-          primaryId ? "PUT" : "POST",
-          this.settings
-        );
+        let body;
 
         this.convertsOut([item]);
 
@@ -1968,22 +2097,25 @@ export default {
         }
 
         if (!this.settings.form.api.output.item) {
-          options.body = JSON.stringify(item);
+          body = JSON.stringify(item);
+        } else if (typeof this.settings.form.api.output.item === "string") {
+          let output = {};
+          output[this.settings.form.api.output.item] = item;
+          body = JSON.stringify(output);
         } else {
-          options.body = JSON.stringify({
-            item: item,
-          });
+          body = JSON.stringify(
+            this.settings.form.api.output.item(item, options)
+          );
         }
 
-        const params = new URLSearchParams(urlParams);
-        let paramsString = params.toString();
+        const method = primaryId ? "PUT" : "POST";
 
-        let url =
-          this.settings.form.api.url +
-          (primaryId ? "/" + primaryId : "") +
-          (paramsString ? "?" + paramsString : "");
-
-        const response = await fetch(url, options).catch((err) => {
+        const response = await fetch(
+          prepareFetchUrl(method, this.settings.form.api, primaryId, urlParams),
+          prepareFetchOptions(method, this.settings.api, {
+            body: body,
+          })
+        ).catch((err) => {
           // console.error(err.message);
           this.addMessage(err.message, 3500, "danger");
         });
@@ -2054,18 +2186,15 @@ export default {
         // unflatten nem kell a Mongo miatt, de mi van ha a backend mysql? akkor a json úgy is egy mező
         //item = unflattenObject(item);
 
-        // console.log(item);
-
-        let options = prepareFetchOptions("PUT", this.settings);
-
-        options.body = JSON.stringify({
-          item: item,
-          ids: this.selected,
-        });
-
-        let url = this.settings.table.api.url;
-
-        const response = await fetch(url, options).catch((err) => {
+        const response = await fetch(
+          prepareFetchUrl("PUT", this.settings.table.api),
+          prepareFetchOptions("PUT", this.settings.table.api, {
+            body: JSON.stringify({
+              item: item,
+              ids: this.selected,
+            }),
+          })
+        ).catch((err) => {
           console.error(err.message);
           this.addMessage(err.message, 3500, "danger", err);
         });
@@ -2228,14 +2357,10 @@ export default {
           urlParams.order = JSON.stringify(urlParams.order);
         }
 
-        const params = new URLSearchParams(urlParams);
-
-        let options = prepareFetchOptions("GET", this.settings);
-        let url = this.settings.table.api.url + "?" + params.toString();
-
-        const response = await fetch(url, options);
-
-        // console.log(response);
+        const response = await fetch(
+          prepareFetchUrl("GET", this.settings.table.api, null, urlParams),
+          prepareFetchOptions("GET", this.settings.table.api)
+        );
 
         if (response.status !== 200) {
           throw new Error(
@@ -2370,8 +2495,8 @@ export default {
       }, this.message.timeout);
     },
 
-    translate(key) {
-      return translate(key, this.settings.translate);
+    translate(key, vars, language) {
+      return translate(key, this.settings.translate, vars, language);
     },
 
     convertsIn(items) {
@@ -2468,7 +2593,7 @@ export default {
     .vua-table-title {
       color: var(--bs-dark);
     }
-    .vua-table-header {
+    .vua-table-control {
       user-select: none;
       background-color: var(--bs-light);
       color: var(--bs-dark);
@@ -2489,7 +2614,7 @@ export default {
     .vua-table-title {
       color: var(--bs-light);
     }
-    .vua-table-header {
+    .vua-table-control {
       user-select: none;
       background-color: var(--bs-secondary);
       color: var(--bs-light);

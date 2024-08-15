@@ -6,9 +6,13 @@ window.VuEntities = {
 			options: {
 				mode: "no-cors",
 				cache: "no-cache",
+				headers: {
+					'X-Api-Key': 'key123'
+				},
 			},
 			query: {
 				name: 'silver',
+
 			}
 		},
 		table: {

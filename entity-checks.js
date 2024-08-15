@@ -13,7 +13,8 @@ const api = {
 	},
 	input: {
 		item: 'item',
-		items: 'items'
+		items: 'items',
+		total: 'count'
 	},
 	output: {
 		item: 'item',
@@ -34,19 +35,9 @@ const api = {
 };
 
 const translate = {
-	'Columns': 'Oszlopok',
-	'all': 'összesen',
-	'page': 'oldal',
-	'row': 'sor',
-	'hidden': 'rejtett',
-	'Visible all': 'Mind látható',
-	'Hidden all': 'Mind rejtett',
-	// '=': 'Egyenlő',
-	// '>': 'Nagyobb',
-	// '>=': 'Nagyobb vagy egyenlő',
-	// '<': 'Kisebb',
-	// '<=': 'Kisebb vagy egyenlő',
-	'Are you sure you want to delete all selected items?': 'Biztos hogy törölni akarod az összes kiválasztott elemet?'
+	hu: {
+		'Reload': 'Frissítés {var1}',
+	}
 };
 
 const methods = {
@@ -126,7 +117,7 @@ const table = {
 		limits: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000],
 	},
 	exports: exports,
-	header: {
+	control: {
 		class: 'text-center border rounded mt-2',
 		buttons: [
 			{
@@ -137,7 +128,7 @@ const table = {
 			},
 			{
 				action: 'reload',
-				title: 'Újratöltés',
+				title: 'Reload',
 				class: 'btn btn-sm btn-outline-dark m-1',
 				icon: 'bi bi-arrow-clockwise',
 			},
@@ -157,7 +148,7 @@ const table = {
 				icon: 'bi bi-envelope',
 			},
 			{
-				title: 'Exportálás',
+				title: 'Export',
 				class: 'btn btn-sm btn-primary m-1',
 				icon: 'bi bi-download',
 				dropdowns: [{
@@ -214,17 +205,17 @@ const table = {
 		{
 			name: 'year',
 			title: 'Év',
-			width: '10%',
+			width: '7%',
 			filter: {
 				type: 'number',
-				class: 'd-flex align-items-center justify-content-center',
-				default: 2024,
+				// class: 'd-flex align-items-center justify-content-center',								
 				min: 1990,
 				max: 2030,
-				operator: '=',
+				default_value: 2024,
+				default_operator: '=',
 				operators: false,
-				buttonx: false,
-				fixed: true,				
+				_buttonx: true,
+				fixed: true,
 				// operators: [{
 				// 	label: '=',
 				// 	value: '='
@@ -237,19 +228,18 @@ const table = {
 				// 	label: '<',
 				// 	value: '<'
 				// }]
-
-			}
+			},
 		},
 		{
 			name: 'month',
 			title: 'Hónap',
-			width: '10%',
+			width: '12%',
 			filter: {
 				type: 'number',
-				default: 7,
 				min: 1,
 				max: 12,
-				operator: '>=',
+				default_operator: '>=',
+				default_value: 7,
 				operators: true,
 				buttonx: false,
 				// operators: [{
@@ -269,6 +259,7 @@ const table = {
 		{
 			name: 'status',
 			title: 'Státusz',
+			width: '8%',
 			template: function (status) {
 
 				let map = {
@@ -285,19 +276,19 @@ const table = {
 				options: [
 					{
 						value: undefined,
-						label: 'Mind'
+						label: 'All'
 					},
 					{
 						value: 0,
-						label: 'Új'
+						label: 'New'
 					},
 					{
 						value: 1,
-						label: 'Aktív'
+						label: 'Active'
 					},
 					{
 						value: 9,
-						label: 'Törölt'
+						label: 'Deleted'
 					}
 				]
 			}
@@ -307,33 +298,37 @@ const table = {
 			title: 'Adózás',
 			filter: {
 				type: 'text',
-				operator: '%'
+				default_operator: '%'
 			},
 			input: {
 				type: 'text',
-				bulkactions: true,
 				autosave: true,
 				onchange: function (value, column, item) {
 					// console.log(value, column, item);
 				}
 			},
+			bulk: {
+				enabled: true,
+			}
 		},
 		{
 			name: 'client.name',
 			title: 'Ügyfél',
 			filter: {
 				type: 'text',
-				default: 'sch',
-				operator: '%'
+				default_value: 'sch',
+				default_operator: '%'
 			},
 			input: {
 				type: 'text',
-				bulkactions: true,
 				autosave: true,
 				onchange: function (value, column, item) {
 					// console.log(value, column, item);
 				}
 			},
+			bulk: {
+				enabled: true,
+			}
 		},
 		{
 			name: 'states.general.repi_konyvelese.value',
@@ -383,12 +378,13 @@ const table = {
 						value: 1.0,
 					}
 				],
-				bulkactions: true,
 				autosave: true,
 				onchange: function (value, column, item) {
 					console.log(value, column, item);
 				}
-
+			},
+			bulk: {
+				enabled: true,
 			}
 		},
 		{
@@ -417,83 +413,64 @@ const table = {
 			},
 			input: {
 				type: 'datetime-local',
-				bulkactions: true,
 				autosave: true,
 				onchange: function (value, column, item) {
 					console.log(value, column, item);
 				}
-
-			}
+			},
+			bulk: {
+				enabled: true,
+			},
 		},
 		{
 			name: '#buttons',
-			title: null,
+			title: 'Gombok',
+			header: {
+				title: null,
+				class: 'text-end text-nowrap',
+				buttons: [
+					{
+						action: 'resetorders',
+						class: 'btn btn-sm btn-secondary bg-dark text-warning m-1',
+					},
+				],
+			},
 			sortable: false,
 			width: '10%',
 			class: 'text-end text-nowrap',
 			filter: {
-				class: 'text-end text-nowrap w-100',
+				class: 'text-end text-nowrap',
 				buttons: [
 					{
 						action: 'resetdetails',
-						xtitle: 'Mind becsuk',
 						class: 'btn btn-sm btn-secondary bg-dark text-warning m-1',
-						icon: 'bi bi-chevron-compact-up',
 					},
 					{
 						action: 'resetfilters',
-						// title: 'Alapértelmezés',
 						class: 'btn btn-sm btn-secondary bg-dark text-warning m-1',
-						icon: 'bi bi-x',
 					},
 				],
 			},
-			headerbuttons: [
-				{
-					action: 'resetorders',
-					// title: 'Alapértelmezés',
-					class: 'btn btn-sm btn-secondary bg-dark text-warning m-1',
-					icon: 'bi bi-x',
-				},
-			],			
-			rowbuttons: [
+			buttons: [
 				{
 					action: 'details',
-					title: '',
-					class: 'btn btn-sm ms-1 btn-outline-secondary text-light m-1',
-					icon: 'bi bi-chevron-compact-down',
 				},
 				{
 					action: 'edit',
-					title: '',
-					class: 'btn btn-sm btn-secondary m-1',
-					icon: 'bi bi-pencil-square',
 				},
 				{
 					action: 'delete',
-					title: '',
-					class: 'btn btn-sm btn-danger m-1',
-					icon: 'bi bi-trash',
 				},
 				{
 					action: 'save',
-					title: '',
-					class: 'btn btn-sm btn-primary m-1',
-					icon: 'bi bi-save',
 				},
 			],
 			bulkbuttons: [
 				{
 					action: 'delete',
-					title: '',
-					class: 'btn btn-sm btn-danger m-1',
-					icon: 'bi bi-trash',
 				},
 				{
 					action: 'save',
-					title: '',
-					class: 'btn btn-sm btn-primary m-1',
-					icon: 'bi bi-save',
 				},
 			],
 		},

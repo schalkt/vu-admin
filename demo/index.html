@@ -26,6 +26,11 @@
   <script src="./../dist/vu-admin.umd.js"></script>
   <script>
 
+    VuAdmin.VuAdmin.init({
+      translate: {},
+      entities: {}
+    });
+
     const app = Vue.createApp();
     app.component('vu-admin', VuAdmin.VuAdmin);
     app.mount('#app');

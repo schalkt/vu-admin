@@ -265,6 +265,13 @@ export default VuAdminFormGroup;
 
 <style lang="scss" scoped>
 .vu-admin {
+
+form {
+	.form-control {
+		font-weight: 500;
+	}
+}
+
   [data-bs-theme="light"] {
   }
 

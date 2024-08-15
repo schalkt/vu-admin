@@ -1,154 +1,134 @@
 export default {
-	pkey: 'id',	
+	pkey: 'id',
 	api: {
 		url: 'http://supercms.vi/szerk/api/post',
+		options: {
+			mode: "cors",
+			cache: "no-cache"
+		},
+		auth: {
+			type: 'Basic',
+			user: 'editor',
+			password: 'editor'
+		},
 		input: {
 			item: 'item',
 			items: 'items'
 		}
 	},
-	translate: {
-		'First' : 'Első',
-		'Prev': 'Előző',
-		'Next': 'Következő',
-		'Last': 'Utolsó',
-		'Columns': 'Oszlopok',
-		'all': 'összesen',
-		'page': 'oldal',
-		'Visible all': 'Mind látható',
-		'Hidden all': 'Mind rejtett',
-		'row': 'sor',
-		'=': 'Egyenlő',
-		'>': 'Nagyobb mint',
-		'<': 'Kisebb mint'
+	relations: {
+		user: {
+			entity: 'user',
+			local: 'user_id',
+			foreign: 'id',
+			type: '1-8',
+		}
 	},
 	table: {
-		title: '',
-		theme: 'light',
-		header: {
-			class: '',
-			buttons: []
-		},
 		pagination: {
-			limit: 2,
-			limits: [2, 5, 10],
-			size: 4
+			hidden: true,
 		},
-		order: {
-			'id': {
-				dir: 'DESC',
-				fixed: false,
-				idx: 0
-			},
+		header: {
+			title: 'ioi',
+			_hidden: true,
 		},
-		buttons: [
-			{
-				action: 'edit',
-				title: '',
-				class: 'btn btn-sm btn-primary m-1',
-				icon: 'bi bi-pencil-square',
-			},
-			// {
-			// 	action: 'delete',
-			// 	title: '',
-			// 	class: 'btn btn-sm btn-danger m-1',
-			// 	icon: 'bi bi-trash',
-			// }
-		],
 		columns: [
 			{
 				name: 'id',
-				title: 'ID',
-				width: '5%',
-				filter: {
-					type: 'number',
-					operator: '='
-				}
+				// filter: {
+				// 	type: 'number',
+				// 	operator: '='
+				// }
+			},
+			{
+				name: 'user_id',
+				title: 'Felhasználó',
+				sortable: false,
+				relation: {
+					entity: 'user',
+					columns: ['id', 'email', 'images'],
+				},
+				template: function (user_id, item) {
+
+					if (!item['user.email']) {
+						return;
+					}
+
+					let img;
+
+					if (item['user.images'] && item['user.images'][0]) {
+						img = '<img class="rounded me-2" height="24" src="http://supercms.vi/' + item['user.images'][0].types.tiny.url + '" alt="' + item['user.email'] + '" />';
+					}
+
+					return img;
+				},
 			},
 			{
 				name: 'status',
-				title: 'Státusz',
-				width: '15%',
-				xtemplate: function (status) {
-
-					let map = {
-						0: 'Új',
-						1: 'Aktív',
-						9: 'Törölt'
-					}
-
-					return map[status];
-
-				},
-				filter: {
-					type: 'select',
-					options: [
-						{
-							value: undefined,
-							label: 'Mind'
-						},
-						{
-							value: 0,
-							label: 'Új'
-						},
-						{
-							value: 1,
-							label: 'Aktív'
-						},
-						{
-							value: 9,
-							label: 'Törölt'
-						}
-					]
-				},
-				input: {
-					type: 'select',
-					options: [
-						{
-							value: 0,
-							label: 'Új'
-						},
-						{
-							value: 1,
-							label: 'Aktív'
-						},
-						{
-							value: 9,
-							label: 'Törölt'
-						}
-					],
-					autosave: true,
-					onchange: function (value, column, item) {
-						console.log(value, column, item);
-					}
-	
-				}
+				// width: '15%',
+				// filter: {
+				// 	type: 'select',
+				// 	options: [
+				// 		{
+				// 			value: undefined,
+				// 			label: 'All'
+				// 		},
+				// 		{
+				// 			value: 0,
+				// 			label: 'New'
+				// 		},
+				// 		{
+				// 			value: 1,
+				// 			label: 'Active'
+				// 		},
+				// 		{
+				// 			value: 9,
+				// 			label: 'Deleted'
+				// 		}
+				// 	]
+				// },
+				// input: {
+				// 	type: 'select',
+				// 	options: [
+				// 		{
+				// 			value: 0,
+				// 			label: 'New'
+				// 		},
+				// 		{
+				// 			value: 1,
+				// 			label: 'Active'
+				// 		},
+				// 		{
+				// 			value: 9,
+				// 			label: 'Deleted'
+				// 		}
+				// 	],
+				// 	autosave: true,
+				// }
 
 			},
 			{
 				name: 'language',
-				title: 'Lang',
-				filter: {
-					type: 'select',
-					options: [
-						{
-							value: undefined,
-							label: 'Mind'
-						},
-						{
-							'label': 'Magyar',
-							'value': 'hu'
-						},
-						{
-							'label': 'Angol',
-							'value': 'en'
-						}
-					]
-				}
+				// filter: {
+				// 	type: 'select',
+				// 	options: [
+				// 		{
+				// 			value: undefined,
+				// 			label: 'All'
+				// 		},
+				// 		{
+				// 			'label': 'Hunagrian',
+				// 			'value': 'hu'
+				// 		},
+				// 		{
+				// 			'label': 'English',
+				// 			'value': 'en'
+				// 		}
+				// 	]
+				// }
 			},
 			{
 				name: 'images',
-				title: 'Képek',
 				template: function (images) {
 
 					if (!images || !images.length) {
@@ -163,7 +143,7 @@ export default {
 
 					if (img.types && img.types.large) {
 						elements.push(
-							'<a target="_blank" href="' + baseUrl + (img.types.large.url ? img.types.large.url : img.types.large.data) + '"><img height="50" width="auto" class="" src="' + baseUrl + (img.types.tiny.url ? img.types.tiny.url : img.types.tiny.data) + '" alt="' + img.title + '" /></a>'
+							'<a target="_blank" href="' + baseUrl + (img.types.large.url ? img.types.large.url : img.types.large.data) + '"><img height="24" width="auto" class="" src="' + baseUrl + (img.types.tiny.url ? img.types.tiny.url : img.types.tiny.data) + '" alt="' + img.title + '" /></a>'
 						);
 					}
 
@@ -175,14 +155,41 @@ export default {
 			},
 			{
 				name: 'title',
-				title: 'Title',
-				filter: {
-					type: 'text'
-				}
+				// filter: {
+				// 	type: 'text'
+				// }
+			}, {
+				header: {
+					buttons: [
+						{
+							action: 'resetorders',
+						},
+					],
+				},
+				// filter: {
+				// 	buttons: [
+				// 		{
+				// 			action: 'resetfilters',
+				// 		},
+				// 	],
+				// },
+				buttons: [
+					// {
+					// 	action: 'edit',
+					// 	icon: null,
+					// 	title: 'Edit',
+					// },
+					// {
+					// 	action: 'delete',
+					// 	title: '',
+					// 	class: 'btn btn-sm btn-danger m-1',
+					// 	icon: 'bi bi-trash',
+					// }
+				],
 			}
 		]
 	},
-	form: {
+	_form: {
 		groups: [
 			{
 				fields: [
