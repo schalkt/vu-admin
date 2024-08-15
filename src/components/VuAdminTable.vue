@@ -2349,14 +2349,6 @@ export default {
           this.settings.events.beforeItemsLoad(urlParams, this.settings);
         }
 
-        if (urlParams.filter) {
-          urlParams.filter = JSON.stringify(urlParams.filter);
-        }
-
-        if (urlParams.order) {
-          urlParams.order = JSON.stringify(urlParams.order);
-        }
-
         const response = await fetch(
           prepareFetchUrl("GET", this.settings.table.api, null, urlParams),
           prepareFetchOptions("GET", this.settings.table.api)

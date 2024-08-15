@@ -34,15 +34,6 @@ const api = {
 	}
 };
 
-const translate = {
-	hu: {
-		'Reload': 'Frissítés {var1}',
-	},
-	hu2: {
-		'Reload': 'Frissítés {var1}',
-	}
-};
-
 const methods = {
 	convertDateIn: function (value, item) {
 
@@ -125,7 +116,7 @@ const table = {
 		buttons: [
 			{
 				action: 'columns',
-				title: 'Oszlopok',
+				title: 'Columns',
 				class: 'btn btn-sm btn-outline-dark m-1',
 				icon: 'bi bi-table',
 			},
@@ -137,7 +128,7 @@ const table = {
 			},
 			{
 				action: 'create',
-				title: 'Új',
+				title: 'New',
 				class: 'btn btn-sm btn-warning m-1',
 				icon: 'bi bi-plus-circle',
 			},
@@ -740,7 +731,6 @@ export default {
 	theme: 'dark',
 	debug: true,
 	api: api,
-	translate: translate,
 	methods: methods,
 	table: table,
 	form: form,

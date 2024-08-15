@@ -46,7 +46,7 @@ export default {
       translate: {
         hu: {
           Columns: "Oszlopok",
-          All: "Mind",          
+          All: "Mind",
           page: "oldal",
           row: "sor",
           hidden: "rejtett",
@@ -121,14 +121,18 @@ export default {
         this.settings.theme = theme ? theme : "light";
       }
 
-      if (this.settings.translate) {
-        for (let language in this.settings.translate) {
-          this.settings.translate[language] = Object.assign(
-            {},
-            this.translate[language] ? this.translate[language] : {},
-            this.settings.translate[language]
-          );
-        }
+      if (!this.settings.translate) {
+        this.settings.translate = {};
+      }
+
+      for (let language in this.translate) {
+        this.settings.translate[language] = Object.assign(
+          {},
+          this.translate[language] ? this.translate[language] : {},
+          this.settings.translate[language]
+            ? this.settings.translate[language]
+            : {}
+        );
       }
     }
   },
