@@ -3,10 +3,18 @@ import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
 export default defineConfig({
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://dummyjson.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    }
+  },
   plugins: [vue({
     template: {
-      compilerOptions: {
-        delimiters: ['{{ ', ' }}'],
+      compilerOptions: {        
         isCustomElement: tag => tag.startsWith('my-'),
         whitespace: 'condense'
       }
@@ -16,7 +24,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
       name: 'VuAdmin',
-      fileName: (format) => `vu-admin.{{ format }}.js`
+      fileName: (format) => `vu-admin.${ format }.js`
     },
     rollupOptions: {
       external: ['vue'],

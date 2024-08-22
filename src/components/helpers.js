@@ -1,13 +1,11 @@
-export function getValueOrFunction(object, params) {
+export function getValueOrFunction(object, params, settings, vua) {
     try {
 
-        if (typeof object === 'string') {
-            return object;
+        if (typeof object === 'function') {
+            return object(params, settings, vua);
         }
 
-        if (typeof object === 'function') {
-            return object(params);
-        }
+        return object;
 
     } catch (error) {
         return null;
@@ -69,19 +67,38 @@ export function prepareFetchOptions(method, api, options) {
 
 export function prepareFetchUrl(method, api, id, urlParams) {
 
+    let haveParams = false;
 
-    if (urlParams.filter) {
-        urlParams.filter = JSON.stringify(urlParams.filter);
+    if (urlParams) {
+        if (urlParams.filter) {
+            urlParams.filter = JSON.stringify(urlParams.filter);
+        }
+
+        if (urlParams.order) {
+            urlParams.order = JSON.stringify(urlParams.order);
+        }
+
+        haveParams = urlParams && Object.keys(urlParams).length;
     }
 
-    if (urlParams.order) {
-        urlParams.order = JSON.stringify(urlParams.order);
-    }
-
-    const haveParams = urlParams && Object.keys(urlParams).length;
     return api.url + (id ? '/' + id : '') + (haveParams ? "?" + (new URLSearchParams(urlParams)).toString() : '');
 
 }
+
+
+export function slugify(separator = "-") {
+    return this.toString() // Cast to string (optional)
+        .normalize("NFKD") // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase() // Convert the string to lowercase letters
+        .trim() // Remove whitespace from both sides of a string (optional)
+        .replace(/\s+/g, "-") // Replace spaces with -
+        .replace(/[^\w\-]+/g, "") // Remove all non-word chars
+        .replace(/\_/g, "-") // Replace _ with -
+        .replace(/\-\-+/g, "-") // Replace multiple - with single -
+        .replace(/\-$/g, ""); // Remove trailing -
+};
+
 
 export function flattenArrayObjects(array) {
 
@@ -118,6 +135,15 @@ export function unflattenObject(data) {
     return result;
 }
 
+export function isModified(original, current) {
+
+    let originalString = JSON.stringify(original);
+    let currentString = JSON.stringify(current);
+
+    return originalString !== currentString;
+
+}
+
 export function translate(key, translates, vars, language) {
 
     const replaceVars = (value, vars) => {
@@ -147,16 +173,16 @@ export function translate(key, translates, vars, language) {
 
 }
 
-export function convertToCSV(array, fields, delimiter = ';') {
+export function convertToCSV(items, fields, delimiter = ';') {
 
-    const headers = fields.map(field => field.title).join(delimiter);
-    const rows = array.map(obj =>
+    const headers = fields.map(field => field.title ? field.title : (field.name.charAt(0).toUpperCase() + field.name.slice(1))).join(delimiter);
+    const rows = items.map(row =>
         fields.map(field => {
 
-            let value = obj[field.name];
+            let value = row[field.name];
 
             if (field.template) {
-                return field.template(value);
+                return field.template(value, row, items);
             }
 
             return value !== undefined ? value : '';

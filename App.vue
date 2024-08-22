@@ -1,14 +1,11 @@
 <template>
   <div class="container-fluid mt-5">
     <div class="row">
-      <div class="col-md-4">
-        <vu-admin :entity="'_post'" />
-      </div>
-      <div class="col-md-8">
-        <vu-admin :entity="'checks'" />
+      <div class="col-md-12">
+        <vu-admin :entity="'products'" />
       </div>
       <div class="col-md-12">
-        <vu-admin :entity="'_lorem'" />
+        <vu-admin :entity="'users'" />
       </div>
     </div>
   </div>

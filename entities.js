@@ -1,23 +1,13 @@
 
-import EntityPost from './entity-post.js';
+
+import products from './entity-products.js';
+import users from './entity-users.js';
 import EntityChecks from './entity-checks.js';
-import EntityLorem from './entity-lorem.js';
 
 window.VuEntities = {
-    post: EntityPost,
+    products: products,
+    users: users,
     checks: EntityChecks,
-    lorem: EntityLorem,
-    user: {
-        pkey: '_id',
-        api: {
-            url: 'http://supercms.vi/szerk/api/user',
-            input: {
-                item: 'item',
-                items: 'items'
-            }
-        },
-    }
-
 };
 
 // console.log(Object.keys(window.entities));

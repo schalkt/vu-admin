@@ -37,11 +37,11 @@
               >
               <i
                 v-if="config.pagination.limit == limit"
-                class="bi bi-check-circle ms-2 text-info"
+                class="bi bi-check-circle-fill ms-2"
               ></i>
               <i
                 v-if="config.pagination.limit != limit"
-                class="bi bi-circle ms-2 text-muted"
+                class="bi bi-circle ms-2"
               ></i>
             </span>
           </li>
@@ -49,7 +49,7 @@
       </div>      
       <div        
         v-show="ui && ui.wait.table"
-        class="spinner-border spinner-border-sm text-info mx-2"
+        class="spinner-border spinner-border-sm mx-2"
         role="status"
       >
         <span class="visually-hidden">Loading...</span>

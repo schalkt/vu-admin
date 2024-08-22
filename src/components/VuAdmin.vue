@@ -1,30 +1,11 @@
 <template>
-  <div
-    v-cloak
-    v-if="entity && settings.table"
-    class="vu-admin"
-    :data-bs-theme="[settings.theme]"
-  >
+  <div v-cloak v-if="entity && settings.table" class="vu-admin" :data-bs-theme="[settings.theme]">
     <vu-admin-table :settings="settings"></vu-admin-table>
   </div>
 </template>
 
-
 <script>
 import VuAdminTable from "./VuAdminTable.vue";
-
-String.prototype.slugify = function (separator = "-") {
-  return this.toString() // Cast to string (optional)
-    .normalize("NFKD") // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase() // Convert the string to lowercase letters
-    .trim() // Remove whitespace from both sides of a string (optional)
-    .replace(/\s+/g, "-") // Replace spaces with -
-    .replace(/[^\w\-]+/g, "") // Remove all non-word chars
-    .replace(/\_/g, "-") // Replace _ with -
-    .replace(/\-\-+/g, "-") // Replace multiple - with single -
-    .replace(/\-$/g, ""); // Remove trailing -
-};
 
 export default {
   name: "VuAdmin",
@@ -38,52 +19,20 @@ export default {
     if (!params) {
       return;
     }
-
-    console.log(params);
+    console.log('', params);
   },
   data() {
     return {
-      translate: {
-        hu: {
-          Columns: "Oszlopok",
-          All: "Mind",
-          page: "oldal",
-          row: "sor",
-          hidden: "rejtett",
-          First: "Első",
-          Next: "Következő",
-          Prev: "Előző",
-          Last: "Utolsó",
-          Reload: "Újratöltés",
-          New: "Új",
-          Active: "Aktív",
-          Deleted: "Törölt",
-          Copy: "Másolás",
-          Delete: "Törlés",
-          Close: "Bezár",
-          Save: "Mentés",
-          Send: "Küldés",
-          Export: "Exportálás",
-          "Visible all": "Mind látható",
-          "Hidden all": "Mind rejtett",
-          "Save and close": "Ment és bezár",
-          "=": "Egyenlő",
-          ">": "Nagyobb",
-          ">=": "Nagyobb vagy egyenlő",
-          "<": "Kisebb",
-          "<=": "Kisebb vagy egyenlő",
-          "Are you sure you want to delete all selected items?":
-            "Biztos hogy törölni akarod az összes kiválasztott elemet?",
-        },
-      },
-      settings: {
+
+      settings: null,
+      defaults: {
         // primary id field name
         // required, default : undefined
         pkey: "id",
 
         // Boostrap theme
         // optional, default : 'light'
-        theme: "light",
+        theme: undefined,
 
         // VU Admin container class
         // optional, default : null
@@ -93,61 +42,149 @@ export default {
         // example prepare options for selects, (settings) => {},
         init: null,
 
-        translate: {},
+        api: {
+          auth: undefined,
+          options: {},
+          input: {
+            // when item is null -> item = response.data
+            // when item is a string -> item = response.data[input.item]
+            // when item is a function -> item = input.item(data, response)
+            item: undefined,
 
-        // define relations
-        relations: {
-          user: {
-            entity: "user",
-            local: "user_id",
-            foreign: "id",
-            type: "1-8",
+            // when items is null -> items = response.data
+            // when items is a string -> items = response.data[input.items]
+            // when items is a function -> items = input.items(data, response)
+            items: undefined,
+
+            // when total is a string -> total = response.data[input.total]
+            // when total is a function -> total = input.total(data, response)
+            total: undefined,
+          },
+          output: {
+            item: undefined,
+            flatten: true,
+            fields: undefined
+          }
+        },
+
+        translate: {
+          hu: {
+            Columns: "Oszlopok",
+            All: "Mind",
+            page: "oldal",
+            row: "sor",
+            hidden: "rejtett",
+            First: "Első",
+            Next: "Következő",
+            Prev: "Előző",
+            Last: "Utolsó",
+            Reload: "Újratöltés",
+            New: "Új",
+            Active: "Aktív",
+            Deleted: "Törölt",
+            Copy: "Másolás",
+            Delete: "Törlés",
+            Close: "Bezár",
+            Save: "Mentés",
+            Send: "Küldés",
+            Export: "Exportálás",
+            "Visible all": "Mind látható",
+            "Hidden all": "Mind rejtett",
+            "Save and close": "Ment és bezár",
+            "=": "Egyenlő",
+            ">": "Nagyobb",
+            ">=": "Nagyobb vagy egyenlő",
+            "<": "Kisebb",
+            "<=": "Kisebb vagy egyenlő",
+            "Are you sure you want to delete all selected items?":
+              "Biztos hogy törölni akarod az összes kiválasztott elemet?",
           },
         },
-      },
-    };
-  },
-  mounted() {
-    if (window.VuEntities && window.VuEntities[this.entity]) {
-      Object.assign(this.settings, window.VuEntities[this.entity]);
-      this.settings.entity = this.entity;
+        events: {
+          // init
+          afterSettingsInit: undefined,
 
-      if (this.settings.init) {
-        this.settings.init(this.settings);
-      }
+          // items
+          beforeItemsLoad: undefined,
+          afterItemsLoad: undefined,
+
+          // item
+          afterItemLoad: undefined,
+          beforeItemSave: undefined,
+          afterItemSave: undefined,
+          beforeItemDelete: undefined,
+          afterItemDelete: undefined,
+
+          // bulk
+          beforeBulkSave: undefined,
+          afterBulkSave: undefined,
+
+          // export
+          beforeItemsExport: undefined,
+        },
+
+        // define relations
+        relations: {},
+
+        // define table
+        table: {
+          title: null,
+          columns: [],
+          pagination: {
+            size: 10,
+            limit: 10,
+            limits: [10, 20, 50, 100]
+          },
+          order: {},
+          control: {},
+          details: {},
+          exports: {},
+        },
+
+        form: {
+
+        }
+
+      },
+
+    }
+  },
+
+  created() {
+
+    if (window.VuEntities && window.VuEntities[this.entity]) {
+
+      this.settings = Object.assign({}, this.defaults, window.VuEntities[this.entity]);
+      this.settings.entity = this.entity;
 
       if (!this.settings.theme) {
         const theme = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = theme ? theme : "light";
       }
 
-      if (!this.settings.translate) {
-        this.settings.translate = {};
+      // if (!this.settings.translate) {
+      //   this.settings.translate = {};
+      // }
+
+      // for (let language in this.translate) {
+      //   this.settings.translate[language] = Object.assign(
+      //     {},
+      //     this.translate[language] ? this.translate[language] : {},
+      //     this.settings.translate[language]
+      //       ? this.settings.translate[language]
+      //       : {}
+      //   );
+      // }
+
+      if (this.settings.events.afterSettingsInit) {
+        this.settings.events.afterSettingsInit(this.settings);
       }
 
-      for (let language in this.translate) {
-        this.settings.translate[language] = Object.assign(
-          {},
-          this.translate[language] ? this.translate[language] : {},
-          this.settings.translate[language]
-            ? this.settings.translate[language]
-            : {}
-        );
-      }
     }
+
   },
-
-  created() {},
-  methods: {
-    itemIsModified() {
-      let original = JSON.stringify(this.itemOriginal);
-      let current = JSON.stringify(this.item);
-
-      // console.log(original, current);
-
-      return original !== current;
-    },
-  },
+  mounted() { },
+  methods: {},
   components: {
     VuAdminTable,
   },
@@ -158,6 +195,10 @@ export default {
 .vu-admin {
   [v-cloak] {
     display: none !important;
+  }
+
+  input[type="number"] {
+    text-align: end;
   }
 
   .cursor-pointer {
@@ -191,5 +232,10 @@ export default {
     padding-left: 6px;
     padding-right: 3px;
   }
+
+  .p-badge {
+    padding: 0.15em 0.30em;
+  }
+
 }
 </style>

@@ -1,27 +1,14 @@
 <template>
-  <div
-    v-cloak
-    v-if="settings && settings.table"
-    class="vua-table-container"
-    :class="[settings.class]"
-    :data-bs-theme="[settings.theme]"
-  >
+  <div v-cloak v-if="settings && settings.table" class="vua-table-container" :class="[settings.class]" :data-bs-theme="[settings.theme]">
     <div class="vua-overlay" :class="{ blocked: ui.block.table }"></div>
     <div class="vua-table-title">
       <div class="d-flex align-items-center justify-content-between">
         <div class="d-inline-block">
-          <h5
-            class="card-title d-inline-block mb-2"
-            v-if="settings.table.title"
-          >
-            {{  settings.table.title  }}
+          <h5 class="card-title d-inline-block mb-2" v-if="settings.table.title">
+            {{ settings.table.title }}
           </h5>
 
-          <div
-            v-show="ui.wait.table && settings.table.title"
-            class="spinner-border spinner-border-sm text-info mx-2"
-            role="status"
-          >
+          <div v-show="ui.wait.table && settings.table.title" class="spinner-border spinner-border-sm mx-2" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -29,28 +16,19 @@
         <div class="d-inline-block" v-if="messages.length">
           <small class="d-inline-block px-1 mx-1" v-if="message">
             <span :class="['text-' + message.priority]">
-              <strong>{{  message.msg  }}</strong>
+              <strong>{{ message.msg }}</strong>
             </span>
           </small>
 
           <div class="dropdown d-inline-block">
-            <button
-              class="btn btn-sm dropdown-toggle"
-              :class="['btn-' + messages[0].priority]"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              {{  messages.length  }} üzenet
+            <button class="btn btn-sm dropdown-toggle" :class="['btn-' + messages[0].priority]" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ messages.length }} üzenet
             </button>
             <ul class="dropdown-menu text-start">
               <li v-for="message in messages" :key="message">
-                <span
-                  class="dropdown-item"
-                  :class="['text-' + message.priority]"
-                >
-                  <small class="me-2 text-muted">{{  message.datetime  }}</small>
-                  <strong>{{  message.msg  }}</strong>
+                <span class="dropdown-item" :class="['text-' + message.priority]">
+                  <small class="me-2 text-muted">{{ message.datetime }}</small>
+                  <strong>{{ message.msg }}</strong>
                 </span>
               </li>
             </ul>
@@ -59,124 +37,82 @@
       </div>
     </div>
 
-    <div
-      v-if="settings.table.control"
-      class="vua-table-control"
-      :class="[settings.table.control.class]"
-    >
-      <span
-        v-for="button in settings.table.control.buttons"
-        :key="button.action"
-      >
-        <button
-          v-if="button.action !== 'columns' && !button.dropdowns"
-          type="button"
-          :class="[
-            button.class ? button.class : getButtonClassByAction(button.action),
-          ]"
-          @click="tableAction(button, items, null, $event)"
-        >
-          <i
-            :class="[
-              button.icon
-                ? button.icon
-                : getButtonIconClassByAction(button.action),
-            ]"
-          ></i>              
-          {{  translate(button.title)  }}           
+    <div v-if="settings.table.control" class="vua-table-control" :class="[settings.table.control.class]">
+      <span v-for="button in settings.table.control.buttons" :key="button.action">
+        <button v-if="button.action !== 'columns' && !button.dropdowns" type="button" :class="[
+          button.class ? button.class : getButtonClassByAction(button.action),
+        ]" @click="tableAction(button, items, null, $event)">
+          <i :class="[
+            button.icon !== undefined
+              ? getValueOrFunction(button.icon, {
+                button: button,
+                table: this,
+              })
+              : getButtonIconClassByAction(button.action),
+          ]"></i>
+          {{ translate(button.title) }}
         </button>
 
         <div class="dropdown d-inline-block" v-if="button.action === 'columns'">
-          <button
-            type="button"
-            :class="[
-              button.class
-                ? button.class
-                : getButtonClassByAction(button.action),
-            ]"
-            class="dropdown-toggle"
-            data-bs-toggle="dropdown"
-            data-bs-auto-close="outside"
-            aria-expanded="false"
-          >
-            <span
-              v-cloak
-              v-show="settings.table.columns.length > 0"
-              class="mx-1"
-            >
-              <i
-                :class="[
-                  button.icon
-                    ? button.icon
-                    : getButtonIconClassByAction(button.action),
-                ]"
-              ></i>
-              {{  translate(button.title)  }}
+          <button type="button" :class="[
+            button.class
+              ? button.class
+              : getButtonClassByAction(button.action),
+          ]" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            <span v-cloak v-show="settings.table.columns.length > 0" class="mx-1">
+              <i :class="[
+                button.icon !== undefined
+                  ? getValueOrFunction(button.icon, {
+                    button: button,
+                    table: this,
+                  })
+                  : getButtonIconClassByAction(button.action),
+              ]"></i>
+              {{ translate(button.title) }}
               <span v-if="countHiddenColumns()">
-                ( {{  countHiddenColumns()  }} {{  translate('hidden')  }} )
+                ( {{ countHiddenColumns() }} {{ translate('hidden') }} )
               </span>
             </span>
           </button>
           <ul class="dropdown-menu">
             <li v-for="column in settings.table.columns" :key="column">
-              <span
-                class="dropdown-item cursor-pointer"
-                @click="toggleColumn(column)"
-              >
-                <i
-                  v-if="!column.hidden"
-                  class="bi bi-check-square me-2 text-info"
-                ></i>
-                <i
-                  v-if="column.hidden"
-                  class="bi bi-x-square me-2 text-danger"
-                ></i>
-                {{  column.title  }}
-                <small class="badge text-secondary fw-normal"
-                  >{{  column.name  }}</small
-                >
+              <span class="dropdown-item cursor-pointer" @click="toggleColumn(column)">
+                <i v-if="!column.hidden" class="bi bi-check-square-fill me-2"></i>
+                <i v-if="column.hidden" class="bi bi-x-square me-2 text-danger"></i>
+                {{ column.title }}
+                <small class="badge text-secondary fw-normal">{{ column.name }}</small>
               </span>
             </li>
-            <li><hr class="dropdown-divider" /></li>
             <li>
-              <span
-                class="dropdown-item cursor-pointer"
-                @click="toggleColumn(true)"
-                >{{  translate('Visible all')  }}</span
-              >
+              <hr class="dropdown-divider" />
             </li>
             <li>
-              <span
-                class="dropdown-item cursor-pointer"
-                @click="toggleColumn(false)"
-                >{{  translate('Hidden all')  }}</span
-              >
+              <span class="dropdown-item cursor-pointer" @click="toggleColumn(true)">{{ translate('Visible all') }}</span>
+            </li>
+            <li>
+              <span class="dropdown-item cursor-pointer" @click="toggleColumn(false)">{{ translate('Hidden all') }}</span>
             </li>
           </ul>
         </div>
 
         <div class="dropdown d-inline-block" v-cloak v-if="button.dropdowns">
-          <button
-            type="button"
-            :class="[button.class]"
-            class="dropdown-toggle"
-            data-bs-toggle="dropdown"
-            data-bs-auto-close="outside"
-            aria-expanded="false"
-          >
+          <button type="button" :class="[button.class]" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="mx-1">
-              <i :class="[button.icon]"></i> {{  translate(button.title)  }}
+              <i :class="[
+                button.icon !== undefined
+                  ? getValueOrFunction(button.icon, {
+                    button: button,
+                    table: this,
+                  })
+                  : getButtonIconClassByAction(button.action),
+              ]"></i> {{ translate(button.title) }}
             </span>
           </button>
           <ul class="dropdown-menu">
             <li v-for="dropdown in button.dropdowns" :key="dropdown">
-              <span
-                class="dropdown-item cursor-pointer"
-                :class="[button.class]"
-                @click="tableAction(dropdown, items, null, $event)"
-              >
-                <i class="me-2" :class="[button.icon]"></i>
-                {{  translate(dropdown.title)  }}
+              <span class="dropdown-item cursor-pointer" :class="[dropdown.class]" @click="tableAction(dropdown, items, null, $event)">
+                <i v-if="dropdown.icon" :class="[dropdown.icon]"></i>
+                {{ translate(dropdown.title) }}
               </span>
             </li>
           </ul>
@@ -184,314 +120,173 @@
       </span>
     </div>
 
-    <table
-      v-if="settings.table"
-      class="table mb-0"
-      :class="[settings.table.class]"
-    >
+    <table v-if="settings.table" class="table vua-table mb-0" :class="[settings.table.class]">
       <thead>
-        <tr>
-          <th
-            class=""
-            v-for="column in settings.table.columns"
-            :style="[column.hidden ? 'display: none' : '']"
-            :key="column"
-            :width="column.width"
-            :class="[column.header ? column.header.class : '']"
-          >
-            <span
-              class="d-inline-block no-select text-nowrap"
-              :class="{ 'cursor-pointer': isSortable(column) }"
-              @click="sortTable(column)"
-              >{{ (column.header && column.header.title !== undefined) ?
-              column.header.title : (column.title ? column.title :
-              translate(column.name)) }}
-              <span
-                class="badge p-1"
-                v-if="
-                  config.order[column.name] &&
-                  config.order[column.name].dir === 'ASC'
-                "
-                :class="{
-                  'text-light': config.order[column.name].fixed,
-                  'text-warning': !config.order[column.name].fixed,
-                }"
-              >
-                <i class="bi bi-arrow-down"></i>{{ config.order[column.name].idx
-                + 1 }}
+        <tr class="vua-table-header">
+          <th class="" v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :key="column" :width="column.width"
+            :class="[column.header ? column.header.class : '']">
+            <span class="d-inline-block no-select text-nowrap" :class="{ 'cursor-pointer': isSortable(column) }" @click="sortTable(column)">
+
+              <span v-html="(column.header && column.header.title
+                !== undefined) ?
+                column.header.title : (column.title ? column.title :
+                  translate(column.name))"></span>
+
+              <span class="badge text-bg-light ms-1 p-badge" v-if="
+                config.order[column.name]" :class="{
+                  'opacity-50': config.order[column.name].fixed,
+                }">
+                <i v-if="config.order[column.name].dir === 'ASC'" class="bi bi-arrow-down"></i>
+                <i v-if="config.order[column.name].dir === 'DESC'" class="bi bi-arrow-up"></i>
+                {{ config.order[column.name].idx + 1 }}
+
               </span>
-              <span
-                class="badge p-1"
-                v-if="
-                  config.order[column.name] &&
-                  config.order[column.name].dir === 'DESC'
-                "
-                :class="{
-                  'text-light': config.order[column.name].fixed,
-                  'text-warning': !config.order[column.name].fixed,
-                }"
-              >
-                <i class="bi bi-arrow-up"></i>{{ config.order[column.name].idx +
-                1 }}
-              </span>
+
             </span>
 
             <span v-if="column.header && column.header.buttons">
-              <button
-                v-for="button in column.header.buttons"
-                :key="button.action"
-                type="button"
-                :class="[
+              <button v-for="button in column.header.buttons" :key="button.action" type="button"
+                :disabled="button.disabled !== undefined ? getValueOrFunction(button.disabled) : null" :class="[
                   button.class
                     ? button.class
                     : getButtonClassByAction(button.action),
-                ]"
-                @click="tableAction(button, items, null, $event)"
-              >
-                <i
-                  :class="[
-                    button.icon
-                      ? button.icon
-                      : getButtonIconClassByAction(button.action),
-                  ]"
-                ></i>
-                {{  translate(button.title)  }}
+                ]" @click="tableAction(button, items, null, $event)">
+                <i :class="[
+                  button.icon !== undefined
+                    ? getValueOrFunction(button.icon, {
+                      button: button,
+                      column: column,
+                      table: this,
+                    })
+                    : getButtonIconClassByAction(button.action),
+                ]"></i>
+                {{ translate(button.title) }}
               </button>
             </span>
           </th>
         </tr>
-        <tr v-if="countFilters()">
-          <th
-            v-for="column in settings.table.columns"
-            :style="[column.hidden ? 'display: none' : '']"
-            :key="column"
-            :width="column.width"
-            :class="[column.filter ? column.filter.class : '']"
-          >
-            <div
-              class="d-inline-block w-100 px-1"
-              v-if="column.index && column.click"
-            >
-              <span
-                class="cursor-pointer badge border text-secondary py-1 px-2 me-1 my-2 w-100"
-                v-cloak
-                :class="{ 'bg-info text-dark': haveSelectedRowInPage() }"
-                @click="toggleSelectedRowInPage()"
-              >
-                <i
-                  v-show="!haveSelectedRowInPage()"
-                  class="bi bi-check-all"
-                ></i>
+        <tr v-if="countFilters()" class="vua-table-filter">
+          <th v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :key="column" :width="column.width"
+            :class="[column.filter ? column.filter.class : '']">
+            <div class="d-inline-block w-100 px-1" v-if="column.index && column.click">
+              <span class="cursor-pointer badge border badge-index-toggle py-1 px-2 me-1 my-2 w-100" v-cloak :class="{ 'active': haveSelectedRowInPage() }"
+                @click="toggleSelectedRowInPage()">
+                <i v-show="!haveSelectedRowInPage()" class="bi bi-check-all"></i>
                 <i v-show="haveSelectedRowInPage()" class="bi bi-x-lg"></i>
               </span>
             </div>
 
-            <div
-              v-if="column.filter && column.filter.type == 'text'"
-              class="input-group input-group-sm my-1"
-            >
-              <input
-                type="text"
-                :class="{
-                  'text-light': column.filter.fixed,
-                  'text-warning': !column.filter.fixed,
-                }"
-                class="form-control form-control-sm text-warning"
-                v-model="column.filter.value"
-                @keyup.enter="reloadTable()"
-              />
+            <div v-if="column.filter && column.filter.type == 'text'" class="input-group input-group-sm my-1">
+              <input type="text" :class="{
+                'fixed': column.filter.fixed,
+              }" class="form-control form-control-sm" v-model="column.filter.value" @keyup.enter="reloadTable()" />
 
-              <button
-                class="btn btn-outline-secondary"
-                v-if="column.filter.buttonx && column.filter.buttonx != false"
-                :disabled="!column.filter.value"
-                @click="
-                  column.filter.value = undefined;
-                  reloadTable();
-                "
-              >
-                <i
-                  class="bi bi-x"
-                  :class="{ 'text-warning': column.filter.value }"
-                ></i>
+              <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" :disabled="!column.filter.value" :class="{
+                'opacity-25': !column.filter.value,
+              }" @click="
+                column.filter.value = undefined;
+              reloadTable();
+              ">
+                <i class="bi bi-x"></i>
               </button>
             </div>
 
-            <div
-              v-if="column.filter && column.filter.type == 'number'"
-              class="input-group input-group-sm my-1"
-            >
-              <select
-                v-if="column.filter.operators == true"
-                v-model="column.filter.operator"
-                @change="reloadTable()"
-                class="form-select form-select-sm"
-              >
-                <option value="=">{{  translate('=')  }}</option>
-                <option value=">">{{  translate('>')  }}</option>
-                <option value=">=">{{  translate('>=')  }}</option>
-                <option value="<">{{  translate('<')  }}</option>
-                <option value="<=">{{  translate('<=')  }}</option>
+            <div v-if="column.filter && column.filter.type == 'number'" class="input-group input-group-sm my-1">
+              <select v-if="column.filter.operators == true" v-model="column.filter.operator" :disabled="column.filter.fixed" @change="reloadTable()"
+                class="form-select form-select-sm pe-0">
+                <option value="=">{{ translate('=') }}</option>
+                <option value=">">{{ translate('>') }}</option>
+                <option value=">=">{{ translate('>=') }}</option>
+                <option value="<">{{ translate('<') }}</option>
+                <option value="<=">{{ translate('<=') }}</option>
               </select>
 
-              <select
-                v-if="
-                  column.filter.operators && column.filter.operators.length > 0
-                "
-                v-model="column.filter.operator"
-                @change="reloadTable()"
-                class="form-select form-select-sm"
-              >
-                <option
-                  v-for="operator in column.filter.operators"
-                  :key="operator"
-                  :value="operator.value"
-                >
-                  {{  operator.label  }}
+              <select v-if="
+                column.filter.operators && column.filter.operators.length > 0
+              " v-model="column.filter.operator" :disabled="column.filter.fixed" @change="reloadTable()" class="form-select form-select-sm pe-0">
+                <option v-for="operator in column.filter.operators" :key="operator" :value="operator.value">
+                  {{ operator.label }}
                 </option>
               </select>
 
-              <input
-                type="number"
-                class="form-control text-warning"
-                v-model="column.filter.value"
-                :disabled="column.filter.fixed"
-                :min="column.filter.min"
-                :max="column.filter.max"
-                :class="{
-                  'text-light': column.filter.fixed,
-                  'text-warning': !column.filter.fixed,
-                }"
-                @change="reloadTable()"
-                @keyup.enter="reloadTable()"
-              />
+              <input type="number" class="form-control" v-model="column.filter.value" :disabled="column.filter.fixed" :min="column.filter.min" :max="column.filter.max" :class="{
+                'fixed': column.filter.fixed,
+              }" @change="reloadTable()" @keyup.enter="reloadTable()" />
 
-              <button
-                v-if="column.filter.buttonx && column.filter.buttonx != false"
-                class="btn btn-outline-secondary"
-                :disabled="!column.filter.value"
-                @click="
+              <button v-if="!column.filter.fixed && column.filter.buttonx && column.filter.buttonx != false" class="btn btn-outline-secondary" :disabled="!column.filter.value"
+                :class="{
+                  'opacity-25': !column.filter.value,
+                }" @click="
                   column.filter.value = undefined;
-                  reloadTable();
-                "
-              >
-                <i
-                  class="bi bi-x"
-                  :class="{ 'text-warning': column.filter.value }"
-                ></i>
+                reloadTable();
+                ">
+                <i class="bi bi-x"></i>
               </button>
             </div>
 
             <div v-if="column.filter && column.filter.type == 'select'">
-              <select
-                v-model="column.filter.value"
-                @change="reloadTable()"
-                class="form-select form-select-sm my-1 text-warning"
-              >
-                <option
-                  v-for="option in column.filter.options"
-                  :key="option"
-                  :value="option.value"
-                >
-                  {{  translate(option.label)  }}
+              <select v-model="column.filter.value" @change="reloadTable()" :multiple="column.filter.multiple" class="form-select form-select-sm pe-0 my-1">
+                <option v-for="option in column.filter.options" :key="option" :value="option.value">
+                  {{ translate(option.label ? option.label : option.value) }}
                 </option>
               </select>
             </div>
 
-            <div
-              v-if="
-                column.filter &&
-                (column.filter.type == 'datetime-local' ||
-                  column.filter.type == 'date')
-              "
-              class="input-group input-group-sm my-1"
-            >
-              <select
-                v-if="column.filter.operators == true"
-                v-model="column.filter.operator"
-                @change="reloadTable()"
-                class="form-select form-select-sm"
-              >
-                <option value="=">{{  translate('=')  }}</option>
-                <option value=">">{{  translate('>')  }}</option>
-                <option value=">=">{{  translate('>=')  }}</option>
-                <option value="<">{{  translate('<')  }}</option>
-                <option value="<=">{{  translate('<=')  }}</option>
+            <div v-if="
+              column.filter &&
+              (column.filter.type == 'datetime-local' ||
+                column.filter.type == 'date')
+            " class="input-group input-group-sm my-1">
+              <select v-if="column.filter.operators == true" v-model="column.filter.operator" @change="reloadTable()" class="form-select form-select-sm pe-0">
+                <option value="=">{{ translate('=') }}</option>
+                <option value=">">{{ translate('>') }}</option>
+                <option value=">=">{{ translate('>=') }}</option>
+                <option value="<">{{ translate('<') }}</option>
+                <option value="<=">{{ translate('<=') }}</option>
               </select>
 
-              <select
-                v-if="
-                  column.filter.operators && column.filter.operators.length > 0
-                "
-                v-model="column.filter.operator"
-                @change="reloadTable()"
-                class="form-select form-select-sm"
-              >
-                <option
-                  v-for="operator in column.filter.operators"
-                  :key="operator"
-                  :value="operator.value"
-                >
-                  {{  translate(operator.label)  }}
+              <select v-if="
+                column.filter.operators && column.filter.operators.length > 0
+              " v-model="column.filter.operator" @change="reloadTable()" class="form-select form-select-sm pe-0">
+                <option v-for="operator in column.filter.operators" :key="operator" :value="operator.value">
+                  {{ translate(operator.label) }}
                 </option>
               </select>
 
-              <input
-                :type="column.filter.type"
-                :class="{
-                  'text-light': column.filter.fixed,
-                  'text-warning': !column.filter.fixed,
-                }"
-                class="form-control form-control-sm text-warning"
-                v-model="column.filter.value"
-                @change="reloadTable()"
-                @keyup.enter="reloadTable()"
-              />
+              <input :type="column.filter.type" :class="{
+                'fixed': column.filter.fixed,
+              }" class="form-control form-control-sm" v-model="column.filter.value" @change="reloadTable()" @keyup.enter="reloadTable()" />
 
-              <button
-                class="btn btn-outline-secondary"
-                :disabled="!column.filter.value"
-                @click="
-                  column.filter.value = undefined;
-                  reloadTable();
-                "
-              >
-                <i
-                  class="bi bi-x"
-                  :class="{ 'text-warning': column.filter.value }"
-                ></i>
+              <button class="btn btn-outline-secondary" :disabled="!column.filter.value" :class="{
+                'opacity-25': !column.filter.value,
+              }" @click="
+                column.filter.value = undefined;
+              reloadTable();
+              ">
+                <i class="bi bi-x"></i>
               </button>
             </div>
 
-            <span
-              v-if="column.filter && column.filter.buttons"
-              :class="
-                getValueOrFunction(column.filter.buttons, {
-                  column: column,
-                })
-              "
-            >
-              <span
-                v-for="button in column.filter.buttons"
-                :key="button.action"
-              >
-                <button
-                  type="button"
-                  :class="[
-                    button.class
-                      ? button.class
-                      : getButtonClassByAction(button.action),
-                  ]"
-                  @click="tableAction(button, items, null, $event)"
-                >
-                  <i
-                    :class="[
-                      button.icon
-                        ? button.icon
-                        : getButtonIconClassByAction(button.action),
-                    ]"
-                  ></i>
-                  {{  translate(button.title)  }}
+            <span v-if="column.filter && column.filter.buttons" :class="getValueOrFunction(column.filter.buttons, {
+              column: column,
+            })
+              ">
+              <span v-for="button in column.filter.buttons" :key="button.action">
+                <button type="button" :disabled="button.disabled !== undefined ? getValueOrFunction(button.disabled) : null" :class="[
+                  button.class
+                    ? button.class
+                    : getButtonClassByAction(button.action),
+                ]" @click="tableAction(button, items, null, $event)">
+                  <i :class="[
+                    button.icon !== undefined
+                      ? getValueOrFunction(button.icon, {
+                        button: button,
+                        column: column,
+                        table: this,
+                      })
+                      : getButtonIconClassByAction(button.action),
+                  ]"></i>
+                  {{ translate(button.title) }}
                 </button>
               </span>
             </span>
@@ -501,177 +296,130 @@
       <tbody>
         <template v-for="(item, index) in this.items" :key="item.id">
           <tr class="align-middle">
-            <td
-              v-for="column in settings.table.columns"
-              :style="[column.hidden ? 'display: none' : '']"
-              :key="column.name"
-              :data-label="column.title ? column.title : translate(column.name)"
-              :width="column.width"
-              :class="
-                getValueOrFunction(column.class, {
-                  column: column,
-                  item: item,
-                })
-              "
-              @click="tableAction(column, item, index, $event)"
-            >
+            <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :key="column.name"
+              :data-label="column.title ? column.title : translate(column.name)" :width="column.width" :class="getValueOrFunction(column.class, {
+                column: column,
+                item: item,
+              })
+                " @click="tableAction(column, item, index, $event)">
               <div class="d-inline-block w-100 px-1" v-if="column.index">
-                <span
-                  class="cursor-pointer badge border text-secondary p-1 w-100"
-                  :class="{
-                    'border-info text-info':
-                      selected.indexOf(item[settings.pkey]) >= 0,
-                  }"
-                  v-html="
-                    index +
-                    1 +
-                    (config.pagination.page - 1) * config.pagination.limit
-                  "
-                >
+                <span class="cursor-pointer badge border badge-index p-1 w-100" :class="{
+                  'selected':
+                    selected.indexOf(item[settings.pkey]) >= 0,
+                }" v-html="index +
+                  1 +
+                  (config.pagination.page - 1) * config.pagination.limit
+                  ">
                 </span>
               </div>
 
-              <span v-if="!column.template && !column.input">
-                {{  tableCellValue(column.name, item, index)  }}
+              <span v-if="!column.template && !column.input && !column.progressbar">
+                {{ tableCellValue(column.name, item, index, column) }}
               </span>
-              <span
-                v-if="column.template"
-                v-html="tableCellTemplate(column.template, item, index, column)"
-              >
+              <span v-if="column.template" v-html="tableCellTemplate(column.template, item, index, column)">
               </span>
+
+              <div v-if="column.progressbar" class="progress" role="progressbar" aria-label="Warning example" :aria-valuenow="item[column.name]"
+                :aria-valuemax="column.progressbar.max">
+                <div class="progress-bar" :class="[column.progressbar.class]" :style="{ width: Math.round(item[column.name] / column.progressbar.max * 100) + '%' }">
+                  <span v-if="column.progressbar.value">{{ item[column.name] }}</span>
+                </div>
+              </div>
+
               <div v-if="column.input" class="input-group input-group-sm">
-                <span
-                  v-if="column.input.prefix"
-                  class="input-group-text"
-                  v-html="
-                    getValueOrFunction(column.input.prefix, {
-                      column: column,
-                      item: item,
-                    })
-                  "
-                ></span>
+                <span v-if="column.input.prefix" class="input-group-text" v-html="getValueOrFunction(column.input.prefix, {
+                  column: column,
+                  item: item,
+                })
+                  "></span>
 
-                <input
-                  v-if="
-                    ['text', 'number', 'date', 'datetime-local'].indexOf(
-                      column.input.type
-                    ) >= 0
-                  "
-                  :type="column.input.type"
-                  class="form-control form-control-sm text-info"
-                  :class="column.input.class"
-                  @change="
-                    onInputChange(item[column.name], column, item, index)
-                  "
-                  v-model="item[column.name]"
-                />
+                <input v-if="
+                  ['text', 'number', 'date', 'datetime-local'].indexOf(
+                    column.input.type
+                  ) >= 0
+                " :type="column.input.type" class="form-control form-control-sm" :class="getValueOrFunction(column.input.class, {
+                  column: column,
+                  item: item,
+                })" @change="
+                  onInputChange(item[column.name], column, item, index)
+                  " v-model="item[column.name]" />
 
-                <select
-                  v-if="column.input.type == 'select'"
-                  class="form-select form-select-sm text-info"
-                  :class="column.input.class"
-                  @change="
-                    onInputChange(item[column.name], column, item, index)
-                  "
-                  v-model="item[column.name]"
-                >
-                  <option
-                    v-for="option in column.input.options"
-                    :value="option.value"
-                    :key="option"
-                  >
-                    {{  translate(option.label)  }}
+                <select v-if="column.input.type == 'select'" class="form-select form-select-sm pe-0" :class="getValueOrFunction(column.input.class, {
+                  column: column,
+                  item: item,
+                })" @change="
+                  onInputChange(item[column.name], column, item, index)
+                  " v-model="item[column.name]">
+                  <option v-for="option in column.input.options" :value="option.value" :key="option">
+                    {{ translate(option.label) }}
                   </option>
                 </select>
 
-                <span
-                  v-if="column.input.suffix"
-                  class="input-group-text"
-                  v-html="
-                    getValueOrFunction(column.input.suffix, {
-                      column: column,
-                      item: item,
-                    })
-                  "
-                ></span>
+                <span v-if="column.input.suffix" class="input-group-text" v-html="getValueOrFunction(column.input.suffix, {
+                  column: column,
+                  item: item,
+                })
+                  "></span>
               </div>
 
               <span v-if="column.buttons">
                 <span v-for="button in column.buttons" :key="button.action">
-                  <button
-                    type="button"
-                    :class="[
-                      button.class
-                        ? button.class
-                        : getButtonClassByAction(button.action),
-                    ]"
-                    @click="tableAction(button, item, index, $event)"
-                  >
-                    <i
-                      v-if="button.icon !== null"
-                      :class="[
-                        button.icon
-                          ? button.icon
-                          : getButtonIconClassByAction(button.action),
-                      ]"
-                    ></i>
+                  <button type="button" :disabled="button.disabled !== undefined ? getValueOrFunction(button.disabled) : null" :class="[
+                    button.class
+                      ? getValueOrFunction(button.class, {
+                        button: button,
+                        column: column,
+                        item: item,
+                        table: this,
+                      })
+                      : getButtonClassByAction(button.action),
+                  ]" @click="tableAction(button, item, index, $event)">
+                    <i v-if="button.icon !== null" :class="[
+                      button.icon !== undefined
+                        ? getValueOrFunction(button.icon, {
+                          button: button,
+                          column: column,
+                          item: item,
+                          table: this,
+                        })
+                        : getButtonIconClassByAction(button.action),
+                    ]"></i>
 
-                    <span
-                      v-if="button.template"
-                      v-html="
-                        tableCellTemplate(button.template, item, index, column)
-                      "
-                    ></span>
-                    <span v-else>{{  translate(button.title)  }}</span>
+                    <span v-if="button.template" v-html="tableCellTemplate(button.template, item, index, column)
+                      "></span>
+                    <span v-else>{{ translate(button.title) }}</span>
                   </button>
                 </span>
               </span>
             </td>
           </tr>
-          <tr
-            v-if="
-              settings.table.details &&
-              details.indexOf(item[settings.pkey]) >= 0
-            "
-          >
-            <td
-              :class="[settings.table.details.class]"
-              :colspan="settings.table.columns.length"
-            >
-              <div
-                class="m-0"
-                v-for="field in settings.table.details.fields"
-                :key="field"
-              >
+          <tr v-if="
+            settings.table.details &&
+            details.indexOf(item[settings.pkey]) >= 0
+          ">
+            <td :class="[settings.table.details.class]" :colspan="settings.table.columns.length">
+              <div class="m-0" v-for="field in settings.table.details.fields" :key="field">
                 <div class="row g-3 align-items-center">
                   <div class="col text-end" :class="[field.class]">
-                    <label class="col-form-label">{{  field.label  }}</label>
+                    <label class="col-form-label">{{ field.label }}</label>
                   </div>
                   <div class="col" :class="[field.input.class]">
-                    <input
-                      :type="field.input.type"
-                      v-if="['select'].indexOf(field.input.type) < 0"
-                      class="form-control form-control-sm text-info"
-                      v-model="item[field.name]"
+                    <input :type="field.input.type" v-if="['select', 'textarea'].indexOf(field.input.type) < 0" class="form-control form-control-sm" v-model="item[field.name]"
                       @change="
                         onInputChange(item[field.name], field, item, index)
-                      "
-                    />
+                        " />
 
-                    <select
-                      v-if="field.input.type == 'select'"
-                      class="form-select form-select-sm text-info"
-                      v-model="item[field.name]"
-                      @change="
-                        onInputChange(item[field.name], field, item, index)
-                      "
-                    >
-                      <option
-                        v-for="option in field.input.options"
-                        :value="option.value"
-                        :key="option"
-                      >
-                        {{  translate(option.label)  }}
+                    <textarea v-if="field.input.type == 'textarea'" class="form-control form-control-sm" rows="3" v-model="item[field.name]" @change="
+                      onInputChange(item[field.name], field, item, index)
+                      ">
+
+                    </textarea>
+
+                    <select v-if="field.input.type == 'select'" class="form-select form-select-sm pe-0" v-model="item[field.name]" @change="
+                      onInputChange(item[field.name], field, item, index)
+                      ">
+                      <option v-for="option in field.input.options" :value="option.value" :key="option">
+                        {{ translate(option.label) }}
                       </option>
                     </select>
                   </div>
@@ -685,108 +433,62 @@
       </tbody>
       <tfoot>
         <tr v-if="selected.length > 0" class="vua-table-bulk border-info">
-          <td
-            v-for="column in settings.table.columns"
-            :style="[column.hidden ? 'display: none' : '']"
-            :key="column.name"
-            :data-label="column.title"
-            :width="column.width"
-            :class="column.class"
-          >
+          <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :key="column.name" :data-label="column.title" :width="column.width"
+            :class="column.class">
             <div class="d-inline-block w-100 px-1" v-if="column.index">
-              <span
-                v-cloak
-                class="cursor-pointer d-inline-block badge py-1 px-2 me-1 my-2 w-100 bg-info text-dark"
-                @click="toggleSelectedAll()"
-              >
-                {{  selected.length  }}
+              <span v-cloak class="cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100" @click="toggleSelectedAll()">
+                {{ selected.length }}
               </span>
             </div>
 
-            <div
-              v-if="column.input && column.bulk && column.bulk.enabled"
-              class="input-group input-group-sm my-1"
-            >
-              <input
-                v-if="
-                  ['text', 'number', 'date', 'datetime-local'].indexOf(
-                    column.input.type
-                  ) >= 0
-                "
-                :type="column.input.type"
-                class="form-control form-control-sm text-info"
-                :class="column.input.class"
-                :disabled="bulkinputs.indexOf(column.name) < 0"
-                @change="
-                  onBulkInputChange(bulkitem[column.name], bulkitem, column)
-                "
-                v-model="bulkitem[column.name]"
-              />
+            <div v-if="column.input && column.bulk && column.bulk.enabled" class="input-group input-group-sm my-1">
+              <input v-if="
+                ['text', 'number', 'date', 'datetime-local'].indexOf(
+                  column.input.type
+                ) >= 0
+              " :type="column.input.type" class="form-control form-control-sm" :class="column.input.class" :disabled="bulkinputs.indexOf(column.name) < 0" @change="
+                onBulkInputChange(bulkitem[column.name], bulkitem, column)
+                " v-model="bulkitem[column.name]" />
 
-              <select
-                v-if="column.input.type == 'select'"
-                class="form-select form-select-sm text-info"
-                :class="column.input.class"
-                :disabled="bulkinputs.indexOf(column.name) < 0"
+              <select v-if="column.input.type == 'select'" class="form-select form-select-sm pe-0" :class="column.input.class" :disabled="bulkinputs.indexOf(column.name) < 0"
                 @change="
                   onBulkInputChange(bulkitem[column.name], bulkitem, column)
-                "
-                v-model="bulkitem[column.name]"
-              >
-                <option
-                  v-for="option in column.input.options"
-                  :value="option.value"
-                  :key="option"
-                >
-                  {{  translate(option.label)  }}                  
+                  " v-model="bulkitem[column.name]">
+                <option v-for="option in column.input.options" :value="option.value" :key="option">
+                  {{ translate(option.label) }}
                 </option>
               </select>
 
-              <span
-                class="input-group-text cursor-pointer"
-                @click="ifBulkInputClick(column)"
-              >
-                <i
-                  v-if="bulkitem[column.name] === undefined"
-                  class="bi bi-square text-secondary"
-                ></i>
-                <i v-else class="bi bi-check-square text-warning"></i>
+              <span class="input-group-text cursor-pointer" @click="ifBulkInputClick(column)">
+                <i v-if="bulkitem[column.name] === undefined" class="bi bi-square text-secondary"></i>
+                <i v-else class="bi bi-check-square"></i>
               </span>
             </div>
 
             <span v-if="column.bulkbuttons">
               <span v-for="button in column.bulkbuttons" :key="button.action">
-                <button
-                  type="button"
-                  :class="[
-                    button.class
-                      ? button.class
-                      : getButtonClassByAction(button.action),
-                  ]"
-                  :disabled="
-                    button.action === 'save' && !this.bulkinputs.length
-                  "
-                  @click="
+                <button type="button" :class="[
+                  button.class
+                    ? button.class
+                    : getButtonClassByAction(button.action),
+                ]" :disabled="button.action === 'save' && !this.bulkinputs.length
+                  " @click="
                     tableBulkAction(button.action, bulkitem, column, $event)
-                  "
-                >
-                  <i
-                    v-if="button.icon !== null"
-                    :class="[
-                      button.icon
-                        ? button.icon
-                        : getButtonIconClassByAction(button.action),
-                    ]"
-                  ></i>
+                    ">
+                  <i v-if="button.icon !== null" :class="[
+                    button.icon !== undefined
+                      ? getValueOrFunction(button.icon, {
+                        button: button,
+                        column: column,
+                        table: this,
+                      })
+                      : getButtonIconClassByAction(button.action),
+                  ]"></i>
 
-                  <span
-                    v-if="button.template"
-                    v-html="
-                      tableCellTemplate(button.template, bulkitem, null, column)
-                    "
-                  ></span>
+                  <span v-if="button.template" v-html="tableCellTemplate(button.template, bulkitem, null, column)
+                    "></span>
                   <span v-else>
-                    {{  translate(button.title)  }}
+                    {{ translate(button.title) }}
                   </span>
                 </button>
               </span>
@@ -796,157 +498,81 @@
       </tfoot>
     </table>
 
-    <VuAdminTablePagination
-      :settings="settings"
-      :config="config"
-      :ui="ui"
-      @setPage="setPage"
-      @setPageLimit="setPageLimit"
-      @translate="translate"
-    ></VuAdminTablePagination>
+    <VuAdminTablePagination :settings="settings" :config="config" :ui="ui" @setPage="setPage" @setPageLimit="setPageLimit" @translate="translate"></VuAdminTablePagination>
 
     <div class="modal shadow" :id="modalId" tabindex="-1">
       <div class="modal-dialog modal-xl">
         <div class="modal-content h-100">
-          <form
-            ref="form"
-            v-cloak
-            v-if="item"
-            :id="formId"
-            class="form"
-            @submit.prevent="submitItem"
-            :class="{ wait: ui.wait.form }"
-            :data-bs-theme="[settings.theme]"
-          >
+          <form ref="form" v-cloak v-if="item" :id="formId" class="form" @submit.prevent="submitItem" :class="{ wait: ui.wait.form }" :data-bs-theme="[settings.theme]">
             <div class="vua-overlay" :class="{ blocked: ui.block.form }"></div>
             <div class="modal-header">
               <h5 class="modal-title">
-                <span
-                  v-if="
-                    settings.form.title &&
-                    typeof settings.form.title == 'function'
-                  "
-                  v-html="settings.form.title(item, settings)"
-                ></span>
-                <span
-                  v-if="
-                    settings.form.title &&
-                    typeof settings.form.title == 'string'
-                  "
-                  >{{  translate(settings.form.title)  }}</span
-                >
-                <span v-if="!settings.form.title">{{  translate('Edit')  }}</span>
+                <span v-if="
+                  settings.form.title &&
+                  typeof settings.form.title == 'function'
+                " v-html="settings.form.title(item, settings)"></span>
+                <span v-if="
+                  settings.form.title &&
+                  typeof settings.form.title == 'string'
+                ">{{ translate(settings.form.title) }}</span>
+                <span v-if="!settings.form.title">{{ translate('Edit') }}</span>
 
-                <div
-                  v-show="ui.wait.form"
-                  class="spinner-border spinner-border-sm text-info mx-2"
-                  role="status"
-                >
+                <div v-show="ui.wait.form" class="spinner-border spinner-border-sm mx-2" role="status">
                   <span class="visually-hidden">Loading...</span>
                 </div>
                 <small v-if="errors">
-                  <a
-                    class="text-danger link-underline link-underline-opacity-0 fs-6 ms-3"
-                    :href="'#' + formId + '_errors'"
-                  >
+                  <a class="text-danger link-underline link-underline-opacity-0 fs-6 ms-3" :href="'#' + formId + '_errors'">
                     <i class="bi bi-exclamation-circle"></i>
                     Hiba történt
                     <i class="bi bi-arrow-down"></i>
                   </a>
                 </small>
               </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <div
-              class="modal-header d-flex justify-content-between"
-              v-cloak
-              v-if="item"
-            >
+            <div class="modal-header d-flex justify-content-between" v-cloak v-if="item">
               <div>
-                <button
-                  type="button"
-                  class="btn btn-secondary m-1"
-                  @click="reloadItem()"
-                  :disabled="!item[settings.pkey]"
-                >
-                  <i class="bi bi-arrow-clockwise"></i> {{  translate('Reload')  }}
+                <button type="button" class="btn btn-secondary m-1" @click="reloadItem()" :disabled="!item[settings.pkey]">
+                  <i class="bi bi-arrow-clockwise"></i> {{ translate('Reload') }}
                 </button>
 
-                <button
-                  type="button"
-                  class="btn btn-outline-warning m-1"
-                  @click="createItem()"
-                >
-                  <i class="bi bi-plus-circle"></i> {{  translate('New')  }}
+                <button type="button" class="btn btn-outline-warning m-1" @click="createItem()">
+                  <i class="bi bi-plus-circle"></i> {{ translate('New') }}
                 </button>
 
-                <button
-                  type="button"
-                  class="btn btn-outline-warning m-1"
-                  @click="copyItem()"
-                >
-                  <i class="bi bi-copy"></i> {{  translate('Copy')  }}
+                <button type="button" class="btn btn-outline-warning m-1" @click="copyItem()">
+                  <i class="bi bi-copy"></i> {{ translate('Copy') }}
                 </button>
 
-                <button
-                  type="button"
-                  class="btn btn-danger m-1"
-                  @click="deleteItem()"
-                  :disabled="!item[settings.pkey]"
-                >
-                  <i class="bi bi-trash"></i> {{  translate('Delete')  }}
+                <button type="button" class="btn btn-danger m-1" @click="deleteItem()" :disabled="!item[settings.pkey]">
+                  <i class="bi bi-trash"></i> {{ translate('Delete') }}
                 </button>
               </div>
 
               <div>
-                <button
-                  type="button"
-                  class="btn btn-secondary m-1"
-                  data-bs-dismiss="modal"
-                >
-                  <i class="bi bi-x"></i> {{  translate('Close')  }}
+                <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">
+                  <i class="bi bi-x"></i> {{ translate('Close') }}
                 </button>
 
                 <button type="submit" class="btn btn-primary m-1">
-                  <i class="bi bi-save"></i> {{  translate('Save')  }}
+                  <i class="bi bi-save"></i> {{ translate('Save') }}
                 </button>
 
-                <button
-                  type="button"
-                  class="btn btn-success m-1"
-                  @click="submitAndClose"
-                >
-                  <i class="bi bi-save"></i> {{  translate('Save and close')  }}
+                <button type="button" class="btn btn-success m-1" @click="submitAndClose">
+                  <i class="bi bi-save"></i> {{ translate('Save and close') }}
                 </button>
               </div>
             </div>
 
             <div class="modal-body custom-scroll">
               <div class="row" v-if="settings.form">
-                <div
-                  class="pb-5"
-                  :class="[group.class ? group.class : 'col-md-12']"
-                  v-for="group in settings.form.groups"
-                  :key="group"
-                >
+                <div class="pb-5" :class="[group.class ? group.class : 'col-md-12']" v-for="group in settings.form.groups" :key="group">
                   <h2 class="form-row-title mb-4 fw-lighter">
-                    {{  group.title  }}
+                    {{ group.title }}
                   </h2>
 
-                  <VuAdminFormGroup
-                    v-cloak
-                    v-if="item && group"
-                    v-model="item"
-                    :group="group"
-                    :formid="formId"
-                    :settings="settings"
-                  ></VuAdminFormGroup>
+                  <VuAdminFormGroup v-cloak v-if="item && group" v-model="item" :group="group" :formid="formId" :settings="settings"></VuAdminFormGroup>
                 </div>
               </div>
 
@@ -961,78 +587,48 @@
 
                 <div v-for="errorgroup in errors" :key="errorgroup">
                   <div v-for="error in errorgroup" :key="error">
-                    <span class="text-danger"> {{  error.message  }} </span>
+                    <span class="text-danger"> {{ error.message }} </span>
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              class="modal-footer d-flex justify-content-between"
-              v-cloak
-              v-if="item"
-            >
+            <div class="modal-footer d-flex justify-content-between" v-cloak v-if="item">
               <div>
-                <button
-                  type="button"
-                  class="btn btn-secondary m-1"
-                  @click="reloadItem()"
-                  :disabled="!item[settings.pkey]"
-                >
-                  <i class="bi bi-arrow-clockwise"></i> {{  translate('Reload')  }}
+                <button type="button" class="btn btn-secondary m-1" @click="reloadItem()" :disabled="!item[settings.pkey]">
+                  <i class="bi bi-arrow-clockwise"></i> {{ translate('Reload') }}
                 </button>
 
-                <button
-                  type="button"
-                  class="btn btn-outline-warning m-1"
-                  @click="createItem()"
-                >
-                  <i class="bi bi-plus-circle"></i> {{  translate('New')  }}
+                <button type="button" class="btn btn-outline-warning m-1" @click="createItem()">
+                  <i class="bi bi-plus-circle"></i> {{ translate('New') }}
                 </button>
 
-                <button
-                  type="button"
-                  class="btn btn-outline-warning m-1"
-                  @click="copyItem()"
-                >
-                  <i class="bi bi-copy"></i> {{  translate('Copy')  }}
+                <button type="button" class="btn btn-outline-warning m-1" @click="copyItem()">
+                  <i class="bi bi-copy"></i> {{ translate('Copy') }}
                 </button>
 
-                <button
-                  type="button"
-                  class="btn btn-danger m-1"
-                  @click="deleteItem()"
-                  :disabled="!item[settings.pkey]"
-                >
-                  <i class="bi bi-trash"></i> {{  translate('Delete')  }}
+                <button type="button" class="btn btn-danger m-1" @click="deleteItem()" :disabled="!item[settings.pkey]">
+                  <i class="bi bi-trash"></i> {{ translate('Delete') }}
                 </button>
               </div>
 
               <div>
-                <button
-                  type="button"
-                  class="btn btn-secondary m-1"
-                  data-bs-dismiss="modal"
-                >
-                  <i class="bi bi-x"></i> {{  translate('Close')  }}
+                <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">
+                  <i class="bi bi-x"></i> {{ translate('Close') }}
                 </button>
 
                 <button type="submit" class="btn btn-primary m-1">
-                  <i class="bi bi-save"></i> {{  translate('Save')  }}
+                  <i class="bi bi-save"></i> {{ translate('Save') }}
                 </button>
 
-                <button
-                  type="button"
-                  class="btn btn-success m-1"
-                  @click="submitAndClose"
-                >
-                  <i class="bi bi-save"></i> {{  translate('Save and close')  }}
+                <button type="button" class="btn btn-success m-1" @click="submitAndClose">
+                  <i class="bi bi-save"></i> {{ translate('Save and close') }}
                 </button>
               </div>
             </div>
           </form>
           <pre class="bg-light text-dark" v-if="settings.debug">
-            {{  item  }}
-          </pre>
+        {{ item }}
+      </pre>
         </div>
       </div>
     </div>
@@ -1071,7 +667,7 @@ export default {
       item: {},
       items: {},
       selected: [], // config alá menjen, hogy a localStorage -ba mentsük el ezt is
-      details: [], // ez hol van használva?
+      details: [], // melyik sor van kinyitva
       bulkitem: {},
       bulkinputs: [],
       config: {
@@ -1244,7 +840,7 @@ export default {
           column.filter.value =
             column.filter.default_value !== undefined
               ? column.filter.default_value
-              : undefined;
+              : column.filter.value;
 
           column.filter.operator =
             column.filter.default_operator !== undefined
@@ -1398,26 +994,28 @@ export default {
     },
 
     getValueOrFunction(object, params) {
-      return getValueOrFunction(object, params);
+      return getValueOrFunction(object, params, this.settings, this);
     },
 
     getButtonClassByAction(action) {
       switch (action) {
         case "resetorders":
         case "resetfilters":
-          return "btn btn-sm btn-outline-warning text-nowrap mx-1";
+          return "btn btn-sm btn-outline-secondary text-nowrap mx-1";
         case "resetdetails":
-          return "btn btn-sm btn-outline-warning text-nowrap mx-1";
+          return "btn btn-sm btn-outline-secondary text-nowrap mx-1";
         case "edit":
-          return "btn btn-sm btn-primary text-nowrap mx-1";
+          return "btn btn-sm btn-secondary text-nowrap mx-1";
         case "save":
           return "btn btn-sm btn-primary text-nowrap mx-1";
         case "delete":
           return "btn btn-sm btn-danger text-nowrap mx-1";
         case "details":
-          return "btn btn-sm btn-outline-secondary text-light text-nowrap mx-1";
+          return "btn btn-sm btn-outline-secondary text-nowrap mx-1";
         case "columns":
           return "btn btn-sm btn-outline-dark text-nowrap mx-1";
+        case "export":
+          return "btn btn-sm btn-primary text-nowrap mx-1";
       }
     },
 
@@ -1438,13 +1036,20 @@ export default {
           return "bi bi-chevron-compact-down";
         case "columns":
           return "bi bi-table";
+        case "export":
+          return "bi bi-download";
       }
     },
 
-    tableCellValue(path, item) {
+    tableCellValue(path, item, index, column) {
       try {
+
         if (path === undefined || item === undefined) {
           return;
+        }
+
+        if (column.value) {
+          return column.value(path, item, index, column)
         }
 
         if (item[path] !== undefined) {
@@ -1476,8 +1081,8 @@ export default {
       let action = button.action
         ? button.action
         : button.click
-        ? button.click
-        : null;
+          ? button.click
+          : null;
 
       if (action && typeof action !== "string") {
         action(item, this);
@@ -1667,6 +1272,7 @@ export default {
     },
 
     async fetchTable(urlParams) {
+
       try {
         this.errors = null;
 
@@ -1674,7 +1280,7 @@ export default {
 
         urlParams = urlParams ? urlParams : {};
         urlParams.filter = this.getFiltersForFetch();
-        urlParams.order = this.getOrdersForFetch();      
+        urlParams.order = this.getOrdersForFetch();
 
         if (
           this.config.pagination.page !== null &&
@@ -1694,60 +1300,14 @@ export default {
           urlParams.skip = (urlParams.page - 1) * urlParams.limit;
         }
 
-        if (this.settings.events && this.settings.events.beforeItemsLoad) {
-          this.settings.events.beforeItemsLoad(urlParams, this.settings);
-        }
+        let items = await this.fetchItems(this.settings, urlParams, this.config);
 
-        const response = await fetch(
-          prepareFetchUrl("GET", this.settings.table.api, null, urlParams),
-          prepareFetchOptions("GET", this.settings.api)
-        );
-
-        if (response.status !== 200) {
-          throw new Error(
-            this.translate("Response status: " + response.status)
-          );
-        }
-
-        const data = await getResponseJson(response);
-        let error = this.getResponseErrors(response, data);
-
-        if (error || !data) {
-          console.log(this.errors);
+        if (items === false) {
           this.tableNoWait();
-          return;
+          return false;
         }
 
-        if (this.settings.events && this.settings.events.afterItemsLoad) {
-          this.settings.events.afterItemsLoad(data, response);
-        }
-
-        let items;
-
-        if (this.settings.table.api.input.items) {
-          items =
-            typeof this.settings.table.api.input.items === "string"
-              ? data[this.settings.table.api.input.items]
-              : this.settings.table.api.input.items(data, response);
-        } else {
-          items = data;
-        }
-
-        //console.log(items);
-
-        if (this.settings.table.api.input.total) {
-          this.config.pagination.total =
-            typeof this.settings.table.api.input.total === "string"
-              ? data[this.settings.table.api.input.total]
-              : this.settings.table.api.input.total(data, response);
-        } else if (data.total) {
-          this.config.pagination.total = data.total;
-        }
-
-        this.config.pagination.items = items.length;
-        this.calcPage();
-
-        let relations = this.getRelationsForFetch();             
+        let relations = this.getRelationsForFetch();
 
         // load relations
         for (let key of Object.keys(relations)) {
@@ -1766,19 +1326,78 @@ export default {
           await this.fetchRelation(relations[key], items);
         }
 
-        if (items) {
-          // this.items = data.items;
-          this.items = flattenArrayObjects(items);
-          this.convertsIn(this.items);
-        }
-
+        this.items = items;
         this.tableNoWait();
+
       } catch (error) {
         console.error(error.message);
 
         this.addMessage(error.message, 3500, "danger");
         this.tableNoWait();
       }
+    },
+
+    async fetchItems(settings, urlParams, config) {
+
+      if (settings.events && settings.events.beforeItemsLoad) {
+        settings.events.beforeItemsLoad(urlParams, settings);
+      }
+
+      const response = await fetch(
+        prepareFetchUrl("GET", settings.table.api, null, urlParams),
+        prepareFetchOptions("GET", settings.api)
+      );
+
+      if (response.status !== 200) {
+        throw new Error(
+          this.translate("Response status: " + response.status)
+        );
+      }
+
+      const data = await getResponseJson(response);
+      let error = this.getResponseErrors(response, data);
+
+      if (error || !data) {
+        console.error(this.errors);
+        return false;
+      }
+
+      if (settings.events && settings.events.afterItemsLoad) {
+        settings.events.afterItemsLoad(data, response);
+      }
+
+      let items;
+
+      if (settings.table.api.input.items) {
+        items =
+          typeof settings.table.api.input.items === "string"
+            ? data[settings.table.api.input.items]
+            : settings.table.api.input.items(data, response);
+      } else {
+        items = data;
+      }
+
+      if (config) {
+
+        if (settings.table.api.input.total) {
+          config.pagination.total =
+            typeof settings.table.api.input.total === "string"
+              ? data[settings.table.api.input.total]
+              : settings.table.api.input.total(data, response);
+        } else if (data.total) {
+          config.pagination.total = data.total;
+        }
+
+        config.pagination.items = items.length;
+        this.calcPage();
+
+      }
+
+      let flattenedItems = flattenArrayObjects(items);
+      this.convertIn(settings.table.columns, flattenedItems);
+
+      return flattenedItems;
+
     },
 
     async fetchRelation(relation, items) {
@@ -1930,7 +1549,9 @@ export default {
           item = this.item;
         }
 
-        if (!item[this.settings.pkey]) {
+        let primaryId = item[this.settings.pkey];
+
+        if (!primaryId) {
           return;
         }
 
@@ -1942,11 +1563,15 @@ export default {
 
         this.formWait(true);
 
+        if (this.settings.events && this.settings.events.beforeItemDelete) {
+          this.settings.events.beforeItemDelete(item);
+        }
+
         const response = await fetch(
           prepareFetchUrl(
             "DELETE",
             this.settings.form.api,
-            item[this.settings.pkey],
+            primaryId,
             urlParams
           ),
           prepareFetchOptions("DELETE", this.settings.api)
@@ -1958,7 +1583,24 @@ export default {
           );
         }
 
-        this.modalWindow.hide();
+        let itemindex = this.items.find((item) => item[this.settings.pkey] === primaryId);
+
+        console.log(itemindex, primaryId);
+
+        if (itemindex >= 0) {
+          this.items.splice(itemindex, 1);
+        }
+
+        if (this.item) {
+          this.item = {};
+          // this.modalWindow.hide();
+        }
+
+        const data = await response.json();
+
+        if (this.settings.events && this.settings.events.afterItemDelete) {
+          this.settings.events.afterItemDelete(data, response);
+        }
 
         this.reloadTable();
         this.formNoWait();
@@ -2049,11 +1691,9 @@ export default {
         this.tableWait();
         this.formWait(true);
 
-        urlParams = urlParams ? urlParams : {};
+        let primaryId = input[this.settings.pkey];
 
-        if (this.settings.events && this.settings.events.beforeItemSave) {
-          this.settings.events.beforeItemSave(input, urlParams);
-        }
+        urlParams = urlParams ? urlParams : {};
 
         let item = {};
 
@@ -2070,6 +1710,10 @@ export default {
           Object.assign(item, input);
         }
 
+        if (this.settings.events && this.settings.events.beforeItemSave) {
+          this.settings.events.beforeItemSave(item, urlParams, input);
+        }
+
         // const item = Object.keys(input)
         //   .filter((key) => this.settings.api.output.fields.includes(key))
         //   .reduce((obj, key) => {
@@ -2080,17 +1724,16 @@ export default {
         // const formData = new FormData();
 
         // this.files.forEach((file, index) => {
-        // 	formData.append(`file{{ index }}`, file);
+        // 	formData.append(`file{{ index }}`, file);convertOut
         // });
 
         // formData.append("json", JSON.stringify({
         // 	item: item,
         // }));
 
-        let primaryId = item[this.settings.pkey];
         let body;
 
-        this.convertsOut([item]);
+        this.convertOut(this.settings.table.columns, [item]);
 
         if (!this.settings.form.api.output.flatten || !primaryId) {
           item = unflattenObject(item);
@@ -2129,6 +1772,10 @@ export default {
         if (error) {
           console.log(this.errors);
           return;
+        }
+
+        if (this.settings.events && this.settings.events.afterItemSave) {
+          this.settings.events.afterItemSave(data, urlParams);
         }
 
         if (callback) {
@@ -2181,7 +1828,7 @@ export default {
         //     return obj;
         //   }, {});
 
-        this.convertsOut([item]);
+        this.convertOut(this.settings.table.columns, [item]);
 
         // unflatten nem kell a Mongo miatt, de mi van ha a backend mysql? akkor a json úgy is egy mező
         //item = unflattenObject(item);
@@ -2328,7 +1975,8 @@ export default {
 
     async exportTable(urlParams) {
       try {
-        urlParams.limit = ".";
+
+        urlParams.limit = this.config.pagination.total ? this.config.pagination.total : 0;
 
         let filter = this.getFiltersForFetch();
         // let relations = this.getRelationsForFetch();
@@ -2345,34 +1993,12 @@ export default {
         urlParams.filter = filter;
         urlParams.order = order;
 
-        if (this.settings.events && this.settings.events.beforeItemsLoad) {
-          this.settings.events.beforeItemsLoad(urlParams, this.settings);
+        let items = await this.fetchItems(this.settings, urlParams);
+
+        if (this.settings.events && this.settings.events.beforeItemsExport) {
+          this.settings.events.beforeItemsExport(items);
         }
 
-        const response = await fetch(
-          prepareFetchUrl("GET", this.settings.table.api, null, urlParams),
-          prepareFetchOptions("GET", this.settings.table.api)
-        );
-
-        if (response.status !== 200) {
-          throw new Error(
-            this.translate("Response status: " + response.status)
-          );
-        }
-
-        const data = await getResponseJson(response);
-        let error = this.getResponseErrors(response, data);
-
-        if (error || !data) {
-          return;
-        }
-
-        if (this.settings.events && this.settings.events.afterItemLoad) {
-          this.settings.events.afterItemLoad(data, response);
-        }
-
-        let items = flattenArrayObjects(data);
-        this.convertsIn(items);
         let csvString = convertToCSV(
           items,
           this.settings.table.exports[urlParams.type].fields
@@ -2491,27 +2117,26 @@ export default {
       return translate(key, this.settings.translate, vars, language);
     },
 
-    convertsIn(items) {
-      this.converts(items, "in");
-    },
+    convertIn(columns, items) {
 
-    convertsOut(items) {
-      this.converts(items, "out");
-    },
-
-    converts(items, direction) {
-      if (!this.settings.converts || !this.settings.converts[direction]) {
-        return;
+      for (let column of columns) {
+        if (column.convert) {
+          if (column.convert.in) {
+            for (let item of items) {
+              item[column.name] = column.convert.in(item[column.name], item, column);
+            }
+          }
+        }
       }
+    },
 
-      for (let convert of this.settings.converts[direction]) {
-        for (let item of items) {
-          for (let field in item) {
-            if (convert.fields.indexOf(field) >= 0) {
-              item[field] = this.settings.methods[convert.method](
-                item[field],
-                item
-              );
+    convertOut(columns, items) {
+
+      for (let column of columns) {
+        if (column.convert) {
+          if (column.convert.out) {
+            for (let item of items) {
+              item[column.name] = column.convert.out(item[column.name], item, column);
             }
           }
         }
@@ -2545,6 +2170,7 @@ export default {
     0% {
       opacity: 0;
     }
+
     100% {
       opacity: 0.21;
     }
@@ -2578,6 +2204,7 @@ export default {
   }
 
   [data-bs-theme="light"] {
+
     .vua-overlay {
       background-color: rgb(255, 255, 255);
     }
@@ -2585,15 +2212,45 @@ export default {
     .vua-table-title {
       color: var(--bs-dark);
     }
+
     .vua-table-control {
       user-select: none;
       background-color: var(--bs-light);
       color: var(--bs-dark);
     }
+
     .vua-table-bulk {
       background-color: var(--bs-dark);
       color: var(--bs-light);
     }
+
+    .vua-table-filter {
+      input {
+        color: var(--bs-dark);
+      }
+    }
+
+    .badge-index {
+      color: var(--bs-secondary);
+
+      &.selected {
+        color: var(--bs-dark);
+        border-color: var(--bs-dark) !important;
+      }
+
+    }
+
+    .badge-index-toggle {
+
+      color: var(--bs-secondary);
+
+      &.active {
+        color: var(--bs-light);
+        background-color: var(--bs-secondary) !important;
+      }
+
+    }
+
   }
 
   [data-bs-theme="dark"] {
@@ -2606,6 +2263,7 @@ export default {
     .vua-table-title {
       color: var(--bs-light);
     }
+
     .vua-table-control {
       user-select: none;
       background-color: var(--bs-secondary);
@@ -2615,6 +2273,28 @@ export default {
     .modal-title {
       color: var(--bs-light);
     }
+
+    .badge-index {
+      color: var(--bs-secondary);
+
+      &.selected {
+        color: var(--bs-light);
+        border-color: var(--bs-light) !important;
+      }
+
+    }
+
+    .badge-index-toggle {
+
+      color: var(--bs-secondary);
+
+      &.active {
+        color: var(--bs-dark);
+        background-color: var(--bs-light) !important;
+      }
+
+    }
+
   }
 
   /* Mobil stílusok */
@@ -2653,4 +2333,3 @@ export default {
   }
 }
 </style>
-
