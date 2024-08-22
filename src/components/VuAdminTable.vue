@@ -129,7 +129,7 @@
 
               <span v-html="(column.header && column.header.title
                 !== undefined) ?
-                column.header.title : (column.title ? column.title :
+                translate(column.header.title) : (column.title ? translate(column.title) :
                   translate(column.name))"></span>
 
               <span class="badge text-bg-light ms-1 p-badge" v-if="
@@ -503,7 +503,8 @@
     <div class="modal shadow" :id="modalId" tabindex="-1">
       <div class="modal-dialog modal-xl">
         <div class="modal-content h-100">
-          <form ref="form" v-cloak v-if="item" :id="formId" class="form" @submit.prevent="submitItem" :class="{ wait: ui.wait.form }" :data-bs-theme="[settings.theme]">
+          <form ref="form" v-cloak v-if="item" :id="formId" class="form" @submit.prevent="submitItem" :class="[settings.form.class, { wait: ui.wait.form }]"
+            :data-bs-theme="[settings.theme]">
             <div class="vua-overlay" :class="{ blocked: ui.block.form }"></div>
             <div class="modal-header">
               <h5 class="modal-title">
@@ -565,8 +566,9 @@
               </div>
             </div>
 
-            <div class="modal-body custom-scroll">
-              <div class="row" v-if="settings.form">
+            <div class="modal-body custom-scroll" v-if="settings.form">
+
+              <div class="row" :class="[settings.form.rowclass ? settings.form.rowclass : '']">
                 <div class="pb-5" :class="[group.class ? group.class : 'col-md-12']" v-for="group in settings.form.groups" :key="group">
                   <h2 class="form-row-title mb-4 fw-lighter">
                     {{ group.title }}
@@ -1474,26 +1476,32 @@ export default {
       }
     },
 
-    editItem(item) {
-      this.modalWindow.show();
-      this.item = item;
+    async editItem(item) {
 
-      setTimeout(() => {
-        this.fetchItem(item);
-      }, 10);
+      this.item = item;
+      this.modalWindow.show();
+
+      let primaryId = item[this.settings.pkey];      
+
+      this.fetchItem(primaryId);
+      
+      setTimeout(() => {        
+        
+      }, 100);
     },
 
-    async fetchItem(item) {
-      try {
-        this.errors = null;
+    async fetchItem(primaryId) {
 
+      try {
+
+        this.errors = null;
         this.formWait(true);
 
         const response = await fetch(
           prepareFetchUrl(
             "GET",
             this.settings.form.api,
-            item[this.settings.pkey]
+            primaryId
           ),
           prepareFetchOptions("GET", this.settings.api)
         );
@@ -1504,7 +1512,17 @@ export default {
           );
         }
 
-        const data = await response.json();
+        const data = await getResponseJson(response);
+        let error = this.getResponseErrors(response, data);
+
+        if (error || !data) {
+          console.error(this.errors);
+          return false;
+        }
+
+        if (this.settings.events && this.settings.events.afterItemLoad) {
+          this.settings.events.afterItemLoad(data, response);
+        }
 
         //console.log(relations, this.settings);
 
@@ -1525,18 +1543,23 @@ export default {
           }
         }
 
-        if (this.settings.events && this.settings.events.afterItemLoad) {
-          this.settings.events.afterItemLoad(data.item);
+        let item;
+
+        if (this.settings.form.api.input.item) {
+          item =
+            typeof this.settings.form.api.input.item === "string"
+              ? data[this.settings.form.api.input.item]
+              : this.settings.form.api.input.item(data, response);
+        } else {
+          item = data;
         }
 
-        if (data.item) {
-          this.item = flattenObject(data.item);
-          this.itemOriginal = Object.assign({}, data.item);
-        }
+        this.item = flattenObject(item);
+        this.itemOriginal = Object.assign({}, item);
 
         this.formNoWait();
       } catch (error) {
-        console.error(error.message);
+        console.error(error);
         this.formNoWait();
       }
     },
@@ -1655,8 +1678,9 @@ export default {
       }
     },
 
-    reloadItem() {
-      this.fetchItem(this.item);
+    reloadItem() {      
+      let primaryId = this.item[this.settings.pkey]; 
+      this.fetchItem(primaryId);
     },
 
     async submitItem(closeModal) {

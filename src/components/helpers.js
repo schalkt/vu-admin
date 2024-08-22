@@ -4,7 +4,7 @@ export function getValueOrFunction(object, params, settings, vua) {
         if (typeof object === 'function') {
             return object(params, settings, vua);
         }
-
+        
         return object;
 
     } catch (error) {
@@ -86,8 +86,8 @@ export function prepareFetchUrl(method, api, id, urlParams) {
 }
 
 
-export function slugify(separator = "-") {
-    return this.toString() // Cast to string (optional)
+export function slugify(value, separator = "-") {
+    return value.toString() // Cast to string (optional)
         .normalize("NFKD") // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase() // Convert the string to lowercase letters

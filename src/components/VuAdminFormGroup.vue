@@ -1,13 +1,13 @@
 <template>
   <div v-cloak v-if="item && group.fields">
     <div class="form-group pb-3" v-for="field in group.fields" :key="field">
-      <span v-if="field.label">
+      <span v-if="field.label !== null">
         <label
-          v-if="['html', 'image'].indexOf(field.type) < 0"
+          v-if="['html', 'image'].indexOf(field.type) >= 0"
           v-cloak
           class="form-label text-secondary mb-1"
         >
-          {{  field.label  }}
+          {{  field.label ? field.label : translate(field.name)  }}
           <span class="badge text-secondary fw-light" v-if="field.maxlength">
             {{  item[field.name] ? item[field.name].length : 0  }} / {{ field.maxlength }}
           </span>
@@ -17,7 +17,7 @@
           v-cloak
           class="form-label text-secondary mb-1"
           :for="formid + '_' + field.name"
-          v-html="getValueOrFunction(field.label, { field: field, item: item })"
+          v-html="getValueOrFunction(field.label ? field.label : translate(field.name), { field: field, item: item })"
         >
         </label>
       </span>
@@ -54,6 +54,7 @@
           v-model="item[field.name]"
           :min="field.min"
           :max="field.max"
+          :step="field.step"
           :placeholder="field.placeholder ? field.placeholder : ''"
           :readonly="field.readonly"
           :required="field.required"
@@ -103,7 +104,7 @@
             :key="option"
             :value="option.value"
           >
-            {{  option.label  }}
+            {{  option.label ? option.label : option.value }}
           </option>
         </select>
 
@@ -208,6 +209,10 @@ const VuAdminFormGroup = {
   methods: {
     getValueOrFunction(object, params) {
       return getValueOrFunction(object, params);
+    },
+
+    translate(key, vars, language) {
+      return translate(key, this.settings.translate, vars, language);
     },
 
     selectOptions(options, field) {
