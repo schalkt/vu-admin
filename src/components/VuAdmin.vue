@@ -1,6 +1,8 @@
 <template>
-  <div v-cloak v-if="entity && settings.table" class="vu-admin" :data-bs-theme="[settings.theme]">
-    <vu-admin-table :settings="settings"></vu-admin-table>
+  <div v-cloak v-if="entity && settings">
+    <div class="vu-admin" :data-bs-theme="[settings.theme]">
+      <vu-admin-table :settings="settings"></vu-admin-table>
+    </div>
   </div>
 </template>
 
@@ -24,7 +26,7 @@ export default {
   data() {
     return {
 
-      settings: null,
+      settings: undefined,
       defaults: {
         // primary id field name
         // required, default : undefined
@@ -180,7 +182,11 @@ export default {
         this.settings.events.afterSettingsInit(this.settings);
       }
 
+    } else {
+      console.error(`Entity config (${this.entity}) not found`);
     }
+
+
 
   },
   mounted() { },

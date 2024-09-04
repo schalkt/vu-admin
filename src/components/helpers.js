@@ -4,7 +4,7 @@ export function getValueOrFunction(object, params, settings, vua) {
         if (typeof object === 'function') {
             return object(params, settings, vua);
         }
-        
+
         return object;
 
     } catch (error) {
@@ -12,11 +12,17 @@ export function getValueOrFunction(object, params, settings, vua) {
     }
 }
 
-export async function getResponseJson(response) {
+export async function getResponseJson(response, onError) {
     try {
-        return await response.json();
+        return {
+            data: await response.json(),
+            error: null
+        }
     } catch (error) {
-        return null;
+        return {
+            data: undefined,
+            error: error
+        }
     }
 }
 
@@ -68,20 +74,22 @@ export function prepareFetchOptions(method, api, options) {
 export function prepareFetchUrl(method, api, id, urlParams) {
 
     let haveParams = false;
+    let queryParams = Object.assign({}, urlParams ? urlParams : {});
 
     if (urlParams) {
+
         if (urlParams.filter) {
-            urlParams.filter = JSON.stringify(urlParams.filter);
+            queryParams.filter = JSON.stringify(urlParams.filter);
         }
 
         if (urlParams.order) {
-            urlParams.order = JSON.stringify(urlParams.order);
+            queryParams.order = JSON.stringify(urlParams.order);
         }
 
-        haveParams = urlParams && Object.keys(urlParams).length;
+        haveParams = Object.keys(queryParams).length;
     }
 
-    return api.url + (id ? '/' + id : '') + (haveParams ? "?" + (new URLSearchParams(urlParams)).toString() : '');
+    return api.url + (id ? '/' + id : '') + (haveParams ? "?" + (new URLSearchParams(queryParams)).toString() : '');
 
 }
 

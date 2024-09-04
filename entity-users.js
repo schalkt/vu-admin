@@ -312,7 +312,7 @@ export default {
 					class: 'text-end text-nowrap',
 					buttons: [
 						{
-							action: 'resetorders',
+							action: 'TABLE_RESET_ORDERS',
 						},
 					],
 				},
@@ -323,33 +323,33 @@ export default {
 					class: 'text-end text-nowrap',
 					buttons: [
 						{
-							action: 'resetdetails',
+							action: 'TABLE_CLOSE_DETAILS',
 						},
 						{
-							action: 'resetfilters',
+							action: 'TABLE_RESET_FILTERS',
 						},
 					],
 				},
 				buttons: [
 					{
-						action: 'details',
+						action: 'TABLE_ROW_DETAIL',
 					},
 					{
-						action: 'edit',
+						action: 'TABLE_ROW_EDIT',
 					},
 					{
-						action: 'delete',
+						action: 'TABLE_ROW_DELETE',
 					},
 					{
-						action: 'save',
+						action: 'TABLE_ROW_SAVE',
 					},
 				],
 				bulkbuttons: [
 					{
-						action: 'delete',
+						action: 'TABLE_BULK_DELETE',
 					},
 					{
-						action: 'save',
+						action: 'TABLE_BULK_SAVE',
 					},
 				],
 			},

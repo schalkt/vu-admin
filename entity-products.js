@@ -1,5 +1,6 @@
+import VuAdmin from "./src/components/VuAdmin.vue";
 
-let api = {
+let api = {	
 	url: '/api/products',
 	// auth: {
 	// 	type: 'Bearer',
@@ -84,7 +85,7 @@ let columns = [
 	{
 
 		title: '#',
-		click: 'select',
+		click: 'TABLE_ROW_SELECT',
 		index: true,
 		sortable: false,
 		width: '5%',
@@ -323,7 +324,7 @@ let columns = [
 			class: 'text-end text-nowrap',
 			buttons: [
 				{
-					action: 'resetorders',
+					action: 'TABLE_RESET_ORDERS',
 				},
 			],
 		},
@@ -334,7 +335,7 @@ let columns = [
 			class: 'text-end text-nowrap',
 			buttons: [
 				{
-					action: 'resetdetails',
+					action: 'TABLE_CLOSE_DETAILS',
 					disabled: (params, settings, vua) => {
 						// console.log('resetdetails', params, settings, vua);
 						return vua.details.length ? false : true;
@@ -342,36 +343,38 @@ let columns = [
 					}
 				},
 				{
-					action: 'resetfilters',
+					action: 'TABLE_RESET_FILTERS',
 				},
 			],
-		},
+		},		
 		buttons: [
 			{
-				action: 'details',
+				action: 'TABLE_ROW_DETAIL',
 				icon: (params) => {
 					// console.log(params);
 					return params.table.details.indexOf(params.item.id) >= 0 ? 'bi bi-chevron-compact-up' : 'bi bi-chevron-compact-down';
 				}
 			},
 			{
-				action: 'edit',
+				action: 'TABLE_ROW_EDIT'
 			},
 			{
-				action: 'delete',
+				action: 'TABLE_ROW_DELETE',
 			},
 			{
-				action: 'save',
+				action: 'TABLE_ROW_SAVE',
 			},
 		],
-		bulkbuttons: [
-			{
-				action: 'delete',
-			},
-			{
-				action: 'save',
-			},
-		],
+		bulk:{
+			buttons: [
+				{
+					action: 'TABLE_BULK_DELETE',
+				},
+				{
+					action: 'TABLE_BULK_SAVE',
+				},
+			],
+		}
 	},
 ];
 
@@ -399,19 +402,19 @@ let table = {
 		class: 'text-center border rounded mt-2',
 		buttons: [
 			{
-				action: 'columns',
+				action: 'TABLE_COLUMNS',
 				title: 'Columns',
 				class: 'btn btn-sm btn-outline-dark m-1',
 				icon: 'bi bi-table',
 			},
 			{
-				action: 'reload',
+				action: 'TABLE_RELOAD',
 				title: 'Reload',
 				class: 'btn btn-sm btn-outline-dark m-1',
 				icon: 'bi bi-arrow-clockwise',
 			},
 			{
-				action: 'create',
+				action: 'FORM_CREATE',
 				title: 'New',
 				class: 'btn btn-sm btn-warning m-1',
 				icon: 'bi bi-plus-circle',
@@ -434,7 +437,7 @@ let table = {
 				class: 'btn btn-sm btn-primary m-1',
 				icon: 'bi bi-download',
 				dropdowns: [{
-					action: 'export',
+					action: 'TABLE_EXPORT',
 					params: {
 						export: true,
 						type: 'default',
@@ -474,8 +477,7 @@ let table = {
 		],
 		raw: function (item) {
 			return [
-				'<div class="my-1 p-2 bg-secondary text-dark d-flex align-items-center justify-content-center">',
-				'<small>' + JSON.stringify(item) + '</small>',
+				'<div class="my-1 p-2 bg-secondary text-dark d-flex align-items-center justify-content-center">',				
 				// '<small class="me-4"><strong class="me-2">Azonosító</strong><span>' + item['_id'] + '</span></small>',
 				// '<small class="me-4"><strong class="me-2">Létrehozva</strong><span>' + (new Date(item['date_created_at'])).toLocaleString('hu-HU') + '</span></small>',
 				// '<small class="me-4"><strong class="me-2">Módosítva</strong><span>' + (new Date(item['date_updated_at'])).toLocaleString('hu-HU') + '</span></small>',
@@ -528,7 +530,7 @@ let table = {
 		}
 	}
 };
-let form = {
+let form = {	
 	class: 'm-2',
 	rowclass: 'm-2',
 	title: (item) => {
@@ -625,6 +627,7 @@ export default {
 
 	// set the primary key field
 	pkey: 'id',
+	debug: true,
 	api: api,
 	events: events,
 	translate: {
