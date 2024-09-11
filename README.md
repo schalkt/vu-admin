@@ -1,8 +1,7 @@
-# Vue Vite Plugin
+# Vu-Admin
 
-A Vue 3 component plugin built with Vite.
+Vue and Bootstrap based table, form and menu elements
 
-## Installation
+## Under heavy development
 
-```sh
-npm install vue-vite-plugin
+Do not use it in a production environment yet

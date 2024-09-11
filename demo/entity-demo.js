@@ -7,7 +7,6 @@ let api = {
 	}
 };
 
-
 let columns = [
 	{
 		name: 'id',
@@ -26,7 +25,7 @@ let columns = [
 			let items = [];
 
 			for (let product of products) {
-				items.push('<small class="mx-3"><span class="badge border border-secondary text-dark me-1">' + product.quantity + '</span> ' + product.title + '</small>');
+				items.push('<small class="mx-3"><span class="badge border border-secondary text-secondary me-1">' + product.quantity + ' x </span> ' + product.title + '</small>');
 			}
 
 			return items.join('|');
@@ -52,7 +51,7 @@ let columns = [
 		},
 		sortable: false,
 		template: (total, item) => {
-			return '<small class="text-muted">' + Math.round(total - item.discountedTotal) + '</small> <span class="badge bg-light border text-dark">HUF</span>'
+			return '<small class="text-muted">' + Math.round(total - item.discountedTotal).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + '</small> <span class="badge bg-light border text-dark">HUF</span>'
 		}
 
 	},
@@ -65,7 +64,7 @@ let columns = [
 		},
 		sortable: false,
 		template: (value) => {
-			return '<strong class="text-primary">' + Math.round(value) + '</strong> <span class="badge bg-light border text-dark">HUF</span>'
+			return '<strong class="text-info">' + Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + '</strong> <span class="badge bg-light border text-dark">HUF</span>'
 		}
 	},
 ];
@@ -74,6 +73,7 @@ window.VuEntities = {
 	carts: {
 		pkey: 'id',
 		api: api,
+		theme: 'dark',
 		table: {
 			title: 'Carts',
 			columns: columns,
