@@ -1,6 +1,6 @@
 # Vu-Admin
 
-Vue and Bootstrap based table, form and menu elements
+VueJS and Bootstrap based table, form and menu elements
 
 ## Under heavy development
 
