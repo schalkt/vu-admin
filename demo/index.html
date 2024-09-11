@@ -14,22 +14,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.31/vue.global.min.js"
     integrity="sha512-uFfFhP36JMGvEaE2jlZ8Hprsae8dNhmM7ZioMF8Wy8/z2ZtRq1FF+znjWOYeU3hpDenXQoCih190zwwoZ/9EbQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+  <link rel="stylesheet" href="./../dist/vu-admin.css" />
+
 </head>
 
 <body>
   
-  <div class="container my-5" id="app">
-    <vu-admin :entity="'demo'"></vu-admin>
+  <div class="container-fluid" id="app">
+    <vu-admin :entity="'carts'"></vu-admin>
   </div>
 
   <script src="./entity-demo.js"></script>
   <script src="./../dist/vu-admin.umd.js"></script>
   <script>
-
-    VuAdmin.VuAdmin.init({
-      translate: {},
-      entities: {}
-    });
 
     const app = Vue.createApp();
     app.component('vu-admin', VuAdmin.VuAdmin);
