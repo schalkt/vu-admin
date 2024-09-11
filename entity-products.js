@@ -532,27 +532,27 @@ let table = {
 };
 let form = {	
 	class: 'm-2',
-	rowclass: 'm-2',
 	title: (item) => {
 		return (item.title ? item.title : '') + (item.id ? '<span class="badge border text-dark ms-2 p-badge">#' + item.id + '</span>' : '');
 	},
 	groups: [
 		{
 			title: 'Main parameters',
-
-			class: 'border border-dark rounded p-4 mb-4 col-md-6',
+			class: 'border border-dark rounded p-4 col-md-6',
 			fields: [
 				{
 					type: 'text',
 					name: 'title',
 					label: 'Product',
 					required: true,
+					class: 'col-md-6'
 				},
 				{
 					type: 'select',
 					name: 'category',
 					label: 'Category',
 					required: true,
+					class: 'col-md-6',
 					options: [
 						{
 							value: 'beauty',

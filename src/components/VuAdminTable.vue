@@ -596,17 +596,7 @@
               </div>
 
               <div class="modal-body custom-scroll" v-if="settings.form">
-
-                <div class="row" :class="[settings.form.rowclass ? settings.form.rowclass : '']">
-                  <div class="pb-5" :class="[group.class ? group.class : 'col-md-12']" v-for="group in settings.form.groups" :key="group">
-                    <h2 class="form-row-title mb-4 fw-lighter">
-                      {{ group.title }}
-                    </h2>
-
-                    <VuAdminFormGroup v-cloak v-if="item && group" v-model="item" :group="group" :formid="formId" :settings="settings"></VuAdminFormGroup>
-                  </div>
-                </div>
-
+                  <VuAdminFormGroup v-cloak v-if="item && settings.form.groups" v-model="item" :formid="formId" :settings="settings"></VuAdminFormGroup>                  
               </div>
               <div class="modal-footer d-flex justify-content-between" v-cloak v-if="item">
                 <div>
