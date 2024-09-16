@@ -1,6 +1,6 @@
 import VuAdmin from "./src/components/VuAdmin.vue";
 
-let api = {	
+let api = {
 	url: '/api/products',
 	// auth: {
 	// 	type: 'Bearer',
@@ -173,8 +173,25 @@ let columns = [
 		title: 'Category',
 		class: 'text-secondary',
 		filter: {
-			type: 'text',
-			default_operator: '%',
+			type: 'dropdown-select',
+			multiple: true,
+			options: [
+				{
+					'value': 'beauty',					
+				},{
+					'value': 'fragrances'
+				}, {
+					'value': 'furniture'
+				}, {
+					'value': 'groceries'
+				}, {
+					'value': 'home-decoration'
+				}, {
+					'value': 'kitchen-accessories'
+				},
+			],
+			default_operator: 'in',
+			default_value: [],
 			buttonx: true
 		},
 		input: {
@@ -346,7 +363,7 @@ let columns = [
 					action: 'TABLE_RESET_FILTERS',
 				},
 			],
-		},		
+		},
 		buttons: [
 			{
 				action: 'TABLE_ROW_DETAIL',
@@ -365,7 +382,7 @@ let columns = [
 				action: 'TABLE_ROW_SAVE',
 			},
 		],
-		bulk:{
+		bulk: {
 			buttons: [
 				{
 					action: 'TABLE_BULK_DELETE',
@@ -477,7 +494,7 @@ let table = {
 		],
 		raw: function (item) {
 			return [
-				'<div class="my-1 p-2 bg-secondary text-dark d-flex align-items-center justify-content-center">',				
+				'<div class="my-1 p-2 bg-secondary text-dark d-flex align-items-center justify-content-center">',
 				// '<small class="me-4"><strong class="me-2">Azonosító</strong><span>' + item['_id'] + '</span></small>',
 				// '<small class="me-4"><strong class="me-2">Létrehozva</strong><span>' + (new Date(item['date_created_at'])).toLocaleString('hu-HU') + '</span></small>',
 				// '<small class="me-4"><strong class="me-2">Módosítva</strong><span>' + (new Date(item['date_updated_at'])).toLocaleString('hu-HU') + '</span></small>',
@@ -530,7 +547,7 @@ let table = {
 		}
 	}
 };
-let form = {	
+let form = {
 	class: 'm-2',
 	title: (item) => {
 		return (item.title ? item.title : '') + (item.id ? '<span class="badge border text-dark ms-2 p-badge">#' + item.id + '</span>' : '');
@@ -573,7 +590,7 @@ let form = {
 					type: 'html',
 					name: 'description',
 					label: 'Description'
-				},	
+				},
 				{
 					type: 'number',
 					step: 0.01,
@@ -617,7 +634,7 @@ let form = {
 							},
 						},
 					}
-				},			
+				},
 			]
 		}
 	]

@@ -235,6 +235,42 @@
                 </select>
               </div>
 
+              <div v-if="column.filter && column.filter.type == 'dropdown-select'">
+
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ column.filter.value.length }} selected
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <span v-for="option in column.filter.options" :key="option" class="dropdown-item cursor-pointer"
+                        :class="{ 'fw-bold': (column.filter.value.indexOf(option.value) >= 0) }" @click="dropdownSelectToggleOne(column.filter.value, option.value)">{{
+                          translate(option.label ? option.label : option.value) }}
+                      </span>
+                    </li>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                      <span class="dropdown-item cursor-pointer" @click="dropdownSelectAll(column.filter.value, column.filter.options)">
+                        {{ translate('Select all') }}
+                      </span>
+                    </li>
+                    <li>
+                      <span class="dropdown-item cursor-pointer" @click="dropdownSelectClear(column.filter.value)">
+                        {{ translate('Unselect all') }}
+                      </span>
+                    </li>
+                    <li>
+                      <span class="dropdown-item cursor-pointer" @click="dropdownSelectInvert(column.filter.value, column.filter.options)">
+                        {{ translate('Invert all') }}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+
+              </div>
+
               <div v-if="
                 column.filter &&
                 (column.filter.type == 'datetime-local' ||
@@ -305,7 +341,7 @@
                   item: item,
                 })
                   " @click="tableAction(column, item, index, $event)">
-                
+
                 <div class="d-inline-block w-100 px-1" v-if="column.index">
                   <span class="cursor-pointer badge border badge-index p-1 w-100" :class="{
                     'selected':
@@ -596,7 +632,7 @@
               </div>
 
               <div class="modal-body custom-scroll" v-if="settings.form">
-                  <VuAdminFormGroup v-cloak v-if="item && settings.form.groups" v-model="item" :formid="formId" :settings="settings"></VuAdminFormGroup>                  
+                <VuAdminFormGroup v-cloak v-if="item && settings.form.groups" v-model="item" :formid="formId" :settings="settings"></VuAdminFormGroup>
               </div>
               <div class="modal-footer d-flex justify-content-between" v-cloak v-if="item">
                 <div>
@@ -646,7 +682,6 @@
 <script>
 import { Modal } from "bootstrap";
 import {
-  array_unique,
   getValueOrFunction,
   getResponseJson,
   prepareFetchUrl,
@@ -657,6 +692,11 @@ import {
   translate,
   convertToCSV,
   downloadCSV,
+  arrayUnique,
+  arrayToggleOne,
+  arraySelectAll,
+  arraySelectInvert,
+  arraySelectClear
 } from "./helpers";
 import VuAdminFormGroup from "./VuAdminFormGroup.vue";
 import VuAdminTablePagination from "./VuAdminTablePagination.vue";
@@ -1372,7 +1412,7 @@ export default {
             }
           }
 
-          relations[key].ids = array_unique(relations[key].ids);
+          relations[key].ids = arrayUnique(relations[key].ids);
 
           await this.fetchRelation(relations[key], items);
         }
@@ -1598,7 +1638,7 @@ export default {
               ? json.data[this.settings.form.api.input.item]
               : this.settings.form.api.input.item(json.data, response);
         } else {
-          item = json.data;          
+          item = json.data;
         }
 
         this.item = flattenObject(item);
@@ -2149,6 +2189,26 @@ export default {
       } else {
         this.details.push(index);
       }
+    },
+
+    dropdownSelectToggleOne(array, value) {
+      arrayToggleOne(array, value);
+      this.reloadTable();
+    },
+
+    dropdownSelectAll(array, options) {
+      arraySelectAll(array, options);
+      this.reloadTable();
+    },
+
+    dropdownSelectInvert(array, options) {
+      arraySelectInvert(array, options);
+      this.reloadTable();
+    },
+
+    dropdownSelectClear(array) {
+      arraySelectClear(array);
+      this.reloadTable();
     },
 
     async exportTable(urlParams) {

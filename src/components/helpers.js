@@ -219,8 +219,46 @@ export function downloadCSV(csvContent, filename = 'export.csv') {
 
 }
 
-export function array_unique(array) {
+export function arrayUnique(array) {
 
     return [... new Set(array)];
 
 }
+
+export function arrayToggleOne(arr, val) {
+
+    if (arr.indexOf(val) >= 0) {
+        arr.splice(arr.indexOf(val), 1);
+    } else {
+        arr.push(val);
+    }
+
+    return;
+
+};
+
+export function arraySelectAll(array, options) {
+
+    for (let option of options) {
+        if (array.indexOf(option.value) < 0) {
+            array.push(option.value);
+        }
+    }
+
+};
+
+export function arraySelectInvert(array, options) {
+
+    for (let option of options) {
+        if (array.indexOf(option.value) < 0) {
+            array.push(option.value);
+        } else {
+            array.splice(array.indexOf(option.value), 1);
+        }
+    }
+
+};
+
+export function arraySelectClear(array) {
+    array.length = 0;
+};
