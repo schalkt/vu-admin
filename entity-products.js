@@ -174,7 +174,8 @@ let columns = [
 		class: 'text-secondary',
 		filter: {
 			type: 'dropdown-select',
-			multiple: true,
+			default_operator: 'in',						
+			multiple: false,
 			options: [
 				{
 					'value': 'beauty',					
@@ -189,10 +190,7 @@ let columns = [
 				}, {
 					'value': 'kitchen-accessories'
 				},
-			],
-			default_operator: 'in',
-			default_value: [],
-			buttonx: true
+			],			
 		},
 		input: {
 			type: 'text',

@@ -239,29 +239,29 @@
 
                 <div class="dropdown">
                   <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ column.filter.value.length }} selected
+                    {{ column.filter.multiple ? (column.filter.value.length + " selected") : (column.filter.value ? column.filter.value : 'not selected' ) }}
                   </button>
                   <ul class="dropdown-menu">
                     <li>
                       <span v-for="option in column.filter.options" :key="option" class="dropdown-item cursor-pointer"
-                        :class="{ 'fw-bold': (column.filter.value.indexOf(option.value) >= 0) }" @click="dropdownSelectToggleOne(column.filter.value, option.value)">{{
+                        :class="{ 'fw-bold': (column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value) }" @click="dropdownSelectToggleOne(column.filter, option.value)">{{
                           translate(option.label ? option.label : option.value) }}
                       </span>
                     </li>
-                    <li>
+                    <li v-if="column.filter.multiple">
                       <hr class="dropdown-divider">
                     </li>
-                    <li>
+                    <li v-if="column.filter.multiple">
                       <span class="dropdown-item cursor-pointer" @click="dropdownSelectAll(column.filter.value, column.filter.options)">
                         {{ translate('Select all') }}
                       </span>
                     </li>
-                    <li>
+                    <li v-if="column.filter.multiple">
                       <span class="dropdown-item cursor-pointer" @click="dropdownSelectClear(column.filter.value)">
                         {{ translate('Unselect all') }}
                       </span>
                     </li>
-                    <li>
+                    <li v-if="column.filter.multiple">
                       <span class="dropdown-item cursor-pointer" @click="dropdownSelectInvert(column.filter.value, column.filter.options)">
                         {{ translate('Invert all') }}
                       </span>
@@ -903,7 +903,7 @@ export default {
           column.filter.value =
             column.filter.default_value !== undefined
               ? column.filter.default_value
-              : undefined;
+              : ( column.filter.multiple ? [] : undefined );
 
           column.filter.operator =
             column.filter.default_operator !== undefined
@@ -2191,9 +2191,16 @@ export default {
       }
     },
 
-    dropdownSelectToggleOne(array, value) {
-      arrayToggleOne(array, value);
+    dropdownSelectToggleOne(filter, value) {      
+
+      if (filter.multiple) {
+        arrayToggleOne(filter.value, value);
+      } else {
+        filter.value = filter.value === value ? null : value;
+      }
+          
       this.reloadTable();
+
     },
 
     dropdownSelectAll(array, options) {
@@ -2207,7 +2214,13 @@ export default {
     },
 
     dropdownSelectClear(array) {
-      arraySelectClear(array);
+
+      if (typeof(array) != "object") { 
+        array.value = null;
+      } else {
+        arraySelectClear(array);
+      }
+      
       this.reloadTable();
     },
 
