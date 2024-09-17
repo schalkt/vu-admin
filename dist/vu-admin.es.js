@@ -11485,8 +11485,7 @@ function Ew(s, t, e, n, i, r) {
                 placeholder: l.placeholder ? l.placeholder : "",
                 readonly: l.readonly,
                 required: l.required
-              }, `\r
-        `, 10, dw)), [
+              }, "        ", 10, dw)), [
                 [pe, s.item[l.name]]
               ]) : C("", !0),
               l.suffix ? (y(), v("span", {
@@ -13235,7 +13234,6 @@ function VC(s, t, e, n, i, r) {
                         "onUpdate:modelValue": (f) => a[h.name] = f,
                         onChange: (f) => r.onRowInputChange(a[h.name], h, a, l)
                       }, `\r
-\r
                     `, 40, zO)), [
                         [pe, a[h.name]]
                       ]) : C("", !0),
