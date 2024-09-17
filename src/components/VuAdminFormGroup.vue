@@ -117,12 +117,13 @@ const VuAdminFormGroup = {
     },
   },
   methods: {
+
     getValueOrFunction(object, params) {
       return getValueOrFunction(object, params);
     },
 
     translate(key, vars, language) {
-      return translate(key, this.settings.translate, vars, language);
+      return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
     },
 
     selectOptions(options, field) {

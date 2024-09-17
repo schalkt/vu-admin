@@ -2391,7 +2391,7 @@ export default {
     },
 
     translate(key, vars, language) {
-      return translate(key, this.settings.translate, vars, language);
+      return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
     },
 
     convertIn(columns, items) {

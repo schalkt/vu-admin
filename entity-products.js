@@ -1,7 +1,7 @@
 import VuAdmin from "./src/components/VuAdmin.vue";
 
 let api = {
-	url: '/api/products',
+	url: '/api/products',	
 	// auth: {
 	// 	type: 'Bearer',
 	// 	token: 'token-123456789',
@@ -646,6 +646,7 @@ export default {
 	debug: true,
 	api: api,
 	events: events,
+	language: 'en',
 	translate: {
 		'en': {
 			'New': 'New product',

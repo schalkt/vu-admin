@@ -137,8 +137,8 @@ export default {
     setPageLimit(limit) {
       this.$emit("setPageLimit", limit);
     },
-    translate(key) {
-      return translate(key, this.settings.translate);
+    translate(key, vars, language) {
+      return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
     },
     firstDisabled() {
       return this.config.pagination.page <= 1;

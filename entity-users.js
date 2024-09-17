@@ -1,6 +1,6 @@
 export default {
 	pkey: 'id',
-	theme: 'dark',
+	theme: 'dark',	
 	api: {
 		url: '/api/users',
 		options: {
@@ -13,7 +13,7 @@ export default {
 		}
 	},
 	table: {
-		title: 'Users',
+		title: 'Felhasználók',
 		pagination: {
 			limit: 5,
 			size: 20,
@@ -23,7 +23,7 @@ export default {
 			{
 
 				title: '#',
-				click: 'select',
+				click: 'TABLE_ROW_SELECT',
 				index: true,
 				sortable: false,
 				width: '5%',
@@ -33,7 +33,7 @@ export default {
 			},
 			{
 				name: 'id',
-				title: 'ID',
+				title: 'Azonosító',
 				class: 'text-end',
 				width: '6%',
 				filter: {
@@ -44,7 +44,7 @@ export default {
 			},
 			{
 				name: 'image',
-				title: 'Avatar',
+				title: 'Avatár',
 				sortable: false,
 				template: function (image, item) {
 
@@ -59,14 +59,14 @@ export default {
 			},
 			{
 				name: 'firstName',
-				title: 'Name <span class="text-muted ms-1 fw-light">( username )</span>',
+				title: 'Név <span class="text-muted ms-1 fw-light">( felhasználónév )</span>',
 				template: (firstName, item) => {
 					return item.firstName + ' ' + item.lastName + '<span class="text-muted ms-2 fw-light">( ' + item.username + ' )</span>';
 				}
 			},
 			{
 				name: 'birthDate',
-				title: 'Birth Date',
+				title: 'Születési dátum',
 				convert: {
 					in: (value, item, column) => {
 						return (new Date(value)).toISOString().substring(0, 10);
@@ -104,7 +104,7 @@ export default {
 			},
 			{
 				name: 'age',
-				title: 'Age',
+				title: 'Kor',
 				width: '10%',
 				progressbar: {
 					class: 'bg-info text-dark fw-bold',
@@ -132,7 +132,7 @@ export default {
 			},
 			{
 				name: 'height',
-				title: 'Height (cm)',
+				title: 'Magasság (cm)',
 				width: '10%',
 				progressbar: {
 					class: 'bg-info text-dark fw-bold',
@@ -165,7 +165,7 @@ export default {
 			},
 			{
 				name: 'weight',
-				title: 'Weight (kg)',
+				title: 'Súly (kg)',
 				width: '10%',
 				progressbar: {
 					class: 'bg-info text-dark fw-bold',
@@ -199,7 +199,7 @@ export default {
 			{
 
 				name: 'hair.color',
-				title: 'Hair',
+				title: 'Hajszín',
 				template: (value) => {
 
 					let color = value.toLowerCase();
@@ -241,7 +241,7 @@ export default {
 			},
 			{
 				name: 'address.city',
-				title: 'City',
+				title: 'Cím',
 				template: (value, item) => {
 
 					let address = '<span>' + value + '</span> <small class="text-light">' + item['address.address'] + '</small>';
@@ -322,27 +322,27 @@ export default {
 				filter: {
 					class: 'text-end text-nowrap',
 					buttons: [
-						{
-							action: 'TABLE_CLOSE_DETAILS',
-						},
+						// {
+						// 	action: 'TABLE_CLOSE_DETAILS',
+						// },
 						{
 							action: 'TABLE_RESET_FILTERS',
 						},
 					],
 				},
 				buttons: [
-					{
-						action: 'TABLE_ROW_DETAIL',
-					},
+					// {
+					// 	action: 'TABLE_ROW_DETAIL',
+					// },
 					{
 						action: 'TABLE_ROW_EDIT',
 					},
 					{
 						action: 'TABLE_ROW_DELETE',
 					},
-					{
-						action: 'TABLE_ROW_SAVE',
-					},
+					// {
+					// 	action: 'TABLE_ROW_SAVE',
+					// },
 				],
 				bulkbuttons: [
 					{

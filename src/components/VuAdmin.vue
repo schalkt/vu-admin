@@ -8,6 +8,7 @@
 
 <script>
 import VuAdminTable from "./VuAdminTable.vue";
+import { deepMerge } from "./helpers"
 
 export default {
   name: "VuAdmin",
@@ -43,6 +44,7 @@ export default {
         // must be function and called once for update entity settings
         // example prepare options for selects, (settings) => {},
         init: null,
+        language: document.documentElement ? document.documentElement.lang : 'hu',
 
         api: {
           auth: undefined,
@@ -90,6 +92,9 @@ export default {
             Save: "Mentés",
             Send: "Küldés",
             Export: "Exportálás",
+            "Select all": "Mind kiválaszt",
+            "Unselect all": "Mind töröl",
+            "Invert all": "Kijelölések megfordítása",
             "Visible all": "Mind látható",
             "Hidden all": "Mind rejtett",
             "Save and close": "Ment és bezár",
@@ -156,7 +161,7 @@ export default {
 
     if (window.VuEntities && window.VuEntities[this.entity]) {
 
-      this.settings = Object.assign({}, this.defaults, window.VuEntities[this.entity]);
+      this.settings = deepMerge(this.defaults, window.VuEntities[this.entity]);
       this.settings.entity = this.entity;
 
       if (!this.settings.theme) {

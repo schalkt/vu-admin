@@ -1,3 +1,16 @@
+
+export function deepMerge(target, source) {
+
+    for (const key in source) {
+        if (source[key] instanceof Object && key in target) {
+            Object.assign(source[key], deepMerge(target[key], source[key]));
+        }
+    }
+
+    return Object.assign(target || {}, source);
+
+}
+
 export function getValueOrFunction(object, params, settings, vua) {
     try {
 
