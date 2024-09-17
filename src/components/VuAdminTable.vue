@@ -228,24 +228,18 @@
               </div>
 
               <div v-if="column.filter && column.filter.type == 'select'">
-                <select v-model="column.filter.value" @change="reloadTable()" :multiple="column.filter.multiple" class="form-select form-select-sm pe-0 my-1">
-                  <option v-for="option in column.filter.options" :key="option" :value="option.value">
-                    {{ translate(option.label ? option.label : option.value) }}
-                  </option>
-                </select>
-              </div>
 
-              <div v-if="column.filter && column.filter.type == 'dropdown-select'">
-
-                <div class="dropdown">
+                <div class="dropdown" v-if="column.filter.dropdown">
                   <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
                     {{ column.filter.multiple ? (column.filter.value.length + " selected") : (column.filter.value ? column.filter.value : 'not selected' ) }}
                   </button>
                   <ul class="dropdown-menu">
                     <li>
                       <span v-for="option in column.filter.options" :key="option" class="dropdown-item cursor-pointer"
-                        :class="{ 'fw-bold': (column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value) }" @click="dropdownSelectToggleOne(column.filter, option.value)">{{
-                          translate(option.label ? option.label : option.value) }}
+                        :class="{ 'selected': (column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value) }" @click="dropdownSelectToggleOne(column.filter, option.value)">
+                        <i v-if="(column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value)" class="bi bi-check-square"></i>
+                        <i v-else class="bi bi-square"></i>                        
+                        {{ translate(option.label ? option.label : option.value) }}
                       </span>
                     </li>
                     <li v-if="column.filter.multiple">
@@ -268,8 +262,14 @@
                     </li>
                   </ul>
                 </div>
+                
+                <select v-else v-model="column.filter.value" @change="reloadTable()" :multiple="column.filter.multiple" class="form-select form-select-sm pe-0 my-1">
+                  <option v-for="option in column.filter.options" :key="option" :value="option.value">
+                    {{ translate(option.label ? option.label : option.value) }}
+                  </option>
+                </select>
 
-              </div>
+              </div>            
 
               <div v-if="
                 column.filter &&

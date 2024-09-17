@@ -173,13 +173,14 @@ let columns = [
 		title: 'Category',
 		class: 'text-secondary',
 		filter: {
-			type: 'dropdown-select',
-			default_operator: 'in',						
-			multiple: false,
+			type: 'select',
+			dropdown: true,			
+			multiple: true,
+			default_operator: 'in',			
 			options: [
 				{
-					'value': 'beauty',					
-				},{
+					'value': 'beauty',
+				}, {
 					'value': 'fragrances'
 				}, {
 					'value': 'furniture'
@@ -190,7 +191,7 @@ let columns = [
 				}, {
 					'value': 'kitchen-accessories'
 				},
-			],			
+			],
 		},
 		input: {
 			type: 'text',
