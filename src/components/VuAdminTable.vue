@@ -231,14 +231,15 @@
 
                 <div class="dropdown" v-if="column.filter.dropdown">
                   <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ column.filter.multiple ? (column.filter.value.length + " selected") : (column.filter.value ? column.filter.value : 'not selected' ) }}
+                    {{ column.filter.multiple ? (column.filter.value.length + " selected") : (column.filter.value ? column.filter.value : 'not selected') }}
                   </button>
                   <ul class="dropdown-menu">
                     <li>
                       <span v-for="option in column.filter.options" :key="option" class="dropdown-item cursor-pointer"
-                        :class="{ 'selected': (column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value) }" @click="dropdownSelectToggleOne(column.filter, option.value)">
+                        :class="{ 'selected': (column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value) }"
+                        @click="dropdownSelectToggleOne(column.filter, option.value)">
                         <i v-if="(column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value)" class="bi bi-check-square"></i>
-                        <i v-else class="bi bi-square"></i>                        
+                        <i v-else class="bi bi-square"></i>
                         {{ translate(option.label ? option.label : option.value) }}
                       </span>
                     </li>
@@ -262,14 +263,14 @@
                     </li>
                   </ul>
                 </div>
-                
+
                 <select v-else v-model="column.filter.value" @change="reloadTable()" :multiple="column.filter.multiple" class="form-select form-select-sm pe-0 my-1">
                   <option v-for="option in column.filter.options" :key="option" :value="option.value">
                     {{ translate(option.label ? option.label : option.value) }}
                   </option>
                 </select>
 
-              </div>            
+              </div>
 
               <div v-if="
                 column.filter &&
@@ -552,29 +553,34 @@
               :data-bs-theme="[settings.theme]">
               <div class="vua-overlay" :class="{ blocked: ui.block.form }"></div>
               <div class="modal-header">
-                <h5 class="modal-title">
-                  <span v-if="
-                    settings.form.title &&
-                    typeof settings.form.title == 'function'
-                  " v-html="settings.form.title(item, settings)"></span>
-                  <span v-if="
-                    settings.form.title &&
-                    typeof settings.form.title == 'string'
-                  ">{{ translate(settings.form.title) }}</span>
-                  <span v-if="!settings.form.title">{{ translate('Edit') }}</span>
-                </h5>
 
-                <span class="d-inline-block ms-3 mt-1" v-if="message.form">
-                  <span :class="['text-' + message.form.priority]">
-                    <i class="bi bi-envelope-fill me-2"></i>
-                    <span v-html="message.form.msg"></span>
+                
+                  <h5 class="modal-title">
+                    <span v-if="
+                      settings.form.title &&
+                      typeof settings.form.title == 'function'
+                    " v-html="settings.form.title(item, settings)"></span>
+                    <span v-if="
+                      settings.form.title &&
+                      typeof settings.form.title == 'string'
+                    ">{{ translate(settings.form.title) }}</span>
+                    <span v-if="!settings.form.title">{{ translate('Edit') }}</span>
+
+                    <span v-if="item[settings.pkey]" class="badge border text-dark ms-2 p-badge"><span class="text-secondary fw-light">id</span> {{ item[settings.pkey] }}</span>
+
+                  </h5>
+
+                  <span class="d-inline-block ms-3 mt-1" v-if="message.form">
+                    <span :class="['text-' + message.form.priority]">
+                      <i class="bi bi-envelope-fill me-2"></i>
+                      <span v-html="message.form.msg"></span>
+                    </span>
                   </span>
-                </span>
 
-                <span v-show="ui.wait.form" class="spinner-border spinner-border-sm mx-2" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </span>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <span v-show="ui.wait.form" class="spinner-border spinner-border-sm mx-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </span>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
 
               </div>
 
@@ -903,7 +909,7 @@ export default {
           column.filter.value =
             column.filter.default_value !== undefined
               ? column.filter.default_value
-              : ( column.filter.multiple ? [] : undefined );
+              : (column.filter.multiple ? [] : undefined);
 
           column.filter.operator =
             column.filter.default_operator !== undefined
@@ -2191,14 +2197,14 @@ export default {
       }
     },
 
-    dropdownSelectToggleOne(filter, value) {      
+    dropdownSelectToggleOne(filter, value) {
 
       if (filter.multiple) {
         arrayToggleOne(filter.value, value);
       } else {
         filter.value = filter.value === value ? null : value;
       }
-          
+
       this.reloadTable();
 
     },
@@ -2215,12 +2221,12 @@ export default {
 
     dropdownSelectClear(array) {
 
-      if (typeof(array) != "object") { 
+      if (typeof (array) != "object") {
         array.value = null;
       } else {
         arraySelectClear(array);
       }
-      
+
       this.reloadTable();
     },
 

@@ -549,7 +549,7 @@ let table = {
 let form = {
 	class: 'm-2',
 	title: (item) => {
-		return (item.title ? item.title : '') + (item.id ? '<span class="badge border text-dark ms-2 p-badge">#' + item.id + '</span>' : '');
+		return (item.title ? item.title : ''); 
 	},
 	groups: [
 		{
