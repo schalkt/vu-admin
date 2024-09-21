@@ -31,5 +31,5 @@
   },
   "peerDependencies": {
     "vue": "^3.4.31"
-  }
+  } 
 }

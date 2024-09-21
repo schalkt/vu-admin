@@ -8,7 +8,7 @@
       </h2>
 
       <div class="row" v-cloak v-if="item && group.fields">
-        <div :class="[field.class ? field.class : 'col-md-12']" v-for="field in group.fields" :key="field">
+        <div :class="[field.class ? field.class : 'col-md-12', 'input_type_' + field.type]" v-for="field in group.fields" :key="field">
 
           <div class="form-group pb-3">
 
@@ -52,7 +52,7 @@
               <textarea v-if="field.type == 'textarea'" class="form-control" :class="[field.class]" :name="field.name" :id="formid + '_' + field.name" v-model="item[field.name]"
                 :rows="field.rows" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''" :readonly="field.readonly"
                 :required="field.required">
-        </textarea>
+              </textarea>
 
               <span v-if="field.suffix" class="input-group-text" v-html="field.suffix"></span>
             </div>
@@ -60,6 +60,39 @@
             <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :class="[field.class]"></HtmlEditor>
 
             <ImageUpload v-if="field.type == 'image'" v-model="item[field.name]" :class="[field.class]" :params="field.params"></ImageUpload>
+
+            <div v-if="field.type == 'list'">
+
+              <div class="row g-1 d-flex align-items-center justify-content-between mb-1" v-for="(elements,elindex) in arrayElements(item[field.name], field.elements)" :key="elindex">                
+
+                <div v-for="element in elements" :key="element" :class="element.class || 'col'">                                    
+                  <input :type="element.type" :required="element.required" :placeholder="element.placeholder || element.name" class="form-control form-control-sm" v-model="element.value">                  
+                </div>
+                <div class="col-2 text-nowrap text-end">
+                  <button type="button" class="btn btn-sm btn-outline-secondary p-1 me-1" @click="arrayItemMoveUp(item[field.name], elindex)">
+                    <i class="bi bi-arrow-up"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary p-1 me-1" @click="arrayItemMoveDown(item[field.name], elindex + 1)">
+                    <i class="bi bi-arrow-down"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-danger p-1 me-1" @click="arrayRemoveItem(item[field.name], elindex)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <hr v-if="item[field.name] && item[field.name].length">
+              <div class="row g-1 d-flex align-items-center justify-content-between">                
+                <div v-for="element in field.elements" :key="element" :class="element.class || 'col'">
+                  <input :type="element.type" :placeholder="element.placeholder || element.name" class="form-control form-control-sm" v-model="element.value">
+                </div>
+                <div class="col-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary my-1 w-100" @click="arrayAddNewItem(field, item)">
+                    <i class="bi bi-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div>
 
             <span v-if="field.type == 'addresses'">
               <div v-if="item[field.name]">
@@ -91,7 +124,7 @@
 </template>
 
 <script>
-import { translate, getValueOrFunction } from "./helpers";
+import { translate, getValueOrFunction, arrayItemMoveUp, arrayItemMoveDown } from "./helpers";
 import HtmlEditor from "./VuAdminHtmlEditor.vue";
 import ImageUpload from "./VuAdminImageUpload.vue";
 
@@ -149,6 +182,70 @@ const VuAdminFormGroup = {
       }
 
       return options;
+    },
+
+
+    arrayElements(itemElements, fieldElements) {
+
+      if (!itemElements || !itemElements.length ) {
+        return [];
+      }
+      
+      let items;
+      let element;
+      let elements = [];
+
+      for (let itemElement of itemElements) {
+
+        items = [];
+
+        for (let fieldElement of fieldElements) {
+          element = Object.assign({});
+          element.name = fieldElement.name;
+          element.type = fieldElement.type;
+          element.class = fieldElement.class;
+          element.value = itemElement[fieldElement.name];
+          element.required = fieldElement.required;
+          items.push(element);
+        }            
+        
+        elements.push(items);
+
+      }
+
+      return elements;
+
+    },
+
+    arrayAddNewItem(field, item) {
+
+      if (!item[field.name] || typeof item[field.name] !== "object") {
+        item[field.name] = [];
+      }
+      
+      let push = {};
+
+      for (let element of field.elements) {        
+        push[element.name] = element.value;        
+        element.value = undefined;
+      } 
+      
+      item[field.name].push(push);      
+
+    },
+
+    arrayRemoveItem(array, index) {
+
+      array.splice(index, 1);
+
+    },
+
+    arrayItemMoveUp(array, index) {
+      arrayItemMoveUp(array, index);
+    },
+
+    arrayItemMoveDown(array, index) {
+      arrayItemMoveDown(array, index);
     },
 
     insertAddress(fieldName) {

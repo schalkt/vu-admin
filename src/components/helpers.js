@@ -25,7 +25,7 @@ export function getValueOrFunction(object, params, settings, vua) {
     }
 }
 
-export async function getResponseJson(response, onError) {
+export async function getResponseJson(response) {
     try {
         return {
             data: await response.json(),
@@ -275,3 +275,23 @@ export function arraySelectInvert(array, options) {
 export function arraySelectClear(array) {
     array.length = 0;
 };
+
+export function arrayItemMoveUp(arr, index) {
+
+    if (index <= 0 || index >= arr.length) {     
+        return;
+    }
+
+    [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
+
+}
+
+export function arrayItemMoveDown(arr, index) {
+
+    if (index <= 0 || index >= arr.length) {     
+        return;
+    }
+
+    [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
+
+}

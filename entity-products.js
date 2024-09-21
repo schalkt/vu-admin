@@ -1,7 +1,7 @@
 import VuAdmin from "./src/components/VuAdmin.vue";
 
 let api = {
-	url: '/api/products',	
+	url: '/api/products',
 	// auth: {
 	// 	type: 'Bearer',
 	// 	token: 'token-123456789',
@@ -174,9 +174,9 @@ let columns = [
 		class: 'text-secondary',
 		filter: {
 			type: 'select',
-			dropdown: true,			
+			dropdown: true,
 			multiple: true,
-			default_operator: 'in',			
+			default_operator: 'in',
 			options: [
 				{
 					'value': 'beauty',
@@ -549,7 +549,7 @@ let table = {
 let form = {
 	class: 'm-2',
 	title: (item) => {
-		return (item.title ? item.title : ''); 
+		return (item.title ? item.title : '');
 	},
 	groups: [
 		{
@@ -577,6 +577,25 @@ let form = {
 							value: 'fragrances'
 						}
 					]
+				},
+				{
+					type: 'list',
+					name: 'links',
+					label: 'Links',					
+					elements: [
+						{
+							name: 'href',
+							type: 'url',
+							class: 'col-md-7',
+							required: true
+						},
+						{
+							name: 'label',
+							type: 'text',
+							class: 'col-md-3',
+							required: true,
+						}
+					],
 				},
 
 			]
