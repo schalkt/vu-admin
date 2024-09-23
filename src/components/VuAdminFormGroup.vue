@@ -13,13 +13,13 @@
           <div class="form-group pb-3">
 
             <span v-if="field.label !== null">
-              <label v-if="['html', 'image'].indexOf(field.type) >= 0" v-cloak class="form-label text-secondary mb-1">
+              <label v-if="['html', 'image'].indexOf(field.type) >= 0" :class="{'required' : field.required }" v-cloak class="form-label text-secondary mb-1">
                 {{ field.label ? field.label : translate(field.name) }}
                 <span class="badge text-secondary fw-light" v-if="field.maxlength">
                   {{ item[field.name] ? item[field.name].length : 0 }} / {{ field.maxlength }}
                 </span>
               </label>
-              <label v-else v-cloak class="form-label text-secondary mb-1" :for="formid + '_' + field.name"
+              <label v-else :class="{'required' : field.required }" v-cloak class="form-label text-secondary mb-1" :for="formid + '_' + field.name"
                 v-html="getValueOrFunction(field.label ? field.label : translate(field.name), { field: field, item: item })">
               </label>
             </span>
@@ -38,15 +38,15 @@
               <input v-if="field.type == 'date'" class="form-control" :class="[field.class]" type="date" :name="field.name" :id="formid + '_' + field.name"
                 v-model="item[field.name]" :readonly="field.readonly" :required="field.required" />
 
-              <div  v-if="field.type == 'checkbox'" class="form-check">
+              <div v-if="field.type == 'checkbox'" class="form-check">
                 <input class="form-check-input" :class="[field.class]" type="checkbox" :name="field.name" :id="formid + '_' + field.name"
-                :true-value="field.true != undefined ? field.true : true" :false-value="field.false != undefined ? field.false : false"
-                v-model="item[field.name]" :readonly="field.readonly" :required="field.required" />
+                  :true-value="field.true != undefined ? field.true : true" :false-value="field.false != undefined ? field.false : false" v-model="item[field.name]"
+                  :readonly="field.readonly" :required="field.required" />
                 <label class="form-check-label cursor-pointer" :for="formid + '_' + field.name">
                   {{ field.checkbox }}
                 </label>
               </div>
-            
+
               <input v-if="field.type == 'email'" autocomplete="on" class="form-control" :class="[field.class]" type="email" :name="field.name" :id="formid + '_' + field.name"
                 v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''"
                 :readonly="field.readonly" :required="field.required" />
@@ -258,6 +258,11 @@ export default VuAdminFormGroup;
 
 <style lang="scss" scoped>
 .vu-admin {
+
+  label.required::after {
+    content: " *";
+    color: red;
+  }
 
   form {
     .form-control {
