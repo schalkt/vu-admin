@@ -12250,7 +12250,7 @@ const cN = /* @__PURE__ */ xn(Pw, [["render", lN], ["__scopeId", "data-v-5ba0187
         }), e = await Zn(t);
         if (this.getResponseErrors(t, e.data, "form") || !e.data)
           return this.formNoWait(), !1;
-        this.settings.events && this.settings.events.afterItemLoad && this.settings.events.afterItemLoad(e.data, t);
+        this.settings.form.default && (e.data = Object.assign({}, this.settings.form.default, e.data)), this.settings.events && this.settings.events.afterItemLoad && this.settings.events.afterItemLoad(e.data, t);
         for (let r of this.settings.form.groups)
           for (let o of r.fields)
             o.relation && this.settings.relations[o.relation.entity] && (o.relation = Object.assign(
@@ -12498,7 +12498,8 @@ const cN = /* @__PURE__ */ xn(Pw, [["render", lN], ["__scopeId", "data-v-5ba0187
       t >= 0 ? this.details.splice(t, 1) : this.details.push(s);
     },
     dropdownSelectToggleOne(s, t) {
-      s.multiple ? Pb(s.value, t) : s.value = s.value === t ? null : t, this.reloadTable();
+      let e = t.value;
+      s.multiple ? Pb(s.value, e) : s.value = s.value === e ? null : e, this.reloadTable();
     },
     dropdownSelectAll(s, t) {
       jb(s, t), this.reloadTable();
@@ -12686,7 +12687,7 @@ const cN = /* @__PURE__ */ xn(Pw, [["render", lN], ["__scopeId", "data-v-5ba0187
   class: "bi bi-check-square"
 }, wC = { key: 2 }, NC = ["disabled", "onClick"], OC = ["innerHTML"], CC = { key: 2 }, SC = ["id"], LC = { class: "modal-dialog modal-xl" }, kC = { class: "modal-content h-100" }, xC = ["id", "data-bs-theme"], IC = { class: "modal-header" }, RC = { class: "modal-title" }, DC = ["innerHTML"], MC = { key: 1 }, qC = { key: 2 }, BC = {
   key: 3,
-  class: "badge border text-dark ms-2 p-badge"
+  class: "rounded border ms-2 px-2 py-0 fs-6"
 }, $C = {
   key: 0,
   class: "d-inline-block ms-3 mt-1"
@@ -13058,7 +13059,7 @@ function rS(s, t, e, n, i, r) {
                       (y(!0), v(W, null, z(a.filter.options, (l) => (y(), v("span", {
                         key: l,
                         class: D(["dropdown-item cursor-pointer", { selected: a.filter.multiple ? a.filter.value.indexOf(l.value) >= 0 : a.filter.value === l.value }]),
-                        onClick: (h) => r.dropdownSelectToggleOne(a.filter, l.value)
+                        onClick: (h) => r.dropdownSelectToggleOne(a.filter, l)
                       }, [
                         (a.filter.multiple ? a.filter.value.indexOf(l.value) >= 0 : a.filter.value === l.value) ? (y(), v("i", bO)) : (y(), v("i", yO)),
                         Y(" " + k(r.translate(l.label ? l.label : l.value)), 1)
@@ -13496,8 +13497,8 @@ function rS(s, t, e, n, i, r) {
                   }, null, 8, DC)) : C("", !0),
                   e.settings.form.title && typeof e.settings.form.title == "string" ? (y(), v("span", MC, k(r.translate(e.settings.form.title)), 1)) : C("", !0),
                   e.settings.form.title ? C("", !0) : (y(), v("span", qC, k(r.translate("Edit")), 1)),
-                  i.item[e.settings.pkey] ? (y(), v("span", BC, [
-                    t[32] || (t[32] = m("span", { class: "text-secondary fw-light" }, "id", -1)),
+                  i.item[e.settings.pkey] ? (y(), v("small", BC, [
+                    t[32] || (t[32] = m("span", { class: "text-muted fw-light" }, "id", -1)),
                     Y(" " + k(i.item[e.settings.pkey]), 1)
                   ])) : C("", !0)
                 ]),
@@ -13676,7 +13677,7 @@ function rS(s, t, e, n, i, r) {
     ], 10, dN)
   ])) : C("", !0);
 }
-const oS = /* @__PURE__ */ xn(uN, [["render", rS], ["__scopeId", "data-v-44f04eab"]]), aS = {
+const oS = /* @__PURE__ */ xn(uN, [["render", rS], ["__scopeId", "data-v-a93e8966"]]), aS = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -13804,9 +13805,9 @@ const oS = /* @__PURE__ */ xn(uN, [["render", rS], ["__scopeId", "data-v-44f04ea
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.1.3"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.1.4"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.1.3"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.1.4"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
