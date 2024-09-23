@@ -13685,7 +13685,6 @@ const aS = /* @__PURE__ */ kn(hN, [["render", oS], ["__scopeId", "data-v-44f04ea
     }
   },
   init: (s) => {
-    s && console.log("", s);
   },
   data() {
     return {
@@ -13805,9 +13804,9 @@ const aS = /* @__PURE__ */ kn(hN, [["render", oS], ["__scopeId", "data-v-44f04ea
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings);
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.1.1"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.1.1"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },

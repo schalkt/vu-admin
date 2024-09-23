@@ -1,15 +1,19 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
+import { version } from './package.json'
 
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
   server: {
     proxy: {
       '/api': {
         target: 'https://dummyjson.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
-      },      
+      },
     }
   },
   plugins: [vue({

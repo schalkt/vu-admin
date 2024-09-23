@@ -1,7 +1,7 @@
 {
-  "name": "vue-vite-plugin",
-  "version": "1.1.0",
-  "description": "A Vue 3 component plugin built with Vite.",
+  "name": "vu-admin",
+  "version": "1.1.1",
+  "description": "VU Admin",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "type": "module",
@@ -10,6 +10,7 @@
     "prod": "vite build",
     "build": "vite build",
     "serve": "vite preview",
+    "release": "npm --no-git-tag-version version patch && npm run prod",
     "init": "npm prune && npm install && npm update && npm audit fix"
   },
   "keywords": [
@@ -31,5 +32,5 @@
   },
   "peerDependencies": {
     "vue": "^3.4.31"
-  } 
+  }
 }

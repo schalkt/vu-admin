@@ -21,8 +21,7 @@ export default {
   init: (params) => {
     if (!params) {
       return;
-    }
-    console.log('', params);
+    }      
   },
   data() {
     return {
@@ -158,7 +157,7 @@ export default {
   },
 
   created() {
-
+    
     if (window.VuEntities && window.VuEntities[this.entity]) {
 
       this.settings = deepMerge(this.defaults, window.VuEntities[this.entity]);
@@ -187,7 +186,13 @@ export default {
         this.settings.events.afterSettingsInit(this.settings);
       }
 
+      if (this.settings.debug) {
+        console.log('vu-admin ', __APP_VERSION__);
+        console.log(`Entity config (${this.entity}) initialized`);
+      }     
+
     } else {
+      console.log('vu-admin ', __APP_VERSION__);
       console.error(`Entity config (${this.entity}) not found`);
     }
 
