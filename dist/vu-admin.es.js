@@ -11382,18 +11382,15 @@ const XA = /* @__PURE__ */ kn(GT, [["render", YA], ["__scopeId", "data-v-044c76f
   class: "row"
 }, sw = { class: "form-group pb-3" }, nw = { key: 0 }, iw = {
   key: 0,
-  class: "form-label text-secondary mb-1"
-}, rw = {
-  key: 0,
   class: "badge text-secondary fw-light"
-}, ow = ["for", "innerHTML"], aw = { class: "input-group" }, lw = ["innerHTML"], cw = ["name", "id", "onUpdate:modelValue", "minlength", "maxlength", "placeholder", "readonly", "required"], uw = ["name", "id", "onUpdate:modelValue", "min", "max", "step", "placeholder", "readonly", "required"], hw = ["name", "id", "onUpdate:modelValue", "readonly", "required"], dw = {
+}, rw = ["for", "innerHTML"], ow = { class: "input-group" }, aw = ["innerHTML"], lw = ["name", "id", "onUpdate:modelValue", "minlength", "maxlength", "placeholder", "readonly", "required"], cw = ["name", "id", "onUpdate:modelValue", "min", "max", "step", "placeholder", "readonly", "required"], uw = ["name", "id", "onUpdate:modelValue", "readonly", "required"], hw = {
   key: 4,
   class: "form-check"
-}, fw = ["name", "id", "true-value", "false-value", "onUpdate:modelValue", "readonly", "required"], pw = ["for"], gw = ["name", "id", "onUpdate:modelValue", "minlength", "maxlength", "placeholder", "readonly", "required"], mw = ["name", "id", "onUpdate:modelValue", "readonly", "required"], bw = ["value"], yw = ["name", "id", "onUpdate:modelValue", "rows", "minlength", "maxlength", "placeholder", "readonly", "required"], _w = ["innerHTML"], vw = { key: 3 }, Ew = ["type", "required", "placeholder", "onUpdate:modelValue"], Tw = { class: "col-2 text-nowrap text-end" }, Aw = ["onClick"], ww = ["onClick"], Nw = ["onClick"], Ow = { key: 0 }, Cw = { class: "row g-1 d-flex align-items-center justify-content-between" }, Sw = ["type", "placeholder", "onUpdate:modelValue"], Lw = { class: "col-2" }, xw = ["onClick"], kw = { key: 4 }, Iw = { key: 0 }, Rw = ["for"], Dw = ["name", "id", "onUpdate:modelValue"], Mw = ["onClick"], qw = {
+}, dw = ["name", "id", "true-value", "false-value", "onUpdate:modelValue", "readonly", "required"], fw = ["for"], pw = ["name", "id", "onUpdate:modelValue", "minlength", "maxlength", "placeholder", "readonly", "required"], gw = ["name", "id", "onUpdate:modelValue", "readonly", "required"], mw = ["value"], bw = ["name", "id", "onUpdate:modelValue", "rows", "minlength", "maxlength", "placeholder", "readonly", "required"], yw = ["innerHTML"], _w = { key: 3 }, vw = ["type", "required", "placeholder", "onUpdate:modelValue"], Ew = { class: "col-2 text-nowrap text-end" }, Tw = ["onClick"], Aw = ["onClick"], ww = ["onClick"], Nw = { key: 0 }, Ow = { class: "row g-1 d-flex align-items-center justify-content-between" }, Cw = ["type", "placeholder", "onUpdate:modelValue"], Sw = { class: "col-2" }, Lw = ["onClick"], xw = { key: 4 }, kw = { key: 0 }, Iw = ["for"], Rw = ["name", "id", "onUpdate:modelValue"], Dw = ["onClick"], Mw = {
   key: 5,
   class: "p-1"
-}, Bw = ["innerHTML"];
-function $w(s, t, e, n, i, r) {
+}, qw = ["innerHTML"];
+function Bw(s, t, e, n, i, r) {
   const o = ai("HtmlEditor"), c = ai("ImageUpload");
   return y(), _("div", JA, [
     (y(!0), _(W, null, z(s.settings.form.groups, (a) => (y(), _("div", {
@@ -11408,22 +11405,25 @@ function $w(s, t, e, n, i, r) {
         }, [
           m("div", sw, [
             l.label !== null ? (y(), _("span", nw, [
-              ["html", "image"].indexOf(l.type) >= 0 ? (y(), _("label", iw, [
+              ["html", "image"].indexOf(l.type) >= 0 ? (y(), _("label", {
+                key: 0,
+                class: D([{ required: l.required }, "form-label text-secondary mb-1"])
+              }, [
                 Y(x(l.label ? l.label : s.translate(l.name)) + " ", 1),
-                l.maxlength ? (y(), _("span", rw, x(s.item[l.name] ? s.item[l.name].length : 0) + " / " + x(l.maxlength), 1)) : C("", !0)
-              ])) : (y(), _("label", {
+                l.maxlength ? (y(), _("span", iw, x(s.item[l.name] ? s.item[l.name].length : 0) + " / " + x(l.maxlength), 1)) : C("", !0)
+              ], 2)) : (y(), _("label", {
                 key: 1,
-                class: "form-label text-secondary mb-1",
+                class: D([{ required: l.required }, "form-label text-secondary mb-1"]),
                 for: s.formid + "_" + l.name,
                 innerHTML: s.getValueOrFunction(l.label ? l.label : s.translate(l.name), { field: l, item: s.item })
-              }, null, 8, ow))
+              }, null, 10, rw))
             ])) : C("", !0),
-            m("div", aw, [
+            m("div", ow, [
               l.prefix ? (y(), _("span", {
                 key: 0,
                 class: "input-group-text",
                 innerHTML: l.prefix
-              }, null, 8, lw)) : C("", !0),
+              }, null, 8, aw)) : C("", !0),
               l.type == "text" ? X((y(), _("input", {
                 key: 1,
                 class: D(["form-control", [l.class]]),
@@ -11436,7 +11436,7 @@ function $w(s, t, e, n, i, r) {
                 placeholder: l.placeholder ? l.placeholder : "",
                 readonly: l.readonly,
                 required: l.required
-              }, null, 10, cw)), [
+              }, null, 10, lw)), [
                 [pe, s.item[l.name]]
               ]) : C("", !0),
               l.type == "number" ? X((y(), _("input", {
@@ -11452,7 +11452,7 @@ function $w(s, t, e, n, i, r) {
                 placeholder: l.placeholder ? l.placeholder : "",
                 readonly: l.readonly,
                 required: l.required
-              }, null, 10, uw)), [
+              }, null, 10, cw)), [
                 [pe, s.item[l.name]]
               ]) : C("", !0),
               l.type == "date" ? X((y(), _("input", {
@@ -11464,10 +11464,10 @@ function $w(s, t, e, n, i, r) {
                 "onUpdate:modelValue": (h) => s.item[l.name] = h,
                 readonly: l.readonly,
                 required: l.required
-              }, null, 10, hw)), [
+              }, null, 10, uw)), [
                 [pe, s.item[l.name]]
               ]) : C("", !0),
-              l.type == "checkbox" ? (y(), _("div", dw, [
+              l.type == "checkbox" ? (y(), _("div", hw, [
                 X(m("input", {
                   class: D(["form-check-input", [l.class]]),
                   type: "checkbox",
@@ -11478,13 +11478,13 @@ function $w(s, t, e, n, i, r) {
                   "onUpdate:modelValue": (h) => s.item[l.name] = h,
                   readonly: l.readonly,
                   required: l.required
-                }, null, 10, fw), [
+                }, null, 10, dw), [
                   [kd, s.item[l.name]]
                 ]),
                 m("label", {
                   class: "form-check-label cursor-pointer",
                   for: s.formid + "_" + l.name
-                }, x(l.checkbox), 9, pw)
+                }, x(l.checkbox), 9, fw)
               ])) : C("", !0),
               l.type == "email" ? X((y(), _("input", {
                 key: 5,
@@ -11499,7 +11499,7 @@ function $w(s, t, e, n, i, r) {
                 placeholder: l.placeholder ? l.placeholder : "",
                 readonly: l.readonly,
                 required: l.required
-              }, null, 10, gw)), [
+              }, null, 10, pw)), [
                 [pe, s.item[l.name]]
               ]) : C("", !0),
               l.type == "select" ? X((y(), _("select", {
@@ -11515,8 +11515,8 @@ function $w(s, t, e, n, i, r) {
                   class: "",
                   key: h,
                   value: h.value
-                }, x(h.label ? h.label : h.value), 9, bw))), 128))
-              ], 10, mw)), [
+                }, x(h.label ? h.label : h.value), 9, mw))), 128))
+              ], 10, gw)), [
                 [Ie, s.item[l.name]]
               ]) : C("", !0),
               l.type == "textarea" ? X((y(), _("textarea", {
@@ -11531,14 +11531,14 @@ function $w(s, t, e, n, i, r) {
                 placeholder: l.placeholder ? l.placeholder : "",
                 readonly: l.readonly,
                 required: l.required
-              }, "              ", 10, yw)), [
+              }, "              ", 10, bw)), [
                 [pe, s.item[l.name]]
               ]) : C("", !0),
               l.suffix ? (y(), _("span", {
                 key: 8,
                 class: "input-group-text",
                 innerHTML: l.suffix
-              }, null, 8, _w)) : C("", !0)
+              }, null, 8, yw)) : C("", !0)
             ]),
             l.type == "html" ? (y(), ea(o, {
               key: 1,
@@ -11553,7 +11553,7 @@ function $w(s, t, e, n, i, r) {
               class: D([l.class]),
               params: l.params
             }, null, 8, ["modelValue", "onUpdate:modelValue", "class", "params"])) : C("", !0),
-            l.type == "list" ? (y(), _("div", vw, [
+            l.type == "list" ? (y(), _("div", _w, [
               (y(!0), _(W, null, z(s.item[l.name], (h, f) => (y(), _("div", {
                 class: "row g-1 d-flex align-items-center justify-content-between mb-1",
                 key: f
@@ -11568,36 +11568,36 @@ function $w(s, t, e, n, i, r) {
                     placeholder: l.elements[g].placeholder || g,
                     class: "form-control form-control-sm",
                     "onUpdate:modelValue": (v) => s.item[l.name][f][g] = v
-                  }, null, 8, Ew), [
+                  }, null, 8, vw), [
                     [hn, s.item[l.name][f][g]]
                   ])
                 ], 2))), 128)),
-                m("div", Tw, [
+                m("div", Ew, [
                   m("button", {
                     type: "button",
                     class: "btn btn-sm btn-outline-secondary p-1 me-1",
                     onClick: (p) => s.arrayItemMoveUp(s.item[l.name], f)
                   }, t[0] || (t[0] = [
                     m("i", { class: "bi bi-arrow-up" }, null, -1)
-                  ]), 8, Aw),
+                  ]), 8, Tw),
                   m("button", {
                     type: "button",
                     class: "btn btn-sm btn-outline-secondary p-1 me-1",
                     onClick: (p) => s.arrayItemMoveDown(s.item[l.name], f + 1)
                   }, t[1] || (t[1] = [
                     m("i", { class: "bi bi-arrow-down" }, null, -1)
-                  ]), 8, ww),
+                  ]), 8, Aw),
                   m("button", {
                     type: "button",
                     class: "btn btn-sm btn-outline-danger p-1 me-1",
                     onClick: (p) => s.arrayRemoveItem(s.item[l.name], f)
                   }, t[2] || (t[2] = [
                     m("i", { class: "bi bi-trash" }, null, -1)
-                  ]), 8, Nw)
+                  ]), 8, ww)
                 ])
               ]))), 128)),
-              s.item[l.name] && s.item[l.name].length ? (y(), _("hr", Ow)) : C("", !0),
-              m("div", Cw, [
+              s.item[l.name] && s.item[l.name].length ? (y(), _("hr", Nw)) : C("", !0),
+              m("div", Ow, [
                 (y(!0), _(W, null, z(l.elements, (h) => (y(), _("div", {
                   key: h,
                   class: D(h.class || "col")
@@ -11607,36 +11607,36 @@ function $w(s, t, e, n, i, r) {
                     placeholder: h.placeholder || h.name,
                     class: "form-control form-control-sm",
                     "onUpdate:modelValue": (f) => h.value = f
-                  }, null, 8, Sw), [
+                  }, null, 8, Cw), [
                     [hn, h.value]
                   ])
                 ], 2))), 128)),
-                m("div", Lw, [
+                m("div", Sw, [
                   m("button", {
                     type: "button",
                     class: "btn btn-sm btn-outline-primary my-1 w-100",
                     onClick: (h) => s.arrayAddNewItem(l, s.item)
                   }, t[3] || (t[3] = [
                     m("i", { class: "bi bi-plus" }, null, -1)
-                  ]), 8, xw)
+                  ]), 8, Lw)
                 ])
               ])
             ])) : C("", !0),
-            l.type == "addresses" ? (y(), _("span", kw, [
-              s.item[l.name] ? (y(), _("div", Iw, [
+            l.type == "addresses" ? (y(), _("span", xw, [
+              s.item[l.name] ? (y(), _("div", kw, [
                 (y(!0), _(W, null, z(s.item[l.name], (h) => (y(), _("div", { key: h }, [
                   Y(x(h) + " ", 1),
                   m("label", {
                     class: "form-label text-secondary mb-1",
                     for: s.formid + "_" + l.name
-                  }, x(l.label), 9, Rw),
+                  }, x(l.label), 9, Iw),
                   X(m("input", {
                     class: "form-control",
                     type: "text",
                     name: l.name,
                     id: s.formid + "_" + l.name,
                     "onUpdate:modelValue": (f) => h.country = f
-                  }, null, 8, Dw), [
+                  }, null, 8, Rw), [
                     [pe, h.country]
                   ])
                 ]))), 128))
@@ -11645,13 +11645,13 @@ function $w(s, t, e, n, i, r) {
                 type: "button",
                 class: "btn btn-sm btn-secondary",
                 onClick: (h) => s.insertAddress(l.name)
-              }, " Add ", 8, Mw)
+              }, " Add ", 8, Dw)
             ])) : C("", !0),
-            l.description ? (y(), _("div", qw, [
+            l.description ? (y(), _("div", Mw, [
               m("i", {
                 class: "text-muted",
                 innerHTML: l.description
-              }, null, 8, Bw)
+              }, null, 8, qw)
             ])) : C("", !0)
           ])
         ], 2))), 128))
@@ -11659,7 +11659,7 @@ function $w(s, t, e, n, i, r) {
     ], 2))), 128))
   ]);
 }
-const Pw = /* @__PURE__ */ kn(QA, [["render", $w], ["__scopeId", "data-v-943597f6"]]), jw = {
+const $w = /* @__PURE__ */ kn(QA, [["render", Bw], ["__scopeId", "data-v-bdb006ae"]]), Pw = {
   name: "VuAdminTablePagination",
   emits: ["setPage", "setPageLimit", "translate"],
   props: {
@@ -11691,41 +11691,41 @@ const Pw = /* @__PURE__ */ kn(QA, [["render", $w], ["__scopeId", "data-v-943597f
     }
   },
   components: {}
-}, Uw = {
+}, jw = {
   key: 0,
   "aria-label": "Page navigation",
   class: "mt-2 d-flex align-items-center justify-content-between"
-}, Vw = { class: "dropdown d-inline-block m-1" }, Fw = {
+}, Uw = { class: "dropdown d-inline-block m-1" }, Vw = {
   type: "button",
   class: "btn btn-sm btn-secondary dropdown-toggle",
   "data-bs-toggle": "dropdown",
   "aria-expanded": "false"
-}, Hw = { class: "mx-1" }, Ww = { key: 0 }, zw = { class: "dropdown-menu text-end" }, Kw = ["onClick"], Gw = { class: "ms-2" }, Yw = {
+}, Fw = { class: "mx-1" }, Hw = { key: 0 }, Ww = { class: "dropdown-menu text-end" }, zw = ["onClick"], Kw = { class: "ms-2" }, Gw = {
   key: 0,
   class: "bi bi-check-circle-fill ms-2"
-}, Xw = {
+}, Yw = {
   key: 1,
   class: "bi bi-circle ms-2"
-}, Zw = {
+}, Xw = {
   class: "spinner-border spinner-border-sm mx-2",
   role: "status"
-}, Qw = { class: "pagination pagination-sm m-1" }, Jw = { class: "page-item" }, tN = { "aria-hidden": "true" }, eN = { class: "page-item" }, sN = { "aria-hidden": "true" }, nN = ["onClick"], iN = { class: "page-item" }, rN = { "aria-hidden": "true" }, oN = { "aria-hidden": "true" }, aN = {
+}, Zw = { class: "pagination pagination-sm m-1" }, Qw = { class: "page-item" }, Jw = { "aria-hidden": "true" }, tN = { class: "page-item" }, eN = { "aria-hidden": "true" }, sN = ["onClick"], nN = { class: "page-item" }, iN = { "aria-hidden": "true" }, rN = { "aria-hidden": "true" }, oN = {
   key: 0,
   class: "page-item"
-}, lN = { "aria-hidden": "true" };
-function cN(s, t, e, n, i, r) {
-  return e.config.pagination.hidden ? C("", !0) : (y(), _("nav", Uw, [
+}, aN = { "aria-hidden": "true" };
+function lN(s, t, e, n, i, r) {
+  return e.config.pagination.hidden ? C("", !0) : (y(), _("nav", jw, [
     m("div", null, [
-      m("div", Vw, [
-        m("button", Fw, [
-          X(m("span", Hw, [
+      m("div", Uw, [
+        m("button", Vw, [
+          X(m("span", Fw, [
             m("strong", null, x(e.config.pagination.from) + "-" + x(e.config.pagination.to), 1),
-            e.config.pagination.total ? (y(), _("span", Ww, " / " + x(e.config.pagination.total), 1)) : C("", !0)
+            e.config.pagination.total ? (y(), _("span", Hw, " / " + x(e.config.pagination.total), 1)) : C("", !0)
           ], 512), [
             [ws, e.config.pagination.from > 0]
           ])
         ]),
-        m("ul", zw, [
+        m("ul", Ww, [
           m("li", null, [
             (y(!0), _(W, null, z(e.config.pagination.limits, (o) => (y(), _("span", {
               class: D(["dropdown-item cursor-pointer", { selected: e.config.pagination.limit == o }]),
@@ -11733,36 +11733,36 @@ function cN(s, t, e, n, i, r) {
               onClick: (c) => r.setPageLimit(o)
             }, [
               m("strong", null, x(o), 1),
-              m("small", Gw, x(r.translate("row")) + "/" + x(r.translate("page")), 1),
-              e.config.pagination.limit == o ? (y(), _("i", Yw)) : C("", !0),
-              e.config.pagination.limit != o ? (y(), _("i", Xw)) : C("", !0)
-            ], 10, Kw))), 128))
+              m("small", Kw, x(r.translate("row")) + "/" + x(r.translate("page")), 1),
+              e.config.pagination.limit == o ? (y(), _("i", Gw)) : C("", !0),
+              e.config.pagination.limit != o ? (y(), _("i", Yw)) : C("", !0)
+            ], 10, zw))), 128))
           ])
         ])
       ]),
-      X(m("div", Zw, t[4] || (t[4] = [
+      X(m("div", Xw, t[4] || (t[4] = [
         m("span", { class: "visually-hidden" }, "Loading...", -1)
       ]), 512), [
         [ws, e.ui && e.ui.wait.table]
       ])
     ]),
-    m("ul", Qw, [
-      m("li", Jw, [
+    m("ul", Zw, [
+      m("li", Qw, [
         m("a", {
           class: D(["page-link cursor-pointer", { disabled: r.firstDisabled() }]),
           onClick: t[0] || (t[0] = (o) => r.setPage(1)),
           "aria-label": "{{  translate('First')  }}"
         }, [
-          m("span", tN, x(r.translate("First")), 1)
+          m("span", Jw, x(r.translate("First")), 1)
         ], 2)
       ]),
-      m("li", eN, [
+      m("li", tN, [
         m("a", {
           class: D(["page-link cursor-pointer", { disabled: r.prevDisabled() }]),
           onClick: t[1] || (t[1] = (o) => r.setPage(e.config.pagination.page - 1)),
           "aria-label": "{{  translate('Prev')  }}"
         }, [
-          m("span", sN, x(r.translate("Prev")), 1)
+          m("span", eN, x(r.translate("Prev")), 1)
         ], 2)
       ]),
       (y(!0), _(W, null, z(e.config.pagination.numbers, (o) => (y(), _("li", {
@@ -11775,39 +11775,39 @@ function cN(s, t, e, n, i, r) {
             current: o == e.config.pagination.page
           }]),
           onClick: (c) => r.setPage(o)
-        }, x(o), 11, nN)
+        }, x(o), 11, sN)
       ]))), 128)),
-      m("li", iN, [
+      m("li", nN, [
         m("a", {
           class: D(["page-link cursor-pointer", { disabled: r.nextDisabled() }]),
           onClick: t[2] || (t[2] = (o) => r.setPage(e.config.pagination.page + 1)),
           "aria-label": "{{  translate('Next')  }}"
         }, [
-          m("span", rN, [
-            m("span", oN, x(r.translate("Next")), 1)
+          m("span", iN, [
+            m("span", rN, x(r.translate("Next")), 1)
           ])
         ], 2)
       ]),
-      e.config.pagination.total ? (y(), _("li", aN, [
+      e.config.pagination.total ? (y(), _("li", oN, [
         m("a", {
           class: D(["page-link cursor-pointer", { disabled: r.lastDisabled() }]),
           onClick: t[3] || (t[3] = (o) => r.setPage(e.config.pagination.total)),
           "aria-label": "{{  translate('Last')  }}"
         }, [
-          m("span", lN, x(r.translate("Last")), 1)
+          m("span", aN, x(r.translate("Last")), 1)
         ], 2)
       ])) : C("", !0)
     ])
   ]));
 }
-const uN = /* @__PURE__ */ kn(jw, [["render", cN], ["__scopeId", "data-v-5ba01873"]]), hN = {
+const cN = /* @__PURE__ */ kn(Pw, [["render", lN], ["__scopeId", "data-v-5ba01873"]]), uN = {
   name: "VuAdminTable",
   props: {
     settings: Object
   },
   components: {
-    VuAdminFormGroup: Pw,
-    VuAdminTablePagination: uN
+    VuAdminFormGroup: $w,
+    VuAdminTablePagination: cN
   },
   data() {
     return {
@@ -12600,132 +12600,132 @@ const uN = /* @__PURE__ */ kn(jw, [["render", cN], ["__scopeId", "data-v-5ba0187
     //   }
     // },
   }
-}, dN = { key: 0 }, fN = ["data-bs-theme"], pN = { class: "vua-table-title" }, gN = { class: "d-flex align-items-center justify-content-between" }, mN = { class: "d-inline-block" }, bN = {
+}, hN = { key: 0 }, dN = ["data-bs-theme"], fN = { class: "vua-table-title" }, pN = { class: "d-flex align-items-center justify-content-between" }, gN = { class: "d-inline-block" }, mN = {
   key: 0,
   class: "card-title d-inline-block mb-2"
-}, yN = {
+}, bN = {
   class: "spinner-border spinner-border-sm mx-2",
   role: "status"
-}, _N = {
+}, yN = {
   key: 0,
   class: "d-inline-block"
-}, vN = {
+}, _N = {
   key: 0,
   class: "d-inline-block px-1 mx-1"
-}, EN = ["innerHTML"], TN = { class: "dropdown d-inline-block" }, AN = ["innerHTML"], wN = { class: "dropdown-menu text-start" }, NN = { class: "me-2 text-muted" }, ON = ["innerHTML"], CN = ["onClick"], SN = {
+}, vN = ["innerHTML"], EN = { class: "dropdown d-inline-block" }, TN = ["innerHTML"], AN = { class: "dropdown-menu text-start" }, wN = { class: "me-2 text-muted" }, NN = ["innerHTML"], ON = ["onClick"], CN = {
   key: 1,
   class: "dropdown d-inline-block"
-}, LN = { class: "mx-1" }, xN = { key: 0 }, kN = { class: "dropdown-menu" }, IN = ["onClick"], RN = {
+}, SN = { class: "mx-1" }, LN = { key: 0 }, xN = { class: "dropdown-menu" }, kN = ["onClick"], IN = {
   key: 0,
   class: "bi bi-check-square-fill me-2"
-}, DN = {
+}, RN = {
   key: 1,
   class: "bi bi-x-square me-2 text-danger"
-}, MN = { class: "badge text-secondary fw-normal" }, qN = {
+}, DN = { class: "badge text-secondary fw-normal" }, MN = {
   key: 2,
   class: "dropdown d-inline-block"
-}, BN = { class: "mx-1" }, $N = { class: "dropdown-menu" }, PN = ["onClick"], jN = { class: "vua-table-header" }, UN = ["width"], VN = ["onClick"], FN = ["innerHTML"], HN = {
+}, qN = { class: "mx-1" }, BN = { class: "dropdown-menu" }, $N = ["onClick"], PN = { class: "vua-table-header" }, jN = ["width"], UN = ["onClick"], VN = ["innerHTML"], FN = {
   key: 0,
   class: "bi bi-arrow-down"
-}, WN = {
+}, HN = {
   key: 1,
   class: "bi bi-arrow-up"
-}, zN = { key: 0 }, KN = ["disabled", "onClick"], GN = {
+}, WN = { key: 0 }, zN = ["disabled", "onClick"], KN = {
   key: 0,
   class: "vua-table-filter"
-}, YN = ["width"], XN = {
+}, GN = ["width"], YN = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, ZN = { class: "bi bi-check-all" }, QN = { class: "bi bi-x-lg" }, JN = {
+}, XN = { class: "bi bi-check-all" }, ZN = { class: "bi bi-x-lg" }, QN = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, tO = ["onUpdate:modelValue"], eO = ["disabled", "onClick"], sO = {
+}, JN = ["onUpdate:modelValue"], tO = ["disabled", "onClick"], eO = {
   key: 2,
   class: "input-group input-group-sm my-1"
-}, nO = ["onUpdate:modelValue", "disabled"], iO = { value: "=" }, rO = { value: ">" }, oO = { value: ">=" }, aO = { value: "<" }, lO = { value: "<=" }, cO = ["onUpdate:modelValue", "disabled"], uO = ["value"], hO = ["onUpdate:modelValue", "disabled", "min", "max"], dO = ["disabled", "onClick"], fO = { key: 3 }, pO = {
+}, sO = ["onUpdate:modelValue", "disabled"], nO = { value: "=" }, iO = { value: ">" }, rO = { value: ">=" }, oO = { value: "<" }, aO = { value: "<=" }, lO = ["onUpdate:modelValue", "disabled"], cO = ["value"], uO = ["onUpdate:modelValue", "disabled", "min", "max"], hO = ["disabled", "onClick"], dO = { key: 3 }, fO = {
   key: 0,
   class: "dropdown"
-}, gO = {
+}, pO = {
   class: "btn btn-sm btn-secondary dropdown-toggle my-1",
   type: "button",
   "data-bs-auto-close": "outside",
   "data-bs-toggle": "dropdown",
   "aria-expanded": "false"
-}, mO = { class: "dropdown-menu" }, bO = ["onClick"], yO = {
+}, gO = { class: "dropdown-menu" }, mO = ["onClick"], bO = {
   key: 0,
   class: "bi bi-check-square"
-}, _O = {
+}, yO = {
   key: 1,
   class: "bi bi-square"
-}, vO = { key: 0 }, EO = { key: 1 }, TO = ["onClick"], AO = { key: 2 }, wO = ["onClick"], NO = { key: 3 }, OO = ["onClick"], CO = ["onUpdate:modelValue", "multiple"], SO = ["value"], LO = {
+}, _O = { key: 0 }, vO = { key: 1 }, EO = ["onClick"], TO = { key: 2 }, AO = ["onClick"], wO = { key: 3 }, NO = ["onClick"], OO = ["onUpdate:modelValue", "multiple"], CO = ["value"], SO = {
   key: 4,
   class: "input-group input-group-sm my-1"
-}, xO = ["onUpdate:modelValue"], kO = { value: "=" }, IO = { value: ">" }, RO = { value: ">=" }, DO = { value: "<" }, MO = { value: "<=" }, qO = ["onUpdate:modelValue"], BO = ["value"], $O = ["type", "onUpdate:modelValue"], PO = ["disabled", "onClick"], jO = ["disabled", "onClick"], UO = { class: "align-middle" }, VO = ["data-label", "width", "onClick"], FO = {
+}, LO = ["onUpdate:modelValue"], xO = { value: "=" }, kO = { value: ">" }, IO = { value: ">=" }, RO = { value: "<" }, DO = { value: "<=" }, MO = ["onUpdate:modelValue"], qO = ["value"], BO = ["type", "onUpdate:modelValue"], $O = ["disabled", "onClick"], PO = ["disabled", "onClick"], jO = { class: "align-middle" }, UO = ["data-label", "width", "onClick"], VO = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, HO = ["innerHTML"], WO = { key: 1 }, zO = ["innerHTML"], KO = ["aria-valuenow", "aria-valuemax"], GO = { key: 0 }, YO = {
+}, FO = ["innerHTML"], HO = { key: 1 }, WO = ["innerHTML"], zO = ["aria-valuenow", "aria-valuemax"], KO = { key: 0 }, GO = {
   key: 4,
   class: "input-group input-group-sm"
-}, XO = ["innerHTML"], ZO = ["type", "onChange", "onUpdate:modelValue"], QO = ["onChange", "onUpdate:modelValue"], JO = ["value"], tC = ["innerHTML"], eC = { key: 5 }, sC = ["disabled", "onClick"], nC = ["innerHTML"], iC = { key: 2 }, rC = { key: 0 }, oC = ["colspan"], aC = { class: "row g-3 align-items-center" }, lC = { class: "col-form-label" }, cC = ["type", "onUpdate:modelValue", "onChange"], uC = ["onUpdate:modelValue", "onChange"], hC = ["onUpdate:modelValue", "onChange"], dC = ["value"], fC = ["innerHTML"], pC = {
+}, YO = ["innerHTML"], XO = ["type", "onChange", "onUpdate:modelValue"], ZO = ["onChange", "onUpdate:modelValue"], QO = ["value"], JO = ["innerHTML"], tC = { key: 5 }, eC = ["disabled", "onClick"], sC = ["innerHTML"], nC = { key: 2 }, iC = { key: 0 }, rC = ["colspan"], oC = { class: "row g-3 align-items-center" }, aC = { class: "col-form-label" }, lC = ["type", "onUpdate:modelValue", "onChange"], cC = ["onUpdate:modelValue", "onChange"], uC = ["onUpdate:modelValue", "onChange"], hC = ["value"], dC = ["innerHTML"], fC = {
   key: 0,
   class: "bg-light text-dark"
-}, gC = {
+}, pC = {
   key: 0,
   class: "vua-table-bulk border-info"
-}, mC = ["data-label", "width"], bC = {
+}, gC = ["data-label", "width"], mC = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, yC = {
+}, bC = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, _C = ["type", "disabled", "onChange", "onUpdate:modelValue"], vC = ["disabled", "onChange", "onUpdate:modelValue"], EC = ["value"], TC = ["onClick"], AC = {
+}, yC = ["type", "disabled", "onChange", "onUpdate:modelValue"], _C = ["disabled", "onChange", "onUpdate:modelValue"], vC = ["value"], EC = ["onClick"], TC = {
   key: 0,
   class: "bi bi-square text-secondary"
-}, wC = {
+}, AC = {
   key: 1,
   class: "bi bi-check-square"
-}, NC = { key: 2 }, OC = ["disabled", "onClick"], CC = ["innerHTML"], SC = { key: 2 }, LC = ["id"], xC = { class: "modal-dialog modal-xl" }, kC = { class: "modal-content h-100" }, IC = ["id", "data-bs-theme"], RC = { class: "modal-header" }, DC = { class: "modal-title" }, MC = ["innerHTML"], qC = { key: 1 }, BC = { key: 2 }, $C = {
+}, wC = { key: 2 }, NC = ["disabled", "onClick"], OC = ["innerHTML"], CC = { key: 2 }, SC = ["id"], LC = { class: "modal-dialog modal-xl" }, xC = { class: "modal-content h-100" }, kC = ["id", "data-bs-theme"], IC = { class: "modal-header" }, RC = { class: "modal-title" }, DC = ["innerHTML"], MC = { key: 1 }, qC = { key: 2 }, BC = {
   key: 3,
   class: "badge border text-dark ms-2 p-badge"
-}, PC = {
+}, $C = {
   key: 0,
   class: "d-inline-block ms-3 mt-1"
-}, jC = ["innerHTML"], UC = {
+}, PC = ["innerHTML"], jC = {
   class: "spinner-border spinner-border-sm mx-2",
   role: "status"
-}, VC = {
+}, UC = {
   key: 0,
   class: "modal-header d-flex justify-content-between"
-}, FC = ["disabled"], HC = ["disabled"], WC = {
+}, VC = ["disabled"], FC = ["disabled"], HC = {
   key: 0,
   class: "d-inline-block m-1"
-}, zC = { class: "dropdown d-inline-block" }, KC = ["innerHTML"], GC = { class: "dropdown-menu text-start" }, YC = { class: "me-2 text-muted" }, XC = ["innerHTML"], ZC = {
+}, WC = { class: "dropdown d-inline-block" }, zC = ["innerHTML"], KC = { class: "dropdown-menu text-start" }, GC = { class: "me-2 text-muted" }, YC = ["innerHTML"], XC = {
   type: "button",
   class: "btn btn-sm btn-secondary m-1",
   "data-bs-dismiss": "modal"
-}, QC = {
+}, ZC = {
   type: "submit",
   class: "btn btn-sm btn-primary m-1"
-}, JC = {
+}, QC = {
   key: 1,
   class: "modal-body custom-scroll"
-}, tS = {
+}, JC = {
   key: 2,
   class: "modal-footer d-flex justify-content-between"
-}, eS = ["disabled"], sS = ["disabled"], nS = {
+}, tS = ["disabled"], eS = ["disabled"], sS = {
   type: "button",
   class: "btn btn-secondary m-1",
   "data-bs-dismiss": "modal"
-}, iS = {
+}, nS = {
   type: "submit",
   class: "btn btn-primary m-1"
-}, rS = {
+}, iS = {
   key: 1,
   class: "bg-light text-dark"
 };
-function oS(s, t, e, n, i, r) {
+function rS(s, t, e, n, i, r) {
   const o = ai("VuAdminTablePagination"), c = ai("VuAdminFormGroup");
-  return e.settings && e.settings.table ? (y(), _("div", dN, [
+  return e.settings && e.settings.table ? (y(), _("div", hN, [
     m("div", {
       class: D(["vua-table-container", [e.settings.class]]),
       "data-bs-theme": [e.settings.theme]
@@ -12733,45 +12733,45 @@ function oS(s, t, e, n, i, r) {
       m("div", {
         class: D(["vua-overlay", { blocked: i.ui.block.table }])
       }, null, 2),
-      m("div", pN, [
-        m("div", gN, [
-          m("div", mN, [
-            e.settings.table.title ? (y(), _("h5", bN, x(e.settings.table.title), 1)) : C("", !0),
-            X(m("div", yN, t[26] || (t[26] = [
+      m("div", fN, [
+        m("div", pN, [
+          m("div", gN, [
+            e.settings.table.title ? (y(), _("h5", mN, x(e.settings.table.title), 1)) : C("", !0),
+            X(m("div", bN, t[26] || (t[26] = [
               m("span", { class: "visually-hidden" }, "Loading...", -1)
             ]), 512), [
               [ws, i.ui.wait.table && e.settings.table.title]
             ])
           ]),
-          i.messages.table.length ? (y(), _("div", _N, [
-            i.message.table ? (y(), _("small", vN, [
+          i.messages.table.length ? (y(), _("div", yN, [
+            i.message.table ? (y(), _("small", _N, [
               m("span", {
                 class: D(["text-" + i.message.table.priority])
               }, [
                 m("span", {
                   class: "fw-bold",
                   innerHTML: i.message.table.msg
-                }, null, 8, EN)
+                }, null, 8, vN)
               ], 2)
             ])) : C("", !0),
-            m("div", TN, [
+            m("div", EN, [
               m("button", {
                 class: D(["btn btn-sm dropdown-toggle", ["btn-" + i.messages.table[0].priority]]),
                 type: "button",
                 "data-bs-toggle": "dropdown",
                 "aria-expanded": "false",
                 innerHTML: i.messages.table.length + " " + (i.messages.table.length > 1 ? r.translate("messages") : r.translate("message"))
-              }, null, 10, AN),
-              m("ul", wN, [
+              }, null, 10, TN),
+              m("ul", AN, [
                 (y(!0), _(W, null, z(i.messages.table, (a) => (y(), _("li", { key: a }, [
                   m("span", {
                     class: D(["dropdown-item", ["text-" + a.priority]])
                   }, [
-                    m("small", NN, x(a.datetime), 1),
+                    m("small", wN, x(a.datetime), 1),
                     m("span", {
                       class: "fw-bold",
                       innerHTML: a.msg
-                    }, null, 8, ON)
+                    }, null, 8, NN)
                   ], 2)
                 ]))), 128))
               ])
@@ -12803,8 +12803,8 @@ function oS(s, t, e, n, i, r) {
               ])
             }, null, 2),
             Y(" " + x(r.translate(a.title)), 1)
-          ], 10, CN)) : C("", !0),
-          a.action === "TABLE_COLUMNS" ? (y(), _("div", SN, [
+          ], 10, ON)) : C("", !0),
+          a.action === "TABLE_COLUMNS" ? (y(), _("div", CN, [
             m("button", {
               type: "button",
               class: D([[
@@ -12814,7 +12814,7 @@ function oS(s, t, e, n, i, r) {
               "data-bs-auto-close": "outside",
               "aria-expanded": "false"
             }, [
-              X(m("span", LN, [
+              X(m("span", SN, [
                 m("i", {
                   class: D([
                     a.icon !== void 0 ? r.getValueOrFunction(a.icon, {
@@ -12824,22 +12824,22 @@ function oS(s, t, e, n, i, r) {
                   ])
                 }, null, 2),
                 Y(" " + x(r.translate(a.title)) + " ", 1),
-                r.countHiddenColumns() ? (y(), _("span", xN, " ( " + x(r.countHiddenColumns()) + " " + x(r.translate("hidden")) + " ) ", 1)) : C("", !0)
+                r.countHiddenColumns() ? (y(), _("span", LN, " ( " + x(r.countHiddenColumns()) + " " + x(r.translate("hidden")) + " ) ", 1)) : C("", !0)
               ], 512), [
                 [ws, e.settings.table.columns.length > 0]
               ])
             ], 2),
-            m("ul", kN, [
+            m("ul", xN, [
               (y(!0), _(W, null, z(e.settings.table.columns, (l) => (y(), _("li", { key: l }, [
                 m("span", {
                   class: "dropdown-item cursor-pointer",
                   onClick: (h) => r.toggleColumn(l)
                 }, [
-                  l.hidden ? C("", !0) : (y(), _("i", RN)),
-                  l.hidden ? (y(), _("i", DN)) : C("", !0),
+                  l.hidden ? C("", !0) : (y(), _("i", IN)),
+                  l.hidden ? (y(), _("i", RN)) : C("", !0),
                   Y(" " + x(l.title) + " ", 1),
-                  m("small", MN, x(l.name), 1)
-                ], 8, IN)
+                  m("small", DN, x(l.name), 1)
+                ], 8, kN)
               ]))), 128)),
               t[27] || (t[27] = m("li", null, [
                 m("hr", { class: "dropdown-divider" })
@@ -12858,7 +12858,7 @@ function oS(s, t, e, n, i, r) {
               ])
             ])
           ])) : C("", !0),
-          a.dropdowns ? (y(), _("div", qN, [
+          a.dropdowns ? (y(), _("div", MN, [
             m("button", {
               type: "button",
               class: D([[a.class], "dropdown-toggle"]),
@@ -12866,7 +12866,7 @@ function oS(s, t, e, n, i, r) {
               "data-bs-auto-close": "outside",
               "aria-expanded": "false"
             }, [
-              m("span", BN, [
+              m("span", qN, [
                 m("i", {
                   class: D([
                     a.icon !== void 0 ? r.getValueOrFunction(a.icon, {
@@ -12878,7 +12878,7 @@ function oS(s, t, e, n, i, r) {
                 Y(" " + x(r.translate(a.title)), 1)
               ])
             ], 2),
-            m("ul", $N, [
+            m("ul", BN, [
               (y(!0), _(W, null, z(a.dropdowns, (l) => (y(), _("li", { key: l }, [
                 m("span", {
                   class: D(["dropdown-item cursor-pointer", [l.class]]),
@@ -12889,7 +12889,7 @@ function oS(s, t, e, n, i, r) {
                     class: D([l.icon])
                   }, null, 2)) : C("", !0),
                   Y(" " + x(r.translate(l.title)), 1)
-                ], 10, PN)
+                ], 10, $N)
               ]))), 128))
             ])
           ])) : C("", !0)
@@ -12900,7 +12900,7 @@ function oS(s, t, e, n, i, r) {
         class: D(["table vua-table mb-0", [e.settings.table.class]])
       }, [
         m("thead", null, [
-          m("tr", jN, [
+          m("tr", PN, [
             (y(!0), _(W, null, z(e.settings.table.columns, (a) => (y(), _("th", {
               class: D(["", [a.header ? a.header.class : ""]]),
               style: Gn([a.hidden ? "display: none" : ""]),
@@ -12913,19 +12913,19 @@ function oS(s, t, e, n, i, r) {
               }, [
                 m("span", {
                   innerHTML: a.header && a.header.title !== void 0 ? r.translate(a.header.title) : a.title ? r.translate(a.title) : r.translate(a.name)
-                }, null, 8, FN),
+                }, null, 8, VN),
                 i.config.order[a.name] ? (y(), _("span", {
                   key: 0,
                   class: D(["badge text-bg-light ms-1 p-badge", {
                     "opacity-50": i.config.order[a.name].fixed
                   }])
                 }, [
-                  i.config.order[a.name].dir === "ASC" ? (y(), _("i", HN)) : C("", !0),
-                  i.config.order[a.name].dir === "DESC" ? (y(), _("i", WN)) : C("", !0),
+                  i.config.order[a.name].dir === "ASC" ? (y(), _("i", FN)) : C("", !0),
+                  i.config.order[a.name].dir === "DESC" ? (y(), _("i", HN)) : C("", !0),
                   Y(" " + x(i.config.order[a.name].idx + 1), 1)
                 ], 2)) : C("", !0)
-              ], 10, VN),
-              a.header && a.header.buttons ? (y(), _("span", zN, [
+              ], 10, UN),
+              a.header && a.header.buttons ? (y(), _("span", WN, [
                 (y(!0), _(W, null, z(a.header.buttons, (l) => (y(), _("button", {
                   key: l.action,
                   type: "button",
@@ -12945,31 +12945,31 @@ function oS(s, t, e, n, i, r) {
                     ])
                   }, null, 2),
                   Y(" " + x(r.translate(l.title)), 1)
-                ], 10, KN))), 128))
+                ], 10, zN))), 128))
               ])) : C("", !0)
-            ], 14, UN))), 128))
+            ], 14, jN))), 128))
           ]),
-          r.countFilters() ? (y(), _("tr", GN, [
+          r.countFilters() ? (y(), _("tr", KN, [
             (y(!0), _(W, null, z(e.settings.table.columns, (a) => (y(), _("th", {
               style: Gn([a.hidden ? "display: none" : ""]),
               key: a,
               width: a.width,
               class: D([a.filter ? a.filter.class : ""])
             }, [
-              a.index && a.click ? (y(), _("div", XN, [
+              a.index && a.click ? (y(), _("div", YN, [
                 m("span", {
                   class: D(["cursor-pointer badge border badge-index-toggle py-1 px-2 me-1 my-2 w-100", { active: r.haveSelectedRowInPage() }]),
                   onClick: t[2] || (t[2] = (l) => r.toggleSelectedRowInPage())
                 }, [
-                  X(m("i", ZN, null, 512), [
+                  X(m("i", XN, null, 512), [
                     [ws, !r.haveSelectedRowInPage()]
                   ]),
-                  X(m("i", QN, null, 512), [
+                  X(m("i", ZN, null, 512), [
                     [ws, r.haveSelectedRowInPage()]
                   ])
                 ], 2)
               ])) : C("", !0),
-              a.filter && a.filter.type == "text" ? (y(), _("div", JN, [
+              a.filter && a.filter.type == "text" ? (y(), _("div", QN, [
                 X(m("input", {
                   type: "text",
                   class: D([{
@@ -12977,7 +12977,7 @@ function oS(s, t, e, n, i, r) {
                   }, "form-control form-control-sm"]),
                   "onUpdate:modelValue": (l) => a.filter.value = l,
                   onKeyup: t[3] || (t[3] = Oo((l) => r.reloadTable(), ["enter"]))
-                }, null, 42, tO), [
+                }, null, 42, JN), [
                   [pe, a.filter.value]
                 ]),
                 a.filter.buttonx && a.filter.buttonx != !1 ? (y(), _("button", {
@@ -12991,9 +12991,9 @@ function oS(s, t, e, n, i, r) {
                   }
                 }, t[28] || (t[28] = [
                   m("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, eO)) : C("", !0)
+                ]), 10, tO)) : C("", !0)
               ])) : C("", !0),
-              a.filter && a.filter.type == "number" ? (y(), _("div", sO, [
+              a.filter && a.filter.type == "number" ? (y(), _("div", eO, [
                 a.filter.operators == !0 ? X((y(), _("select", {
                   key: 0,
                   "onUpdate:modelValue": (l) => a.filter.operator = l,
@@ -13001,12 +13001,12 @@ function oS(s, t, e, n, i, r) {
                   onChange: t[4] || (t[4] = (l) => r.reloadTable()),
                   class: "form-select form-select-sm pe-0"
                 }, [
-                  m("option", iO, x(r.translate("=")), 1),
-                  m("option", rO, x(r.translate(">")), 1),
-                  m("option", oO, x(r.translate(">=")), 1),
-                  m("option", aO, x(r.translate("<")), 1),
-                  m("option", lO, x(r.translate("<=")), 1)
-                ], 40, nO)), [
+                  m("option", nO, x(r.translate("=")), 1),
+                  m("option", iO, x(r.translate(">")), 1),
+                  m("option", rO, x(r.translate(">=")), 1),
+                  m("option", oO, x(r.translate("<")), 1),
+                  m("option", aO, x(r.translate("<=")), 1)
+                ], 40, sO)), [
                   [Ie, a.filter.operator]
                 ]) : C("", !0),
                 a.filter.operators && a.filter.operators.length > 0 ? X((y(), _("select", {
@@ -13019,8 +13019,8 @@ function oS(s, t, e, n, i, r) {
                   (y(!0), _(W, null, z(a.filter.operators, (l) => (y(), _("option", {
                     key: l,
                     value: l.value
-                  }, x(l.label), 9, uO))), 128))
-                ], 40, cO)), [
+                  }, x(l.label), 9, cO))), 128))
+                ], 40, lO)), [
                   [Ie, a.filter.operator]
                 ]) : C("", !0),
                 X(m("input", {
@@ -13034,7 +13034,7 @@ function oS(s, t, e, n, i, r) {
                   max: a.filter.max,
                   onChange: t[6] || (t[6] = (l) => r.reloadTable()),
                   onKeyup: t[7] || (t[7] = Oo((l) => r.reloadTable(), ["enter"]))
-                }, null, 42, hO), [
+                }, null, 42, uO), [
                   [pe, a.filter.value]
                 ]),
                 !a.filter.fixed && a.filter.buttonx && a.filter.buttonx != !1 ? (y(), _("button", {
@@ -13048,42 +13048,42 @@ function oS(s, t, e, n, i, r) {
                   }
                 }, t[29] || (t[29] = [
                   m("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, dO)) : C("", !0)
+                ]), 10, hO)) : C("", !0)
               ])) : C("", !0),
-              a.filter && a.filter.type == "select" ? (y(), _("div", fO, [
-                a.filter.dropdown ? (y(), _("div", pO, [
-                  m("button", gO, x(a.filter.multiple ? a.filter.value.length + " selected" : a.filter.value ? a.filter.value : "not selected"), 1),
-                  m("ul", mO, [
+              a.filter && a.filter.type == "select" ? (y(), _("div", dO, [
+                a.filter.dropdown ? (y(), _("div", fO, [
+                  m("button", pO, x(a.filter.multiple ? a.filter.value.length + " selected" : a.filter.value ? a.filter.value : "not selected"), 1),
+                  m("ul", gO, [
                     m("li", null, [
                       (y(!0), _(W, null, z(a.filter.options, (l) => (y(), _("span", {
                         key: l,
                         class: D(["dropdown-item cursor-pointer", { selected: a.filter.multiple ? a.filter.value.indexOf(l.value) >= 0 : a.filter.value === l.value }]),
                         onClick: (h) => r.dropdownSelectToggleOne(a.filter, l.value)
                       }, [
-                        (a.filter.multiple ? a.filter.value.indexOf(l.value) >= 0 : a.filter.value === l.value) ? (y(), _("i", yO)) : (y(), _("i", _O)),
+                        (a.filter.multiple ? a.filter.value.indexOf(l.value) >= 0 : a.filter.value === l.value) ? (y(), _("i", bO)) : (y(), _("i", yO)),
                         Y(" " + x(r.translate(l.label ? l.label : l.value)), 1)
-                      ], 10, bO))), 128))
+                      ], 10, mO))), 128))
                     ]),
-                    a.filter.multiple ? (y(), _("li", vO, t[30] || (t[30] = [
+                    a.filter.multiple ? (y(), _("li", _O, t[30] || (t[30] = [
                       m("hr", { class: "dropdown-divider" }, null, -1)
                     ]))) : C("", !0),
-                    a.filter.multiple ? (y(), _("li", EO, [
+                    a.filter.multiple ? (y(), _("li", vO, [
                       m("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (l) => r.dropdownSelectAll(a.filter.value, a.filter.options)
-                      }, x(r.translate("Select all")), 9, TO)
+                      }, x(r.translate("Select all")), 9, EO)
                     ])) : C("", !0),
-                    a.filter.multiple ? (y(), _("li", AO, [
+                    a.filter.multiple ? (y(), _("li", TO, [
                       m("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (l) => r.dropdownSelectClear(a.filter.value)
-                      }, x(r.translate("Unselect all")), 9, wO)
+                      }, x(r.translate("Unselect all")), 9, AO)
                     ])) : C("", !0),
-                    a.filter.multiple ? (y(), _("li", NO, [
+                    a.filter.multiple ? (y(), _("li", wO, [
                       m("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (l) => r.dropdownSelectInvert(a.filter.value, a.filter.options)
-                      }, x(r.translate("Invert all")), 9, OO)
+                      }, x(r.translate("Invert all")), 9, NO)
                     ])) : C("", !0)
                   ])
                 ])) : X((y(), _("select", {
@@ -13096,24 +13096,24 @@ function oS(s, t, e, n, i, r) {
                   (y(!0), _(W, null, z(a.filter.options, (l) => (y(), _("option", {
                     key: l,
                     value: l.value
-                  }, x(r.translate(l.label ? l.label : l.value)), 9, SO))), 128))
-                ], 40, CO)), [
+                  }, x(r.translate(l.label ? l.label : l.value)), 9, CO))), 128))
+                ], 40, OO)), [
                   [Ie, a.filter.value]
                 ])
               ])) : C("", !0),
-              a.filter && (a.filter.type == "datetime-local" || a.filter.type == "date") ? (y(), _("div", LO, [
+              a.filter && (a.filter.type == "datetime-local" || a.filter.type == "date") ? (y(), _("div", SO, [
                 a.filter.operators == !0 ? X((y(), _("select", {
                   key: 0,
                   "onUpdate:modelValue": (l) => a.filter.operator = l,
                   onChange: t[9] || (t[9] = (l) => r.reloadTable()),
                   class: "form-select form-select-sm pe-0"
                 }, [
-                  m("option", kO, x(r.translate("=")), 1),
-                  m("option", IO, x(r.translate(">")), 1),
-                  m("option", RO, x(r.translate(">=")), 1),
-                  m("option", DO, x(r.translate("<")), 1),
-                  m("option", MO, x(r.translate("<=")), 1)
-                ], 40, xO)), [
+                  m("option", xO, x(r.translate("=")), 1),
+                  m("option", kO, x(r.translate(">")), 1),
+                  m("option", IO, x(r.translate(">=")), 1),
+                  m("option", RO, x(r.translate("<")), 1),
+                  m("option", DO, x(r.translate("<=")), 1)
+                ], 40, LO)), [
                   [Ie, a.filter.operator]
                 ]) : C("", !0),
                 a.filter.operators && a.filter.operators.length > 0 ? X((y(), _("select", {
@@ -13125,8 +13125,8 @@ function oS(s, t, e, n, i, r) {
                   (y(!0), _(W, null, z(a.filter.operators, (l) => (y(), _("option", {
                     key: l,
                     value: l.value
-                  }, x(r.translate(l.label)), 9, BO))), 128))
-                ], 40, qO)), [
+                  }, x(r.translate(l.label)), 9, qO))), 128))
+                ], 40, MO)), [
                   [Ie, a.filter.operator]
                 ]) : C("", !0),
                 X(m("input", {
@@ -13137,7 +13137,7 @@ function oS(s, t, e, n, i, r) {
                   "onUpdate:modelValue": (l) => a.filter.value = l,
                   onChange: t[11] || (t[11] = (l) => r.reloadTable()),
                   onKeyup: t[12] || (t[12] = Oo((l) => r.reloadTable(), ["enter"]))
-                }, null, 42, $O), [
+                }, null, 42, BO), [
                   [hn, a.filter.value]
                 ]),
                 m("button", {
@@ -13150,7 +13150,7 @@ function oS(s, t, e, n, i, r) {
                   }
                 }, t[31] || (t[31] = [
                   m("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, PO)
+                ]), 10, $O)
               ])) : C("", !0),
               a.filter && a.filter.buttons ? (y(), _("span", {
                 key: 5,
@@ -13181,17 +13181,17 @@ function oS(s, t, e, n, i, r) {
                       ])
                     }, null, 2),
                     Y(" " + x(r.translate(l.title)), 1)
-                  ], 10, jO)
+                  ], 10, PO)
                 ]))), 128))
               ], 2)) : C("", !0)
-            ], 14, YN))), 128))
+            ], 14, GN))), 128))
           ])) : C("", !0)
         ]),
         m("tbody", null, [
           (y(!0), _(W, null, z(this.items, (a, l) => (y(), _(W, {
             key: a.id
           }, [
-            m("tr", UO, [
+            m("tr", jO, [
               (y(!0), _(W, null, z(e.settings.table.columns, (h) => (y(), _("td", {
                 style: Gn([h.hidden ? "display: none" : ""]),
                 key: h.name,
@@ -13205,19 +13205,19 @@ function oS(s, t, e, n, i, r) {
                 ),
                 onClick: (f) => r.tableAction(h, a, l, f)
               }, [
-                h.index ? (y(), _("div", FO, [
+                h.index ? (y(), _("div", VO, [
                   m("span", {
                     class: D(["cursor-pointer badge border badge-index p-1 w-100", {
                       selected: i.selected.indexOf(a[e.settings.pkey]) >= 0
                     }]),
                     innerHTML: l + 1 + (i.config.pagination.page - 1) * i.config.pagination.limit
-                  }, null, 10, HO)
+                  }, null, 10, FO)
                 ])) : C("", !0),
-                !h.template && !h.input && !h.progressbar ? (y(), _("span", WO, x(r.tableCellValue(h.name, a, l, h)), 1)) : C("", !0),
+                !h.template && !h.input && !h.progressbar ? (y(), _("span", HO, x(r.tableCellValue(h.name, a, l, h)), 1)) : C("", !0),
                 h.template ? (y(), _("span", {
                   key: 2,
                   innerHTML: r.tableCellTemplate(h.template, a, l, h)
-                }, null, 8, zO)) : C("", !0),
+                }, null, 8, WO)) : C("", !0),
                 h.progressbar ? (y(), _("div", {
                   key: 3,
                   class: "progress",
@@ -13230,10 +13230,10 @@ function oS(s, t, e, n, i, r) {
                     class: D(["progress-bar", [h.progressbar.class]]),
                     style: Gn({ width: Math.round(a[h.name] / h.progressbar.max * 100) + "%" })
                   }, [
-                    h.progressbar.value ? (y(), _("span", GO, x(a[h.name]), 1)) : C("", !0)
+                    h.progressbar.value ? (y(), _("span", KO, x(a[h.name]), 1)) : C("", !0)
                   ], 6)
-                ], 8, KO)) : C("", !0),
-                h.input ? (y(), _("div", YO, [
+                ], 8, zO)) : C("", !0),
+                h.input ? (y(), _("div", GO, [
                   h.input.prefix ? (y(), _("span", {
                     key: 0,
                     class: "input-group-text",
@@ -13241,7 +13241,7 @@ function oS(s, t, e, n, i, r) {
                       column: h,
                       item: a
                     })
-                  }, null, 8, XO)) : C("", !0),
+                  }, null, 8, YO)) : C("", !0),
                   ["text", "number", "date", "datetime-local"].indexOf(
                     h.input.type
                   ) >= 0 ? X((y(), _("input", {
@@ -13253,7 +13253,7 @@ function oS(s, t, e, n, i, r) {
                     })]),
                     onChange: (f) => r.onRowInputChange(a[h.name], h, a, l),
                     "onUpdate:modelValue": (f) => a[h.name] = f
-                  }, null, 42, ZO)), [
+                  }, null, 42, XO)), [
                     [hn, a[h.name]]
                   ]) : C("", !0),
                   h.input.type == "select" ? X((y(), _("select", {
@@ -13268,8 +13268,8 @@ function oS(s, t, e, n, i, r) {
                     (y(!0), _(W, null, z(h.input.options, (f) => (y(), _("option", {
                       value: f.value,
                       key: f
-                    }, x(r.translate(f.label)), 9, JO))), 128))
-                  ], 42, QO)), [
+                    }, x(r.translate(f.label)), 9, QO))), 128))
+                  ], 42, ZO)), [
                     [Ie, a[h.name]]
                   ]) : C("", !0),
                   h.input.suffix ? (y(), _("span", {
@@ -13279,9 +13279,9 @@ function oS(s, t, e, n, i, r) {
                       column: h,
                       item: a
                     })
-                  }, null, 8, tC)) : C("", !0)
+                  }, null, 8, JO)) : C("", !0)
                 ])) : C("", !0),
-                h.buttons ? (y(), _("span", eC, [
+                h.buttons ? (y(), _("span", tC, [
                   (y(!0), _(W, null, z(h.buttons, (f) => (y(), _("span", {
                     key: f.action
                   }, [
@@ -13312,13 +13312,13 @@ function oS(s, t, e, n, i, r) {
                       f.template ? (y(), _("span", {
                         key: 1,
                         innerHTML: r.tableCellTemplate(f.template, a, l, h)
-                      }, null, 8, nC)) : (y(), _("span", iC, x(r.translate(f.title)), 1))
-                    ], 10, sC)
+                      }, null, 8, sC)) : (y(), _("span", nC, x(r.translate(f.title)), 1))
+                    ], 10, eC)
                   ]))), 128))
                 ])) : C("", !0)
-              ], 14, VO))), 128))
+              ], 14, UO))), 128))
             ]),
-            e.settings.table.details && i.details.indexOf(a[e.settings.pkey]) >= 0 ? (y(), _("tr", rC, [
+            e.settings.table.details && i.details.indexOf(a[e.settings.pkey]) >= 0 ? (y(), _("tr", iC, [
               m("td", {
                 class: D([e.settings.table.details.class]),
                 colspan: e.settings.table.columns.length
@@ -13327,11 +13327,11 @@ function oS(s, t, e, n, i, r) {
                   class: "m-0",
                   key: h
                 }, [
-                  m("div", aC, [
+                  m("div", oC, [
                     m("div", {
                       class: D(["col text-end", [h.class]])
                     }, [
-                      m("label", lC, x(h.label), 1)
+                      m("label", aC, x(h.label), 1)
                     ], 2),
                     m("div", {
                       class: D(["col", [h.input.class]])
@@ -13342,7 +13342,7 @@ function oS(s, t, e, n, i, r) {
                         class: "form-control form-control-sm",
                         "onUpdate:modelValue": (f) => a[h.name] = f,
                         onChange: (f) => r.onRowInputChange(a[h.name], h, a, l)
-                      }, null, 40, cC)), [
+                      }, null, 40, lC)), [
                         [hn, a[h.name]]
                       ]) : C("", !0),
                       h.input.type == "textarea" ? X((y(), _("textarea", {
@@ -13352,7 +13352,7 @@ function oS(s, t, e, n, i, r) {
                         "onUpdate:modelValue": (f) => a[h.name] = f,
                         onChange: (f) => r.onRowInputChange(a[h.name], h, a, l)
                       }, `\r
-                    `, 40, uC)), [
+                    `, 40, cC)), [
                         [pe, a[h.name]]
                       ]) : C("", !0),
                       h.input.type == "select" ? X((y(), _("select", {
@@ -13364,8 +13364,8 @@ function oS(s, t, e, n, i, r) {
                         (y(!0), _(W, null, z(h.input.options, (f) => (y(), _("option", {
                           value: f.value,
                           key: f
-                        }, x(r.translate(f.label)), 9, dC))), 128))
-                      ], 40, hC)), [
+                        }, x(r.translate(f.label)), 9, hC))), 128))
+                      ], 40, uC)), [
                         [Ie, a[h.name]]
                       ]) : C("", !0)
                     ], 2)
@@ -13373,15 +13373,15 @@ function oS(s, t, e, n, i, r) {
                 ]))), 128)),
                 m("span", {
                   innerHTML: e.settings.table.details.raw(a)
-                }, null, 8, fC),
-                e.settings.debug ? (y(), _("pre", pC, "                " + x(a) + `
+                }, null, 8, dC),
+                e.settings.debug ? (y(), _("pre", fC, "                " + x(a) + `
               `, 1)) : C("", !0)
-              ], 10, oC)
+              ], 10, rC)
             ])) : C("", !0)
           ], 64))), 128))
         ]),
         m("tfoot", null, [
-          i.selected.length > 0 ? (y(), _("tr", gC, [
+          i.selected.length > 0 ? (y(), _("tr", pC, [
             (y(!0), _(W, null, z(e.settings.table.columns, (a) => (y(), _("td", {
               style: Gn([a.hidden ? "display: none" : ""]),
               key: a.name,
@@ -13389,13 +13389,13 @@ function oS(s, t, e, n, i, r) {
               width: a.width,
               class: D(a.class)
             }, [
-              a.index ? (y(), _("div", bC, [
+              a.index ? (y(), _("div", mC, [
                 m("span", {
                   class: "cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100",
                   onClick: t[13] || (t[13] = (l) => r.toggleSelectedAll())
                 }, x(i.selected.length), 1)
               ])) : C("", !0),
-              a.input && a.bulk && a.bulk.enabled ? (y(), _("div", yC, [
+              a.input && a.bulk && a.bulk.enabled ? (y(), _("div", bC, [
                 ["text", "number", "date", "datetime-local"].indexOf(
                   a.input.type
                 ) >= 0 ? X((y(), _("input", {
@@ -13405,7 +13405,7 @@ function oS(s, t, e, n, i, r) {
                   disabled: i.bulkinputs.indexOf(a.name) < 0,
                   onChange: (l) => r.onBulkInputChange(i.bulkitem[a.name], i.bulkitem, a),
                   "onUpdate:modelValue": (l) => i.bulkitem[a.name] = l
-                }, null, 42, _C)), [
+                }, null, 42, yC)), [
                   [hn, i.bulkitem[a.name]]
                 ]) : C("", !0),
                 a.input.type == "select" ? X((y(), _("select", {
@@ -13418,18 +13418,18 @@ function oS(s, t, e, n, i, r) {
                   (y(!0), _(W, null, z(a.input.options, (l) => (y(), _("option", {
                     value: l.value,
                     key: l
-                  }, x(r.translate(l.label)), 9, EC))), 128))
-                ], 42, vC)), [
+                  }, x(r.translate(l.label)), 9, vC))), 128))
+                ], 42, _C)), [
                   [Ie, i.bulkitem[a.name]]
                 ]) : C("", !0),
                 m("span", {
                   class: "input-group-text cursor-pointer",
                   onClick: (l) => r.ifBulkInputClick(a)
                 }, [
-                  i.bulkitem[a.name] === void 0 ? (y(), _("i", AC)) : (y(), _("i", wC))
-                ], 8, TC)
+                  i.bulkitem[a.name] === void 0 ? (y(), _("i", TC)) : (y(), _("i", AC))
+                ], 8, EC)
               ])) : C("", !0),
-              a.bulk ? (y(), _("span", NC, [
+              a.bulk ? (y(), _("span", wC, [
                 (y(!0), _(W, null, z(a.bulk.buttons, (l) => (y(), _("span", {
                   key: l.action
                 }, [
@@ -13454,11 +13454,11 @@ function oS(s, t, e, n, i, r) {
                     l.template ? (y(), _("span", {
                       key: 1,
                       innerHTML: r.tableCellTemplate(l.template, i.bulkitem, null, a)
-                    }, null, 8, CC)) : (y(), _("span", SC, x(r.translate(l.title)), 1))
-                  ], 10, OC)
+                    }, null, 8, OC)) : (y(), _("span", CC, x(r.translate(l.title)), 1))
+                  ], 10, NC)
                 ]))), 128))
               ])) : C("", !0)
-            ], 14, mC))), 128))
+            ], 14, gC))), 128))
           ])) : C("", !0)
         ])
       ], 2)) : C("", !0),
@@ -13475,8 +13475,8 @@ function oS(s, t, e, n, i, r) {
         id: i.modalId,
         tabindex: "-1"
       }, [
-        m("div", xC, [
-          m("div", kC, [
+        m("div", LC, [
+          m("div", xC, [
             i.item ? (y(), _("form", {
               key: 0,
               ref: "form",
@@ -13488,30 +13488,30 @@ function oS(s, t, e, n, i, r) {
               m("div", {
                 class: D(["vua-overlay", { blocked: i.ui.block.form }])
               }, null, 2),
-              m("div", RC, [
-                m("h5", DC, [
+              m("div", IC, [
+                m("h5", RC, [
                   e.settings.form.title && typeof e.settings.form.title == "function" ? (y(), _("span", {
                     key: 0,
                     innerHTML: e.settings.form.title(i.item, e.settings)
-                  }, null, 8, MC)) : C("", !0),
-                  e.settings.form.title && typeof e.settings.form.title == "string" ? (y(), _("span", qC, x(r.translate(e.settings.form.title)), 1)) : C("", !0),
-                  e.settings.form.title ? C("", !0) : (y(), _("span", BC, x(r.translate("Edit")), 1)),
-                  i.item[e.settings.pkey] ? (y(), _("span", $C, [
+                  }, null, 8, DC)) : C("", !0),
+                  e.settings.form.title && typeof e.settings.form.title == "string" ? (y(), _("span", MC, x(r.translate(e.settings.form.title)), 1)) : C("", !0),
+                  e.settings.form.title ? C("", !0) : (y(), _("span", qC, x(r.translate("Edit")), 1)),
+                  i.item[e.settings.pkey] ? (y(), _("span", BC, [
                     t[32] || (t[32] = m("span", { class: "text-secondary fw-light" }, "id", -1)),
                     Y(" " + x(i.item[e.settings.pkey]), 1)
                   ])) : C("", !0)
                 ]),
-                i.message.form ? (y(), _("span", PC, [
+                i.message.form ? (y(), _("span", $C, [
                   m("span", {
                     class: D(["text-" + i.message.form.priority])
                   }, [
                     t[33] || (t[33] = m("i", { class: "bi bi-envelope-fill me-2" }, null, -1)),
                     m("span", {
                       innerHTML: i.message.form.msg
-                    }, null, 8, jC)
+                    }, null, 8, PC)
                   ], 2)
                 ])) : C("", !0),
-                X(m("span", UC, t[34] || (t[34] = [
+                X(m("span", jC, t[34] || (t[34] = [
                   m("span", { class: "visually-hidden" }, "Loading...", -1)
                 ]), 512), [
                   [ws, i.ui.wait.form]
@@ -13523,7 +13523,7 @@ function oS(s, t, e, n, i, r) {
                   "aria-label": "Close"
                 }, null, -1))
               ]),
-              i.item ? (y(), _("div", VC, [
+              i.item ? (y(), _("div", UC, [
                 m("div", null, [
                   m("button", {
                     type: "button",
@@ -13533,7 +13533,7 @@ function oS(s, t, e, n, i, r) {
                   }, [
                     t[36] || (t[36] = m("i", { class: "bi bi-arrow-clockwise" }, null, -1)),
                     Y(" " + x(r.translate("Reload")), 1)
-                  ], 8, FC),
+                  ], 8, VC),
                   m("button", {
                     type: "button",
                     class: "btn btn-sm btn-outline-warning m-1",
@@ -13558,37 +13558,37 @@ function oS(s, t, e, n, i, r) {
                   }, [
                     t[39] || (t[39] = m("i", { class: "bi bi-trash" }, null, -1)),
                     Y(" " + x(r.translate("Delete")), 1)
-                  ], 8, HC)
+                  ], 8, FC)
                 ]),
                 m("div", null, [
-                  i.messages.form.length ? (y(), _("div", WC, [
-                    m("div", zC, [
+                  i.messages.form.length ? (y(), _("div", HC, [
+                    m("div", WC, [
                       m("button", {
                         class: D(["btn btn-sm dropdown-toggle", ["btn-" + i.messages.form[0].priority]]),
                         type: "button",
                         "data-bs-toggle": "dropdown",
                         "aria-expanded": "false",
                         innerHTML: i.messages.form.length + " " + (i.messages.form.length > 1 ? r.translate("messages") : r.translate("message"))
-                      }, null, 10, KC),
-                      m("ul", GC, [
+                      }, null, 10, zC),
+                      m("ul", KC, [
                         (y(!0), _(W, null, z(i.messages.form, (a) => (y(), _("li", { key: a }, [
                           m("span", {
                             class: D(["dropdown-item", ["text-" + a.priority]])
                           }, [
-                            m("small", YC, x(a.datetime), 1),
+                            m("small", GC, x(a.datetime), 1),
                             m("span", {
                               innerHTML: a.msg
-                            }, null, 8, XC)
+                            }, null, 8, YC)
                           ], 2)
                         ]))), 128))
                       ])
                     ])
                   ])) : C("", !0),
-                  m("button", ZC, [
+                  m("button", XC, [
                     t[40] || (t[40] = m("i", { class: "bi bi-x" }, null, -1)),
                     Y(" " + x(r.translate("Close")), 1)
                   ]),
-                  m("button", QC, [
+                  m("button", ZC, [
                     t[41] || (t[41] = m("i", { class: "bi bi-save" }, null, -1)),
                     Y(" " + x(r.translate("Save")), 1)
                   ]),
@@ -13602,7 +13602,7 @@ function oS(s, t, e, n, i, r) {
                   ])
                 ])
               ])) : C("", !0),
-              e.settings.form ? (y(), _("div", JC, [
+              e.settings.form ? (y(), _("div", QC, [
                 i.item && e.settings.form.groups ? (y(), ea(c, {
                   key: 0,
                   modelValue: i.item,
@@ -13611,7 +13611,7 @@ function oS(s, t, e, n, i, r) {
                   settings: e.settings
                 }, null, 8, ["modelValue", "formid", "settings"])) : C("", !0)
               ])) : C("", !0),
-              i.item ? (y(), _("div", tS, [
+              i.item ? (y(), _("div", JC, [
                 m("div", null, [
                   m("button", {
                     type: "button",
@@ -13621,7 +13621,7 @@ function oS(s, t, e, n, i, r) {
                   }, [
                     t[43] || (t[43] = m("i", { class: "bi bi-arrow-clockwise" }, null, -1)),
                     Y(" " + x(r.translate("Reload")), 1)
-                  ], 8, eS),
+                  ], 8, tS),
                   m("button", {
                     type: "button",
                     class: "btn btn-outline-warning m-1",
@@ -13646,14 +13646,14 @@ function oS(s, t, e, n, i, r) {
                   }, [
                     t[46] || (t[46] = m("i", { class: "bi bi-trash" }, null, -1)),
                     Y(" " + x(r.translate("Delete")), 1)
-                  ], 8, sS)
+                  ], 8, eS)
                 ]),
                 m("div", null, [
-                  m("button", nS, [
+                  m("button", sS, [
                     t[47] || (t[47] = m("i", { class: "bi bi-x" }, null, -1)),
                     Y(" " + x(r.translate("Close")), 1)
                   ]),
-                  m("button", iS, [
+                  m("button", nS, [
                     t[48] || (t[48] = m("i", { class: "bi bi-save" }, null, -1)),
                     Y(" " + x(r.translate("Save")), 1)
                   ]),
@@ -13667,16 +13667,16 @@ function oS(s, t, e, n, i, r) {
                   ])
                 ])
               ])) : C("", !0)
-            ], 42, IC)) : C("", !0),
-            e.settings.debug ? (y(), _("pre", rS, "        " + x(i.item) + `
+            ], 42, kC)) : C("", !0),
+            e.settings.debug ? (y(), _("pre", iS, "        " + x(i.item) + `
       `, 1)) : C("", !0)
           ])
         ])
-      ], 8, LC)
-    ], 10, fN)
+      ], 8, SC)
+    ], 10, dN)
   ])) : C("", !0);
 }
-const aS = /* @__PURE__ */ kn(hN, [["render", oS], ["__scopeId", "data-v-44f04eab"]]), lS = {
+const oS = /* @__PURE__ */ kn(uN, [["render", rS], ["__scopeId", "data-v-44f04eab"]]), aS = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -13804,34 +13804,34 @@ const aS = /* @__PURE__ */ kn(hN, [["render", oS], ["__scopeId", "data-v-44f04ea
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.1.1"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.1.2"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.1.1"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.1.2"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
   methods: {},
   components: {
-    VuAdminTable: aS
+    VuAdminTable: oS
   }
-}, cS = { key: 0 }, uS = ["data-bs-theme"];
-function hS(s, t, e, n, i, r) {
+}, lS = { key: 0 }, cS = ["data-bs-theme"];
+function uS(s, t, e, n, i, r) {
   const o = ai("vu-admin-table");
-  return e.entity && i.settings ? (y(), _("div", cS, [
+  return e.entity && i.settings ? (y(), _("div", lS, [
     m("div", {
       class: "vu-admin",
       "data-bs-theme": [i.settings.theme]
     }, [
       hu(o, { settings: i.settings }, null, 8, ["settings"])
-    ], 8, uS)
+    ], 8, cS)
   ])) : C("", !0);
 }
-const dS = /* @__PURE__ */ kn(lS, [["render", hS]]), vS = {
+const hS = /* @__PURE__ */ kn(aS, [["render", uS]]), _S = {
   install(s) {
-    s.component("VuAdmin", dS);
+    s.component("VuAdmin", hS);
   }
 };
 export {
-  dS as VuAdmin,
-  vS as default
+  hS as VuAdmin,
+  _S as default
 };
