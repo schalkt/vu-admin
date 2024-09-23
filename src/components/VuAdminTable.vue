@@ -237,7 +237,7 @@
                     <li>
                       <span v-for="option in column.filter.options" :key="option" class="dropdown-item cursor-pointer"
                         :class="{ 'selected': (column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value) }"
-                        @click="dropdownSelectToggleOne(column.filter, option.value)">
+                        @click="dropdownSelectToggleOne(column.filter, option)">
                         <i v-if="(column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value)" class="bi bi-check-square"></i>
                         <i v-else class="bi bi-square"></i>
                         {{ translate(option.label ? option.label : option.value) }}
@@ -554,33 +554,33 @@
               <div class="vua-overlay" :class="{ blocked: ui.block.form }"></div>
               <div class="modal-header">
 
-                
-                  <h5 class="modal-title">
-                    <span v-if="
-                      settings.form.title &&
-                      typeof settings.form.title == 'function'
-                    " v-html="settings.form.title(item, settings)"></span>
-                    <span v-if="
-                      settings.form.title &&
-                      typeof settings.form.title == 'string'
-                    ">{{ translate(settings.form.title) }}</span>
-                    <span v-if="!settings.form.title">{{ translate('Edit') }}</span>
 
-                    <span v-if="item[settings.pkey]" class="badge border text-dark ms-2 p-badge"><span class="text-secondary fw-light">id</span> {{ item[settings.pkey] }}</span>
+                <h5 class="modal-title">
+                  <span v-if="
+                    settings.form.title &&
+                    typeof settings.form.title == 'function'
+                  " v-html="settings.form.title(item, settings)"></span>
+                  <span v-if="
+                    settings.form.title &&
+                    typeof settings.form.title == 'string'
+                  ">{{ translate(settings.form.title) }}</span>
+                  <span v-if="!settings.form.title">{{ translate('Edit') }}</span>
 
-                  </h5>
+                  <small v-if="item[settings.pkey]" class="rounded border ms-2 px-2 py-0 fs-6"><span class="text-muted fw-light">id</span> {{ item[settings.pkey] }}</small>
 
-                  <span class="d-inline-block ms-3 mt-1" v-if="message.form">
-                    <span :class="['text-' + message.form.priority]">
-                      <i class="bi bi-envelope-fill me-2"></i>
-                      <span v-html="message.form.msg"></span>
-                    </span>
+                </h5>
+
+                <span class="d-inline-block ms-3 mt-1" v-if="message.form">
+                  <span :class="['text-' + message.form.priority]">
+                    <i class="bi bi-envelope-fill me-2"></i>
+                    <span v-html="message.form.msg"></span>
                   </span>
+                </span>
 
-                  <span v-show="ui.wait.form" class="spinner-border spinner-border-sm mx-2" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </span>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
+                <span v-show="ui.wait.form" class="spinner-border spinner-border-sm mx-2" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
               </div>
 
@@ -939,7 +939,7 @@ export default {
 
     reloadTable(params) {
       this.fetchTable(params);
-    },
+    },    
 
     createItem() {
 
@@ -1613,8 +1613,8 @@ export default {
           return false;
         }
 
-        if (this.settings.form.default) {          
-          json.data = Object.assign({}, this.settings.form.default, json.data);          
+        if (this.settings.form.default) {
+          json.data = Object.assign({}, this.settings.form.default, json.data);
         }
 
         if (this.settings.events && this.settings.events.afterItemLoad) {
@@ -2201,7 +2201,9 @@ export default {
       }
     },
 
-    dropdownSelectToggleOne(filter, value) {
+    dropdownSelectToggleOne(filter, option) {
+
+      let value = option.value;
 
       if (filter.multiple) {
         arrayToggleOne(filter.value, value);

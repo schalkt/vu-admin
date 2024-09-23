@@ -180,7 +180,7 @@ let columns = [
 			options: [
 				{
 					'value': 'beauty',
-				}, {
+				},{
 					'value': 'fragrances'
 				}, {
 					'value': 'furniture'
@@ -212,11 +212,11 @@ let columns = [
 		},
 		filter: {
 			type: 'select',
-			multiple: false,
-			operator: 'in',
+			multiple: true,
+			default_operator: 'in',
 			options: [
 				{
-					value: 'beauty'
+					value: 'beauty',
 				},
 				{
 					value: 'mascara'
@@ -402,6 +402,24 @@ let table = {
 		limit: 10,
 		limits: [5, 10, 20, 50, 100, 200]
 	},
+	presets: [
+		{
+			title: 'default',
+			default: true,
+			order: {
+				'title': {
+					dir: 'DESC',
+					fixed: false,
+					idx: 0
+				},
+				'rating': {
+					dir: 'ASC',
+					fixed: true,
+					idx: 1
+				}
+			}
+		}
+	],
 	order: {
 		'title': {
 			dir: 'DESC',
@@ -566,7 +584,7 @@ let form = {
 					name: 'title',
 					label: 'Product',
 					required: true,
-					class: 'col-md-6',					
+					class: 'col-md-6',
 				},
 				{
 					type: 'select',
@@ -574,7 +592,7 @@ let form = {
 					label: 'Category',
 					required: true,
 					class: 'col-md-6',
-					inputclass: (params) => {						
+					inputclass: (params) => {
 						return params.item[params.field.name] == 'beauty' ? 'bg-warning' : 'bg-dark text-light';
 					},
 					optionclass: (params) => {
@@ -592,7 +610,7 @@ let form = {
 				{
 					type: 'list',
 					name: 'links',
-					label: 'Links',					
+					label: 'Links',
 					elements: {
 						href: {
 							type: 'url',
@@ -604,19 +622,19 @@ let form = {
 							class: 'col-md-3',
 							required: true,
 						}
-					}					
+					}
 				},
 				{
-					type: 'checkbox',						
+					type: 'checkbox',
 					name: 'new',
 					label: null,
 					checkbox: 'New product',
 					true: 1,
-					false: 0,				
-					class: 'col-md-6',						
+					false: 0,
+					class: 'col-md-6',
 				},
 				{
-					type: 'checkbox',						
+					type: 'checkbox',
 					name: 'discount',
 					label: null,
 					checkbox: 'Discount',
