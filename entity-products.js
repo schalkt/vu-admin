@@ -561,7 +561,7 @@ let form = {
 					name: 'title',
 					label: 'Product',
 					required: true,
-					class: 'col-md-6'
+					class: 'col-md-6',					
 				},
 				{
 					type: 'select',
@@ -569,6 +569,12 @@ let form = {
 					label: 'Category',
 					required: true,
 					class: 'col-md-6',
+					inputclass: (params) => {						
+						return params.item[params.field.name] == 'beauty' ? 'bg-warning' : 'bg-dark text-light';
+					},
+					optionclass: (params) => {
+						return 'bg-light text-dark';
+					},
 					options: [
 						{
 							value: 'beauty',
@@ -581,7 +587,7 @@ let form = {
 				{
 					type: 'list',
 					name: 'links',
-					label: 'Links',
+					label: 'Links',					
 					elements: {
 						href: {
 							type: 'url',
@@ -601,8 +607,8 @@ let form = {
 					label: null,
 					checkbox: 'New product',
 					true: 1,
-					false: 0,
-					class: 'col-md-6',
+					false: 0,				
+					class: 'col-md-6',						
 				},
 				{
 					type: 'checkbox',						
