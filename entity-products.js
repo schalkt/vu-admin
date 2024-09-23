@@ -581,21 +581,19 @@ let form = {
 				{
 					type: 'list',
 					name: 'links',
-					label: 'Links',					
-					elements: [
-						{
-							name: 'href',
+					label: 'Links',
+					elements: {
+						href: {
 							type: 'url',
 							class: 'col-md-7',
 							required: true
 						},
-						{
-							name: 'label',
+						label: {
 							type: 'text',
 							class: 'col-md-3',
 							required: true,
 						}
-					],
+					},
 				},
 
 			]

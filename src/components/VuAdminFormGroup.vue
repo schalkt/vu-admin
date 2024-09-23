@@ -63,10 +63,10 @@
 
             <div v-if="field.type == 'list'">
 
-              <div class="row g-1 d-flex align-items-center justify-content-between mb-1" v-for="(elements,elindex) in arrayElements(item[field.name], field.elements)" :key="elindex">                
+              <div class="row g-1 d-flex align-items-center justify-content-between mb-1" v-for="(elements,elindex) in item[field.name]" :key="elindex">                
 
-                <div v-for="element in elements" :key="element" :class="element.class || 'col'">                                    
-                  <input :type="element.type" :required="element.required" :placeholder="element.placeholder || element.name" class="form-control form-control-sm" v-model="element.value">                  
+                <div v-for="(elementValue, elementKey) in elements" :key="elementKey" :class="field.elements[elementKey].class || 'col'">                                    
+                  <input :type="field.elements[elementKey].type" :required="field.elements[elementKey].required" :placeholder="field.elements[elementKey].placeholder || elementKey" class="form-control form-control-sm" v-model="item[field.name][elindex][elementKey]">                  
                 </div>
                 <div class="col-2 text-nowrap text-end">
                   <button type="button" class="btn btn-sm btn-outline-secondary p-1 me-1" @click="arrayItemMoveUp(item[field.name], elindex)">
@@ -143,6 +143,9 @@ const VuAdminFormGroup = {
   created() { },
   mounted() {
     this.item = this.modelValue;
+
+
+
   },
   watch: {
     modelValue(newValue) {
@@ -184,39 +187,6 @@ const VuAdminFormGroup = {
       return options;
     },
 
-
-    arrayElements(itemElements, fieldElements) {
-
-      if (!itemElements || !itemElements.length ) {
-        return [];
-      }
-      
-      let items;
-      let element;
-      let elements = [];
-
-      for (let itemElement of itemElements) {
-
-        items = [];
-
-        for (let fieldElement of fieldElements) {
-          element = Object.assign({});
-          element.name = fieldElement.name;
-          element.type = fieldElement.type;
-          element.class = fieldElement.class;
-          element.value = itemElement[fieldElement.name];
-          element.required = fieldElement.required;
-          items.push(element);
-        }            
-        
-        elements.push(items);
-
-      }
-
-      return elements;
-
-    },
-
     arrayAddNewItem(field, item) {
 
       if (!item[field.name] || typeof item[field.name] !== "object") {
@@ -225,8 +195,9 @@ const VuAdminFormGroup = {
       
       let push = {};
 
-      for (let element of field.elements) {        
-        push[element.name] = element.value;        
+      for (let elementKey in field.elements) {        
+        let element = field.elements[elementKey];
+        push[elementKey] = element.value;        
         element.value = undefined;
       } 
       
