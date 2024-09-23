@@ -38,6 +38,15 @@
               <input v-if="field.type == 'date'" class="form-control" :class="[field.class]" type="date" :name="field.name" :id="formid + '_' + field.name"
                 v-model="item[field.name]" :readonly="field.readonly" :required="field.required" />
 
+              <div  v-if="field.type == 'checkbox'" class="form-check">
+                <input class="form-check-input" :class="[field.class]" type="checkbox" :name="field.name" :id="formid + '_' + field.name"
+                :true-value="field.true != undefined ? field.true : true" :false-value="field.false != undefined ? field.false : false"
+                v-model="item[field.name]" :readonly="field.readonly" :required="field.required" />
+                <label class="form-check-label cursor-pointer" :for="formid + '_' + field.name">
+                  {{ field.checkbox }}
+                </label>
+              </div>
+            
               <input v-if="field.type == 'email'" autocomplete="on" class="form-control" :class="[field.class]" type="email" :name="field.name" :id="formid + '_' + field.name"
                 v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''"
                 :readonly="field.readonly" :required="field.required" />
@@ -63,10 +72,11 @@
 
             <div v-if="field.type == 'list'">
 
-              <div class="row g-1 d-flex align-items-center justify-content-between mb-1" v-for="(elements,elindex) in item[field.name]" :key="elindex">                
+              <div class="row g-1 d-flex align-items-center justify-content-between mb-1" v-for="(elements, elindex) in item[field.name]" :key="elindex">
 
-                <div v-for="(elementValue, elementKey) in elements" :key="elementKey" :class="field.elements[elementKey].class || 'col'">                                    
-                  <input :type="field.elements[elementKey].type" :required="field.elements[elementKey].required" :placeholder="field.elements[elementKey].placeholder || elementKey" class="form-control form-control-sm" v-model="item[field.name][elindex][elementKey]">                  
+                <div v-for="(elementValue, elementKey) in elements" :key="elementKey" :class="field.elements[elementKey].class || 'col'">
+                  <input :type="field.elements[elementKey].type" :required="field.elements[elementKey].required" :placeholder="field.elements[elementKey].placeholder || elementKey"
+                    class="form-control form-control-sm" v-model="item[field.name][elindex][elementKey]">
                 </div>
                 <div class="col-2 text-nowrap text-end">
                   <button type="button" class="btn btn-sm btn-outline-secondary p-1 me-1" @click="arrayItemMoveUp(item[field.name], elindex)">
@@ -81,7 +91,7 @@
                 </div>
               </div>
               <hr v-if="item[field.name] && item[field.name].length">
-              <div class="row g-1 d-flex align-items-center justify-content-between">                
+              <div class="row g-1 d-flex align-items-center justify-content-between">
                 <div v-for="element in field.elements" :key="element" :class="element.class || 'col'">
                   <input :type="element.type" :placeholder="element.placeholder || element.name" class="form-control form-control-sm" v-model="element.value">
                 </div>
@@ -192,16 +202,16 @@ const VuAdminFormGroup = {
       if (!item[field.name] || typeof item[field.name] !== "object") {
         item[field.name] = [];
       }
-      
+
       let push = {};
 
-      for (let elementKey in field.elements) {        
+      for (let elementKey in field.elements) {
         let element = field.elements[elementKey];
-        push[elementKey] = element.value;        
+        push[elementKey] = element.value;
         element.value = undefined;
-      } 
-      
-      item[field.name].push(push);      
+      }
+
+      item[field.name].push(push);
 
     },
 

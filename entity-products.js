@@ -593,9 +593,26 @@ let form = {
 							class: 'col-md-3',
 							required: true,
 						}
-					},
+					}					
 				},
-
+				{
+					type: 'checkbox',						
+					name: 'new',
+					label: null,
+					checkbox: 'New product',
+					true: 1,
+					false: 0,
+					class: 'col-md-6',
+				},
+				{
+					type: 'checkbox',						
+					name: 'discount',
+					label: null,
+					checkbox: 'Discount',
+					true: true,
+					false: false,
+					class: 'col-md-6',
+				}
 			]
 		},
 		{
