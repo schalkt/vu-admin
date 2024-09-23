@@ -551,6 +551,11 @@ let form = {
 	title: (item) => {
 		return (item.title ? item.title : '');
 	},
+	default: {
+		new: 1,
+		discount: false,
+		title: 'New product'
+	},
 	groups: [
 		{
 			title: 'Main parameters',

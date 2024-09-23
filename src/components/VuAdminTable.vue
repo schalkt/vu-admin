@@ -1613,6 +1613,10 @@ export default {
           return false;
         }
 
+        if (this.settings.form.default) {          
+          json.data = Object.assign({}, this.settings.form.default, json.data);          
+        }
+
         if (this.settings.events && this.settings.events.afterItemLoad) {
           this.settings.events.afterItemLoad(json.data, response);
         }
