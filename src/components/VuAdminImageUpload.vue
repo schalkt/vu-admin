@@ -12,7 +12,7 @@
           </div>
         </div>
 
-        <input type="text" class="form-control form-control-sm w-100 mt-1" v-model="editfile.title" @change="slug(index)" />
+        <input type="text" class="form-control form-control-sm w-100 mt-1" v-model="editfile.title" />
 
         <div class="row g-1">
           <div class="col-md-6">
@@ -63,7 +63,7 @@
                         <i class="bi bi-file-play"></i>
                       </span>
 
-                      <input type="text" class="form-control py-1 px-2 border-0 fw-light" v-model="file.title" />
+                      <input required="text" class="form-control py-1 px-2 border-0 fw-light" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
 
                       <span v-if="!file.isDocument && file.types && file.types[params.thumbnail]" class="mx-1">
                         <a v-if="file.types[params.thumbnail].url" target="_blank" :href="file.types[params.thumbnail].url">
@@ -99,7 +99,7 @@
                             <small class="dropdown-item py-0 d-flex justify-content-between">
                               <span class="text-muted fw-light me-3">original size & extension</span>
                               <span>
-                                <span v-html="roundFileSize(file.original.bytes, true)"></span>                                
+                                <span v-html="roundFileSize(file.original.bytes, true)"></span>
                                 <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ file.original.extension }}</small>
                               </span>
                             </small>
@@ -128,21 +128,26 @@
                                   <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ type.extension }}</small>
                                 </span>
                               </small>
-
                             </li>
 
                           </template>
                           <li>
                             <hr class="dropdown-divider">
                           </li>
-                          <li>
+                          <li v-if="file.uploaded">
                             <small class="dropdown-item py-0 d-flex justify-content-between">
                               <span class="text-muted fw-light me-3">uploaded at</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
                             </small>
                           </li>
                           <li>
                             <small class="dropdown-item py-0 d-flex justify-content-between">
-                              <span class="text-muted fw-light me-3">uploaded bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
+                              <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploadiing' }} bytes</span> <span
+                                v-html="roundFileSize(file.bytes, true)"></span>
+                            </small>
+                          </li>
+                          <li>
+                            <small class="dropdown-item py-0 d-flex justify-content-between">
+                              <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploadiing' }} filename</span> <span>{{ file.slug }}</span>
                             </small>
                           </li>
                         </ul>
@@ -153,8 +158,8 @@
                     </div>
 
                   </td>
-
                 </tr>
+
               </template>
             </tbody>
           </table>
@@ -163,7 +168,7 @@
 
         <div v-else :class="[params.colclass ? params.colclass : 'col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3']" v-for="(file, index) in files" :key="index">
           <div class="vsa-image-container h-100 position-relative border p-1 rounded">
-            <div v-if="file.loaded" class="w-100 h-100">
+            <div v-if="file.loaded" class="w-100 h-100 d-flex align-items-center flex-column">
 
               <div v-if="0" class="vsa-image-info position-absolute start-0 bottom-0 end-0 p-2 text-center text-light">
 
@@ -209,24 +214,21 @@
                 </div>
               </div>
 
-              <div v-if="file.types && file.types[params.thumbnail]" class="vsa-image-frame w-100 text-center">
+              <div v-if="file.types && file.types[params.thumbnail]" class="vsa-image-frame mb-auto text-center">
                 <img class="img-fluid" :src="file.types[params.thumbnail].url
                   ? file.types[params.thumbnail].url
                   : file.types[params.thumbnail].data
                   " :alt="file.name" />
               </div>
 
-
-              <span class="fs-5 ms-2" v-if="file.isDocument">
+              <div class="display-3 w-100 text-center mb-auto" v-if="file.isDocument">
                 <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
-              </span>
+              </div>
 
+              <input required="text" class="form-control rounded-0 rounded-top py-1 px-2 fw-light" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
 
-              <input type="text" class="form-control py-0 px-2 fw-light" v-model="file.title" />
-
-              <div class="dropdown">
-                <button class="btn btn-sm bg-light text-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-
+              <div class="dropdown rounded-bottom border w-100">
+                <button class="btn btn-sm bg-light text-dark dropdown-toggle w-100 h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 </button>
                 <ul class="dropdown-menu">
                   <li>
@@ -250,12 +252,11 @@
                   </li>
                   <li v-if="!file.isDocument">
                     <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">original extension</span> <span>{{ file.original.extension }}</span>
-                    </small>
-                  </li>
-                  <li v-if="!file.isDocument">
-                    <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">original size</span> <span v-html="roundFileSize(file.original.bytes, true)"></span>
+                      <span class="text-muted fw-light me-3">original size & extension</span>
+                      <span>
+                        <span v-html="roundFileSize(file.original.bytes, true)"></span>
+                        <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ file.original.extension }}</small>
+                      </span>
                     </small>
                   </li>
 
@@ -267,25 +268,20 @@
 
                     <li v-if="file.original.width">
                       <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3"><span class="text-primary">{{ preset }}</span> resolution</span> {{ type.width }} x {{ type.height }}
+                        <span class="text-muted fw-light me-4"><span class="text-primary">{{ preset }}</span> resolution & crop</span>
+                        <span>
+                          {{ type.width }} x {{ type.height }}
+                          <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm" v-if="type.crop">{{ type.crop }}</small>
+                        </span>
                       </small>
                     </li>
                     <li>
                       <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> extension</span> <span>{{ type.extension
-                          }}</span>
-                      </small>
-                    </li>
-                    <li>
-                      <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> crop</span> <span>{{ type.crop
-                          }}</span>
-                      </small>
-                    </li>
-                    <li>
-                      <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> size</span> <span
-                          :class="{ 'text-danger': type.bytes > file.original.bytes }" v-html="roundFileSize(type.bytes, true)"></span>
+                        <span class="text-muted fw-light me-1"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> size & extension</span>
+                        <span>
+                          <span :class="{ 'text-danger': type.bytes > file.original.bytes }" v-html="roundFileSize(type.bytes, true)"></span>
+                          <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ type.extension }}</small>
+                        </span>
                       </small>
                     </li>
 
@@ -293,14 +289,19 @@
                   <li>
                     <hr class="dropdown-divider">
                   </li>
-                  <li>
+                  <li v-if="file.uploaded">
                     <small class="dropdown-item py-0 d-flex justify-content-between">
                       <span class="text-muted fw-light me-3">uploaded at</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
                     </small>
                   </li>
                   <li>
                     <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">uploaded bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
+                      <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploadiing' }} bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
+                    </small>
+                  </li>
+                  <li>
+                    <small class="dropdown-item py-0 d-flex justify-content-between">
+                      <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploadiing' }} filename</span> <span>{{ file.slug }}</span>
                     </small>
                   </li>
                 </ul>
@@ -511,6 +512,7 @@ const ImageUpload = {
       };
       file.title = file.name.split(".").slice(0, -1).join(".");
       file.uid = Math.round(Math.random() * 9999999).toString(32) + Date.now().toString(32);
+      file.slug = slugify(file.title);
       file.timestamp = Math.round(Date.now() / 1000);
       file.original = {
         bytes: file.size,
@@ -726,15 +728,12 @@ const ImageUpload = {
         file.types[preset.key].blob = await this.getBlob(canvas, file.types[preset.key].mime, file.types[preset.key].quality);
 
         if (file.types[preset.key].blob) {
-          console.log(file.types[preset.key].blob);
           file.types[preset.key].bytes = file.types[preset.key].blob.size;
         }
 
         if (file.types[preset.key].bytes) {
           file.bytes += file.types[preset.key].bytes;
         }
-
-        console.log(file.types[preset.key]);
 
         if (callback) {
           callback(preset, file);
@@ -778,15 +777,22 @@ const ImageUpload = {
       });
     },
 
-    slug(index) {
-      let file = this.files[index];
+    slug(file) {
+
+      // file rename currently not supported
+      if (file.uploaded) {
+        return;
+      }
+
+      file.slug = slugify(file.title);
 
       for (let key in file.types) {
-        let type = file.types[key];
         let preset = this.params.presets[key];
-
-        type.slug = slugify(file.title) + "-" + preset.width + "x" + preset.height;
+        file.types[key].slug = slugify(file.title) + "-" + preset.width + "x" + preset.height;
       }
+
+      this.$forceUpdate();
+
     },
 
     download(index, params) {

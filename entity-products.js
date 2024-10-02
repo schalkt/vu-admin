@@ -716,6 +716,7 @@ let form = {
 					params: {
 						ui: 'list',						
 						limit: 15,
+						colclass: 'col-4',
 						text: 'Click here to upload',
 						accept: [
 							"txt",
