@@ -13,7 +13,7 @@
           <div class="form-group pb-3">
 
             <span v-if="field.label !== null">
-              <label v-if="['html', 'image'].indexOf(field.type) >= 0" :class="{'required' : field.required }" v-cloak class="form-label text-secondary mb-1">
+              <label v-if="['html', 'image', 'upload'].indexOf(field.type) >= 0" :class="{'required' : field.required }" v-cloak class="form-label text-secondary mb-1">
                 {{ field.label ? field.label : translate(field.name) }}
                 <span class="badge text-secondary fw-light" v-if="field.maxlength">
                   {{ item[field.name] ? item[field.name].length : 0 }} / {{ field.maxlength }}
@@ -68,7 +68,7 @@
 
             <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :class="[field.class]"></HtmlEditor>
 
-            <ImageUpload v-if="field.type == 'image'" v-model="item[field.name]" :class="[field.class]" :params="field.params"></ImageUpload>
+            <ImageUpload v-if="field.type == 'image' || field.type == 'upload'" v-model="item[field.name]" :class="[field.class]" :params="field.params" :settings="settings"></ImageUpload>
 
             <div v-if="field.type == 'list'">
 

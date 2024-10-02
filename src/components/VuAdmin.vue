@@ -213,6 +213,10 @@ export default {
     display: none !important;
   }
 
+  .ff-mono {
+    font-family: monospace;
+  }
+
   input[type="number"] {
     text-align: end;
   }

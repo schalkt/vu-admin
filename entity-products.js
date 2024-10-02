@@ -180,7 +180,7 @@ let columns = [
 			options: [
 				{
 					'value': 'beauty',
-				},{
+				}, {
 					'value': 'fragrances'
 				}, {
 					'value': 'furniture'
@@ -212,11 +212,17 @@ let columns = [
 		},
 		filter: {
 			type: 'select',
-			multiple: true,
+			multiple: false,
 			default_operator: 'in',
 			options: [
 				{
-					value: 'beauty',
+					value: 'beauty'
+				},
+				{
+					value: 'notbeauty',
+					label: 'not beauty',
+					filtervalue: 'beauty',
+					operator: 'nin'
 				},
 				{
 					value: 'mascara'
@@ -569,6 +575,7 @@ let form = {
 	title: (item) => {
 		return (item.title ? item.title : '');
 	},
+	upload: 'blob', // dataurl or blob
 	default: {
 		new: 1,
 		discount: false,
@@ -664,37 +671,74 @@ let form = {
 					}
 				},
 				{
-					type: 'image',
+					type: 'upload',
 					name: 'images',
 					label: 'Images',
 					required: false,
 					params: {
-						limit: 1,
+						ui: 'card',
+						limit: 10,
+						colclass: 'col-6',
 						text: 'Click here to upload',
-						accept: ["image/png", "image/jpeg", "image/webp"],
+						accept: ["png", "jpg", "jpeg", "webp"],
 						thumbnail: 'small',
 						download: 'large',
 						editor: false,
 						presets: {
-							large: {
+							default: {
 								width: 1920,
 								height: 1080,
-								convert: "image/webp",
-								quality: 0.85
+								extension: "webp",
+								quality: 0.9
 							},
 							small: {
 								width: 400,
 								height: 320,
-								convert: "image/webp",
-								quality: 0.75
+								extension: "png",
+								quality: 0.75,
+								crop: 'contain',
 							},
 							tiny: {
 								width: 160,
 								height: 100,
-								convert: "image/webp",
+								crop: 'fit',
+								extension: "webp",
 								quality: 0.7
 							},
 						},
+					}
+				},
+				{
+					type: 'upload',
+					name: 'documents',
+					label: 'Documents',
+					required: true,
+					params: {
+						ui: 'list',						
+						limit: 15,
+						text: 'Click here to upload',
+						accept: [
+							"txt",
+							"pdf",
+							"doc",
+							"docx",
+							"xls",
+							"xlsx",												
+							"png",
+						 	"jpeg",
+							"webp",
+							"mp4"
+						],	
+						thumbnail: 'thumbnail',
+						presets: {									
+							thumbnail: {
+								width: 120,
+								height: 100,
+								crop: 'contain',
+								extension: "webp",
+								quality: 0.6
+							},
+						},					
 					}
 				},
 			]
@@ -710,6 +754,7 @@ export default {
 	api: api,
 	events: events,
 	language: 'en',
+	_theme: 'dark',
 	translate: {
 		'en': {
 			'New': 'New product',

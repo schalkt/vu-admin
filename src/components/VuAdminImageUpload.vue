@@ -4,9 +4,9 @@
       <div v-cloak v-if="editfile && editfile.presets" class="vsa-image-editor p-2 text-center text-light">
         <div class="row">
           <div class="col-md-3" v-for="(type, index) in editfile.types" :key="index">
-            <span class="badge bg-dark text-light fw-light mx-1 text-uppercase">{{ type.convert.replace(/.*\//, '') }}</span>
+            <span class="badge bg-dark text-light fw-light mx-1 text-uppercase">{{ type.extension }}</span>
             <span class="badge bg-dark text-light fw-light mx-1">{{ type.width }} x {{ type.height }}</span>
-            <span class="badge bg-dark text-light fw-light mx-1">~{{ this.round(type.bytes) }}</span>
+            <span class="badge bg-dark text-light fw-light mx-1">~{{ roundFileSize(type.bytes) }}</span>
 
             <img v-cloak v-if="type" class="img-thumbnail rounded" :src="type.url ? type.url : type.data" />
           </div>
@@ -36,20 +36,144 @@
         </div>
       </div>
 
-      <div class="row g-1" v-if="files && files.length">
-        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3" v-for="(file, index) in files" :key="index">
-          <div class="vsa-image-container border border-secondary rounded p-2 h-100 position-relative">
-            <div v-if="file.types && file.types[params.thumbnail]" class="w-100 h-100 d-flex align-items-center">
-              <div class="vsa-image-info position-absolute start-0 bottom-0 end-0 p-2 text-center text-light">
-                {#
+      <div class="row g-2 mb-1" v-if="files && files.length">
+
+        <div v-if="params.ui === 'list'">
+
+          <table class="table table-sm table-responsive table-borderless">
+            <tbody>
+              <template v-for="(file, index) in files" :key="index">
+                <tr>
+                  <td class="align-middle text-center ps-0">
+                    <small>{{ index + 1 }}</small>
+                  </td>
+                  <td class="align-middle px-0">
+
+                    <div class="input-group border rounded">
+
+                      <span class="fs-5 ms-2" v-if="file.isDocument">
+                        <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
+                      </span>
+
+                      <span class="fs-5 ms-2" v-else-if="file.isImage">
+                        <i class="bi bi-file-image"></i>
+                      </span>
+
+                      <span class="fs-5 ms-2" v-else-if="file.isVideo">
+                        <i class="bi bi-file-play"></i>
+                      </span>
+
+                      <input type="text" class="form-control py-1 px-2 border-0 fw-light" v-model="file.title" />
+
+                      <span v-if="!file.isDocument && file.types && file.types[params.thumbnail]" class="mx-1">
+                        <a v-if="file.types[params.thumbnail].url" target="_blank" :href="file.types[params.thumbnail].url">
+                          <img height="32" width="auto" class="rounded border" :src="file.types[params.thumbnail].url" :alt="file.name" />
+                        </a>
+                        <img v-else height="32" width="auto" class="" :src="file.types[params.thumbnail].data" :alt="file.name" />
+                      </span>
+
+                      <div class="dropdown">
+                        <button class="btn btn-sm bg-light text-dark dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li>
+                            <button class="dropdown-item text-danger py-1" @click="remove(index)" type="button">
+                              <i class="bi bi-x-circle"></i> Remove
+                            </button>
+                          </li>
+
+                          <li v-if="file.uploaded">
+                            <button class="dropdown-item text-primary py-1" @click="download(index, params)" type="button">
+                              <i class="bi bi-download"></i> Download
+                            </button>
+                          </li>
+                          <li>
+                            <hr class="dropdown-divider">
+                          </li>
+                          <li v-if="file.original.width">
+                            <small class="dropdown-item py-0 d-flex justify-content-between">
+                              <span class="text-muted fw-light me-3">original resolution</span> {{ file.original.width }} x {{ file.original.height }}
+                            </small>
+                          </li>
+                          <li v-if="!file.isDocument">
+                            <small class="dropdown-item py-0 d-flex justify-content-between">
+                              <span class="text-muted fw-light me-3">original size & extension</span>
+                              <span>
+                                <span v-html="roundFileSize(file.original.bytes, true)"></span>                                
+                                <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ file.original.extension }}</small>
+                              </span>
+                            </small>
+                          </li>
+
+                          <template v-for="(type, preset) in file.types" :key="type">
+
+                            <li v-if="!file.isDocument">
+                              <hr class="dropdown-divider">
+                            </li>
+
+                            <li v-if="file.original.width">
+                              <small class="dropdown-item py-0 d-flex justify-content-between">
+                                <span class="text-muted fw-light me-4"><span class="text-primary">{{ preset }}</span> resolution & crop</span>
+                                <span>
+                                  {{ type.width }} x {{ type.height }}
+                                  <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm" v-if="type.crop">{{ type.crop }}</small>
+                                </span>
+                              </small>
+                            </li>
+                            <li>
+                              <small class="dropdown-item py-0 d-flex justify-content-between">
+                                <span class="text-muted fw-light me-1"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> size & extension</span>
+                                <span>
+                                  <span :class="{ 'text-danger': type.bytes > file.original.bytes }" v-html="roundFileSize(type.bytes, true)"></span>
+                                  <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ type.extension }}</small>
+                                </span>
+                              </small>
+
+                            </li>
+
+                          </template>
+                          <li>
+                            <hr class="dropdown-divider">
+                          </li>
+                          <li>
+                            <small class="dropdown-item py-0 d-flex justify-content-between">
+                              <span class="text-muted fw-light me-3">uploaded at</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
+                            </small>
+                          </li>
+                          <li>
+                            <small class="dropdown-item py-0 d-flex justify-content-between">
+                              <span class="text-muted fw-light me-3">uploaded bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
+                            </small>
+                          </li>
+                        </ul>
+
+
+                      </div>
+
+                    </div>
+
+                  </td>
+
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+        </div>
+
+        <div v-else :class="[params.colclass ? params.colclass : 'col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3']" v-for="(file, index) in files" :key="index">
+          <div class="vsa-image-container h-100 position-relative border p-1 rounded">
+            <div v-if="file.loaded" class="w-100 h-100">
+
+              <div v-if="0" class="vsa-image-info position-absolute start-0 bottom-0 end-0 p-2 text-center text-light">
+
                 <span v-if="file.resized" class="badge bg-warning text-dark m-1">resized</span>
-                #} {#
+
                 <div class="" v-for="(type, index) in file.types" :key="index">
-                  <span class="badge bg-dark text-light fw-light mx-1 text-uppercase">{{ type.convert.replace('image/', '') }}</span>
+                  <span class="badge bg-dark text-light fw-light mx-1 text-uppercase">{{ type.extension }}</span>
                   <span class="badge bg-dark text-light fw-light mx-1">{{ type.width }} x {{ type.height }}</span>
-                  <span class="badge bg-dark text-light fw-light mx-1">~{{ this.round(type.bytes) }}</span>
+                  <span class="badge bg-dark text-light fw-light mx-1">~{{ roundFileSize(type.bytes) }}</span>
                 </div>
-                #}
 
                 <strong class="bg-dark text-light rounded p-0 px-2 mb-1">#{{ index + 1 }}</strong>
 
@@ -64,8 +188,8 @@
                   </button>
 
                   <a title="Open in new tab" v-if="file && file.types && file.uploaded" class="btn btn-sm btn-outline-light mx-1" target="_blank" :href="file.types[params.download].url
-                      ? file.types[params.download].url
-                      : file.types[params.download].data
+                    ? file.types[params.download].url
+                    : file.types[params.download].data
                     ">
                     <i class="bi bi-box-arrow-up-right"></i>
                   </a>
@@ -85,87 +209,179 @@
                 </div>
               </div>
 
-              <div class="vsa-image-frame w-100 text-center">
-                <img class="img-fluid rounded" :src="file.types[params.thumbnail].url
-                    ? file.types[params.thumbnail].url
-                    : file.types[params.thumbnail].data
+              <div v-if="file.types && file.types[params.thumbnail]" class="vsa-image-frame w-100 text-center">
+                <img class="img-fluid" :src="file.types[params.thumbnail].url
+                  ? file.types[params.thumbnail].url
+                  : file.types[params.thumbnail].data
                   " :alt="file.name" />
               </div>
+
+
+              <span class="fs-5 ms-2" v-if="file.isDocument">
+                <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
+              </span>
+
+
+              <input type="text" class="form-control py-0 px-2 fw-light" v-model="file.title" />
+
+              <div class="dropdown">
+                <button class="btn btn-sm bg-light text-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <button class="dropdown-item text-danger py-1" @click="remove(index)" type="button">
+                      <i class="bi bi-x-circle"></i> Remove
+                    </button>
+                  </li>
+
+                  <li v-if="file.uploaded">
+                    <button class="dropdown-item text-primary py-1" @click="download(index, params)" type="button">
+                      <i class="bi bi-download"></i> Download
+                    </button>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li v-if="file.original.width">
+                    <small class="dropdown-item py-0 d-flex justify-content-between">
+                      <span class="text-muted fw-light me-3">original resolution</span> {{ file.original.width }} x {{ file.original.height }}
+                    </small>
+                  </li>
+                  <li v-if="!file.isDocument">
+                    <small class="dropdown-item py-0 d-flex justify-content-between">
+                      <span class="text-muted fw-light me-3">original extension</span> <span>{{ file.original.extension }}</span>
+                    </small>
+                  </li>
+                  <li v-if="!file.isDocument">
+                    <small class="dropdown-item py-0 d-flex justify-content-between">
+                      <span class="text-muted fw-light me-3">original size</span> <span v-html="roundFileSize(file.original.bytes, true)"></span>
+                    </small>
+                  </li>
+
+                  <template v-for="(type, preset) in file.types" :key="type">
+
+                    <li v-if="!file.isDocument">
+                      <hr class="dropdown-divider">
+                    </li>
+
+                    <li v-if="file.original.width">
+                      <small class="dropdown-item py-0 d-flex justify-content-between">
+                        <span class="text-muted fw-light me-3"><span class="text-primary">{{ preset }}</span> resolution</span> {{ type.width }} x {{ type.height }}
+                      </small>
+                    </li>
+                    <li>
+                      <small class="dropdown-item py-0 d-flex justify-content-between">
+                        <span class="text-muted fw-light me-3"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> extension</span> <span>{{ type.extension
+                          }}</span>
+                      </small>
+                    </li>
+                    <li>
+                      <small class="dropdown-item py-0 d-flex justify-content-between">
+                        <span class="text-muted fw-light me-3"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> crop</span> <span>{{ type.crop
+                          }}</span>
+                      </small>
+                    </li>
+                    <li>
+                      <small class="dropdown-item py-0 d-flex justify-content-between">
+                        <span class="text-muted fw-light me-3"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> size</span> <span
+                          :class="{ 'text-danger': type.bytes > file.original.bytes }" v-html="roundFileSize(type.bytes, true)"></span>
+                      </small>
+                    </li>
+
+                  </template>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <small class="dropdown-item py-0 d-flex justify-content-between">
+                      <span class="text-muted fw-light me-3">uploaded at</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
+                    </small>
+                  </li>
+                  <li>
+                    <small class="dropdown-item py-0 d-flex justify-content-between">
+                      <span class="text-muted fw-light me-3">uploaded bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
+                    </small>
+                  </li>
+                </ul>
+
+
+              </div>
+
             </div>
 
             <div v-else class="w-100 h-100 vsa-image-loading d-flex align-items-center justify-content-center">
               <span></span>
             </div>
+
+
+
           </div>
         </div>
       </div>
 
       <div class="row g-1">
-        <div class="col-12">
-          <div class="border border-secondary rounded p-2 h-100">
-            <label :for="uploadId" :class="{ disabled: files && params.limit <= files.length }"
-              class="btn btn-dark cursor-pointer h-100 w-100 d-flex align-items-center justify-content-center">
-              <span>
-                <span class="display-3 d-block">+</span>
+        <div class="col-12 d-flex align-items-center justify-content-center">
 
-                <small class="fw-light">
-                  <div class="fs-4" v-if="files && params.limit > files.length">
-                    {{ params.text }}
-                  </div>
+          <label :for="uploadId" :class="{ 'disabled bg-secondary': files && params.limit <= files.length }" class="btn btn-light border border-dark cursor-pointer w-100">
 
-                  <div v-else class="fs-6 text-warning">
-                    You have reached the number of files you can upload
-                  </div>
-                </small>
-              </span>
-            </label>
-          </div>
+            <span v-if="files && params.limit > files.length">
+              <i class="bi bi-upload me-2"></i> {{ params.text }}
+              <small v-if="params.limit">
+                ( <strong class="">{{ files.length }}</strong> / <span class="">{{ params.limit }}</span> )
+              </small>
+            </span>
+
+            <span v-else class="fs-6">
+              <i class="bi bi-exclamation-circle"></i> You've reached the upload limit
+            </span>
+
+          </label>
+
+          <button type="button" class="btn btn-outline-primary ms-1" @click="toggleView()">
+            <i v-if="params.ui != 'list'" class="bi bi-list-ol"></i>
+            <i v-if="params.ui == 'list'" class="bi bi-grid"></i>
+          </button>
+
+          <button :disabled="!files.length" type="button" class="btn btn-outline-danger ms-1" @click="resetConfirm()">
+            <i class="bi bi-trash"></i>
+          </button>
+
         </div>
 
-        <div class="col-12">
-          <div class="border border-secondary rounded p-2 h-100">
-            <div class="text-center h-100 w-100 d-flex align-items-center justify-content-center">
-              <small class="fw-light">
-                <div class="mt-1" v-if="params.limit">
-                  uploaded
-                  <span class="badge bg-dark border border-secondary text-info mx-1">{{ files.length }}</span>
-                  /
-                  <span class="badge bg-dark border border-secondary text-info mx-1">{{ params.limit }}</span>
-                  <span v-if="this.bytes" class="badge bg-dark border border-secondary text-info mx-1">~{{ this.round(this.bytes) }}</span>
-                </div>
-                <div class="mt-1" v-if="params.accept">
-                  accept only
-                  <span class="badge bg-dark border border-secondary text-info mx-1" v-for="ext in params.accept" :key="ext">{{ ext.replace(/.*\//, '') }}
-                  </span>
-                </div>
-                <div v-if="params.presets">
-                  <div class="mt-1" v-for="(preset, index) in params.presets" :key="index">
-                    preset
+        <div class="col-12 text-center">
 
-                    <span class="badge bg-dark border border-secondary text-info mx-1">
-                      {{ index }}
-                    </span>
-
-                    <span class="badge bg-dark border border-secondary text-info mx-1">
-                      {{ preset.width }} x {{ preset.height }}
-                    </span>
-
-                    <span class="badge bg-dark border border-secondary text-info mx-1">
-                      {{ preset.convert.replace(/.*\//, '') }}
-                    </span>
-                  </div>
-                </div>
-
-                <button v-if="files.length" type="button" class="btn btn-sm btn-danger mt-2 p-0 px-3" @click="resetConfirm">
-                  remove all images
-                </button>
-              </small>
+          <small>
+            <div v-if="params.accept">
+              <span class="text-secondary">accept only</span>
+              <strong class="ms-1 text-muted" v-for="ext in params.accept" :key="ext">{{ ext }}</strong>
             </div>
-          </div>
+
+            <div v-if="0 && params.presets">
+              <div class="mt-1" v-for="(preset, index) in params.presets" :key="index">
+                preset
+
+                <span class="mx-1">
+                  {{ index }}
+                </span>
+
+                <span class="mx-1">
+                  {{ preset.width }} x {{ preset.height }}
+                </span>
+
+                <span class="mx-1">
+                  {{ preset.extension }}
+                </span>
+              </div>
+            </div>
+
+          </small>
+
         </div>
       </div>
 
-      <input v-cloak v-if="uploadId" multiple style="opacity: 0; height: 1px; width: 1px" :id="uploadId" type="file" :accept="params.accept.join(',')" @change="handleFileChange" />
+      <input v-cloak v-if="uploadId" multiple style="opacity: 0; height: 1px; width: 1px" :id="uploadId" type="file" :accept="getAcceptMimeTypes(params.accept)"
+        @change="handleFileChange" />
     </div>
   </div>
 </template>
@@ -174,10 +390,39 @@
 
 import { slugify } from "./helpers";
 
+const fileType = {
+  "image": {
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    "png": "image/png",
+    "webp": "image/webp",
+    "gif": "image/gif"
+  },
+  "video": {
+    "mp4": "video/mp4",
+    "webm": "video/webm",
+    "ogg": "video/ogg",
+    "mpeg": "video/mpeg",
+    "mov": "video/quicktime"
+  },
+  "document": {
+    "txt": "text/plain",
+    "pdf": "application/pdf",
+    "doc": "application/msword",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "xls": "application/vnd.ms-excel",
+    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "ppt": "application/vnd.ms-powerpoint",
+    "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "rtf": "application/rtf"
+  }
+};
+
 const ImageUpload = {
   props: {
     modelValue: Array,
     params: Object,
+    settings: Object,
   },
 
   data: function () {
@@ -192,10 +437,10 @@ const ImageUpload = {
   },
   created() {
     let uid = Math.round(Math.random() * 100000);
-
     this.uploadId = "image_upload_" + uid;
   },
   mounted() {
+
     this.editfile = this.modelValue;
 
     if (!this.editfile) {
@@ -213,39 +458,91 @@ const ImageUpload = {
   },
 
   methods: {
-    round(fileSize) {
+
+    roundFileSize(fileSize, suffix) {
+
       const KB = 1024;
       const MB = KB * 1024;
       const GB = MB * 1024;
 
       if (fileSize < KB) {
-        return fileSize + " Byte";
+        return fileSize + (suffix ? " Byte" : '');
       } else if (fileSize < MB) {
-        return (fileSize / KB).toFixed(0) + " KB";
+        return (fileSize / KB).toFixed(0) + (suffix ? '<span class="text-muted fw-light"> KB</span>' : '');
       } else if (fileSize < GB) {
-        return (fileSize / MB).toFixed(2) + " MB";
+        return (fileSize / MB).toFixed(2) + (suffix ? '<span class="text-muted fw-light"> MB</span>' : '');
       } else {
-        return (fileSize / GB).toFixed(2) + " GB";
+        return (fileSize / GB).toFixed(2) + (suffix ? '<span class="text-muted fw-light"> GB</span>' : '');
       }
     },
 
-    extension(filename) {
+    extensionByFilename(filename) {
       return filename.split(".").reverse()[0];
     },
 
+
+    getAcceptMimeTypes(extensions) {
+
+      let mimeTypes = [];
+
+      for (const category in fileType) {
+        if (fileType.hasOwnProperty(category)) {
+          const types = fileType[category];
+
+          // Iterálunk a megadott kiterjesztéseken
+          extensions.forEach(ext => {
+            if (types[ext]) {
+              mimeTypes.push(types[ext]);
+            }
+          });
+        }
+      }
+
+      return mimeTypes.join(",");
+
+    },
+
     detect(file) {
+
       file.bytes = 0;
-      file.types = {};
-      file.title = file.name.split(".").slice(0, -1).join(".");
-      file.original = {
-        size: file.size,
-        type: file.type,
-        modified: file.lastModified,
-        name: file.name,
+      file.types = {
+        default: {
+        }
       };
+      file.title = file.name.split(".").slice(0, -1).join(".");
+      file.uid = Math.round(Math.random() * 9999999).toString(32) + Date.now().toString(32);
+      file.timestamp = Math.round(Date.now() / 1000);
+      file.original = {
+        bytes: file.size,
+        mime: file.type,
+        name: file.name,
+        modified: file.lastModified,
+        extension: this.extensionByFilename(file.name)
+      };
+
+      if (Object.values(fileType.video).indexOf(file.original.mime) >= 0) {
+        file.isVideo = true;
+      } else if (Object.values(fileType.image).indexOf(file.original.mime) >= 0) {
+        file.isImage = true;
+      } else if (Object.values(fileType.document).indexOf(file.original.mime) >= 0) {
+        file.isDocument = true;
+      } else {
+        file.isUnknown = true;
+      }
+
+      if (file.isVideo || file.isImage && !this.params.presets.default) {
+        this.params.presets.default = {
+          width: 1920,
+          height: 1920,
+          extension: "webp",
+          quality: 0.9
+        };
+      }
+
     },
 
     async createThumbnail(file, index) {
+
       const video = document.createElement("video");
       const reader = new FileReader();
 
@@ -286,20 +583,34 @@ const ImageUpload = {
       this.count = this.files ? this.files.length : 0;
       this.wait = true;
 
-      let videoTypes = ["video/mpeg", "video/mp4"];
-
       for (let file of event.target.files) {
+
         this.count++;
 
         if (this.count <= this.params.limit) {
+
           this.files.push(file);
           this.detect(file);
 
-          if (videoTypes.indexOf(file.type) >= 0) {
+          if (file.isVideo) {
             await this.createThumbnail(file);
-          } else {
+          } else if (file.isImage) {
             await this.resizeImage(file);
+          } else if (file.isDocument) {
+
+            file.types.default = {
+              extension: file.original.extension,
+              mime: file.original.mime,
+              slug: slugify(file.title) + "-" + file.uid,
+              bytes: file.size
+            }
+
+            file.loaded = true;
+            file.bytes += file.size;
+            this.bytes += file.bytes
+
           }
+
         }
       }
 
@@ -311,7 +622,7 @@ const ImageUpload = {
       this.uploadEvent.target.value = "";
     },
 
-    forEachPresets(file, source, callback) {
+    async forEachPresets(file, source, callback) {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
@@ -328,55 +639,102 @@ const ImageUpload = {
 
       file.original.width = width;
       file.original.height = height;
-      file.uid =
-        Math.round(Math.random() * 9999999).toString(32) +
-        Date.now().toString(32);
 
       for (let key in this.params.presets) {
+
+        // console.log(key, this.params.presets[key]);
+
         let preset = this.params.presets[key];
         preset.key = key;
 
-        if (width > preset.width) {
-          height = Math.round(height * (preset.width / width));
-          width = preset.width;
-        }
+        preset.width = preset.width ? preset.width : 1920;
+        preset.height = preset.height ? preset.height : 1080;
 
-        if (height > preset.height) {
-          width = Math.round(width * (preset.height / height));
-          height = preset.height;
-        }
+        let targetWidth = preset.width;
+        let targetHeight = preset.height;
 
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(source, 0, 0, width, height);
+        if (preset.crop === "fit") {
+          // Fit mód: a kép közepéről vágunk ki részt, hogy kitöltse a célméretet
+          let scale = Math.max(targetWidth / width, targetHeight / height);
+          let drawWidth = width * scale;
+          let drawHeight = height * scale;
+
+          // Középről történő kivágás
+          let offsetX = (drawWidth - targetWidth) / 2;
+          let offsetY = (drawHeight - targetHeight) / 2;
+
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
+          ctx.drawImage(source, -offsetX, -offsetY, drawWidth, drawHeight);
+
+        } else if (preset.crop === "contain") {
+          // Contain mód: a kép illeszkedik a célterületbe, üres helyek maradhatnak
+          let scale = Math.min(targetWidth / width, targetHeight / height);
+          let drawWidth = width * scale;
+          let drawHeight = height * scale;
+          let offsetX = (targetWidth - drawWidth) / 2;
+          let offsetY = (targetHeight - drawHeight) / 2;
+
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
+          ctx.clearRect(0, 0, targetWidth, targetHeight); // Töröljük az üres területeket
+          ctx.drawImage(source, offsetX, offsetY, drawWidth, drawHeight);
+
+        } else {
+          // Nincs crop, marad az eredeti átméretezés
+          if (width > targetWidth) {
+            height = Math.round(height * (targetWidth / width));
+            width = targetWidth;
+          }
+
+          if (height > targetHeight) {
+            width = Math.round(width * (targetHeight / height));
+            height = targetHeight;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          ctx.drawImage(source, 0, 0, width, height);
+
+        }
 
         file.types[preset.key] = {
-          width: width,
-          height: height,
-          convert: preset.convert ? preset.convert : file.type,
-          quality: preset.quality ? preset.quality : 0.75,
+          width: canvas.width,
+          height: canvas.height,
+          extension: preset.extension ? preset.extension : this.getExtensionByMimeType(file.type),
+          quality: preset.quality ? preset.quality : 0.9,
+          crop: preset.crop ? preset.crop : null
         };
 
         file.types[preset.key].slug =
           slugify(file.title) +
           "-" +
-          preset.width +
+          canvas.width +
           "x" +
-          preset.height +
+          canvas.height +
           "-" +
           file.uid;
+
+        file.types[preset.key].mime = this.getMimeTypeByExtension(file.types[preset.key].extension);
+
         file.types[preset.key].data = canvas.toDataURL(
-          file.types[preset.key].convert,
+          file.types[preset.key].mime,
           file.types[preset.key].quality
         );
-        file.types[preset.key].extension = this.getExtension(
-          file.types[preset.key].convert
-        );
-        file.types[preset.key].bytes = Math.round(
-          file.types[preset.key].data.length / 1.31
-        );
 
-        file.bytes += file.types[preset.key].bytes;
+        file.types[preset.key].blob = await this.getBlob(canvas, file.types[preset.key].mime, file.types[preset.key].quality);
+
+        if (file.types[preset.key].blob) {
+          console.log(file.types[preset.key].blob);
+          file.types[preset.key].bytes = file.types[preset.key].blob.size;
+        }
+
+        if (file.types[preset.key].bytes) {
+          file.bytes += file.types[preset.key].bytes;
+        }
+
+        console.log(file.types[preset.key]);
 
         if (callback) {
           callback(preset, file);
@@ -384,11 +742,26 @@ const ImageUpload = {
       }
     },
 
+    getBlob(canvas, mime, quality) {
+
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(function (blob) {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error("Failed to convert canvas to Blob"));
+          }
+        }, mime, quality);
+      });
+
+    },
+
+
     async resizeImage(file) {
       const blob = await this.fileToBlob(file);
       const image = await createImageBitmap(blob);
 
-      this.forEachPresets(file, image);
+      await this.forEachPresets(file, image);
 
       // file.fullscreen = false;
       file.loaded = true;
@@ -399,7 +772,7 @@ const ImageUpload = {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (event) => {
-          resolve(new Blob([event.target.result], { type: file.type }));
+          resolve(new Blob([event.target.result], { type: file.mime }));
         };
         reader.readAsArrayBuffer(file);
       });
@@ -455,14 +828,49 @@ const ImageUpload = {
     // 	console.log(file.fullscreen);
     // },
 
-    getExtension(mime) {
-      let map = {
-        "image/webp": "webp",
-        "image/jpeg": "jpg",
-        "image/png": "png",
-      };
+    toggleView() {
+      this.params.ui = this.params.ui == 'list' ? 'grid' : 'list';
+    },
 
-      return map[mime];
+    dateFormat(timestamp) {
+      return (new Date(timestamp)).toLocaleDateString('hu-HU', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    },
+
+    getMimeTypeByExtension(extension) {
+
+      for (const category in fileType) {
+        if (fileType.hasOwnProperty(category)) {
+          const types = fileType[category];
+          if (types[extension]) {
+            return types[extension];
+          }
+        }
+      }
+
+      return null; // Ha nem található a kiterjesztés
+
+    },
+
+    getExtensionByMimeType(mimetype) {
+      for (const category in fileType) {
+        if (fileType.hasOwnProperty(category)) {
+          const types = fileType[category];
+          for (const ext in types) {
+            if (types[ext] === mimetype) {
+              return ext;
+            }
+          }
+        }
+      }
+
+      return null; // Ha nem található a MIME-típus
+
     },
   },
 };
@@ -473,7 +881,6 @@ export default ImageUpload;
 <style lang="scss" scoped>
 .vu-admin {
   .vsa-upload {
-    position: relative;
 
     @keyframes vsa-spin {
       to {
@@ -516,9 +923,9 @@ export default ImageUpload;
     }
 
     .vsa-image-container {
-      perspective: 1000px;
+
       position: relative;
-      min-height: 120px;
+      // min-height: 120px;
 
       .vsa-image-frame.fullscreen {
         position: fixed !important;
@@ -531,7 +938,6 @@ export default ImageUpload;
 
       img {
         z-index: 100;
-        background-color: black;
       }
 
       &:hover {

@@ -406,7 +406,7 @@ export default {
 						label: 'Url cím'
 					},
 					{
-						type: 'image',
+						type: 'upload',
 						name: 'images',
 						label: 'Képek',
 						required: false,
