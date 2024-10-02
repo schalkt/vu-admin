@@ -68,7 +68,7 @@
 
             <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :class="[field.class]"></HtmlEditor>
 
-            <ImageUpload v-if="field.type == 'image' || field.type == 'upload'" v-model="item[field.name]" :class="[field.class]" :params="field.params" :settings="settings"></ImageUpload>
+            <FileUpload v-if="field.type == 'image' || field.type == 'upload'" v-model="item[field.name]" :class="[field.class]" :params="field.params" :settings="settings"></FileUpload>
 
             <div v-if="field.type == 'list'">
 
@@ -136,7 +136,7 @@
 <script>
 import { translate, getValueOrFunction, arrayItemMoveUp, arrayItemMoveDown } from "./helpers";
 import HtmlEditor from "./VuAdminHtmlEditor.vue";
-import ImageUpload from "./VuAdminImageUpload.vue";
+import FileUpload from "./VuAdminFileUpload.vue";
 
 const VuAdminFormGroup = {
   props: {
@@ -248,7 +248,7 @@ const VuAdminFormGroup = {
   },
   components: {
     HtmlEditor,
-    ImageUpload,
+    FileUpload,
   },
 };
 

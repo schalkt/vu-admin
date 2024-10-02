@@ -11630,7 +11630,7 @@ function KA(s, t, e, n, i, r) {
     ], 2)
   ]);
 }
-const GA = /* @__PURE__ */ In(Yw, [["render", KA], ["__scopeId", "data-v-7257905c"]]), YA = {
+const GA = /* @__PURE__ */ In(Yw, [["render", KA], ["__scopeId", "data-v-45e004bd"]]), YA = {
   props: {
     modelValue: Object,
     group: Object,
@@ -11704,7 +11704,7 @@ const GA = /* @__PURE__ */ In(Yw, [["render", KA], ["__scopeId", "data-v-7257905
   },
   components: {
     HtmlEditor: Kw,
-    ImageUpload: GA
+    FileUpload: GA
   }
 }, XA = YA, ZA = { class: "row m-1" }, QA = { class: "form-row-title mb-4 fw-lighter" }, JA = {
   key: 0,
@@ -11720,7 +11720,7 @@ const GA = /* @__PURE__ */ In(Yw, [["render", KA], ["__scopeId", "data-v-7257905
   class: "p-1"
 }, DN = ["innerHTML"];
 function MN(s, t, e, n, i, r) {
-  const o = ui("HtmlEditor"), c = ui("ImageUpload");
+  const o = ui("HtmlEditor"), c = ui("FileUpload");
   return b(), y("div", ZA, [
     (b(!0), y(W, null, K(s.settings.form.groups, (a) => (b(), y("div", {
       key: a,
@@ -11989,7 +11989,7 @@ function MN(s, t, e, n, i, r) {
     ], 2))), 128))
   ]);
 }
-const qN = /* @__PURE__ */ In(XA, [["render", MN], ["__scopeId", "data-v-064c6d67"]]), $N = {
+const qN = /* @__PURE__ */ In(XA, [["render", MN], ["__scopeId", "data-v-d992c9e9"]]), $N = {
   name: "VuAdminTablePagination",
   emits: ["setPage", "setPageLimit", "translate"],
   props: {
@@ -14135,9 +14135,9 @@ const i2 = /* @__PURE__ */ In(lO, [["render", n2], ["__scopeId", "data-v-a93e896
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.4"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.5"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.4"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.5"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },

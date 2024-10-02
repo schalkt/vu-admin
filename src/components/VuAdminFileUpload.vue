@@ -419,7 +419,7 @@ const fileType = {
   }
 };
 
-const ImageUpload = {
+const FileUpload = {
   props: {
     modelValue: Array,
     params: Object,
@@ -881,7 +881,7 @@ const ImageUpload = {
   },
 };
 
-export default ImageUpload;
+export default FileUpload;
 </script>
 
 <style lang="scss" scoped>
