@@ -12713,7 +12713,7 @@ const aO = /* @__PURE__ */ In($N, [["render", oO], ["__scopeId", "data-v-5ba0187
             this.settings.form.api.output.fields.includes(p) && (i[p] = s[p]);
         else
           Object.assign(i, s);
-        let o;
+        let o, c;
         if (this.convertOut(this.settings.table.columns, [i]), (!this.settings.form.api.output.flatten || !r) && (i = qb(i)), this.settings.events && this.settings.events.beforeItemSave && this.settings.events.beforeItemSave(i, n, s), !this.settings.form.api.output.item)
           o = JSON.stringify(i);
         else if (typeof this.settings.form.api.output.item == "string") {
@@ -12723,23 +12723,25 @@ const aO = /* @__PURE__ */ In($N, [["render", oO], ["__scopeId", "data-v-5ba0187
           o = JSON.stringify(
             this.settings.form.api.output.item(i, options)
           );
-        const c = r ? "PUT" : "POST", a = await fetch(
-          As(c, this.settings.form.api, r, n),
-          Ts(c, this.settings.form.api, {
+        const a = r ? "PUT" : "POST";
+        c = await fetch(
+          As(a, this.settings.form.api, r, n),
+          Ts(a, this.settings.form.api, {
             body: o
           })
-        ), l = await Qn(a), h = this.getResponseErrors(a, l.data);
+        );
+        const l = await Qn(c), h = this.getResponseErrors(c, l.data);
         if (h) {
-          e && e(h, s, n, a);
+          e && e(h, s, n, c);
           return;
         }
         if (l.error) {
-          e && e(l.error, s, n, a);
+          e && e(l.error, s, n, c);
           return;
         }
-        this.settings.events && this.settings.events.afterItemSave && this.settings.events.afterItemSave(l.data, n), t && t(l.data, a);
+        this.settings.events && this.settings.events.afterItemSave && this.settings.events.afterItemSave(l.data, n), t && t(l.data, c);
       } catch (i) {
-        e && e(i, s, n, response);
+        e && e(i, s, n);
       }
     },
     async saveBulk(s) {
@@ -14022,7 +14024,7 @@ function r2(s, t, e, n, i, r) {
     ], 10, uO)
   ])) : A("", !0);
 }
-const o2 = /* @__PURE__ */ In(lO, [["render", r2], ["__scopeId", "data-v-6e71687b"]]), a2 = {
+const o2 = /* @__PURE__ */ In(lO, [["render", r2], ["__scopeId", "data-v-353e77d0"]]), a2 = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14150,9 +14152,9 @@ const o2 = /* @__PURE__ */ In(lO, [["render", r2], ["__scopeId", "data-v-6e71687
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.11"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.12"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.11"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.12"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },

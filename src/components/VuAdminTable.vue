@@ -1967,6 +1967,7 @@ export default {
         // }));
 
         let body;
+        let response;
 
         this.convertOut(this.settings.table.columns, [item]);
 
@@ -1992,7 +1993,7 @@ export default {
 
         const method = primaryId ? "PUT" : "POST";
 
-        const response = await fetch(
+        response = await fetch(
           prepareFetchUrl(method, this.settings.form.api, primaryId, urlParams),
           prepareFetchOptions(method, this.settings.form.api, {
             body: body,
@@ -2028,7 +2029,7 @@ export default {
       } catch (error) {
 
         if (onError) {
-          onError(error, input, urlParams, response);
+          onError(error, input, urlParams);
         }
 
       }
