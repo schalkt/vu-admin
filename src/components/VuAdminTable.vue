@@ -1949,10 +1949,6 @@ export default {
           Object.assign(item, input);
         }
 
-        if (this.settings.events && this.settings.events.beforeItemSave) {
-          this.settings.events.beforeItemSave(item, urlParams, input);
-        }
-
         // const item = Object.keys(input)
         //   .filter((key) => this.settings.api.output.fields.includes(key))
         //   .reduce((obj, key) => {
@@ -1977,6 +1973,10 @@ export default {
         if (!this.settings.form.api.output.flatten || !primaryId) {
           item = unflattenObject(item);
         }
+
+        if (this.settings.events && this.settings.events.beforeItemSave) {
+          this.settings.events.beforeItemSave(item, urlParams, input);
+        }        
 
         if (!this.settings.form.api.output.item) {
           body = JSON.stringify(item);
