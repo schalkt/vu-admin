@@ -185,8 +185,8 @@
                 }" class="form-control form-control-sm" v-model="column.filter.value" @keyup.enter="reloadTable()" />
 
                 <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" 
-                    :disabled="column.filter.value === null || column.filter.value === undefined" :class="{
-                  'opacity-25': !column.filter.value,
+                    :disabled="column.filter.value == null" :class="{
+                  'opacity-25': column.filter.value == null,
                 }" @click="
                   column.filter.value = undefined;
                 reloadTable();
@@ -218,9 +218,9 @@
                 }" @change="reloadTable()" @keyup.enter="reloadTable()" />
 
                 <button v-if="!column.filter.fixed && column.filter.buttonx && column.filter.buttonx != false" class="btn btn-outline-secondary" 
-                  :disabled="column.filter.value === null || column.filter.value === undefined"
+                  :disabled="column.filter.value == null"
                   :class="{
-                    'opacity-25': !column.filter.value,
+                    'opacity-25': column.filter.value == null,
                   }" @click="
                     column.filter.value = undefined;
                   reloadTable();
@@ -275,8 +275,8 @@
                   </select>
                   
                   <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" 
-                      :disabled="column.filter.value === null || column.filter.value === undefined" :class="{
-                      'opacity-25': !column.filter.value,
+                      :disabled="column.filter.value == null" :class="{
+                      'opacity-25': column.filter.value == null,
                     }" @click="
                       column.filter.value = undefined;
                     reloadTable();
