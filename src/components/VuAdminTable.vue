@@ -184,7 +184,8 @@
                   'fixed': column.filter.fixed,
                 }" class="form-control form-control-sm" v-model="column.filter.value" @keyup.enter="reloadTable()" />
 
-                <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" :disabled="!column.filter.value" :class="{
+                <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" 
+                    :disabled="column.filter.value === null || column.filter.value === undefined" :class="{
                   'opacity-25': !column.filter.value,
                 }" @click="
                   column.filter.value = undefined;
@@ -216,7 +217,8 @@
                   'fixed': column.filter.fixed,
                 }" @change="reloadTable()" @keyup.enter="reloadTable()" />
 
-                <button v-if="!column.filter.fixed && column.filter.buttonx && column.filter.buttonx != false" class="btn btn-outline-secondary" :disabled="!column.filter.value"
+                <button v-if="!column.filter.fixed && column.filter.buttonx && column.filter.buttonx != false" class="btn btn-outline-secondary" 
+                  :disabled="column.filter.value === null || column.filter.value === undefined"
                   :class="{
                     'opacity-25': !column.filter.value,
                   }" @click="
@@ -272,7 +274,8 @@
                     </option>
                   </select>
                   
-                  <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" :disabled="!column.filter.value" :class="{
+                  <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" 
+                      :disabled="column.filter.value === null || column.filter.value === undefined" :class="{
                       'opacity-25': !column.filter.value,
                     }" @click="
                       column.filter.value = undefined;
