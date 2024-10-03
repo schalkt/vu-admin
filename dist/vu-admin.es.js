@@ -11403,7 +11403,7 @@ function KA(s, t, e, n, i, r) {
                         ])) : A("", !0),
                         f("li", null, [
                           f("small", zT, [
-                            f("span", KT, O(o.uploaded ? "uploaded" : "uploadiing") + " bytes", 1),
+                            f("span", KT, O(o.uploaded ? "uploaded" : "uploading") + " bytes", 1),
                             t[20] || (t[20] = V()),
                             f("span", {
                               innerHTML: s.roundFileSize(o.bytes, !0)
@@ -11412,7 +11412,7 @@ function KA(s, t, e, n, i, r) {
                         ]),
                         f("li", null, [
                           f("small", YT, [
-                            f("span", XT, O(o.uploaded ? "uploaded" : "uploadiing") + " filename", 1),
+                            f("span", XT, O(o.uploaded ? "uploaded" : "uploading") + " filename", 1),
                             t[21] || (t[21] = V()),
                             f("span", null, O(o.slug), 1)
                           ])
@@ -11545,7 +11545,7 @@ function KA(s, t, e, n, i, r) {
                   ])) : A("", !0),
                   f("li", null, [
                     f("small", CA, [
-                      f("span", SA, O(o.uploaded ? "uploaded" : "uploadiing") + " bytes", 1),
+                      f("span", SA, O(o.uploaded ? "uploaded" : "uploading") + " bytes", 1),
                       t[37] || (t[37] = V()),
                       f("span", {
                         innerHTML: s.roundFileSize(o.bytes, !0)
@@ -11554,7 +11554,7 @@ function KA(s, t, e, n, i, r) {
                   ]),
                   f("li", null, [
                     f("small", LA, [
-                      f("span", kA, O(o.uploaded ? "uploaded" : "uploadiing") + " filename", 1),
+                      f("span", kA, O(o.uploaded ? "uploaded" : "uploading") + " filename", 1),
                       t[38] || (t[38] = V()),
                       f("span", null, O(o.slug), 1)
                     ])
@@ -11630,7 +11630,7 @@ function KA(s, t, e, n, i, r) {
     ], 2)
   ]);
 }
-const GA = /* @__PURE__ */ In(Yw, [["render", KA], ["__scopeId", "data-v-45e004bd"]]), YA = {
+const GA = /* @__PURE__ */ In(Yw, [["render", KA], ["__scopeId", "data-v-f576c2d9"]]), YA = {
   props: {
     modelValue: Object,
     group: Object,
@@ -12988,73 +12988,76 @@ const aO = /* @__PURE__ */ In($N, [["render", oO], ["__scopeId", "data-v-5ba0187
 }, mC = {
   key: 1,
   class: "bi bi-square"
-}, bC = { key: 0 }, yC = { key: 1 }, _C = ["onClick"], vC = { key: 2 }, EC = ["onClick"], wC = { key: 3 }, TC = ["onClick"], AC = ["onUpdate:modelValue", "multiple"], NC = ["value"], OC = {
+}, bC = { key: 0 }, yC = { key: 1 }, _C = ["onClick"], vC = { key: 2 }, EC = ["onClick"], wC = { key: 3 }, TC = ["onClick"], AC = {
+  key: 1,
+  class: "input-group input-group-sm my-1"
+}, NC = ["onUpdate:modelValue", "multiple"], OC = ["value"], CC = ["disabled", "onClick"], SC = {
   key: 4,
   class: "input-group input-group-sm my-1"
-}, CC = ["onUpdate:modelValue"], SC = { value: "=" }, xC = { value: ">" }, LC = { value: ">=" }, kC = { value: "<" }, IC = { value: "<=" }, RC = ["onUpdate:modelValue"], DC = ["value"], MC = ["type", "onUpdate:modelValue"], qC = ["disabled", "onClick"], $C = ["disabled", "onClick"], BC = { class: "align-middle" }, PC = ["data-label", "width", "onClick"], jC = {
+}, xC = ["onUpdate:modelValue"], LC = { value: "=" }, kC = { value: ">" }, IC = { value: ">=" }, RC = { value: "<" }, DC = { value: "<=" }, MC = ["onUpdate:modelValue"], qC = ["value"], $C = ["type", "onUpdate:modelValue"], BC = ["disabled", "onClick"], PC = ["disabled", "onClick"], jC = { class: "align-middle" }, UC = ["data-label", "width", "onClick"], VC = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, UC = ["innerHTML"], VC = { key: 1 }, FC = ["innerHTML"], HC = ["aria-valuenow", "aria-valuemax"], WC = { key: 0 }, zC = {
+}, FC = ["innerHTML"], HC = { key: 1 }, WC = ["innerHTML"], zC = ["aria-valuenow", "aria-valuemax"], KC = { key: 0 }, GC = {
   key: 4,
   class: "input-group input-group-sm"
-}, KC = ["innerHTML"], GC = ["type", "onChange", "onUpdate:modelValue"], YC = ["onChange", "onUpdate:modelValue"], XC = ["value"], ZC = ["innerHTML"], QC = { key: 5 }, JC = ["disabled", "onClick"], tS = ["innerHTML"], eS = { key: 2 }, sS = { key: 0 }, nS = ["colspan"], iS = { class: "row g-3 align-items-center" }, rS = { class: "col-form-label" }, oS = ["type", "onUpdate:modelValue", "onChange"], aS = ["onUpdate:modelValue", "onChange"], lS = ["onUpdate:modelValue", "onChange"], cS = ["value"], uS = ["innerHTML"], hS = {
+}, YC = ["innerHTML"], XC = ["type", "onChange", "onUpdate:modelValue"], ZC = ["onChange", "onUpdate:modelValue"], QC = ["value"], JC = ["innerHTML"], tS = { key: 5 }, eS = ["disabled", "onClick"], sS = ["innerHTML"], nS = { key: 2 }, iS = { key: 0 }, rS = ["colspan"], oS = { class: "row g-3 align-items-center" }, aS = { class: "col-form-label" }, lS = ["type", "onUpdate:modelValue", "onChange"], cS = ["onUpdate:modelValue", "onChange"], uS = ["onUpdate:modelValue", "onChange"], hS = ["value"], dS = ["innerHTML"], fS = {
   key: 0,
   class: "bg-light text-dark"
-}, dS = {
+}, pS = {
   key: 0,
   class: "vua-table-bulk border-info"
-}, fS = ["data-label", "width"], pS = {
+}, gS = ["data-label", "width"], mS = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, gS = {
+}, bS = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, mS = ["type", "disabled", "onChange", "onUpdate:modelValue"], bS = ["disabled", "onChange", "onUpdate:modelValue"], yS = ["value"], _S = ["onClick"], vS = {
+}, yS = ["type", "disabled", "onChange", "onUpdate:modelValue"], _S = ["disabled", "onChange", "onUpdate:modelValue"], vS = ["value"], ES = ["onClick"], wS = {
   key: 0,
   class: "bi bi-square text-secondary"
-}, ES = {
+}, TS = {
   key: 1,
   class: "bi bi-check-square"
-}, wS = { key: 2 }, TS = ["disabled", "onClick"], AS = ["innerHTML"], NS = { key: 2 }, OS = ["id"], CS = { class: "modal-dialog modal-xl" }, SS = { class: "modal-content h-100" }, xS = ["id", "data-bs-theme"], LS = { class: "modal-header" }, kS = { class: "modal-title" }, IS = ["innerHTML"], RS = { key: 1 }, DS = { key: 2 }, MS = {
+}, AS = { key: 2 }, NS = ["disabled", "onClick"], OS = ["innerHTML"], CS = { key: 2 }, SS = ["id"], xS = { class: "modal-dialog modal-xl" }, LS = { class: "modal-content h-100" }, kS = ["id", "data-bs-theme"], IS = { class: "modal-header" }, RS = { class: "modal-title" }, DS = ["innerHTML"], MS = { key: 1 }, qS = { key: 2 }, $S = {
   key: 3,
   class: "rounded border ms-2 px-2 py-0 fs-6"
-}, qS = {
+}, BS = {
   key: 0,
   class: "d-inline-block ms-3 mt-1"
-}, $S = ["innerHTML"], BS = {
+}, PS = ["innerHTML"], jS = {
   class: "spinner-border spinner-border-sm mx-2",
   role: "status"
-}, PS = {
+}, US = {
   key: 0,
   class: "modal-header d-flex justify-content-between"
-}, jS = ["disabled"], US = ["disabled"], VS = {
+}, VS = ["disabled"], FS = ["disabled"], HS = {
   key: 0,
   class: "d-inline-block m-1"
-}, FS = { class: "dropdown d-inline-block" }, HS = ["innerHTML"], WS = { class: "dropdown-menu text-start" }, zS = { class: "me-2 text-muted" }, KS = ["innerHTML"], GS = {
+}, WS = { class: "dropdown d-inline-block" }, zS = ["innerHTML"], KS = { class: "dropdown-menu text-start" }, GS = { class: "me-2 text-muted" }, YS = ["innerHTML"], XS = {
   type: "button",
   class: "btn btn-sm btn-secondary m-1",
   "data-bs-dismiss": "modal"
-}, YS = {
+}, ZS = {
   type: "submit",
   class: "btn btn-sm btn-primary m-1"
-}, XS = {
+}, QS = {
   key: 1,
   class: "modal-body custom-scroll"
-}, ZS = {
+}, JS = {
   key: 2,
   class: "modal-footer d-flex justify-content-between"
-}, QS = ["disabled"], JS = ["disabled"], t2 = {
+}, t2 = ["disabled"], e2 = ["disabled"], s2 = {
   type: "button",
   class: "btn btn-secondary m-1",
   "data-bs-dismiss": "modal"
-}, e2 = {
+}, n2 = {
   type: "submit",
   class: "btn btn-primary m-1"
-}, s2 = {
+}, i2 = {
   key: 1,
   class: "bg-light text-dark"
 };
-function n2(s, t, e, n, i, r) {
+function r2(s, t, e, n, i, r) {
   const o = ui("VuAdminTablePagination"), c = ui("VuAdminFormGroup");
   return e.settings && e.settings.table ? (b(), y("div", cO, [
     f("div", {
@@ -13417,34 +13420,47 @@ function n2(s, t, e, n, i, r) {
                       }, O(r.translate("Invert all")), 9, TC)
                     ])) : A("", !0)
                   ])
-                ])) : G((b(), y("select", {
-                  key: 1,
-                  "onUpdate:modelValue": (l) => a.filter.value = l,
-                  onChange: t[8] || (t[8] = (l) => r.reloadTable()),
-                  multiple: a.filter.multiple,
-                  class: "form-select form-select-sm pe-0 my-1"
-                }, [
-                  (b(!0), y(W, null, K(a.filter.options, (l) => (b(), y("option", {
-                    key: l,
-                    value: l.value
-                  }, O(r.translate(l.label ? l.label : l.value)), 9, NC))), 128))
-                ], 40, AC)), [
-                  [Re, a.filter.value]
-                ])
+                ])) : (b(), y("div", AC, [
+                  G(f("select", {
+                    "onUpdate:modelValue": (l) => a.filter.value = l,
+                    onChange: t[8] || (t[8] = (l) => r.reloadTable()),
+                    multiple: a.filter.multiple,
+                    class: "form-select form-select-sm pe-0"
+                  }, [
+                    (b(!0), y(W, null, K(a.filter.options, (l) => (b(), y("option", {
+                      key: l,
+                      value: l.value
+                    }, O(r.translate(l.label ? l.label : l.value)), 9, OC))), 128))
+                  ], 40, NC), [
+                    [Re, a.filter.value]
+                  ]),
+                  a.filter.buttonx && a.filter.buttonx != !1 ? (b(), y("button", {
+                    key: 0,
+                    class: R(["btn btn-outline-secondary", {
+                      "opacity-25": !a.filter.value
+                    }]),
+                    disabled: !a.filter.value,
+                    onClick: (l) => {
+                      a.filter.value = void 0, r.reloadTable();
+                    }
+                  }, t[31] || (t[31] = [
+                    f("i", { class: "bi bi-x" }, null, -1)
+                  ]), 10, CC)) : A("", !0)
+                ]))
               ])) : A("", !0),
-              a.filter && (a.filter.type == "datetime-local" || a.filter.type == "date") ? (b(), y("div", OC, [
+              a.filter && (a.filter.type == "datetime-local" || a.filter.type == "date") ? (b(), y("div", SC, [
                 a.filter.operators == !0 ? G((b(), y("select", {
                   key: 0,
                   "onUpdate:modelValue": (l) => a.filter.operator = l,
                   onChange: t[9] || (t[9] = (l) => r.reloadTable()),
                   class: "form-select form-select-sm pe-0"
                 }, [
-                  f("option", SC, O(r.translate("=")), 1),
-                  f("option", xC, O(r.translate(">")), 1),
-                  f("option", LC, O(r.translate(">=")), 1),
-                  f("option", kC, O(r.translate("<")), 1),
-                  f("option", IC, O(r.translate("<=")), 1)
-                ], 40, CC)), [
+                  f("option", LC, O(r.translate("=")), 1),
+                  f("option", kC, O(r.translate(">")), 1),
+                  f("option", IC, O(r.translate(">=")), 1),
+                  f("option", RC, O(r.translate("<")), 1),
+                  f("option", DC, O(r.translate("<=")), 1)
+                ], 40, xC)), [
                   [Re, a.filter.operator]
                 ]) : A("", !0),
                 a.filter.operators && a.filter.operators.length > 0 ? G((b(), y("select", {
@@ -13456,8 +13472,8 @@ function n2(s, t, e, n, i, r) {
                   (b(!0), y(W, null, K(a.filter.operators, (l) => (b(), y("option", {
                     key: l,
                     value: l.value
-                  }, O(r.translate(l.label)), 9, DC))), 128))
-                ], 40, RC)), [
+                  }, O(r.translate(l.label)), 9, qC))), 128))
+                ], 40, MC)), [
                   [Re, a.filter.operator]
                 ]) : A("", !0),
                 G(f("input", {
@@ -13468,7 +13484,7 @@ function n2(s, t, e, n, i, r) {
                   "onUpdate:modelValue": (l) => a.filter.value = l,
                   onChange: t[11] || (t[11] = (l) => r.reloadTable()),
                   onKeyup: t[12] || (t[12] = ni((l) => r.reloadTable(), ["enter"]))
-                }, null, 42, MC), [
+                }, null, 42, $C), [
                   [dn, a.filter.value]
                 ]),
                 f("button", {
@@ -13479,9 +13495,9 @@ function n2(s, t, e, n, i, r) {
                   onClick: (l) => {
                     a.filter.value = void 0, r.reloadTable();
                   }
-                }, t[31] || (t[31] = [
+                }, t[32] || (t[32] = [
                   f("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, qC)
+                ]), 10, BC)
               ])) : A("", !0),
               a.filter && a.filter.buttons ? (b(), y("span", {
                 key: 5,
@@ -13512,7 +13528,7 @@ function n2(s, t, e, n, i, r) {
                       ])
                     }, null, 2),
                     V(" " + O(r.translate(l.title)), 1)
-                  ], 10, $C)
+                  ], 10, PC)
                 ]))), 128))
               ], 2)) : A("", !0)
             ], 14, zO))), 128))
@@ -13522,7 +13538,7 @@ function n2(s, t, e, n, i, r) {
           (b(!0), y(W, null, K(this.items, (a, l) => (b(), y(W, {
             key: a.id
           }, [
-            f("tr", BC, [
+            f("tr", jC, [
               (b(!0), y(W, null, K(e.settings.table.columns, (h) => (b(), y("td", {
                 style: Yn([h.hidden ? "display: none" : ""]),
                 key: h.name,
@@ -13536,19 +13552,19 @@ function n2(s, t, e, n, i, r) {
                 ),
                 onClick: (p) => r.tableAction(h, a, l, p)
               }, [
-                h.index ? (b(), y("div", jC, [
+                h.index ? (b(), y("div", VC, [
                   f("span", {
                     class: R(["cursor-pointer badge border badge-index p-1 w-100", {
                       selected: i.selected.indexOf(a[e.settings.pkey]) >= 0
                     }]),
                     innerHTML: l + 1 + (i.config.pagination.page - 1) * i.config.pagination.limit
-                  }, null, 10, UC)
+                  }, null, 10, FC)
                 ])) : A("", !0),
-                !h.template && !h.input && !h.progressbar ? (b(), y("span", VC, O(r.tableCellValue(h.name, a, l, h)), 1)) : A("", !0),
+                !h.template && !h.input && !h.progressbar ? (b(), y("span", HC, O(r.tableCellValue(h.name, a, l, h)), 1)) : A("", !0),
                 h.template ? (b(), y("span", {
                   key: 2,
                   innerHTML: r.tableCellTemplate(h.template, a, l, h)
-                }, null, 8, FC)) : A("", !0),
+                }, null, 8, WC)) : A("", !0),
                 h.progressbar ? (b(), y("div", {
                   key: 3,
                   class: "progress",
@@ -13561,10 +13577,10 @@ function n2(s, t, e, n, i, r) {
                     class: R(["progress-bar", [h.progressbar.class]]),
                     style: Yn({ width: Math.round(a[h.name] / h.progressbar.max * 100) + "%" })
                   }, [
-                    h.progressbar.value ? (b(), y("span", WC, O(a[h.name]), 1)) : A("", !0)
+                    h.progressbar.value ? (b(), y("span", KC, O(a[h.name]), 1)) : A("", !0)
                   ], 6)
-                ], 8, HC)) : A("", !0),
-                h.input ? (b(), y("div", zC, [
+                ], 8, zC)) : A("", !0),
+                h.input ? (b(), y("div", GC, [
                   h.input.prefix ? (b(), y("span", {
                     key: 0,
                     class: "input-group-text",
@@ -13572,7 +13588,7 @@ function n2(s, t, e, n, i, r) {
                       column: h,
                       item: a
                     })
-                  }, null, 8, KC)) : A("", !0),
+                  }, null, 8, YC)) : A("", !0),
                   ["text", "number", "date", "datetime-local"].indexOf(
                     h.input.type
                   ) >= 0 ? G((b(), y("input", {
@@ -13584,7 +13600,7 @@ function n2(s, t, e, n, i, r) {
                     })]),
                     onChange: (p) => r.onRowInputChange(a[h.name], h, a, l),
                     "onUpdate:modelValue": (p) => a[h.name] = p
-                  }, null, 42, GC)), [
+                  }, null, 42, XC)), [
                     [dn, a[h.name]]
                   ]) : A("", !0),
                   h.input.type == "select" ? G((b(), y("select", {
@@ -13599,8 +13615,8 @@ function n2(s, t, e, n, i, r) {
                     (b(!0), y(W, null, K(h.input.options, (p) => (b(), y("option", {
                       value: p.value,
                       key: p
-                    }, O(r.translate(p.label)), 9, XC))), 128))
-                  ], 42, YC)), [
+                    }, O(r.translate(p.label)), 9, QC))), 128))
+                  ], 42, ZC)), [
                     [Re, a[h.name]]
                   ]) : A("", !0),
                   h.input.suffix ? (b(), y("span", {
@@ -13610,9 +13626,9 @@ function n2(s, t, e, n, i, r) {
                       column: h,
                       item: a
                     })
-                  }, null, 8, ZC)) : A("", !0)
+                  }, null, 8, JC)) : A("", !0)
                 ])) : A("", !0),
-                h.buttons ? (b(), y("span", QC, [
+                h.buttons ? (b(), y("span", tS, [
                   (b(!0), y(W, null, K(h.buttons, (p) => (b(), y("span", {
                     key: p.action
                   }, [
@@ -13643,13 +13659,13 @@ function n2(s, t, e, n, i, r) {
                       p.template ? (b(), y("span", {
                         key: 1,
                         innerHTML: r.tableCellTemplate(p.template, a, l, h)
-                      }, null, 8, tS)) : (b(), y("span", eS, O(r.translate(p.title)), 1))
-                    ], 10, JC)
+                      }, null, 8, sS)) : (b(), y("span", nS, O(r.translate(p.title)), 1))
+                    ], 10, eS)
                   ]))), 128))
                 ])) : A("", !0)
-              ], 14, PC))), 128))
+              ], 14, UC))), 128))
             ]),
-            e.settings.table.details && i.details.indexOf(a[e.settings.pkey]) >= 0 ? (b(), y("tr", sS, [
+            e.settings.table.details && i.details.indexOf(a[e.settings.pkey]) >= 0 ? (b(), y("tr", iS, [
               f("td", {
                 class: R([e.settings.table.details.class]),
                 colspan: e.settings.table.columns.length
@@ -13658,11 +13674,11 @@ function n2(s, t, e, n, i, r) {
                   class: "m-0",
                   key: h
                 }, [
-                  f("div", iS, [
+                  f("div", oS, [
                     f("div", {
                       class: R(["col text-end", [h.class]])
                     }, [
-                      f("label", rS, O(h.label), 1)
+                      f("label", aS, O(h.label), 1)
                     ], 2),
                     f("div", {
                       class: R(["col", [h.input.class]])
@@ -13673,7 +13689,7 @@ function n2(s, t, e, n, i, r) {
                         class: "form-control form-control-sm",
                         "onUpdate:modelValue": (p) => a[h.name] = p,
                         onChange: (p) => r.onRowInputChange(a[h.name], h, a, l)
-                      }, null, 40, oS)), [
+                      }, null, 40, lS)), [
                         [dn, a[h.name]]
                       ]) : A("", !0),
                       h.input.type == "textarea" ? G((b(), y("textarea", {
@@ -13683,7 +13699,7 @@ function n2(s, t, e, n, i, r) {
                         "onUpdate:modelValue": (p) => a[h.name] = p,
                         onChange: (p) => r.onRowInputChange(a[h.name], h, a, l)
                       }, `\r
-                    `, 40, aS)), [
+                    `, 40, cS)), [
                         [jt, a[h.name]]
                       ]) : A("", !0),
                       h.input.type == "select" ? G((b(), y("select", {
@@ -13695,8 +13711,8 @@ function n2(s, t, e, n, i, r) {
                         (b(!0), y(W, null, K(h.input.options, (p) => (b(), y("option", {
                           value: p.value,
                           key: p
-                        }, O(r.translate(p.label)), 9, cS))), 128))
-                      ], 40, lS)), [
+                        }, O(r.translate(p.label)), 9, hS))), 128))
+                      ], 40, uS)), [
                         [Re, a[h.name]]
                       ]) : A("", !0)
                     ], 2)
@@ -13704,15 +13720,15 @@ function n2(s, t, e, n, i, r) {
                 ]))), 128)),
                 f("span", {
                   innerHTML: e.settings.table.details.raw(a)
-                }, null, 8, uS),
-                e.settings.debug ? (b(), y("pre", hS, "                " + O(a) + `
+                }, null, 8, dS),
+                e.settings.debug ? (b(), y("pre", fS, "                " + O(a) + `
               `, 1)) : A("", !0)
-              ], 10, nS)
+              ], 10, rS)
             ])) : A("", !0)
           ], 64))), 128))
         ]),
         f("tfoot", null, [
-          i.selected.length > 0 ? (b(), y("tr", dS, [
+          i.selected.length > 0 ? (b(), y("tr", pS, [
             (b(!0), y(W, null, K(e.settings.table.columns, (a) => (b(), y("td", {
               style: Yn([a.hidden ? "display: none" : ""]),
               key: a.name,
@@ -13720,13 +13736,13 @@ function n2(s, t, e, n, i, r) {
               width: a.width,
               class: R(a.class)
             }, [
-              a.index ? (b(), y("div", pS, [
+              a.index ? (b(), y("div", mS, [
                 f("span", {
                   class: "cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100",
                   onClick: t[13] || (t[13] = (l) => r.toggleSelectedAll())
                 }, O(i.selected.length), 1)
               ])) : A("", !0),
-              a.input && a.bulk && a.bulk.enabled ? (b(), y("div", gS, [
+              a.input && a.bulk && a.bulk.enabled ? (b(), y("div", bS, [
                 ["text", "number", "date", "datetime-local"].indexOf(
                   a.input.type
                 ) >= 0 ? G((b(), y("input", {
@@ -13736,7 +13752,7 @@ function n2(s, t, e, n, i, r) {
                   disabled: i.bulkinputs.indexOf(a.name) < 0,
                   onChange: (l) => r.onBulkInputChange(i.bulkitem[a.name], i.bulkitem, a),
                   "onUpdate:modelValue": (l) => i.bulkitem[a.name] = l
-                }, null, 42, mS)), [
+                }, null, 42, yS)), [
                   [dn, i.bulkitem[a.name]]
                 ]) : A("", !0),
                 a.input.type == "select" ? G((b(), y("select", {
@@ -13749,18 +13765,18 @@ function n2(s, t, e, n, i, r) {
                   (b(!0), y(W, null, K(a.input.options, (l) => (b(), y("option", {
                     value: l.value,
                     key: l
-                  }, O(r.translate(l.label)), 9, yS))), 128))
-                ], 42, bS)), [
+                  }, O(r.translate(l.label)), 9, vS))), 128))
+                ], 42, _S)), [
                   [Re, i.bulkitem[a.name]]
                 ]) : A("", !0),
                 f("span", {
                   class: "input-group-text cursor-pointer",
                   onClick: (l) => r.ifBulkInputClick(a)
                 }, [
-                  i.bulkitem[a.name] === void 0 ? (b(), y("i", vS)) : (b(), y("i", ES))
-                ], 8, _S)
+                  i.bulkitem[a.name] === void 0 ? (b(), y("i", wS)) : (b(), y("i", TS))
+                ], 8, ES)
               ])) : A("", !0),
-              a.bulk ? (b(), y("span", wS, [
+              a.bulk ? (b(), y("span", AS, [
                 (b(!0), y(W, null, K(a.bulk.buttons, (l) => (b(), y("span", {
                   key: l.action
                 }, [
@@ -13785,11 +13801,11 @@ function n2(s, t, e, n, i, r) {
                     l.template ? (b(), y("span", {
                       key: 1,
                       innerHTML: r.tableCellTemplate(l.template, i.bulkitem, null, a)
-                    }, null, 8, AS)) : (b(), y("span", NS, O(r.translate(l.title)), 1))
-                  ], 10, TS)
+                    }, null, 8, OS)) : (b(), y("span", CS, O(r.translate(l.title)), 1))
+                  ], 10, NS)
                 ]))), 128))
               ])) : A("", !0)
-            ], 14, fS))), 128))
+            ], 14, gS))), 128))
           ])) : A("", !0)
         ])
       ], 2)) : A("", !0),
@@ -13806,8 +13822,8 @@ function n2(s, t, e, n, i, r) {
         id: i.modalId,
         tabindex: "-1"
       }, [
-        f("div", CS, [
-          f("div", SS, [
+        f("div", xS, [
+          f("div", LS, [
             i.item ? (b(), y("form", {
               key: 0,
               ref: "form",
@@ -13819,42 +13835,42 @@ function n2(s, t, e, n, i, r) {
               f("div", {
                 class: R(["vua-overlay", { blocked: i.ui.block.form }])
               }, null, 2),
-              f("div", LS, [
-                f("h5", kS, [
+              f("div", IS, [
+                f("h5", RS, [
                   e.settings.form.title && typeof e.settings.form.title == "function" ? (b(), y("span", {
                     key: 0,
                     innerHTML: e.settings.form.title(i.item, e.settings)
-                  }, null, 8, IS)) : A("", !0),
-                  e.settings.form.title && typeof e.settings.form.title == "string" ? (b(), y("span", RS, O(r.translate(e.settings.form.title)), 1)) : A("", !0),
-                  e.settings.form.title ? A("", !0) : (b(), y("span", DS, O(r.translate("Edit")), 1)),
-                  i.item[e.settings.pkey] ? (b(), y("small", MS, [
-                    t[32] || (t[32] = f("span", { class: "text-muted fw-light" }, "id", -1)),
+                  }, null, 8, DS)) : A("", !0),
+                  e.settings.form.title && typeof e.settings.form.title == "string" ? (b(), y("span", MS, O(r.translate(e.settings.form.title)), 1)) : A("", !0),
+                  e.settings.form.title ? A("", !0) : (b(), y("span", qS, O(r.translate("Edit")), 1)),
+                  i.item[e.settings.pkey] ? (b(), y("small", $S, [
+                    t[33] || (t[33] = f("span", { class: "text-muted fw-light" }, "id", -1)),
                     V(" " + O(i.item[e.settings.pkey]), 1)
                   ])) : A("", !0)
                 ]),
-                i.message.form ? (b(), y("span", qS, [
+                i.message.form ? (b(), y("span", BS, [
                   f("span", {
                     class: R(["text-" + i.message.form.priority])
                   }, [
-                    t[33] || (t[33] = f("i", { class: "bi bi-envelope-fill me-2" }, null, -1)),
+                    t[34] || (t[34] = f("i", { class: "bi bi-envelope-fill me-2" }, null, -1)),
                     f("span", {
                       innerHTML: i.message.form.msg
-                    }, null, 8, $S)
+                    }, null, 8, PS)
                   ], 2)
                 ])) : A("", !0),
-                G(f("span", BS, t[34] || (t[34] = [
+                G(f("span", jS, t[35] || (t[35] = [
                   f("span", { class: "visually-hidden" }, "Loading...", -1)
                 ]), 512), [
                   [Ns, i.ui.wait.form]
                 ]),
-                t[35] || (t[35] = f("button", {
+                t[36] || (t[36] = f("button", {
                   type: "button",
                   class: "btn-close",
                   "data-bs-dismiss": "modal",
                   "aria-label": "Close"
                 }, null, -1))
               ]),
-              i.item ? (b(), y("div", PS, [
+              i.item ? (b(), y("div", US, [
                 f("div", null, [
                   f("button", {
                     type: "button",
@@ -13862,15 +13878,15 @@ function n2(s, t, e, n, i, r) {
                     onClick: t[14] || (t[14] = (a) => r.reloadItem()),
                     disabled: !i.item[e.settings.pkey]
                   }, [
-                    t[36] || (t[36] = f("i", { class: "bi bi-arrow-clockwise" }, null, -1)),
+                    t[37] || (t[37] = f("i", { class: "bi bi-arrow-clockwise" }, null, -1)),
                     V(" " + O(r.translate("Reload")), 1)
-                  ], 8, jS),
+                  ], 8, VS),
                   f("button", {
                     type: "button",
                     class: "btn btn-sm btn-outline-warning m-1",
                     onClick: t[15] || (t[15] = (a) => r.createItem())
                   }, [
-                    t[37] || (t[37] = f("i", { class: "bi bi-plus-circle" }, null, -1)),
+                    t[38] || (t[38] = f("i", { class: "bi bi-plus-circle" }, null, -1)),
                     V(" " + O(r.translate("New")), 1)
                   ]),
                   f("button", {
@@ -13878,7 +13894,7 @@ function n2(s, t, e, n, i, r) {
                     class: "btn btn-sm btn-outline-warning m-1",
                     onClick: t[16] || (t[16] = (a) => r.copyItem())
                   }, [
-                    t[38] || (t[38] = f("i", { class: "bi bi-copy" }, null, -1)),
+                    t[39] || (t[39] = f("i", { class: "bi bi-copy" }, null, -1)),
                     V(" " + O(r.translate("Copy")), 1)
                   ]),
                   f("button", {
@@ -13887,40 +13903,40 @@ function n2(s, t, e, n, i, r) {
                     onClick: t[17] || (t[17] = (a) => r.deleteItem()),
                     disabled: !i.item[e.settings.pkey]
                   }, [
-                    t[39] || (t[39] = f("i", { class: "bi bi-trash" }, null, -1)),
+                    t[40] || (t[40] = f("i", { class: "bi bi-trash" }, null, -1)),
                     V(" " + O(r.translate("Delete")), 1)
-                  ], 8, US)
+                  ], 8, FS)
                 ]),
                 f("div", null, [
-                  i.messages.form.length ? (b(), y("div", VS, [
-                    f("div", FS, [
+                  i.messages.form.length ? (b(), y("div", HS, [
+                    f("div", WS, [
                       f("button", {
                         class: R(["btn btn-sm dropdown-toggle", ["btn-" + i.messages.form[0].priority]]),
                         type: "button",
                         "data-bs-toggle": "dropdown",
                         "aria-expanded": "false",
                         innerHTML: i.messages.form.length + " " + (i.messages.form.length > 1 ? r.translate("messages") : r.translate("message"))
-                      }, null, 10, HS),
-                      f("ul", WS, [
+                      }, null, 10, zS),
+                      f("ul", KS, [
                         (b(!0), y(W, null, K(i.messages.form, (a) => (b(), y("li", { key: a }, [
                           f("span", {
                             class: R(["dropdown-item", ["text-" + a.priority]])
                           }, [
-                            f("small", zS, O(a.datetime), 1),
+                            f("small", GS, O(a.datetime), 1),
                             f("span", {
                               innerHTML: a.msg
-                            }, null, 8, KS)
+                            }, null, 8, YS)
                           ], 2)
                         ]))), 128))
                       ])
                     ])
                   ])) : A("", !0),
-                  f("button", GS, [
-                    t[40] || (t[40] = f("i", { class: "bi bi-x" }, null, -1)),
+                  f("button", XS, [
+                    t[41] || (t[41] = f("i", { class: "bi bi-x" }, null, -1)),
                     V(" " + O(r.translate("Close")), 1)
                   ]),
-                  f("button", YS, [
-                    t[41] || (t[41] = f("i", { class: "bi bi-save" }, null, -1)),
+                  f("button", ZS, [
+                    t[42] || (t[42] = f("i", { class: "bi bi-save" }, null, -1)),
                     V(" " + O(r.translate("Save")), 1)
                   ]),
                   f("button", {
@@ -13928,12 +13944,12 @@ function n2(s, t, e, n, i, r) {
                     class: "btn btn-sm btn-success m-1",
                     onClick: t[18] || (t[18] = (...a) => r.submitAndClose && r.submitAndClose(...a))
                   }, [
-                    t[42] || (t[42] = f("i", { class: "bi bi-save" }, null, -1)),
+                    t[43] || (t[43] = f("i", { class: "bi bi-save" }, null, -1)),
                     V(" " + O(r.translate("Save and close")), 1)
                   ])
                 ])
               ])) : A("", !0),
-              e.settings.form ? (b(), y("div", XS, [
+              e.settings.form ? (b(), y("div", QS, [
                 i.item && e.settings.form.groups ? (b(), ia(c, {
                   key: 0,
                   modelValue: i.item,
@@ -13942,7 +13958,7 @@ function n2(s, t, e, n, i, r) {
                   settings: e.settings
                 }, null, 8, ["modelValue", "formid", "settings"])) : A("", !0)
               ])) : A("", !0),
-              i.item ? (b(), y("div", ZS, [
+              i.item ? (b(), y("div", JS, [
                 f("div", null, [
                   f("button", {
                     type: "button",
@@ -13950,15 +13966,15 @@ function n2(s, t, e, n, i, r) {
                     onClick: t[20] || (t[20] = (a) => r.reloadItem()),
                     disabled: !i.item[e.settings.pkey]
                   }, [
-                    t[43] || (t[43] = f("i", { class: "bi bi-arrow-clockwise" }, null, -1)),
+                    t[44] || (t[44] = f("i", { class: "bi bi-arrow-clockwise" }, null, -1)),
                     V(" " + O(r.translate("Reload")), 1)
-                  ], 8, QS),
+                  ], 8, t2),
                   f("button", {
                     type: "button",
                     class: "btn btn-outline-warning m-1",
                     onClick: t[21] || (t[21] = (a) => r.createItem())
                   }, [
-                    t[44] || (t[44] = f("i", { class: "bi bi-plus-circle" }, null, -1)),
+                    t[45] || (t[45] = f("i", { class: "bi bi-plus-circle" }, null, -1)),
                     V(" " + O(r.translate("New")), 1)
                   ]),
                   f("button", {
@@ -13966,7 +13982,7 @@ function n2(s, t, e, n, i, r) {
                     class: "btn btn-outline-warning m-1",
                     onClick: t[22] || (t[22] = (a) => r.copyItem())
                   }, [
-                    t[45] || (t[45] = f("i", { class: "bi bi-copy" }, null, -1)),
+                    t[46] || (t[46] = f("i", { class: "bi bi-copy" }, null, -1)),
                     V(" " + O(r.translate("Copy")), 1)
                   ]),
                   f("button", {
@@ -13975,17 +13991,17 @@ function n2(s, t, e, n, i, r) {
                     onClick: t[23] || (t[23] = (a) => r.deleteItem()),
                     disabled: !i.item[e.settings.pkey]
                   }, [
-                    t[46] || (t[46] = f("i", { class: "bi bi-trash" }, null, -1)),
+                    t[47] || (t[47] = f("i", { class: "bi bi-trash" }, null, -1)),
                     V(" " + O(r.translate("Delete")), 1)
-                  ], 8, JS)
+                  ], 8, e2)
                 ]),
                 f("div", null, [
-                  f("button", t2, [
-                    t[47] || (t[47] = f("i", { class: "bi bi-x" }, null, -1)),
+                  f("button", s2, [
+                    t[48] || (t[48] = f("i", { class: "bi bi-x" }, null, -1)),
                     V(" " + O(r.translate("Close")), 1)
                   ]),
-                  f("button", e2, [
-                    t[48] || (t[48] = f("i", { class: "bi bi-save" }, null, -1)),
+                  f("button", n2, [
+                    t[49] || (t[49] = f("i", { class: "bi bi-save" }, null, -1)),
                     V(" " + O(r.translate("Save")), 1)
                   ]),
                   f("button", {
@@ -13993,21 +14009,21 @@ function n2(s, t, e, n, i, r) {
                     class: "btn btn-success m-1",
                     onClick: t[24] || (t[24] = (...a) => r.submitAndClose && r.submitAndClose(...a))
                   }, [
-                    t[49] || (t[49] = f("i", { class: "bi bi-save" }, null, -1)),
+                    t[50] || (t[50] = f("i", { class: "bi bi-save" }, null, -1)),
                     V(" " + O(r.translate("Save and close")), 1)
                   ])
                 ])
               ])) : A("", !0)
-            ], 42, xS)) : A("", !0),
-            e.settings.debug ? (b(), y("pre", s2, "        " + O(i.item) + `
+            ], 42, kS)) : A("", !0),
+            e.settings.debug ? (b(), y("pre", i2, "        " + O(i.item) + `
       `, 1)) : A("", !0)
           ])
         ])
-      ], 8, OS)
+      ], 8, SS)
     ], 10, uO)
   ])) : A("", !0);
 }
-const i2 = /* @__PURE__ */ In(lO, [["render", n2], ["__scopeId", "data-v-a93e8966"]]), r2 = {
+const o2 = /* @__PURE__ */ In(lO, [["render", r2], ["__scopeId", "data-v-9e77309e"]]), a2 = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14135,34 +14151,34 @@ const i2 = /* @__PURE__ */ In(lO, [["render", n2], ["__scopeId", "data-v-a93e896
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.5"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.6"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.5"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.6"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
   methods: {},
   components: {
-    VuAdminTable: i2
+    VuAdminTable: o2
   }
-}, o2 = { key: 0 }, a2 = ["data-bs-theme"];
-function l2(s, t, e, n, i, r) {
+}, l2 = { key: 0 }, c2 = ["data-bs-theme"];
+function u2(s, t, e, n, i, r) {
   const o = ui("vu-admin-table");
-  return e.entity && i.settings ? (b(), y("div", o2, [
+  return e.entity && i.settings ? (b(), y("div", l2, [
     f("div", {
       class: "vu-admin",
       "data-bs-theme": [i.settings.theme]
     }, [
       fu(o, { settings: i.settings }, null, 8, ["settings"])
-    ], 8, a2)
+    ], 8, c2)
   ])) : A("", !0);
 }
-const c2 = /* @__PURE__ */ In(r2, [["render", l2]]), b2 = {
+const h2 = /* @__PURE__ */ In(a2, [["render", u2]]), _2 = {
   install(s) {
-    s.component("VuAdmin", c2);
+    s.component("VuAdmin", h2);
   }
 };
 export {
-  c2 as VuAdmin,
-  b2 as default
+  h2 as VuAdmin,
+  _2 as default
 };

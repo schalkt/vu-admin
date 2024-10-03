@@ -264,11 +264,24 @@
                   </ul>
                 </div>
 
-                <select v-else v-model="column.filter.value" @change="reloadTable()" :multiple="column.filter.multiple" class="form-select form-select-sm pe-0 my-1">
-                  <option v-for="option in column.filter.options" :key="option" :value="option.value">
-                    {{ translate(option.label ? option.label : option.value) }}
-                  </option>
-                </select>
+                <div v-else class="input-group input-group-sm my-1">
+                
+                  <select v-model="column.filter.value" @change="reloadTable()" :multiple="column.filter.multiple" class="form-select form-select-sm pe-0">
+                    <option v-for="option in column.filter.options" :key="option" :value="option.value">
+                      {{ translate(option.label ? option.label : option.value) }}
+                    </option>
+                  </select>
+                  
+                  <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" :disabled="!column.filter.value" :class="{
+                      'opacity-25': !column.filter.value,
+                    }" @click="
+                      column.filter.value = undefined;
+                    reloadTable();
+                    ">
+                      <i class="bi bi-x"></i>
+                  </button>
+
+                </div>
 
               </div>
 

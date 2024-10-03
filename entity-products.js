@@ -176,7 +176,7 @@ let columns = [
 			type: 'select',
 			dropdown: true,
 			multiple: true,
-			default_operator: 'in',
+			default_operator: 'in',			
 			options: [
 				{
 					'value': 'beauty',
@@ -214,6 +214,7 @@ let columns = [
 			type: 'select',
 			multiple: false,
 			default_operator: 'in',
+			buttonx: true,
 			options: [
 				{
 					value: 'beauty'

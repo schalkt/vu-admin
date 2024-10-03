@@ -141,13 +141,13 @@
                           </li>
                           <li>
                             <small class="dropdown-item py-0 d-flex justify-content-between">
-                              <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploadiing' }} bytes</span> <span
+                              <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} bytes</span> <span
                                 v-html="roundFileSize(file.bytes, true)"></span>
                             </small>
                           </li>
                           <li>
                             <small class="dropdown-item py-0 d-flex justify-content-between">
-                              <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploadiing' }} filename</span> <span>{{ file.slug }}</span>
+                              <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} filename</span> <span>{{ file.slug }}</span>
                             </small>
                           </li>
                         </ul>
@@ -296,12 +296,12 @@
                   </li>
                   <li>
                     <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploadiing' }} bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
+                      <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
                     </small>
                   </li>
                   <li>
                     <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploadiing' }} filename</span> <span>{{ file.slug }}</span>
+                      <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} filename</span> <span>{{ file.slug }}</span>
                     </small>
                   </li>
                 </ul>
