@@ -146,14 +146,18 @@ export function flattenObject(obj, parent = '', res = {}) {
 }
 
 export function unflattenObject(data) {
+
     let result = {};
+
     for (let i in data) {
         let keys = i.split('.');
         keys.reduce((res, key, j) => {
             return res[key] || (res[key] = isNaN(Number(keys[j + 1])) ? (keys.length - 1 === j ? data[i] : {}) : []);
         }, result);
     }
+
     return result;
+
 }
 
 export function isModified(original, current) {
@@ -278,7 +282,7 @@ export function arraySelectClear(array) {
 
 export function arrayItemMoveUp(arr, index) {
 
-    if (index <= 0 || index >= arr.length) {     
+    if (index <= 0 || index >= arr.length) {
         return;
     }
 
@@ -288,7 +292,7 @@ export function arrayItemMoveUp(arr, index) {
 
 export function arrayItemMoveDown(arr, index) {
 
-    if (index <= 0 || index >= arr.length) {     
+    if (index <= 0 || index >= arr.length) {
         return;
     }
 
