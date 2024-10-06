@@ -10960,7 +10960,7 @@ const Kw = /* @__PURE__ */ In(Fw, [["render", zw], ["__scopeId", "data-v-443c4ed
 }, Gw = {
   props: {
     modelValue: Array,
-    params: Object,
+    field: Object,
     settings: Object
   },
   data: function() {
@@ -10975,7 +10975,7 @@ const Kw = /* @__PURE__ */ In(Fw, [["render", zw], ["__scopeId", "data-v-443c4ed
   },
   created() {
     let s = Math.round(Math.random() * 1e5);
-    this.uploadId = "image_upload_" + s;
+    this.uploadId = "image_upload_" + s, this.params = this.field.params;
   },
   mounted() {
     this.editfile = this.modelValue, this.editfile || (this.editfile = []);
@@ -11035,12 +11035,24 @@ const Kw = /* @__PURE__ */ In(Fw, [["render", zw], ["__scopeId", "data-v-443c4ed
     async handleFileChange(s) {
       this.uploadEvent = s, this.count = this.files ? this.files.length : 0, this.wait = !0;
       for (let t of s.target.files)
-        this.count++, this.count <= this.params.limit && (this.files.push(t), this.detect(t), t.isVideo ? await this.createThumbnail(t) : t.isImage ? await this.resizeImage(t) : t.isDocument && (t.types.default = {
-          extension: t.original.extension,
-          mime: t.original.mime,
-          slug: Jn(t.title) + "-" + t.uid,
-          bytes: t.size
-        }, t.loaded = !0, t.bytes += t.size, this.bytes += t.bytes));
+        if (this.count++, this.count <= this.params.limit) {
+          if (this.files.push(t), this.detect(t), t.isVideo)
+            await this.createThumbnail(t);
+          else if (t.isImage)
+            await this.resizeImage(t);
+          else if (t.isDocument) {
+            const e = new FileReader();
+            e.addEventListener("load", (n) => {
+              t.types.default = {
+                extension: t.original.extension,
+                mime: t.original.mime,
+                slug: Jn(t.title) + "-" + t.uid,
+                bytes: t.size,
+                data: n.target.result
+              }, t.loaded = !0, t.bytes += t.size, this.bytes += t.bytes;
+            }), e.readAsDataURL(t);
+          }
+        }
       this.$emit("update:modelValue", this.files), this.wait = !1, this.uploadEvent.target.value = "";
     },
     async forEachPresets(s, t, e) {
@@ -11630,11 +11642,11 @@ function KA(s, t, e, n, i, r) {
     ], 2)
   ]);
 }
-const GA = /* @__PURE__ */ In(Yw, [["render", KA], ["__scopeId", "data-v-f576c2d9"]]), YA = {
+const GA = /* @__PURE__ */ In(Yw, [["render", KA], ["__scopeId", "data-v-074cafd8"]]), YA = {
   props: {
     modelValue: Object,
     group: Object,
-    formid: String,
+    formId: String,
     settings: Object
   },
   data: function() {
@@ -11743,7 +11755,7 @@ function MN(s, t, e, n, i, r) {
               ], 2)) : (b(), y("label", {
                 key: 1,
                 class: R([{ required: l.required }, "form-label text-secondary mb-1"]),
-                for: s.formid + "_" + l.name,
+                for: s.formId + "_" + l.name,
                 innerHTML: s.getValueOrFunction(l.label ? l.label : s.translate(l.name), { field: l, item: s.item })
               }, null, 10, nN))
             ])) : A("", !0),
@@ -11758,7 +11770,7 @@ function MN(s, t, e, n, i, r) {
                 class: R(["form-control", s.getValueOrFunction(l.inputclass ? l.inputclass : "", { field: l, item: s.item })]),
                 type: "text",
                 name: l.name,
-                id: s.formid + "_" + l.name,
+                id: s.formId + "_" + l.name,
                 "onUpdate:modelValue": (h) => s.item[l.name] = h,
                 minlength: l.minlength,
                 maxlength: l.maxlength,
@@ -11773,7 +11785,7 @@ function MN(s, t, e, n, i, r) {
                 class: R(["form-control", s.getValueOrFunction(l.inputclass ? l.inputclass : "", { field: l, item: s.item })]),
                 type: "number",
                 name: l.name,
-                id: s.formid + "_" + l.name,
+                id: s.formId + "_" + l.name,
                 "onUpdate:modelValue": (h) => s.item[l.name] = h,
                 min: l.min,
                 max: l.max,
@@ -11789,7 +11801,7 @@ function MN(s, t, e, n, i, r) {
                 class: R(["form-control", s.getValueOrFunction(l.inputclass ? l.inputclass : "", { field: l, item: s.item })]),
                 type: "date",
                 name: l.name,
-                id: s.formid + "_" + l.name,
+                id: s.formId + "_" + l.name,
                 "onUpdate:modelValue": (h) => s.item[l.name] = h,
                 readonly: l.readonly,
                 required: l.required
@@ -11801,7 +11813,7 @@ function MN(s, t, e, n, i, r) {
                   class: R(["form-check-input", s.getValueOrFunction(l.inputclass ? l.inputclass : "", { field: l, item: s.item })]),
                   type: "checkbox",
                   name: l.name,
-                  id: s.formid + "_" + l.name,
+                  id: s.formId + "_" + l.name,
                   "true-value": l.true != null ? l.true : !0,
                   "false-value": l.false != null ? l.false : !1,
                   "onUpdate:modelValue": (h) => s.item[l.name] = h,
@@ -11812,7 +11824,7 @@ function MN(s, t, e, n, i, r) {
                 ]),
                 f("label", {
                   class: "form-check-label cursor-pointer",
-                  for: s.formid + "_" + l.name
+                  for: s.formId + "_" + l.name
                 }, O(l.checkbox), 9, hN)
               ])) : A("", !0),
               l.type == "email" ? G((b(), y("input", {
@@ -11821,7 +11833,7 @@ function MN(s, t, e, n, i, r) {
                 class: R(["form-control", s.getValueOrFunction(l.inputclass ? l.inputclass : "", { field: l, item: s.item })]),
                 type: "email",
                 name: l.name,
-                id: s.formid + "_" + l.name,
+                id: s.formId + "_" + l.name,
                 "onUpdate:modelValue": (h) => s.item[l.name] = h,
                 minlength: l.minlength,
                 maxlength: l.maxlength,
@@ -11835,7 +11847,7 @@ function MN(s, t, e, n, i, r) {
                 key: 6,
                 class: R(["form-select", s.getValueOrFunction(l.inputclass ? l.inputclass : "", { field: l, item: s.item })]),
                 name: l.name,
-                id: s.formid + "_" + l.name,
+                id: s.formId + "_" + l.name,
                 "onUpdate:modelValue": (h) => s.item[l.name] = h,
                 readonly: l.readonly,
                 required: l.required
@@ -11852,7 +11864,7 @@ function MN(s, t, e, n, i, r) {
                 key: 7,
                 class: R(["form-control", s.getValueOrFunction(l.inputclass ? l.inputclass : "", { field: l, item: s.item })]),
                 name: l.name,
-                id: s.formid + "_" + l.name,
+                id: s.formId + "_" + l.name,
                 "onUpdate:modelValue": (h) => s.item[l.name] = h,
                 rows: l.rows,
                 minlength: l.minlength,
@@ -11880,9 +11892,9 @@ function MN(s, t, e, n, i, r) {
               modelValue: s.item[l.name],
               "onUpdate:modelValue": (h) => s.item[l.name] = h,
               class: R([l.class]),
-              params: l.params,
+              field: l,
               settings: s.settings
-            }, null, 8, ["modelValue", "onUpdate:modelValue", "class", "params", "settings"])) : A("", !0),
+            }, null, 8, ["modelValue", "onUpdate:modelValue", "class", "field", "settings"])) : A("", !0),
             l.type == "list" ? (b(), y("div", bN, [
               (b(!0), y(W, null, K(s.item[l.name], (h, p) => (b(), y("div", {
                 class: "row g-1 d-flex align-items-center justify-content-between mb-1",
@@ -11958,13 +11970,13 @@ function MN(s, t, e, n, i, r) {
                   V(O(h) + " ", 1),
                   f("label", {
                     class: "form-label text-secondary mb-1",
-                    for: s.formid + "_" + l.name
+                    for: s.formId + "_" + l.name
                   }, O(l.label), 9, LN),
                   G(f("input", {
                     class: "form-control",
                     type: "text",
                     name: l.name,
-                    id: s.formid + "_" + l.name,
+                    id: s.formId + "_" + l.name,
                     "onUpdate:modelValue": (p) => h.country = p
                   }, null, 8, kN), [
                     [jt, h.country]
@@ -11989,7 +12001,7 @@ function MN(s, t, e, n, i, r) {
     ], 2))), 128))
   ]);
 }
-const qN = /* @__PURE__ */ In(XA, [["render", MN], ["__scopeId", "data-v-d992c9e9"]]), $N = {
+const qN = /* @__PURE__ */ In(XA, [["render", MN], ["__scopeId", "data-v-5d5814cf"]]), $N = {
   name: "VuAdminTablePagination",
   emits: ["setPage", "setPageLimit", "translate"],
   props: {
@@ -12175,6 +12187,8 @@ const aO = /* @__PURE__ */ In($N, [["render", oO], ["__scopeId", "data-v-5ba0187
           form: !1
         }
       },
+      formId: null,
+      formData: null,
       modalId: null,
       modalElement: null,
       modalWindow: null,
@@ -12704,6 +12718,25 @@ const aO = /* @__PURE__ */ In($N, [["render", oO], ["__scopeId", "data-v-5ba0187
         for (let e of errors)
           this.addTableMessage(e.message, e.timeout, e.priority);
     },
+    getColumnByName(s) {
+      return this.settings.table.columns.find((t) => t.name === s);
+    },
+    // addFilesToFormData(input, formData, formUploads) {
+    //   for (let formUpload in formUploads) {
+    //     for (let file of input[formUpload]) {
+    //       if (!file.uploaded) {
+    //         for (let type of Object.keys(file.types)) {
+    //           if (file.types[type].blob) {
+    //             formData.append(formUpload + '[]', file.types[type].blob, `${file.types[type].slug}.${file.types[type].extension}`);
+    //           } else {
+    //             formData.append(formUpload + '[]', file, `${file.types[type].slug}.${file.types[type].extension}`);
+    //           }
+    //           console.log(file);
+    //         }
+    //       }
+    //     }
+    //   }
+    // },
     async saveItem(s, t, e, n) {
       try {
         n = n || {};
@@ -13828,7 +13861,7 @@ function r2(s, t, e, n, i, r) {
             i.item ? (b(), y("form", {
               key: 0,
               ref: "form",
-              id: s.formId,
+              id: i.formId,
               class: R(["form", [e.settings.form.class, { wait: i.ui.wait.form }]]),
               onSubmit: t[25] || (t[25] = na((...a) => r.submitItem && r.submitItem(...a), ["prevent"])),
               "data-bs-theme": [e.settings.theme]
@@ -13955,7 +13988,7 @@ function r2(s, t, e, n, i, r) {
                   key: 0,
                   modelValue: i.item,
                   "onUpdate:modelValue": t[19] || (t[19] = (a) => i.item = a),
-                  formid: s.formId,
+                  formid: i.formId,
                   settings: e.settings
                 }, null, 8, ["modelValue", "formid", "settings"])) : A("", !0)
               ])) : A("", !0),
@@ -14024,7 +14057,7 @@ function r2(s, t, e, n, i, r) {
     ], 10, uO)
   ])) : A("", !0);
 }
-const o2 = /* @__PURE__ */ In(lO, [["render", r2], ["__scopeId", "data-v-353e77d0"]]), a2 = {
+const o2 = /* @__PURE__ */ In(lO, [["render", r2], ["__scopeId", "data-v-bf9ba1fd"]]), a2 = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14152,9 +14185,9 @@ const o2 = /* @__PURE__ */ In(lO, [["render", r2], ["__scopeId", "data-v-353e77d
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.12"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.13"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.12"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.13"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
