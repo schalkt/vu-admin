@@ -184,8 +184,7 @@
                   'fixed': column.filter.fixed,
                 }" class="form-control form-control-sm" v-model="column.filter.value" @keyup.enter="reloadTable()" />
 
-                <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" 
-                    :disabled="column.filter.value == null" :class="{
+                <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" :disabled="column.filter.value == null" :class="{
                   'opacity-25': column.filter.value == null,
                 }" @click="
                   column.filter.value = undefined;
@@ -217,9 +216,8 @@
                   'fixed': column.filter.fixed,
                 }" @change="reloadTable()" @keyup.enter="reloadTable()" />
 
-                <button v-if="!column.filter.fixed && column.filter.buttonx && column.filter.buttonx != false" class="btn btn-outline-secondary" 
-                  :disabled="column.filter.value == null"
-                  :class="{
+                <button v-if="!column.filter.fixed && column.filter.buttonx && column.filter.buttonx != false" class="btn btn-outline-secondary"
+                  :disabled="column.filter.value == null" :class="{
                     'opacity-25': column.filter.value == null,
                   }" @click="
                     column.filter.value = undefined;
@@ -267,21 +265,20 @@
                 </div>
 
                 <div v-else class="input-group input-group-sm my-1">
-                
+
                   <select v-model="column.filter.value" @change="reloadTable()" :multiple="column.filter.multiple" class="form-select form-select-sm pe-0">
                     <option v-for="option in column.filter.options" :key="option" :value="option.value">
                       {{ translate(option.label ? option.label : option.value) }}
                     </option>
                   </select>
-                  
-                  <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" 
-                      :disabled="column.filter.value == null" :class="{
-                      'opacity-25': column.filter.value == null,
-                    }" @click="
-                      column.filter.value = undefined;
-                    reloadTable();
-                    ">
-                      <i class="bi bi-x"></i>
+
+                  <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" :disabled="column.filter.value == null" :class="{
+                    'opacity-25': column.filter.value == null,
+                  }" @click="
+                    column.filter.value = undefined;
+                  reloadTable();
+                  ">
+                    <i class="bi bi-x"></i>
                   </button>
 
                 </div>
@@ -774,6 +771,8 @@ export default {
           form: false,
         },
       },
+      formId: null,
+      formData: null,
       modalId: null,
       modalElement: null,
       modalWindow: null,
@@ -871,6 +870,7 @@ export default {
 
     this.formId = "form_" + this.settings.entity + "_" + uid;
     this.modalId = "modal_" + this.settings.entity + "_" + uid;
+
     this.resetTable();
   },
   mounted() {
@@ -955,7 +955,7 @@ export default {
 
     reloadTable(params) {
       this.fetchTable(params);
-    },    
+    },
 
     createItem() {
 
@@ -1927,6 +1927,37 @@ export default {
     },
 
 
+    getColumnByName(columnName) {
+
+      return this.settings.table.columns.find((col) => {
+        return col.name === columnName;
+      });
+
+    },
+
+    // addFilesToFormData(input, formData, formUploads) {
+
+    //   for (let formUpload in formUploads) {
+    //     for (let file of input[formUpload]) {
+    //       if (!file.uploaded) {
+    //         for (let type of Object.keys(file.types)) {
+
+    //           if (file.types[type].blob) {
+    //             formData.append(formUpload + '[]', file.types[type].blob, `${file.types[type].slug}.${file.types[type].extension}`);
+    //           } else {
+    //             formData.append(formUpload + '[]', file, `${file.types[type].slug}.${file.types[type].extension}`);
+    //           }
+              
+    //           console.log(file);
+    //         }
+    //       }
+    //     }
+
+    //   }
+
+    // },
+
+
     async saveItem(input, onSuccess, onError, urlParams) {
 
       try {
@@ -1977,7 +2008,7 @@ export default {
 
         if (this.settings.events && this.settings.events.beforeItemSave) {
           this.settings.events.beforeItemSave(item, urlParams, input);
-        }        
+        }
 
         if (!this.settings.form.api.output.item) {
           body = JSON.stringify(item);
@@ -1991,12 +2022,16 @@ export default {
           );
         }
 
+        // this.formData = new FormData();
+        // this.formData.append('json', body)
+        // this.addFilesToFormData(input, this.formData, this.formUploads);
+
         const method = primaryId ? "PUT" : "POST";
 
         response = await fetch(
           prepareFetchUrl(method, this.settings.form.api, primaryId, urlParams),
           prepareFetchOptions(method, this.settings.form.api, {
-            body: body,
+            body: body
           })
         );
 

@@ -422,7 +422,7 @@ const fileType = {
 const FileUpload = {
   props: {
     modelValue: Array,
-    params: Object,
+    field: Object,
     settings: Object,
   },
 
@@ -439,6 +439,7 @@ const FileUpload = {
   created() {
     let uid = Math.round(Math.random() * 100000);
     this.uploadId = "image_upload_" + uid;
+    this.params = this.field.params;
   },
   mounted() {
 
@@ -600,16 +601,28 @@ const FileUpload = {
             await this.resizeImage(file);
           } else if (file.isDocument) {
 
-            file.types.default = {
-              extension: file.original.extension,
-              mime: file.original.mime,
-              slug: slugify(file.title) + "-" + file.uid,
-              bytes: file.size
-            }
+            // const blob = await this.fileToBlob(file);
+            const reader = new FileReader();
 
-            file.loaded = true;
-            file.bytes += file.size;
-            this.bytes += file.bytes
+            reader.addEventListener("load", (e) => {
+
+              file.types.default = {
+                extension: file.original.extension,
+                mime: file.original.mime,
+                slug: slugify(file.title) + "-" + file.uid,
+                bytes: file.size,
+                data: e.target.result
+              }
+
+              file.loaded = true;
+              file.bytes += file.size;
+              this.bytes += file.bytes
+
+            });
+
+            // console.log(blob, file);
+
+            reader.readAsDataURL(file);
 
           }
 
