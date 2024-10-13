@@ -39,6 +39,36 @@ export async function getResponseJson(response) {
     }
 }
 
+
+export function getResponseErrors(response, data) {
+
+    let errors = [];
+
+    if (data && data.errors) {
+
+        for (let error of data.errors) {
+            errors.push({
+                message: error.message,
+                timeout: 3500,
+                priority: 'danger',
+            });
+        }
+
+    } else if (response.status >= 400 && response.status <= 511) {
+
+        errors.push({
+            message: response.status + (response.statusText ? (' ' + response.statusText) : ''),
+            timeout: 3500,
+            priority: 'danger'
+        });
+
+    }
+
+    return errors.length > 0 ? errors : null;
+}
+
+
+
 export function prepareFetchOptions(method, api, options) {
 
     if (!api.options) {
@@ -297,5 +327,15 @@ export function arrayItemMoveDown(arr, index) {
     }
 
     [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
+
+}
+
+export function executeFunctions(obj, params) {
+
+    Object.keys(obj).forEach(key => {
+        if (typeof obj[key] === 'function') {
+            obj[key] = obj[key](params);
+        }
+    });
 
 }

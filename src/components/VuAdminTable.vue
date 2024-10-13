@@ -44,7 +44,10 @@
         <span v-for="button in settings.table.control.buttons" :key="button.action">
           <button v-if="button.action !== 'TABLE_COLUMNS' && !button.dropdowns" type="button" :class="[
             button.class ? button.class : getButtonClassByAction(button.action),
-          ]" @click="tableAction(button, items, null, $event)">
+          ]" @click="tableAction(button, {
+            items: items,
+            $event: $event
+          })">
             <i :class="[
               button.icon !== undefined
                 ? getValueOrFunction(button.icon, {
@@ -113,7 +116,10 @@
             </button>
             <ul class="dropdown-menu">
               <li v-for="dropdown in button.dropdowns" :key="dropdown">
-                <span class="dropdown-item cursor-pointer" :class="[dropdown.class]" @click="tableAction(dropdown, items, null, $event)">
+                <span class="dropdown-item cursor-pointer" :class="[dropdown.class]" @click="tableAction(dropdown, {
+                  items: items,
+                  $event: $event
+                })">
                   <i v-if="dropdown.icon" :class="[dropdown.icon]"></i>
                   {{ translate(dropdown.title) }}
                 </span>
@@ -153,7 +159,10 @@
                     button.class
                       ? button.class
                       : getButtonClassByAction(button.action),
-                  ]" @click="tableAction(button, items, null, $event)">
+                  ]" @click="tableAction(button, {
+                    items: items,
+                    $event: $event
+                  })">
                   <i :class="[
                     button.icon !== undefined
                       ? getValueOrFunction(button.icon, {
@@ -329,7 +338,10 @@
                     button.class
                       ? button.class
                       : getButtonClassByAction(button.action),
-                  ]" @click="tableAction(button, items, null, $event)">
+                  ]" @click="tableAction(button, {
+                    items: items,
+                    $event: $event
+                  })">
                     <i :class="[
                       button.icon !== undefined
                         ? getValueOrFunction(button.icon, {
@@ -354,7 +366,11 @@
                   column: column,
                   item: item,
                 })
-                  " @click="tableAction(column, item, index, $event)">
+                  " @click="tableAction(column, {
+                    item: item,
+                    index: index,
+                    $event: $event
+                  })">
 
                 <div class="d-inline-block w-100 px-1" v-if="column.index">
                   <span class="cursor-pointer badge border badge-index p-1 w-100" :class="{
@@ -427,7 +443,12 @@
                           table: this,
                         })
                         : getButtonClassByAction(button.action),
-                    ]" @click="tableAction(button, item, index, $event)">
+                    ]" @click="tableAction(button, {
+                      column: column,
+                      item: item,
+                      index: index,
+                      $event: $event
+                    })">
                       <i v-if="button.icon !== null" :class="[
                         button.icon !== undefined
                           ? getValueOrFunction(button.icon, {
@@ -562,134 +583,8 @@
       <div class="modal shadow" :id="modalId" tabindex="-1">
         <div class="modal-dialog modal-xl">
           <div class="modal-content h-100">
-            <form ref="form" v-cloak v-if="item" :id="formId" class="form" @submit.prevent="submitItem" :class="[settings.form.class, { wait: ui.wait.form }]"
-              :data-bs-theme="[settings.theme]">
-              <div class="vua-overlay" :class="{ blocked: ui.block.form }"></div>
-              <div class="modal-header">
-
-
-                <h5 class="modal-title">
-                  <span v-if="
-                    settings.form.title &&
-                    typeof settings.form.title == 'function'
-                  " v-html="settings.form.title(item, settings)"></span>
-                  <span v-if="
-                    settings.form.title &&
-                    typeof settings.form.title == 'string'
-                  ">{{ translate(settings.form.title) }}</span>
-                  <span v-if="!settings.form.title">{{ translate('Edit') }}</span>
-
-                  <small v-if="item[settings.pkey]" class="rounded border ms-2 px-2 py-0 fs-6"><span class="text-muted fw-light">id</span> {{ item[settings.pkey] }}</small>
-
-                </h5>
-
-                <span class="d-inline-block ms-3 mt-1" v-if="message.form">
-                  <span :class="['text-' + message.form.priority]">
-                    <i class="bi bi-envelope-fill me-2"></i>
-                    <span v-html="message.form.msg"></span>
-                  </span>
-                </span>
-
-                <span v-show="ui.wait.form" class="spinner-border spinner-border-sm mx-2" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </span>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-
-              </div>
-
-              <div class="modal-header d-flex justify-content-between" v-cloak v-if="item">
-                <div>
-                  <button type="button" class="btn btn-sm btn-secondary m-1" @click="reloadItem()" :disabled="!item[settings.pkey]">
-                    <i class="bi bi-arrow-clockwise"></i> {{ translate('Reload') }}
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-outline-warning m-1" @click="createItem()">
-                    <i class="bi bi-plus-circle"></i> {{ translate('New') }}
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-outline-warning m-1" @click="copyItem()">
-                    <i class="bi bi-copy"></i> {{ translate('Copy') }}
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-danger m-1" @click="deleteItem()" :disabled="!item[settings.pkey]">
-                    <i class="bi bi-trash"></i> {{ translate('Delete') }}
-                  </button>
-                </div>
-
-                <div>
-
-                  <div class="d-inline-block m-1" v-if="messages.form.length">
-
-                    <div class="dropdown d-inline-block">
-                      <button class="btn btn-sm dropdown-toggle" :class="['btn-' + messages.form[0].priority]" type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                        v-html="messages.form.length + ' ' + (messages.form.length > 1 ? translate('messages') : translate('message'))">
-                      </button>
-                      <ul class="dropdown-menu text-start">
-                        <li v-for="message in messages.form" :key="message">
-                          <span class="dropdown-item" :class="['text-' + message.priority]">
-                            <small class="me-2 text-muted">{{ message.datetime }}</small>
-                            <span v-html="message.msg"></span>
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <button type="button" class="btn btn-sm btn-secondary m-1" data-bs-dismiss="modal">
-                    <i class="bi bi-x"></i> {{ translate('Close') }}
-                  </button>
-
-                  <button type="submit" class="btn btn-sm btn-primary m-1">
-                    <i class="bi bi-save"></i> {{ translate('Save') }}
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-success m-1" @click="submitAndClose">
-                    <i class="bi bi-save"></i> {{ translate('Save and close') }}
-                  </button>
-                </div>
-
-              </div>
-
-              <div class="modal-body custom-scroll" v-if="settings.form">
-                <VuAdminFormGroup v-cloak v-if="item && settings.form.groups" v-model="item" :formid="formId" :settings="settings"></VuAdminFormGroup>
-              </div>
-              <div class="modal-footer d-flex justify-content-between" v-cloak v-if="item">
-                <div>
-                  <button type="button" class="btn btn-secondary m-1" @click="reloadItem()" :disabled="!item[settings.pkey]">
-                    <i class="bi bi-arrow-clockwise"></i> {{ translate('Reload') }}
-                  </button>
-
-                  <button type="button" class="btn btn-outline-warning m-1" @click="createItem()">
-                    <i class="bi bi-plus-circle"></i> {{ translate('New') }}
-                  </button>
-
-                  <button type="button" class="btn btn-outline-warning m-1" @click="copyItem()">
-                    <i class="bi bi-copy"></i> {{ translate('Copy') }}
-                  </button>
-
-                  <button type="button" class="btn btn-danger m-1" @click="deleteItem()" :disabled="!item[settings.pkey]">
-                    <i class="bi bi-trash"></i> {{ translate('Delete') }}
-                  </button>
-                </div>
-
-                <div>
-                  <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">
-                    <i class="bi bi-x"></i> {{ translate('Close') }}
-                  </button>
-
-                  <button type="submit" class="btn btn-primary m-1">
-                    <i class="bi bi-save"></i> {{ translate('Save') }}
-                  </button>
-
-                  <button type="button" class="btn btn-success m-1" @click="submitAndClose">
-                    <i class="bi bi-save"></i> {{ translate('Save and close') }}
-                  </button>
-                </div>
-              </div>
-            </form>
-            <pre class="bg-light text-dark" v-if="settings.debug">
-        {{ item }}
-      </pre>
+            <VuAdminForm v-cloak v-if="settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings" :modalWindow="modalWindow"
+              :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation"></VuAdminForm>
           </div>
         </div>
       </div>
@@ -701,8 +596,10 @@
 <script>
 import { Modal } from "bootstrap";
 import {
+  deepMerge,
   getValueOrFunction,
   getResponseJson,
+  getResponseErrors,
   prepareFetchUrl,
   prepareFetchOptions,
   flattenArrayObjects,
@@ -715,9 +612,10 @@ import {
   arrayToggleOne,
   arraySelectAll,
   arraySelectInvert,
-  arraySelectClear
+  arraySelectClear,
+  executeFunctions
 } from "./helpers";
-import VuAdminFormGroup from "./VuAdminFormGroup.vue";
+import VuAdminForm from "./VuAdminForm.vue";
 import VuAdminTablePagination from "./VuAdminTablePagination.vue";
 
 
@@ -732,9 +630,10 @@ export default {
   name: "VuAdminTable",
   props: {
     settings: Object,
+    eventBus: Object,
   },
   components: {
-    VuAdminFormGroup,
+    VuAdminForm,
     VuAdminTablePagination,
   },
   data() {
@@ -876,9 +775,34 @@ export default {
   mounted() {
     this.modalElement = document.getElementById(this.modalId);
     this.modalWindow = new Modal(this.modalElement);
+
+    this.modalElement.addEventListener('hidden.bs.modal', event => {
+      this.settings.form.visible = false;
+    });
+
+    this.modalElement.addEventListener('show.bs.modal', event => {
+      this.settings.form.visible = true;
+    });
+
+    this.listenEvent();
+
   },
 
   methods: {
+
+    sendEvent(eventName, eventTarget, payload) {
+      this.eventBus.emit(eventName, eventTarget, {
+        from: this.settings.entity,
+        payload: payload
+      });
+    },
+
+    listenEvent() {
+      this.eventBus.on(`EDIT-${this.settings.entity}`, (data) => {
+        this.editItem(data.payload.item);
+      });
+    },
+
     tableWait(block) {
       this.ui.wait.table = true;
       this.ui.block.table = block;
@@ -887,16 +811,6 @@ export default {
     tableNoWait() {
       this.ui.wait.table = false;
       this.ui.block.table = false;
-    },
-
-    formWait(block) {
-      this.ui.wait.form = true;
-      this.ui.block.form = block;
-    },
-
-    formNoWait() {
-      this.ui.wait.form = false;
-      this.ui.block.form = false;
     },
 
     countFilters() {
@@ -957,25 +871,6 @@ export default {
       this.fetchTable(params);
     },
 
-    createItem() {
-
-      this.item = this.settings.form.default ? this.settings.form.default : {};
-      this.modalWindow.show();
-
-      setTimeout(() => {
-        this.itemOriginal = Object.assign({}, this.item);
-      }, 100);
-    },
-
-    copyItem() {
-
-      this.item[this.settings.pkey] = undefined;
-      this.modalWindow.show();
-
-      setTimeout(() => {
-        this.itemOriginal = Object.assign({}, this.item);
-      }, 100);
-    },
 
     calcPage() {
       if (
@@ -1175,29 +1070,27 @@ export default {
       }
     },
 
-    tableAction(button, item, index, event) {
-      if (event) {
-        event.stopPropagation();
+    tableAction(button, params) {
+
+      if (params.$event) {
+        params.$event.stopPropagation();
       }
 
-      let action = button.action
-        ? button.action
-        : button.click
-          ? button.click
-          : null;
+      let action = button.action ? button.action
+        : (button.click ? button.click : null);
 
       if (action && typeof action !== "string") {
-        action(item, this);
+        action(params.item, params, this);
         return;
       }
 
       switch (action) {
         case "TABLE_ROW_SELECT":
-          this.toggleSelected(item[this.settings.pkey]);
+          this.toggleSelected(params.item[this.settings.pkey]);
           break;
 
         case "TABLE_ROW_DETAIL":
-          this.toggleDetail(item[this.settings.pkey]);
+          this.toggleDetail(params.item[this.settings.pkey]);
           break;
 
         case "TABLE_CLOSE_DETAILS":
@@ -1213,15 +1106,15 @@ export default {
           break;
 
         case "TABLE_ROW_EDIT":
-          this.editItem(item);
+          this.editItem(params.item);
           break;
 
         case "TABLE_ROW_SAVE":
-          this.tableRowSave(item, button.params);
+          this.tableRowSave(params.item, button.params);
           break;
 
         case "FORM_SUBMIT":
-          this.saveForm(item);
+          this.saveForm(params.item);
           break;
 
         case "___save":
@@ -1229,7 +1122,7 @@ export default {
             item,
             () => {
               this.addTableMessage(
-                this.translate("Saved") + ` <small>( ${this.settings.pkey}:  ${item[this.settings.pkey]} )</small>`,
+                this.translate("Saved") + ` <small>( ${this.settings.pkey}:  ${params.item[this.settings.pkey]} )</small>`,
                 2500,
               );
             },
@@ -1242,12 +1135,12 @@ export default {
           break;
 
         case "FORM_CREATE":
-          this.createItem(item, button.params);
+          this.createItem(params.item, button.params);
           break;
 
         case "TABLE_ROW_DELETE":
         case "FORM_DELETE":
-          this.deleteItem(item, button.params);
+          this.deleteItem(params.item, button.params);
           break;
 
         case "TABLE_RELOAD":
@@ -1258,6 +1151,7 @@ export default {
           this.exportTable(button.params);
           break;
       }
+
     },
 
     tableBulkAction(action, items, column, event) {
@@ -1366,24 +1260,49 @@ export default {
       return haveFilter ? filter : null;
     },
 
-    getRelationsForFetch() {
-      let relations = {};
+    async fetchTableRelations(items) {
 
       for (let column of this.settings.table.columns) {
+
         if (
           column.relation &&
           this.settings.relations[column.relation.entity]
         ) {
-          relations[column.relation.entity] = Object.assign(
-            {},
-            this.settings.relations[column.relation.entity]
-          );
-          relations[column.relation.entity].columns = column.relation.columns;
+
+          let ids = [];
+          column.relation = deepMerge(this.settings.relations[column.relation.entity], column.relation);
+
+          for (let item of items) {
+            if (item[column.relation.local]) {
+              ids.push(item[column.relation.local]);
+            }
+          }
+
+          column.relation.ids = arrayUnique(ids);
+
+          await this.fetchRelation(column, items);
+
         }
+
       }
 
-      return relations;
     },
+
+    // getTableRelationsForFetch(callback) {
+
+    //   for (let column of this.settings.table.columns) {
+
+    //     if (
+    //       column.relation &&
+    //       this.settings.relations[column.relation.entity]
+    //     ) {
+    //       column.relation = Object.assign({}, this.settings.relations[column.relation.entity], column.relation);
+    //       callback(column);
+    //     }
+
+    //   }
+
+    // },
 
     async fetchTable(urlParams) {
 
@@ -1420,29 +1339,13 @@ export default {
           return false;
         }
 
-        let relations = this.getRelationsForFetch();
-
-        // load relations
-        for (let key of Object.keys(relations)) {
-          relations[key].ids = [];
-
-          for (let item of items) {
-            let local = item[relations[key].local];
-
-            if (local) {
-              relations[key].ids.push(local);
-            }
-          }
-
-          relations[key].ids = arrayUnique(relations[key].ids);
-
-          await this.fetchRelation(relations[key], items);
-        }
+        await this.fetchTableRelations(items);
 
         this.items = items;
         this.tableNoWait();
 
       } catch (error) {
+
         console.error(error.message);
 
         this.addTableMessage(error.message, 3500, "danger");
@@ -1463,7 +1366,7 @@ export default {
       );
 
       const json = await getResponseJson(response);
-      const errors = this.getResponseErrors(response, json.data);
+      const errors = getResponseErrors(response, json.data);
 
       if (errors) {
         this.handleTableErrors(errors);
@@ -1513,35 +1416,43 @@ export default {
 
     },
 
-    async fetchRelation(relation, items) {
+    async fetchRelation(column, items) {
+
       try {
-        let searchParams = {
-          limit: 0,
-          list: "select",
-          columns: relation.columns
-            ? JSON.stringify(relation.columns)
-            : undefined,
-        };
 
-        if (relation.ids && relation.ids.length) {
-          let type = typeof relation.ids[0] === "string" ? "text" : "number";
-          let values =
-            type === "string"
-              ? "'" + relation.ids.join("','") + "'"
-              : relation.ids.join(",");
+        let searchParams = column.relation.params ? column.relation.params : {};
 
-          let filter = {};
-
-          filter[relation.foreign] = {
-            type: "array",
-            value: relation.ids,
-            operator: "IN",
-          };
-
-          searchParams.filter = JSON.stringify(filter);
+        if (column.relation.columns) {
+          searchParams.columns = JSON.stringify(column.relation.columns);
         }
 
-        let settings = window.VuEntities[relation.entity];
+        if (!column.relation.ids || !column.relation.ids.length) {
+          return;
+        }
+
+        let type = typeof column.relation.ids[0] === "string" ? "text" : "number";
+        let values =
+          type === "string"
+            ? "'" + column.relation.ids.join("','") + "'"
+            : column.relation.ids.join(",");
+
+        let filter = {};
+
+        filter[column.relation.foreign] = {
+          type: "array",
+          value: values,
+          operator: "IN",
+        };
+
+        searchParams.filter = JSON.stringify(filter);
+
+        let settings = window.VuEntities[column.relation.entity];
+        column.relation.settings = settings;
+
+        executeFunctions(searchParams, {
+          column: column,
+          settings: settings
+        });
 
         const response = await fetch(
           prepareFetchUrl("GET", settings.api, null, searchParams),
@@ -1555,27 +1466,27 @@ export default {
         }
 
         const json = await getResponseJson(response);
-        const error = this.getResponseErrors(response, json.data);
+        const error = getResponseErrors(response, json.data);
 
         if (error || !json.data) {
           return;
         }
 
         if (settings.api.input.items) {
-          relation.items =
+          column.relation.items =
             typeof settings.api.input.items === "string"
               ? json.data[settings.api.input.items]
               : settings.api.input.items(json.data, response);
         } else {
-          relation.items = json.data;
+          column.relation.items = json.data;
         }
 
         if (items && items[0]) {
           for (let item of items) {
-            if (item[relation.local]) {
-              item[relation.entity] = relation.items.find(
+            if (item[column.relation.local]) {
+              item[column.relation.entity] = column.relation.items.find(
                 (current, index, arr) => {
-                  return current[relation.foreign] === item[relation.local];
+                  return current[column.relation.foreign] === item[column.relation.local];
                 }
               );
             }
@@ -1588,94 +1499,18 @@ export default {
 
     async editItem(item) {
 
+      if (!this.settings.form || !this.settings.form.api) {
+        return false;
+      }
+
       this.item = item;
       this.message.form = null;
       this.messages.form = [];
       this.modalWindow.show();
 
-      let primaryId = item[this.settings.pkey];
-
-      this.fetchItem(primaryId);
-
-      setTimeout(() => {
-
-      }, 100);
     },
 
-    async fetchItem(primaryId) {
 
-      try {
-
-        this.formWait(true);
-
-        const response = await fetch(
-          prepareFetchUrl(
-            "GET",
-            this.settings.form.api,
-            primaryId
-          ),
-          prepareFetchOptions("GET", this.settings.api)
-        ).catch((err) => {
-
-
-
-        });
-
-        const json = await getResponseJson(response);
-        let error = this.getResponseErrors(response, json.data, 'form');
-
-        if (error || !json.data) {
-          this.formNoWait();
-          return false;
-        }
-
-        if (this.settings.form.default) {
-          json.data = Object.assign({}, this.settings.form.default, json.data);
-        }
-
-        if (this.settings.events && this.settings.events.afterItemLoad) {
-          this.settings.events.afterItemLoad(json.data, response);
-        }
-
-        //console.log(relations, this.settings);
-
-        for (let group of this.settings.form.groups) {
-          for (let field of group.fields) {
-            // collect relations
-            if (
-              field.relation &&
-              this.settings.relations[field.relation.entity]
-            ) {
-              field.relation = Object.assign(
-                {},
-                this.settings.relations[field.relation.entity],
-                field.relation
-              );
-              await this.fetchRelation(field.relation);
-            }
-          }
-        }
-
-        let item;
-
-        if (this.settings.form.api.input.item) {
-          item =
-            typeof this.settings.form.api.input.item === "string"
-              ? json.data[this.settings.form.api.input.item]
-              : this.settings.form.api.input.item(json.data, response);
-        } else {
-          item = json.data;
-        }
-
-        this.item = flattenObject(item);
-        this.itemOriginal = Object.assign({}, item);
-
-        this.formNoWait();
-      } catch (error) {
-        console.error(error);
-        this.formNoWait();
-      }
-    },
 
     async deleteItem(item, urlParams) {
       try {
@@ -1720,7 +1555,7 @@ export default {
 
         let itemindex = this.items.find((item) => item[this.settings.pkey] === primaryId);
 
-        console.log(itemindex, primaryId);
+        // console.log(itemindex, primaryId);
 
         if (itemindex >= 0) {
           this.items.splice(itemindex, 1);
@@ -1738,7 +1573,9 @@ export default {
         }
 
         this.reloadTable();
+
         this.formNoWait();
+
       } catch (error) {
         console.error(error.message);
         this.formNoWait();
@@ -1789,60 +1626,8 @@ export default {
       }
     },
 
-    reloadItem() {
-      let primaryId = this.item[this.settings.pkey];
-      this.fetchItem(primaryId);
-    },
 
-    async submitItem(closeModal) {
 
-      this.saveItem(this.item, (data) => {
-
-        let item = {};
-
-        if (this.settings.form.api.input.item) {
-          item =
-            typeof this.settings.form.api.input.item === "string"
-              ? data[this.settings.form.api.input.item]
-              : this.settings.form.api.input.item(data, response);
-        } else {
-          item = data;
-        }
-
-        if (item) {
-
-          this.addFormMessage(
-            this.translate("Saved") + ` <small>( ${this.settings.pkey}:  ${item[this.settings.pkey]} )</small>`,
-            2500
-          );
-
-          this.item = flattenObject(item);
-          this.itemOriginal = Object.assign({}, item);
-        }
-
-        if (closeModal === true) {
-          this.modalWindow.hide();
-        }
-
-        this.reloadTable();
-
-      }, (err) => {
-
-        console.log(err);
-        this.addFormMessage(err.message, 14500, 'danger')
-
-      });
-    },
-
-    async submitAndClose() {
-      let form = this.$refs.form;
-
-      if (form.checkValidity()) {
-        this.submitItem(true);
-      } else {
-        form.reportValidity();
-      }
-    },
 
 
     tableRowSave(item, urlParams) {
@@ -1867,16 +1652,16 @@ export default {
 
     },
 
-    submitForm(item, onSuccess, onError, urlParams) {
+    // submitForm(item, onSuccess, onError, urlParams) {
 
-      this.formWait(true);
-      this.saveItem(item, () => {
+    //   this.formWait(true);
+    //   this.saveItem(item, () => {
 
-      }, () => {
+    //   }, () => {
 
-      }, urlParams);
+    //   }, urlParams);
 
-    },
+    // },
 
 
     handleTableErrors(errors) {
@@ -1947,7 +1732,7 @@ export default {
     //           } else {
     //             formData.append(formUpload + '[]', file, `${file.types[type].slug}.${file.types[type].extension}`);
     //           }
-              
+
     //           console.log(file);
     //         }
     //       }
@@ -1956,6 +1741,17 @@ export default {
     //   }
 
     // },
+
+    createItem() {
+
+      this.item = this.settings.form.default ? this.settings.form.default : {};
+      this.modalWindow.show();
+
+      setTimeout(() => {
+        this.itemOriginal = Object.assign({}, this.item);
+      }, 100);
+
+    },
 
 
     async saveItem(input, onSuccess, onError, urlParams) {
@@ -2036,7 +1832,7 @@ export default {
         );
 
         const json = await getResponseJson(response);
-        const errors = this.getResponseErrors(response, json.data);
+        const errors = getResponseErrors(response, json.data);
 
         if (errors) {
           if (onError) {
@@ -2117,7 +1913,7 @@ export default {
         });
 
         const json = await getResponseJson(response);
-        const error = this.getResponseErrors(response, json.data);
+        const error = getResponseErrors(response, json.data);
 
         this.tableNoWait();
 
@@ -2139,33 +1935,7 @@ export default {
       }
     },
 
-    getResponseErrors(response, data) {
 
-      let errors = [];
-
-      if (data && data.errors) {
-
-        for (let error of data.errors) {
-          errors.push({
-            message: error.message,
-            timeout: 3500,
-            priority: 'danger',
-          });
-        }
-
-      } else if (response.status >= 400 && response.status <= 511) {
-
-        errors.push({
-          message: response.status + (response.statusText ? (' ' + response.statusText) : ''),
-          timeout: 3500,
-          priority: 'danger'
-        });
-
-      }
-
-      return errors.length > 0 ? errors : null;
-
-    },
 
     countHiddenColumns() {
       return this.settings.table.columns.filter(
@@ -2294,7 +2064,7 @@ export default {
         urlParams.limit = this.config.pagination.total ? this.config.pagination.total : 0;
 
         let filter = this.getFiltersForFetch();
-        // let relations = this.getRelationsForFetch();
+        // let relations = this.getTableRelationsForFetch();
         let order = this.getOrdersForFetch();
 
         if (this.selected.length > 0) {
@@ -2410,12 +2180,6 @@ export default {
       } else {
         this.bulkitem[column.name] = undefined;
       }
-    },
-
-    addFormMessage(msg, timeout, priority, details) {
-
-      this.addMessage('form', msg, timeout, priority, details);
-
     },
 
     addTableMessage(msg, timeout, priority, details) {

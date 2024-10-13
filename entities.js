@@ -1,9 +1,11 @@
 
-import products from './entity-products.js';
-import users from './entity-users.js';
+import product from './entity-product.js';
+import post from './entity-post.js';
+import user from './entity-user.js';
 
 window.VuEntities = {
-    products: products,
-    users: users,
+    product: product,
+    post: post,
+    user: user,
 };
 

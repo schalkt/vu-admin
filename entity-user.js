@@ -1,6 +1,7 @@
 export default {
 	pkey: 'id',
 	theme: 'dark',	
+	debug: true,
 	api: {
 		url: '/api/users',
 		options: {
@@ -355,7 +356,7 @@ export default {
 			},
 		]
 	},
-	_form: {
+	form: {
 		groups: [
 			{
 				fields: [
