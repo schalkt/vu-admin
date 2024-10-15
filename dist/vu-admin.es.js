@@ -11864,7 +11864,7 @@ function qN(s, t, e, n, i, r) {
               }, null, 10, pN)), [
                 [jt, s.item[l.name]]
               ]) : A("", !0),
-              l.type == "select" ? G((b(), y("select", {
+              l.type == "select" && (!l.relation || l.relation && l.relation.items) ? G((b(), y("select", {
                 key: 6,
                 class: R(["form-select", s.getValueOrFunction(l.inputclass ? l.inputclass : "", { field: l, item: s.item })]),
                 name: l.name,
@@ -12022,7 +12022,7 @@ function qN(s, t, e, n, i, r) {
     ], 2))), 128))
   ]);
 }
-const BN = /* @__PURE__ */ Fs(QA, [["render", qN], ["__scopeId", "data-v-5d5814cf"]]), PN = {
+const BN = /* @__PURE__ */ Fs(QA, [["render", qN], ["__scopeId", "data-v-a6576df3"]]), PN = {
   props: {
     modelValue: Object,
     modalWindow: Object,
@@ -14329,9 +14329,9 @@ const dS = /* @__PURE__ */ Fs(UO, [["render", hS], ["__scopeId", "data-v-772f1f7
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.17"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.19"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.17"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.19"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },

@@ -51,7 +51,7 @@
                 v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''"
                 :readonly="field.readonly" :required="field.required" />
 
-              <select v-if="field.type == 'select'" class="form-select" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]"
+              <select v-if="field.type == 'select' && (!field.relation || (field.relation && field.relation.items))" class="form-select" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]"
                 :readonly="field.readonly" :required="field.required">
                 <option :class="getValueOrFunction(field.optionclass ? field.optionclass : '', { field: field, item:item, option: option })" v-for="option in selectOptions(field.options, field)" :key="option" :value="option.value">
                   {{ option.label ? option.label : option.value }}

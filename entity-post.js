@@ -204,19 +204,11 @@ let form = {
 					},
 					options: (item, field, self) => {
 
-						console.log(field.relation);
-						// return field.relation.items.map(person => ({
-						// 	value: person.id,
-						// 	label: `${person.firstName} ${person.lastName}`
-						//   }));
-
-
-						// return params.items.map(item => {
-						// 	return {
-						// 		value: item.id,
-						// 		label: item.firstName + '' + item.lastName,
-						// 	};
-						// });
+						return field.relation.items.map(person => ({
+							value: person.id,
+							label: `${person.firstName} ${person.lastName}`
+						}));
+						
 					},
 					required: false,
 				},
