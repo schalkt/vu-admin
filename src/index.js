@@ -4,6 +4,6 @@ export { VuAdmin };
 
 export default {
   install(app) {
-    app.component('VuAdmin', VuAdmin);
+    app.component('VuAdmin', VuAdmin);        
   }
 };

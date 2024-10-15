@@ -595,6 +595,7 @@
 
 <script>
 import { Modal } from "bootstrap";
+import mitt from 'mitt';
 import {
   deepMerge,
   getValueOrFunction,
@@ -618,6 +619,7 @@ import {
 import VuAdminForm from "./VuAdminForm.vue";
 import VuAdminTablePagination from "./VuAdminTablePagination.vue";
 
+const eventBus = mitt();
 
 const BTN_TABLE_ROW_EDIT = 'table:row:edit';
 const BTN_TABLE_ROW_SAVE = 'table:row:save';
@@ -630,7 +632,6 @@ export default {
   name: "VuAdminTable",
   props: {
     settings: Object,
-    eventBus: Object,
   },
   components: {
     VuAdminForm,
@@ -791,14 +792,15 @@ export default {
   methods: {
 
     sendEvent(eventName, eventTarget, payload) {
-      this.eventBus.emit(eventName, eventTarget, {
+      eventBus.emit(eventName+'-'+eventTarget, {
         from: this.settings.entity,
         payload: payload
       });
     },
 
     listenEvent() {
-      this.eventBus.on(`EDIT-${this.settings.entity}`, (data) => {
+
+      eventBus.on(`EDIT-${this.settings.entity}`, (data) => {
         this.editItem(data.payload.item);
       });
     },

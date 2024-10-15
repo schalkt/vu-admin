@@ -1,7 +1,7 @@
 <template>
   <div v-cloak v-if="entity && settings">
     <div class="vu-admin" :data-bs-theme="[settings.theme]">
-      <vu-admin-table :settings="settings" :eventBus="eventBus"></vu-admin-table>
+      <vu-admin-table :settings="settings"></vu-admin-table>
     </div>
   </div>
 </template>
@@ -16,8 +16,7 @@ export default {
     entity: {
       type: String,
       required: true,
-    },
-    eventBus: Object,
+    }
   },
   init: (params) => {
     if (!params) {
@@ -155,27 +154,6 @@ export default {
       },
     }
   },
-  eventBus: {
-    events: {},
-    emit(eventName, eventTarget, data) {
-      if (this.events[`${eventName}-${eventTarget}`]) {
-        data.event = eventName;
-        data.target = eventTarget;
-        this.events[`${eventName}-${eventTarget}`].forEach(fn => fn(data));
-      }
-    },
-    on(event, fn) {
-      if (!this.events[event]) {
-        this.events[event] = [];
-      }
-      this.events[event].push(fn);      
-    },
-    off(event, fn) {
-      if (this.events[event]) {
-        this.events[event] = this.events[event].filter(f => f !== fn);
-      }
-    }
-  },
   created() {
 
     if (window.VuEntities && window.VuEntities[this.entity]) {
@@ -225,6 +203,7 @@ export default {
     VuAdminTable,
   },
 };
+
 </script>
 
 <style lang="scss">

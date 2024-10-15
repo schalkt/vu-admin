@@ -32,5 +32,8 @@
   },
   "peerDependencies": {
     "vue": "^3.4.31"
+  },
+  "dependencies": {
+    "mitt": "^3.0.1"
   }
 }
