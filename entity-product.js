@@ -176,7 +176,7 @@ let columns = [
 			type: 'select',
 			dropdown: true,
 			multiple: true,
-			default_operator: 'in',			
+			default_operator: 'in',
 			options: [
 				{
 					'value': 'beauty',
@@ -618,18 +618,124 @@ let form = {
 				{
 					type: 'list',
 					name: 'links',
-					label: 'Links',
+					label: 'Linkek',
+					sortable: true,
 					elements: {
 						href: {
 							type: 'url',
 							class: 'col-md-7',
+							required: true,							
+							prefix: 'URL'
+						},
+						name: {
+							type: 'text',
+							class: 'col-md-5',
+							required: true,
+							prefix: 'Name'
+						}
+					},
+				},
+				{
+					type: 'list',
+					name: 'websites',
+					label: 'Websites',
+					sortable: true,
+					elements: {
+						href: {
+							type: 'select',
+							options: async (item, field, self) => {
+
+								return [
+									{
+										label: '',
+										value: undefined
+									},
+									{
+										label: 'Google',
+										value: 'https://www.google.com/'
+									},
+									{
+										label: 'Youtube',
+										value: 'https://www.youtube.com/'
+									}
+								];
+							},
+							class: 'col-md-12',
+							inputclass: 'form-select-sm',
 							required: true
 						},
-						label: {
-							type: 'text',
+						// label: {
+						// 	type: 'checkbox',
+						// 	class: 'col-md-3',
+						// 	required: true,
+						// }
+					}
+				},
+				{
+					type: 'list',
+					name: 'owners',
+					label: 'Owners',
+					sort: false,
+					elements: {
+						owner: {
+							type: 'select',
+							template: (selected) => {
+								console.log(selected);
+								return selected.owner.label;
+								return JSON.stringify(selected);
+							},
+							options: async (item, field, self) => {
+
+								const response = await fetch('/api/users', {});
+								const data = await response.json();
+								const options = data.users.reduce((acc, item) => {
+									acc.push({
+										label: item.email,
+										value: item.id
+									});
+									return acc;
+								}, [])
+
+								options.unshift({
+									label: '',
+									value: undefined
+								})
+
+								return options;
+
+							},
+							class: 'col-md-9',
+							inputclass: 'form-select-sm',
+							required: true
+						},
+						href: {
+							type: 'select',
+							options: async (item, field, self) => {
+
+								return [
+									{
+										label: '',
+										value: undefined
+									},
+									{
+										label: 'Elsődleges',
+										value: 'primary'
+									},
+									{
+										label: 'Másodlagos',
+										value: 'secondary'
+									}
+								];
+							},
 							class: 'col-md-3',
-							required: true,
+							inputclass: 'form-select-sm',
+							required: true
 						}
+						// label: {
+						// 	type: 'checkbox',
+						// 	class: 'col-md-3',
+						// 	required: true,
+						// }
 					}
 				},
 				{
@@ -715,7 +821,7 @@ let form = {
 					label: 'Documents',
 					required: true,
 					params: {
-						ui: 'list',						
+						ui: 'list',
 						limit: 15,
 						colclass: 'col-4',
 						text: 'Click here to upload',
@@ -725,14 +831,14 @@ let form = {
 							"doc",
 							"docx",
 							"xls",
-							"xlsx",												
+							"xlsx",
 							"png",
-						 	"jpeg",
+							"jpeg",
 							"webp",
 							"mp4"
-						],	
+						],
 						thumbnail: 'thumbnail',
-						presets: {									
+						presets: {
 							thumbnail: {
 								width: 120,
 								height: 100,
@@ -740,7 +846,7 @@ let form = {
 								extension: "webp",
 								quality: 0.6
 							},
-						},					
+						},
 					}
 				},
 			]

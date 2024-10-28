@@ -792,14 +792,13 @@ export default {
   methods: {
 
     sendEvent(eventName, eventTarget, payload) {
-      eventBus.emit(eventName+'-'+eventTarget, {
+      eventBus.emit(eventName + '-' + eventTarget, {
         from: this.settings.entity,
         payload: payload
       });
     },
 
     listenEvent() {
-
       eventBus.on(`EDIT-${this.settings.entity}`, (data) => {
         this.editItem(data.payload.item);
       });
@@ -1141,6 +1140,9 @@ export default {
           break;
 
         case "TABLE_ROW_DELETE":
+          this.deleteItem(params.item, button.params);
+          break;
+
         case "FORM_DELETE":
           this.deleteItem(params.item, button.params);
           break;
@@ -1513,7 +1515,6 @@ export default {
     },
 
 
-
     async deleteItem(item, urlParams) {
       try {
 
@@ -1533,7 +1534,7 @@ export default {
           return;
         }
 
-        this.formWait(true);
+        this.tableWait(true);
 
         if (this.settings.events && this.settings.events.beforeItemDelete) {
           this.settings.events.beforeItemDelete(item);
@@ -1575,12 +1576,11 @@ export default {
         }
 
         this.reloadTable();
-
-        this.formNoWait();
+        //this.tableNoWait();
 
       } catch (error) {
         console.error(error.message);
-        this.formNoWait();
+        this.tableNoWait();
       }
     },
 

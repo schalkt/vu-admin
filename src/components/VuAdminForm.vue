@@ -151,8 +151,7 @@ const VuAdminForm = {
   props: {
     modelValue: Object,
     modalWindow: Object,
-    saveItem: Function,
-    deleteItem: Function,
+    saveItem: Function,    
     reloadTable: Function,
     fetchRelation: Function,
     group: Object,
@@ -394,6 +393,67 @@ const VuAdminForm = {
         this.addFormMessage(err.message, 14500, 'danger')
 
       });
+    },
+
+    async deleteItem(item, urlParams) {
+      try {
+
+        if (!item) {
+          item = this.item;
+        }
+
+        let primaryId = item[this.settings.pkey];
+
+        if (!primaryId) {
+          return;
+        }
+
+        const confirmed = confirm("Are you sure you want to delete this post");
+
+        if (!confirmed) {
+          return;
+        }
+
+        this.formWait(true);
+
+        if (this.settings.events && this.settings.events.beforeItemDelete) {
+          this.settings.events.beforeItemDelete(item);
+        }
+
+        const response = await fetch(
+          prepareFetchUrl(
+            "DELETE",
+            this.settings.form.api,
+            primaryId,
+            urlParams
+          ),
+          prepareFetchOptions("DELETE", this.settings.api)
+        );
+
+        if (response.status !== 200) {
+          throw new Error(
+            this.translate("Response status: " + response.status)
+          );
+        }
+
+        if (this.item) {
+          this.item = {};
+          this.modalWindow.hide();
+        }
+
+        const data = await response.json();
+
+        if (this.settings.events && this.settings.events.afterItemDelete) {
+          this.settings.events.afterItemDelete(data, response);
+        }
+
+        this.reloadTable();
+        this.formNoWait();
+
+      } catch (error) {
+        console.error(error.message);
+        this.formNoWait();
+      }
     },
 
   },

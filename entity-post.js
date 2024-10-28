@@ -212,7 +212,42 @@ let form = {
 					},
 					required: false,
 				},
-
+				{
+					type: 'list',
+					name: 'owners',
+					label: 'Owners',
+					sort: false,
+					elements: {
+						owner: {
+							type: 'select',
+							options: () => {
+								return [
+                                    {
+                                        label: 'Google',										
+                                        value: {
+											id: 1,
+											link: 'https://www.google.com/'
+										}
+                                    },
+                                    {
+                                        label: 'Youtube',
+										value: {
+											id: 2,
+											link: 'https://www.youtube.com/'
+										}
+                                        
+                                    }
+                                ];
+							},
+							class: 'col-md-10',
+							template: (value, params) => {
+								console.log(value, params);
+								return value.owner.link + ' ' + value.owner.id;;
+							},
+							required: true
+						},						
+					}
+				},
 				{
 					type: 'text',
 					name: 'title',

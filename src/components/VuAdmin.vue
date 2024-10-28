@@ -7,8 +7,9 @@
 </template>
 
 <script>
+
 import VuAdminTable from "./VuAdminTable.vue";
-import { deepMerge } from "./helpers"
+import { deepMerge } from "./helpers";
 
 export default {
   name: "VuAdmin",
@@ -193,8 +194,6 @@ export default {
       console.log('vu-admin ', __APP_VERSION__);
       console.error(`Entity config (${this.entity}) not found`);
     }
-
-
 
   },
   mounted() { },

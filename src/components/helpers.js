@@ -326,6 +326,8 @@ export function arrayItemMoveDown(arr, index) {
         return;
     }
 
+    console.log(arr[index - 1], arr[index]);
+
     [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
 
 }

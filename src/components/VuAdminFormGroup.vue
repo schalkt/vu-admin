@@ -51,12 +51,8 @@
                 v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''"
                 :readonly="field.readonly" :required="field.required" />
 
-              <select v-if="field.type == 'select' && (!field.relation || (field.relation && field.relation.items))" class="form-select" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]"
-                :readonly="field.readonly" :required="field.required">
-                <option :class="getValueOrFunction(field.optionclass ? field.optionclass : '', { field: field, item:item, option: option })" v-for="option in selectOptions(field.options, field)" :key="option" :value="option.value">
-                  {{ option.label ? option.label : option.value }}
-                </option>
-              </select>
+
+              <VuAdminFormSelect v-if="field.type == 'select' && (!field.relation || (field.relation && field.relation.items))" v-model="item[field.name]" :field="field" :item="item" :settings="settings" :formId="formId"></VuAdminFormSelect>             
 
               <textarea v-if="field.type == 'textarea'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]"
                 :rows="field.rows" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''" :readonly="field.readonly"
@@ -69,40 +65,8 @@
             <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :class="[field.class]"></HtmlEditor>
 
             <FileUpload v-if="field.type == 'image' || field.type == 'upload'" v-model="item[field.name]" :class="[field.class]" :field="field" :settings="settings"></FileUpload>
-
-            <div v-if="field.type == 'list'">
-
-              <div class="row g-1 d-flex align-items-center justify-content-between mb-1" v-for="(elements, elindex) in item[field.name]" :key="elindex">
-
-                <div v-for="(elementValue, elementKey) in elements" :key="elementKey" :class="field.elements[elementKey].class || 'col'">
-                  <input :type="field.elements[elementKey].type" :required="field.elements[elementKey].required" :placeholder="field.elements[elementKey].placeholder || elementKey"
-                    class="form-control form-control-sm" v-model="item[field.name][elindex][elementKey]">
-                </div>
-                <div class="col-2 text-nowrap text-end">
-                  <button type="button" class="btn btn-sm btn-outline-secondary p-1 me-1" @click="arrayItemMoveUp(item[field.name], elindex)">
-                    <i class="bi bi-arrow-up"></i>
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary p-1 me-1" @click="arrayItemMoveDown(item[field.name], elindex + 1)">
-                    <i class="bi bi-arrow-down"></i>
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-danger p-1 me-1" @click="arrayRemoveItem(item[field.name], elindex)">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </div>
-              <hr v-if="item[field.name] && item[field.name].length">
-              <div class="row g-1 d-flex align-items-center justify-content-between">
-                <div v-for="element in field.elements" :key="element" :class="element.class || 'col'">
-                  <input :type="element.type" :placeholder="element.placeholder || element.name" class="form-control form-control-sm" v-model="element.value">
-                </div>
-                <div class="col-2">
-                  <button type="button" class="btn btn-sm btn-outline-primary my-1 w-100" @click="arrayAddNewItem(field, item)">
-                    <i class="bi bi-plus"></i>
-                  </button>
-                </div>
-              </div>
-
-            </div>
+            
+            <VuAdminFormList v-if="field.type == 'list' && (!field.relation || (field.relation && field.relation.items))" v-model="item[field.name]" :field="field" :item="item" :settings="settings" :formId="formId"></VuAdminFormList>             
 
             <span v-if="field.type == 'addresses'">
               <div v-if="item[field.name]">
@@ -137,6 +101,8 @@
 import { translate, getValueOrFunction, arrayItemMoveUp, arrayItemMoveDown } from "./helpers";
 import HtmlEditor from "./VuAdminHtmlEditor.vue";
 import FileUpload from "./VuAdminFileUpload.vue";
+import VuAdminFormSelect from "./VuAdminFormSelect.vue";
+import VuAdminFormList from "./VuAdminFormList.vue";
 
 const VuAdminFormGroup = {
   props: {
@@ -246,6 +212,8 @@ const VuAdminFormGroup = {
   components: {
     HtmlEditor,
     FileUpload,
+    VuAdminFormSelect,
+    VuAdminFormList
   },
 };
 
