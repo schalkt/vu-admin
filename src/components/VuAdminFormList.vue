@@ -6,7 +6,7 @@
 
       <div class="col-10">
         <div class="row g-1 d-flex align-items-center justify-content-between">
-          <div v-for="(element, elementKey) in field.elements" :key="element" :class="element.class || 'col'">
+          <div v-for="element in field.elements" :key="element" :class="element.class || 'col'">
             <small>
               {{ element.placeholder ? element.placeholder : (element.prefix ? element.prefix : '') }}
             </small>
@@ -28,12 +28,12 @@
             <span v-if="field.elements[elementKey].template" v-html="getValueOrFunction(field.elements[elementKey].template, value[elindex])"></span>
 
             <div v-else class="input-group input-group-sm">
-            
-              <VuAdminFormSelect v-if="field.elements[elementKey].type == 'select'" v-model="value[elindex][elementKey].value" :field="field.elements[elementKey]"
-              :item="item" :settings="settings" :formId="formId" :optionValue="'object'"></VuAdminFormSelect>
 
-              <input v-else :type="field.elements[elementKey].type" :required="field.elements[elementKey].required" :placeholder="field.elements[elementKey].placeholder || elementKey"
-                class="form-control" v-model="value[elindex][elementKey]">                            
+              <VuAdminFormSelect v-if="field.elements[elementKey].type == 'select' && value[elindex][elementKey]" v-model="value[elindex][elementKey]"
+                :field="field.elements[elementKey]" :item="item" :settings="settings" :formId="formId" :optionValue="'object'"></VuAdminFormSelect>
+
+              <input v-else :type="field.elements[elementKey].type" :required="field.elements[elementKey].required"
+                :placeholder="field.elements[elementKey].placeholder || elementKey" class="form-control" v-model="value[elindex][elementKey]">
 
             </div>
 
@@ -65,7 +65,7 @@
 
       <div class="col-10">
         <div class="row g-1 d-flex align-items-center justify-content-between">
-          <div v-for="(element, elementKey) in field.elements" :key="element" :class="element.class || 'col'">
+          <div v-for="element in field.elements" :key="element" :class="element.class || 'col'">
 
             <div class="input-group input-group-sm">
 
@@ -180,16 +180,17 @@ const VuAdminFormList = {
 
     arrayAddNewItem(field, item) {
 
-      if (!item[field.name] || typeof item[field.name] !== "object") {
-        item[field.name] = [];
-      }
+      // if (!item[field.name] || typeof item[field.name] !== "object") {
+      //   item[field.name] = [];
+      // }
 
       let push = {};
 
       for (let elementKey in field.elements) {
-        let element = field.elements[elementKey];
-        push[elementKey] = element.value;
+        let element = Object.assign({}, field.elements[elementKey]);
+        push[elementKey] = element.value ? element.value : null;
         // element.value = undefined;
+        field.elements[elementKey].value = null;
       }
 
       this.value.push(push);

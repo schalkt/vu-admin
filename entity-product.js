@@ -624,13 +624,13 @@ let form = {
 						href: {
 							type: 'url',
 							class: 'col-md-7',
-							required: true,							
+							required: false,							
 							prefix: 'URL'
 						},
 						name: {
 							type: 'text',
 							class: 'col-md-5',
-							required: true,
+							required: false,
 							prefix: 'Name'
 						}
 					},
@@ -674,8 +674,8 @@ let form = {
 				{
 					type: 'list',
 					name: 'owners',
-					label: 'Owners',
-					sort: false,
+					label: 'Owners',					
+					sortable: true,
 					elements: {
 						owner: {
 							type: 'select',

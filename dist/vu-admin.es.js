@@ -11697,14 +11697,17 @@ const JA = /* @__PURE__ */ He(tT, [["render", QA], ["__scopeId", "data-v-074cafd
   created() {
   },
   mounted() {
-    this.loadOptions(), this.newitem = this.modelValue;
+    this.loadOptions(), this.setNewItem(this.modelValue);
   },
   watch: {
     modelValue(s) {
-      this.optionValue === "object" || (this.newitem = s);
+      this.setNewItem(s);
     }
   },
   methods: {
+    setNewItem(s) {
+      this.optionValue === "object" ? this.newitem = s && s.value : this.newitem = s;
+    },
     async loadOptions() {
       this.options = await this.selectOptions(this.field.options, this.field);
     },
@@ -11828,11 +11831,10 @@ const Dd = /* @__PURE__ */ He(eN, [["render", iN]]), rN = {
     //   return options;
     // },
     arrayAddNewItem(s, t) {
-      (!t[s.name] || typeof t[s.name] != "object") && (t[s.name] = []);
       let e = {};
       for (let n in s.elements) {
-        let i = s.elements[n];
-        e[n] = i.value;
+        let i = Object.assign({}, s.elements[n]);
+        e[n] = i.value ? i.value : null, s.elements[n].value = null;
       }
       this.value.push(e), this.$emit("update:modelValue", this.value);
     },
@@ -11865,7 +11867,7 @@ function SN(s, t, e, n, i, r) {
     p("div", aN, [
       p("div", lN, [
         p("div", cN, [
-          (b(!0), y(W, null, z(s.field.elements, (l, a) => (b(), y("div", {
+          (b(!0), y(W, null, z(s.field.elements, (l) => (b(), y("div", {
             key: l,
             class: $(l.class || "col")
           }, [
@@ -11889,10 +11891,10 @@ function SN(s, t, e, n, i, r) {
               key: 0,
               innerHTML: s.getValueOrFunction(s.field.elements[h].template, s.value[a])
             }, null, 8, dN)) : (b(), y("div", fN, [
-              s.field.elements[h].type == "select" ? (b(), es(o, {
+              s.field.elements[h].type == "select" && s.value[a][h] ? (b(), es(o, {
                 key: 0,
-                modelValue: s.value[a][h].value,
-                "onUpdate:modelValue": (d) => s.value[a][h].value = d,
+                modelValue: s.value[a][h],
+                "onUpdate:modelValue": (d) => s.value[a][h] = d,
                 field: s.field.elements[h],
                 item: s.item,
                 settings: s.settings,
@@ -11942,7 +11944,7 @@ function SN(s, t, e, n, i, r) {
     p("div", _N, [
       p("div", EN, [
         p("div", wN, [
-          (b(!0), y(W, null, z(s.field.elements, (l, a) => (b(), y("div", {
+          (b(!0), y(W, null, z(s.field.elements, (l) => (b(), y("div", {
             key: l,
             class: $(l.class || "col")
           }, [
@@ -11951,7 +11953,7 @@ function SN(s, t, e, n, i, r) {
               l.type == "select" && (!l.relation || l.relation && l.relation.items) ? (b(), es(o, {
                 key: 1,
                 modelValue: l.value,
-                "onUpdate:modelValue": (u) => l.value = u,
+                "onUpdate:modelValue": (a) => l.value = a,
                 field: l,
                 item: s.item,
                 settings: s.settings,
@@ -11962,7 +11964,7 @@ function SN(s, t, e, n, i, r) {
                 type: l.type,
                 placeholder: l.placeholder || l.name,
                 class: "form-control form-control-sm",
-                "onUpdate:modelValue": (u) => l.value = u
+                "onUpdate:modelValue": (a) => l.value = a
               }, null, 8, NN)), [
                 [gn, l.value]
               ]),
