@@ -187,20 +187,25 @@ const VuAdminFormList = {
       let push = {};
 
       for (let elementKey in field.elements) {
+        
         let element = Object.assign({}, field.elements[elementKey]);
         let value = element.value ? element.value : null;
         
-        if (value === undefined || value === null) {
+        if (value !== undefined && value !== null) {          
+          push[elementKey] = value;          
+        } else {
           return;
         }
-
-        push[elementKey] = value;
-        // element.value = undefined;
-        field.elements[elementKey].value = null;
-      }
-
+        
+      }      
+      
       this.value.push(push);
       this.$emit('update:modelValue', this.value);
+
+      for (let elementKey in field.elements) {                
+        field.elements[elementKey].value = null;                
+      } 
+
 
     },
 

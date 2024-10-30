@@ -11834,11 +11834,14 @@ const Dd = /* @__PURE__ */ He(eN, [["render", iN]]), rN = {
       let e = {};
       for (let n in s.elements) {
         let i = Object.assign({}, s.elements[n]), r = i.value ? i.value : null;
-        if (r == null)
+        if (r != null)
+          e[n] = r;
+        else
           return;
-        e[n] = r, s.elements[n].value = null;
       }
       this.value.push(e), this.$emit("update:modelValue", this.value);
+      for (let n in s.elements)
+        s.elements[n].value = null;
     },
     arrayRemoveItem(s, t) {
       s.splice(t, 1);
@@ -14602,9 +14605,9 @@ const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-b1e4d9d
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.22"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.23"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.22"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.23"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
