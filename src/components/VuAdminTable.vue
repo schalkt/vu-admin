@@ -1270,11 +1270,11 @@ export default {
 
         if (
           column.relation &&
-          this.settings.relations[column.relation.entity]
+          this.settings.relations[column.relation.config]
         ) {
 
           let ids = [];
-          column.relation = deepMerge(this.settings.relations[column.relation.entity], column.relation);
+          column.relation = deepMerge(this.settings.relations[column.relation.config], column.relation);
 
           for (let item of items) {
             if (item[column.relation.local]) {
@@ -1450,17 +1450,13 @@ export default {
 
         searchParams.filter = JSON.stringify(filter);
 
-        let settings = window.VuEntities[column.relation.entity];
-        column.relation.settings = settings;
-
         executeFunctions(searchParams, {
           column: column,
-          settings: settings
         });
 
         const response = await fetch(
-          prepareFetchUrl("GET", settings.api, null, searchParams),
-          prepareFetchOptions("GET", settings.api)
+          prepareFetchUrl("GET", column.relation.api, null, searchParams),
+          prepareFetchOptions("GET", column.relation.api)
         );
 
         if (response.status !== 200) {
@@ -1476,11 +1472,11 @@ export default {
           return;
         }
 
-        if (settings.api.input.items) {
+        if (column.relation.api.input.items) {
           column.relation.items =
-            typeof settings.api.input.items === "string"
-              ? json.data[settings.api.input.items]
-              : settings.api.input.items(json.data, response);
+            typeof column.relation.api.input.items === "string"
+              ? json.data[column.relation.api.input.items]
+              : column.relation.api.input.items(json.data, response);
         } else {
           column.relation.items = json.data;
         }

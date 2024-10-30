@@ -324,11 +324,11 @@ const VuAdminForm = {
             // collect relations
             if (
               field.relation &&
-              settings.relations[field.relation.entity]
+              settings.relations[field.relation.config]
             ) {
 
-              // console.log(field, settings.relations[field.relation.entity]);
-              field.relation = deepMerge(settings.relations[field.relation.entity], field.relation);
+              // console.log(field, settings.relations[field.relation.config]);
+              field.relation = deepMerge(settings.relations[field.relation.config], field.relation);
               await this.fetchRelation(field, [item]);
 
             }

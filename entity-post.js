@@ -43,13 +43,13 @@ let columns = [
 		name: 'userId',
 		title: 'User',
 		relation: {
-			entity: 'user',
+			config: 'user1',
 			params: {
 				limit: 0,
 				select: ['id', 'firstName', 'lastName'],
 				entity: (params) => {
 					// console.log(params);
-					return params.column.relation.entity;
+					return params.column.relation.config;
 				}
 			}
 		},
@@ -196,7 +196,7 @@ let form = {
 					name: 'userId',
 					label: 'User',
 					relation: {
-						entity: 'user',
+						config: 'user1',
 						params: {
 							limit: 0,
 							select: ['id', 'firstName', 'lastName'],
@@ -274,11 +274,35 @@ export default {
 	table: table,
 	form: form,
 	relations: {
-		user: {
+		user1: {
 			entity: 'user',
 			local: 'userId',
 			foreign: 'id',
-			type: '1-8',
+			api: {
+				url: '/api/users',
+				options: {
+					mode: "cors",
+					cache: "no-cache"
+				},
+				input: {
+					items: 'users'
+				}
+			},
+		},
+		user2: {
+			entity: 'user',
+			local: 'userId',
+			foreign: 'id',
+			api: {
+				url: '/api/users',
+				options: {
+					mode: "cors",
+					cache: "no-cache"
+				},
+				input: {
+					items: 'users'
+				}
+			},
 		}
 	},
 
