@@ -12389,7 +12389,7 @@ const iO = /* @__PURE__ */ He(xN, [["render", nO], ["__scopeId", "data-v-479fc5f
         t.form.api.input.item ? r = typeof t.form.api.input.item == "string" ? n.data[t.form.api.input.item] : t.form.api.input.item(n.data, e) : r = n.data;
         for (let o of t.form.groups)
           for (let l of o.fields)
-            l.relation && t.relations[l.relation.entity] && (l.relation = Dr(t.relations[l.relation.entity], l.relation), await this.fetchRelation(l, [r]));
+            l.relation && t.relations[l.relation.config] && (l.relation = Dr(t.relations[l.relation.config], l.relation), await this.fetchRelation(l, [r]));
         this.item = vr(r), this.itemOriginal = Object.assign({}, r), this.formNoWait();
       } catch (e) {
         console.error(e), this.formNoWait();
@@ -12676,7 +12676,7 @@ function DO(s, t, e, n, i, r) {
     `, 1)) : A("", !0)
   ], 42, aO)) : A("", !0);
 }
-const MO = /* @__PURE__ */ He(oO, [["render", DO], ["__scopeId", "data-v-e4adfd05"]]), qO = {
+const MO = /* @__PURE__ */ He(oO, [["render", DO], ["__scopeId", "data-v-ee1ae7b0"]]), qO = {
   name: "VuAdminTablePagination",
   emits: ["setPage", "setPageLimit", "translate"],
   props: {
@@ -13167,9 +13167,9 @@ const aC = /* @__PURE__ */ He(qO, [["render", oC], ["__scopeId", "data-v-5ba0187
     },
     async fetchTableRelations(s) {
       for (let t of this.settings.table.columns)
-        if (t.relation && this.settings.relations[t.relation.entity]) {
+        if (t.relation && this.settings.relations[t.relation.config]) {
           let e = [];
-          t.relation = Dr(this.settings.relations[t.relation.entity], t.relation);
+          t.relation = Dr(this.settings.relations[t.relation.config], t.relation);
           for (let n of s)
             n[t.relation.local] && e.push(n[t.relation.local]);
           t.relation.ids = Wb(e), await this.fetchRelation(t, s);
@@ -13227,27 +13227,24 @@ const aC = /* @__PURE__ */ He(qO, [["render", oC], ["__scopeId", "data-v-5ba0187
           type: "array",
           value: i,
           operator: "IN"
-        }, e.filter = JSON.stringify(r);
-        let o = window.VuEntities[s.relation.entity];
-        s.relation.settings = o, Xb(e, {
-          column: s,
-          settings: o
+        }, e.filter = JSON.stringify(r), Xb(e, {
+          column: s
         });
-        const l = await fetch(
-          ts("GET", o.api, null, e),
-          Je("GET", o.api)
+        const o = await fetch(
+          ts("GET", s.relation.api, null, e),
+          Je("GET", s.relation.api)
         );
-        if (l.status !== 200)
+        if (o.status !== 200)
           throw new Error(
-            this.translate("Response status: " + l.status)
+            this.translate("Response status: " + o.status)
           );
-        const a = await ni(l);
-        if (ii(l, a.data) || !a.data)
+        const l = await ni(o);
+        if (ii(o, l.data) || !l.data)
           return;
-        if (o.api.input.items ? s.relation.items = typeof o.api.input.items == "string" ? a.data[o.api.input.items] : o.api.input.items(a.data, l) : s.relation.items = a.data, t && t[0])
-          for (let h of t)
-            h[s.relation.local] && (h[s.relation.entity] = s.relation.items.find(
-              (d, g, m) => d[s.relation.foreign] === h[s.relation.local]
+        if (s.relation.api.input.items ? s.relation.items = typeof s.relation.api.input.items == "string" ? l.data[s.relation.api.input.items] : s.relation.api.input.items(l.data, o) : s.relation.items = l.data, t && t[0])
+          for (let u of t)
+            u[s.relation.local] && (u[s.relation.entity] = s.relation.items.find(
+              (h, d, g) => h[s.relation.foreign] === u[s.relation.local]
             ));
       } catch (e) {
         console.error(e.message);
@@ -14477,7 +14474,7 @@ function x2(s, t, e, n, i, r) {
     ], 10, uC)
   ])) : A("", !0);
 }
-const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-b1e4d9d4"]]), $2 = {
+const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-47c64d39"]]), $2 = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14605,9 +14602,9 @@ const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-b1e4d9d
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.23"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.24"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.23"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.24"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
