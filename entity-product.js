@@ -624,13 +624,11 @@ let form = {
 						href: {
 							type: 'url',
 							class: 'col-md-7',
-							required: false,							
 							prefix: 'URL'
 						},
 						name: {
 							type: 'text',
 							class: 'col-md-5',
-							required: false,
 							prefix: 'Name'
 						}
 					},
@@ -662,7 +660,6 @@ let form = {
 							},
 							class: 'col-md-12',
 							inputclass: 'form-select-sm',
-							required: true
 						},
 						// label: {
 						// 	type: 'checkbox',

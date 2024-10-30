@@ -188,7 +188,13 @@ const VuAdminFormList = {
 
       for (let elementKey in field.elements) {
         let element = Object.assign({}, field.elements[elementKey]);
-        push[elementKey] = element.value ? element.value : null;
+        let value = element.value ? element.value : null;
+        
+        if (value === undefined || value === null) {
+          return;
+        }
+
+        push[elementKey] = value;
         // element.value = undefined;
         field.elements[elementKey].value = null;
       }
