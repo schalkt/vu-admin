@@ -14602,9 +14602,9 @@ const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-47c64d3
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.24"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.25"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.24"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.25"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
