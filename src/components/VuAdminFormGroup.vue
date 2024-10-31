@@ -25,7 +25,10 @@
             </span>
 
             <div class="input-group">
-              <span v-if="field.prefix" class="input-group-text" v-html="field.prefix"></span>
+              <span v-if="field.prefix" class="input-group-text" v-html="getValueOrFunction(field.prefix, {
+                field: field,
+                item: item
+              })"></span>
 
               <input v-if="field.type == 'text'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="text" :name="field.name" :id="formId + '_' + field.name"
                 v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''"
@@ -59,7 +62,11 @@
                 :required="field.required">
               </textarea>
 
-              <span v-if="field.suffix" class="input-group-text" v-html="field.suffix"></span>
+              <span v-if="field.suffix" class="input-group-text" v-html="getValueOrFunction(field.suffix, {
+                field: field,
+                item: item
+              })"></span>
+
             </div>
 
             <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :class="[field.class]"></HtmlEditor>
@@ -85,7 +92,10 @@
             </span>
 
             <div class="p-1" v-if="field.description">
-              <i class="text-muted" v-html="field.description"></i>
+              <i class="text-muted" v-html="getValueOrFunction(field.description, {
+                field: field,
+                item: item
+              })"></i>
             </div>
 
 

@@ -246,6 +246,9 @@ let form = {
 					type: 'select',
 					name: 'userId',
 					label: 'User',
+					suffix: (params, settings) => {
+						return `<a href="/${params.item['user.id']}" class="link">LINK</a>`;
+					},
 					relation: {
 						config: 'user1',
 						params: {
@@ -262,6 +265,9 @@ let form = {
 						
 					},
 					required: false,
+					description: (params, settings) => {
+						return `<small></small>${JSON.stringify(params.item['user.id'])}</small>`
+					}
 				},
 				{
 					type: 'list',
