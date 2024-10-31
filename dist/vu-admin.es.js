@@ -12298,6 +12298,7 @@ const iO = /* @__PURE__ */ He(xN, [["render", nO], ["__scopeId", "data-v-479fc5f
   data: function() {
     return {
       item: {},
+      loaded: !1,
       ui: {
         wait: {
           table: !1,
@@ -12390,7 +12391,7 @@ const iO = /* @__PURE__ */ He(xN, [["render", nO], ["__scopeId", "data-v-479fc5f
         for (let o of t.form.groups)
           for (let l of o.fields)
             l.relation && t.relations[l.relation.config] && (l.relation = Dr(t.relations[l.relation.config], l.relation), await this.fetchRelation(l, [r]));
-        this.item = vr(r), this.itemOriginal = Object.assign({}, r), this.formNoWait();
+        this.item = vr(r), this.itemOriginal = Object.assign({}, r), this.loaded = !0, this.formNoWait();
       } catch (e) {
         console.error(e), this.formNoWait();
       }
@@ -12441,11 +12442,14 @@ const iO = /* @__PURE__ */ He(xN, [["render", nO], ["__scopeId", "data-v-479fc5f
   components: {
     VuAdminFormGroup: iO
   }
-}, oO = rO, aO = ["id", "data-bs-theme"], lO = { class: "modal-header" }, cO = { class: "modal-title" }, uO = ["innerHTML"], hO = { key: 1 }, dO = { key: 2 }, fO = {
+}, oO = rO, aO = ["id", "data-bs-theme"], lO = { class: "modal-header" }, cO = {
+  key: 0,
+  class: "modal-title"
+}, uO = ["innerHTML"], hO = { key: 1 }, dO = { key: 2 }, fO = {
   key: 3,
   class: "rounded border ms-2 px-2 py-0 fs-6"
 }, pO = {
-  key: 0,
+  key: 1,
   class: "d-inline-block ms-3 mt-1"
 }, gO = ["innerHTML"], mO = {
   class: "spinner-border spinner-border-sm mx-2",
@@ -12494,7 +12498,7 @@ function DO(s, t, e, n, i, r) {
       class: $(["vua-overlay", { blocked: s.ui.block.form }])
     }, null, 2),
     p("div", lO, [
-      p("h5", cO, [
+      s.loaded ? (b(), y("h5", cO, [
         s.settings.form.title && typeof s.settings.form.title == "function" ? (b(), y("span", {
           key: 0,
           innerHTML: s.settings.form.title(s.item, s.settings)
@@ -12505,7 +12509,7 @@ function DO(s, t, e, n, i, r) {
           t[12] || (t[12] = p("span", { class: "text-muted fw-light" }, "id", -1)),
           U(" " + O(s.item[s.settings.pkey]), 1)
         ])) : A("", !0)
-      ]),
+      ])) : A("", !0),
       s.message.form ? (b(), y("span", pO, [
         p("span", {
           class: $(["text-" + s.message.form.priority])
@@ -12676,7 +12680,7 @@ function DO(s, t, e, n, i, r) {
     `, 1)) : A("", !0)
   ], 42, aO)) : A("", !0);
 }
-const MO = /* @__PURE__ */ He(oO, [["render", DO], ["__scopeId", "data-v-ee1ae7b0"]]), qO = {
+const MO = /* @__PURE__ */ He(oO, [["render", DO], ["__scopeId", "data-v-ad65ae05"]]), qO = {
   name: "VuAdminTablePagination",
   emits: ["setPage", "setPageLimit", "translate"],
   props: {
@@ -14605,9 +14609,9 @@ const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-7b081c7
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.26"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.27"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.26"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.27"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
