@@ -13220,31 +13220,34 @@ const aC = /* @__PURE__ */ He(qO, [["render", oC], ["__scopeId", "data-v-5ba0187
     async fetchRelation(s, t) {
       try {
         let e = s.relation.params ? s.relation.params : {};
-        if (s.relation.columns && (e.columns = JSON.stringify(s.relation.columns)), !s.relation.ids || !s.relation.ids.length)
-          return;
-        let i = (typeof s.relation.ids[0] == "string" ? "text" : "number") === "string" ? "'" + s.relation.ids.join("','") + "'" : s.relation.ids.join(","), r = {};
-        r[s.relation.foreign] = {
-          type: "array",
-          value: i,
-          operator: "IN"
-        }, e.filter = JSON.stringify(r), Xb(e, {
+        s.relation.columns && (e.columns = JSON.stringify(s.relation.columns));
+        let n = {};
+        if (s.relation.ids && s.relation.ids.length) {
+          let a = (typeof s.relation.ids[0] == "string" ? "text" : "number") === "string" ? "'" + s.relation.ids.join("','") + "'" : s.relation.ids.join(",");
+          n[s.relation.foreign] = {
+            type: "array",
+            value: a,
+            operator: "IN"
+          };
+        }
+        e.filter = JSON.stringify(n), Xb(e, {
           column: s
         });
-        const o = await fetch(
+        const i = await fetch(
           ts("GET", s.relation.api, null, e),
           Je("GET", s.relation.api)
         );
-        if (o.status !== 200)
+        if (i.status !== 200)
           throw new Error(
-            this.translate("Response status: " + o.status)
+            this.translate("Response status: " + i.status)
           );
-        const l = await ni(o);
-        if (ii(o, l.data) || !l.data)
+        const r = await ni(i);
+        if (ii(i, r.data) || !r.data)
           return;
-        if (s.relation.api.input.items ? s.relation.items = typeof s.relation.api.input.items == "string" ? l.data[s.relation.api.input.items] : s.relation.api.input.items(l.data, o) : s.relation.items = l.data, t && t[0])
-          for (let u of t)
-            u[s.relation.local] && (u[s.relation.entity] = s.relation.items.find(
-              (h, d, g) => h[s.relation.foreign] === u[s.relation.local]
+        if (s.relation.api.input.items ? s.relation.items = typeof s.relation.api.input.items == "string" ? r.data[s.relation.api.input.items] : s.relation.api.input.items(r.data, i) : s.relation.items = r.data, t && t[0])
+          for (let l of t)
+            l[s.relation.local] && (l[s.relation.entity] = s.relation.items.find(
+              (a, u, h) => a[s.relation.foreign] === l[s.relation.local]
             ));
       } catch (e) {
         console.error(e.message);
@@ -14474,7 +14477,7 @@ function x2(s, t, e, n, i, r) {
     ], 10, uC)
   ])) : A("", !0);
 }
-const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-47c64d39"]]), $2 = {
+const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-7b081c7e"]]), $2 = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14602,9 +14605,9 @@ const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-47c64d3
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.25"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.26"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.25"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.26"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
