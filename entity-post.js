@@ -183,6 +183,57 @@ let columns = [
 let table = {
 	title: 'Posts',
 	class: 'table-hover table-responsive table-sm',
+	control: {
+		class: 'text-center border rounded mt-2',
+		buttons: [
+			{
+				action: 'TABLE_COLUMNS',
+				title: 'Columns',
+				class: 'btn btn-sm btn-outline-dark m-1',
+				icon: 'bi bi-table',
+			},
+			{
+				action: 'TABLE_RELOAD',
+				title: 'Reload',
+				class: 'btn btn-sm btn-outline-dark m-1',
+				icon: 'bi bi-arrow-clockwise',
+			},
+			{
+				action: 'FORM_CREATE',
+				title: 'New',
+				class: 'btn btn-sm btn-warning m-1',
+				icon: 'bi bi-plus-circle',
+			},
+			{
+				action: function (items) {
+
+					if (confirm('Are you sure?')) {
+						console.log(items);
+						alert('Hello :)');
+					}
+
+				},
+				title: 'Hello',
+				class: 'btn btn-sm btn-dark m-1',
+				icon: 'bi bi-emoji-smile',
+			},
+			{
+				title: 'Export',
+				class: 'btn btn-sm btn-primary m-1',
+				icon: 'bi bi-download',
+				dropdowns: [{
+					action: 'TABLE_EXPORT',
+					params: {
+						export: true,
+						type: 'default',
+					},
+					title: 'Default export',
+					class: 'fw-bolder',
+					icon: 'bi bi-filetype-csv'
+				}]
+			}
+		]
+	},
 	columns: columns,
 };
 
