@@ -5,7 +5,7 @@
     <div class="modal-header">
 
 
-      <h5 class="modal-title">
+      <h5 v-if="loaded" class="modal-title">
         <span v-if="
           settings.form.title &&
           typeof settings.form.title == 'function'
@@ -161,6 +161,7 @@ const VuAdminForm = {
   data: function () {
     return {
       item: {},
+      loaded: false,
       ui: {
         wait: {
           table: false,
@@ -337,6 +338,7 @@ const VuAdminForm = {
 
         this.item = flattenObject(item);
         this.itemOriginal = Object.assign({}, item);
+        this.loaded = true;
 
         this.formNoWait();
       } catch (error) {
