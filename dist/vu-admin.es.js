@@ -13678,26 +13678,26 @@ const rC = /* @__PURE__ */ He(qO, [["render", iC], ["__scopeId", "data-v-a7fb896
 }, VS = ["innerHTML"], FS = { key: 1 }, US = ["innerHTML"], HS = ["aria-valuenow", "aria-valuemax"], WS = { key: 0 }, zS = {
   key: 4,
   class: "input-group input-group-sm"
-}, KS = ["innerHTML"], GS = ["type", "onChange", "onUpdate:modelValue"], YS = ["onChange", "onUpdate:modelValue"], XS = ["value"], ZS = ["innerHTML"], QS = { key: 5 }, JS = ["disabled", "onClick"], t2 = ["innerHTML"], e2 = { key: 2 }, s2 = { key: 0 }, n2 = ["colspan"], i2 = { class: "row g-3 align-items-center" }, r2 = { class: "col-form-label" }, o2 = ["type", "onUpdate:modelValue", "onChange"], a2 = ["onUpdate:modelValue", "onChange"], l2 = ["onUpdate:modelValue", "onChange"], c2 = ["value"], u2 = ["innerHTML"], h2 = {
+}, KS = ["innerHTML"], GS = ["type", "onChange", "onUpdate:modelValue"], YS = ["onChange", "onUpdate:modelValue"], XS = ["value"], ZS = ["innerHTML"], QS = { key: 5 }, JS = ["disabled", "onClick"], tL = ["innerHTML"], eL = { key: 2 }, sL = { key: 0 }, nL = ["colspan"], iL = { class: "row g-3 align-items-center" }, rL = { class: "col-form-label" }, oL = ["type", "onUpdate:modelValue", "onChange"], aL = ["onUpdate:modelValue", "onChange"], lL = ["onUpdate:modelValue", "onChange"], cL = ["value"], uL = ["innerHTML"], hL = {
   key: 0,
   class: "bg-light text-dark"
-}, d2 = {
+}, dL = {
   key: 0,
   class: "vua-table-bulk border-info"
-}, f2 = ["data-label", "width"], p2 = {
+}, fL = ["data-label", "width"], pL = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, g2 = {
+}, gL = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, m2 = ["type", "disabled", "onChange", "onUpdate:modelValue"], b2 = ["disabled", "onChange", "onUpdate:modelValue"], y2 = ["value"], v2 = ["onClick"], _2 = {
+}, mL = ["type", "disabled", "onChange", "onUpdate:modelValue"], bL = ["disabled", "onChange", "onUpdate:modelValue"], yL = ["value"], vL = ["onClick"], _L = {
   key: 0,
   class: "bi bi-square text-secondary"
-}, E2 = {
+}, EL = {
   key: 1,
   class: "bi bi-check-square"
-}, w2 = { key: 2 }, T2 = ["disabled", "onClick"], A2 = ["innerHTML"], N2 = { key: 2 }, O2 = ["id"], C2 = { class: "modal-dialog modal-xl" }, S2 = { class: "modal-content h-100" };
-function L2(s, t, e, n, i, r) {
+}, wL = { key: 2 }, TL = ["disabled", "onClick"], AL = ["innerHTML"], NL = { key: 2 }, OL = ["id"], CL = { class: "modal-dialog modal-xl" }, SL = { class: "modal-content h-100" };
+function LL(s, t, e, n, i, r) {
   const o = Re("VuAdminTablePagination"), l = Re("VuAdminForm");
   return e.settings && e.settings.table ? (b(), y("div", aC, [
     p("div", {
@@ -14320,13 +14320,13 @@ function L2(s, t, e, n, i, r) {
                       d.template ? (b(), y("span", {
                         key: 1,
                         innerHTML: r.tableCellTemplate(d.template, a, u, h)
-                      }, null, 8, t2)) : (b(), y("span", e2, O(r.translate(d.title)), 1))
+                      }, null, 8, tL)) : (b(), y("span", eL, O(r.translate(d.title)), 1))
                     ], 10, JS)
                   ]))), 128))
                 ])) : A("", !0)
               ], 14, PS))), 128))
             ]),
-            e.settings.table.details && i.details.indexOf(a[e.settings.pkey]) >= 0 ? (b(), y("tr", s2, [
+            e.settings.table.details && i.details.indexOf(a[e.settings.pkey]) >= 0 ? (b(), y("tr", sL, [
               p("td", {
                 class: $([e.settings.table.details.class]),
                 colspan: e.settings.table.columns.length
@@ -14335,11 +14335,11 @@ function L2(s, t, e, n, i, r) {
                   class: "m-0",
                   key: h
                 }, [
-                  p("div", i2, [
+                  p("div", iL, [
                     p("div", {
                       class: $(["col text-end", [h.class]])
                     }, [
-                      p("label", r2, O(h.label), 1)
+                      p("label", rL, O(h.label), 1)
                     ], 2),
                     p("div", {
                       class: $(["col", [h.input.class]])
@@ -14350,7 +14350,7 @@ function L2(s, t, e, n, i, r) {
                         class: "form-control form-control-sm",
                         "onUpdate:modelValue": (d) => a[h.name] = d,
                         onChange: (d) => r.onRowInputChange(a[h.name], h, a, u)
-                      }, null, 40, o2)), [
+                      }, null, 40, oL)), [
                         [gn, a[h.name]]
                       ]) : A("", !0),
                       h.input.type == "textarea" ? G((b(), y("textarea", {
@@ -14360,7 +14360,7 @@ function L2(s, t, e, n, i, r) {
                         "onUpdate:modelValue": (d) => a[h.name] = d,
                         onChange: (d) => r.onRowInputChange(a[h.name], h, a, u)
                       }, `\r
-                    `, 40, a2)), [
+                    `, 40, aL)), [
                         [jt, a[h.name]]
                       ]) : A("", !0),
                       h.input.type == "select" ? G((b(), y("select", {
@@ -14372,8 +14372,8 @@ function L2(s, t, e, n, i, r) {
                         (b(!0), y(W, null, z(h.input.options, (d) => (b(), y("option", {
                           value: d.value,
                           key: d
-                        }, O(r.translate(d.label)), 9, c2))), 128))
-                      ], 40, l2)), [
+                        }, O(r.translate(d.label)), 9, cL))), 128))
+                      ], 40, lL)), [
                         [$e, a[h.name]]
                       ]) : A("", !0)
                     ], 2)
@@ -14381,15 +14381,15 @@ function L2(s, t, e, n, i, r) {
                 ]))), 128)),
                 p("span", {
                   innerHTML: e.settings.table.details.raw(a)
-                }, null, 8, u2),
-                e.settings.debug ? (b(), y("pre", h2, "                " + O(a) + `
+                }, null, 8, uL),
+                e.settings.debug ? (b(), y("pre", hL, "                " + O(a) + `
               `, 1)) : A("", !0)
-              ], 10, n2)
+              ], 10, nL)
             ])) : A("", !0)
           ], 64))), 128))
         ]),
         p("tfoot", null, [
-          i.selected.length > 0 ? (b(), y("tr", d2, [
+          i.selected.length > 0 ? (b(), y("tr", dL, [
             (b(!0), y(W, null, z(e.settings.table.columns, (a) => (b(), y("td", {
               style: Zn([a.hidden ? "display: none" : ""]),
               key: a.name,
@@ -14397,13 +14397,13 @@ function L2(s, t, e, n, i, r) {
               width: a.width,
               class: $(a.class)
             }, [
-              a.index ? (b(), y("div", p2, [
+              a.index ? (b(), y("div", pL, [
                 p("span", {
                   class: "cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100",
                   onClick: t[13] || (t[13] = (u) => r.toggleSelectedAll())
                 }, O(i.selected.length), 1)
               ])) : A("", !0),
-              a.input && a.bulk && a.bulk.enabled ? (b(), y("div", g2, [
+              a.input && a.bulk && a.bulk.enabled ? (b(), y("div", gL, [
                 ["text", "number", "date", "datetime-local"].indexOf(
                   a.input.type
                 ) >= 0 ? G((b(), y("input", {
@@ -14413,7 +14413,7 @@ function L2(s, t, e, n, i, r) {
                   disabled: i.bulkinputs.indexOf(a.name) < 0,
                   onChange: (u) => r.onBulkInputChange(i.bulkitem[a.name], i.bulkitem, a),
                   "onUpdate:modelValue": (u) => i.bulkitem[a.name] = u
-                }, null, 42, m2)), [
+                }, null, 42, mL)), [
                   [gn, i.bulkitem[a.name]]
                 ]) : A("", !0),
                 a.input.type == "select" ? G((b(), y("select", {
@@ -14426,18 +14426,18 @@ function L2(s, t, e, n, i, r) {
                   (b(!0), y(W, null, z(a.input.options, (u) => (b(), y("option", {
                     value: u.value,
                     key: u
-                  }, O(r.translate(u.label)), 9, y2))), 128))
-                ], 42, b2)), [
+                  }, O(r.translate(u.label)), 9, yL))), 128))
+                ], 42, bL)), [
                   [$e, i.bulkitem[a.name]]
                 ]) : A("", !0),
                 p("span", {
                   class: "input-group-text cursor-pointer",
                   onClick: (u) => r.ifBulkInputClick(a)
                 }, [
-                  i.bulkitem[a.name] === void 0 ? (b(), y("i", _2)) : (b(), y("i", E2))
-                ], 8, v2)
+                  i.bulkitem[a.name] === void 0 ? (b(), y("i", _L)) : (b(), y("i", EL))
+                ], 8, vL)
               ])) : A("", !0),
-              a.bulk ? (b(), y("span", w2, [
+              a.bulk ? (b(), y("span", wL, [
                 (b(!0), y(W, null, z(a.bulk.buttons, (u) => (b(), y("span", {
                   key: u.action
                 }, [
@@ -14462,11 +14462,11 @@ function L2(s, t, e, n, i, r) {
                     u.template ? (b(), y("span", {
                       key: 1,
                       innerHTML: r.tableCellTemplate(u.template, i.bulkitem, null, a)
-                    }, null, 8, A2)) : (b(), y("span", N2, O(r.translate(u.title)), 1))
-                  ], 10, T2)
+                    }, null, 8, AL)) : (b(), y("span", NL, O(r.translate(u.title)), 1))
+                  ], 10, TL)
                 ]))), 128))
               ])) : A("", !0)
-            ], 14, f2))), 128))
+            ], 14, fL))), 128))
           ])) : A("", !0)
         ])
       ], 2)) : A("", !0),
@@ -14483,8 +14483,8 @@ function L2(s, t, e, n, i, r) {
         id: i.modalId,
         tabindex: "-1"
       }, [
-        p("div", C2, [
-          p("div", S2, [
+        p("div", CL, [
+          p("div", SL, [
             e.settings.form.visible && e.settings.form.groups ? (b(), es(l, {
               key: 0,
               modelValue: i.item,
@@ -14499,11 +14499,11 @@ function L2(s, t, e, n, i, r) {
             }, null, 8, ["modelValue", "formid", "settings", "modalWindow", "saveItem", "deleteItem", "reloadTable", "fetchRelation"])) : A("", !0)
           ])
         ])
-      ], 8, O2)
+      ], 8, OL)
     ], 10, lC)
   ])) : A("", !0);
 }
-const k2 = /* @__PURE__ */ He(oC, [["render", L2], ["__scopeId", "data-v-7b081c7e"]]), x2 = {
+const kL = /* @__PURE__ */ He(oC, [["render", LL], ["__scopeId", "data-v-7b081c7e"]]), xL = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14631,34 +14631,34 @@ const k2 = /* @__PURE__ */ He(oC, [["render", L2], ["__scopeId", "data-v-7b081c7
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.29"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.30"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.29"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.30"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
   methods: {},
   components: {
-    VuAdminTable: k2
+    VuAdminTable: kL
   }
-}, I2 = { key: 0 }, $2 = ["data-bs-theme"];
-function R2(s, t, e, n, i, r) {
+}, IL = { key: 0 }, $L = ["data-bs-theme"];
+function RL(s, t, e, n, i, r) {
   const o = Re("vu-admin-table");
-  return e.entity && i.settings ? (b(), y("div", I2, [
+  return e.entity && i.settings ? (b(), y("div", IL, [
     p("div", {
       class: "vu-admin",
       "data-bs-theme": [i.settings.theme]
     }, [
       bu(o, { settings: i.settings }, null, 8, ["settings"])
-    ], 8, $2)
+    ], 8, $L)
   ])) : A("", !0);
 }
-const D2 = /* @__PURE__ */ He(x2, [["render", R2]]), U2 = {
+const DL = /* @__PURE__ */ He(xL, [["render", RL]]), UL = {
   install(s) {
-    s.component("VuAdmin", D2);
+    s.component("VuAdmin", DL);
   }
 };
 export {
-  D2 as VuAdmin,
-  U2 as default
+  DL as VuAdmin,
+  UL as default
 };

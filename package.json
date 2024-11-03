@@ -1,6 +1,6 @@
 {
   "name": "vu-admin",
-  "version": "1.2.29",
+  "version": "1.2.30",
   "description": "VU Admin",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -27,7 +27,7 @@
     "bootstrap": "^5.3.3",
     "mitt": "^3.0.1",
     "quill": "^2.0.2",
-    "sass": "^1.80.5",
+    "sass": "^1.80.6",
     "vite": "^5.4.10",
     "vue": "^3.5.12"
   },
