@@ -12725,37 +12725,40 @@ const MO = /* @__PURE__ */ He(oO, [["render", DO], ["__scopeId", "data-v-ad65ae0
   key: 0,
   "aria-label": "Page navigation",
   class: "mt-2 d-flex align-items-center justify-content-between"
-}, PO = { class: "dropdown d-inline-block m-1" }, jO = {
-  type: "button",
-  class: "btn btn-sm btn-secondary dropdown-toggle",
-  "data-bs-toggle": "dropdown",
-  "aria-expanded": "false"
-}, VO = { class: "mx-1" }, FO = { key: 0 }, UO = { class: "dropdown-menu text-end" }, HO = ["onClick"], WO = { class: "ms-2" }, zO = {
+}, PO = { class: "dropdown d-inline-block m-1" }, jO = { class: "mx-1" }, VO = { key: 0 }, FO = {
+  key: 0,
+  class: "dropdown-menu text-end"
+}, UO = ["onClick"], HO = { class: "ms-2" }, WO = {
   key: 0,
   class: "bi bi-check-circle-fill ms-2"
-}, KO = {
+}, zO = {
   key: 1,
   class: "bi bi-circle ms-2"
-}, GO = {
+}, KO = {
   class: "spinner-border spinner-border-sm mx-2",
   role: "status"
-}, YO = { class: "pagination pagination-sm m-1" }, XO = { class: "page-item" }, ZO = { "aria-hidden": "true" }, QO = { class: "page-item" }, JO = { "aria-hidden": "true" }, tC = ["onClick"], eC = { class: "page-item" }, sC = { "aria-hidden": "true" }, nC = { "aria-hidden": "true" }, iC = {
+}, GO = { class: "pagination pagination-sm m-1" }, YO = { class: "page-item" }, XO = ["innerHTML"], ZO = { class: "page-item" }, QO = ["innerHTML"], JO = ["onClick"], tC = { class: "page-item" }, eC = ["innerHTML"], sC = {
   key: 0,
   class: "page-item"
-}, rC = { "aria-hidden": "true" };
-function oC(s, t, e, n, i, r) {
+}, nC = ["innerHTML"];
+function iC(s, t, e, n, i, r) {
   return e.config.pagination.hidden ? A("", !0) : (b(), y("nav", BO, [
     p("div", null, [
       p("div", PO, [
-        p("button", jO, [
-          G(p("span", VO, [
+        p("button", {
+          type: "button",
+          class: $(["btn btn-sm btn-secondary", { "dropdown-toggle": e.config.pagination.limits }]),
+          "data-bs-toggle": "dropdown",
+          "aria-expanded": "false"
+        }, [
+          G(p("span", jO, [
             p("strong", null, O(e.config.pagination.from) + "-" + O(e.config.pagination.to), 1),
-            e.config.pagination.total ? (b(), y("span", FO, " / " + O(e.config.pagination.total), 1)) : A("", !0)
+            e.config.pagination.total ? (b(), y("span", VO, " / " + O(e.config.pagination.total), 1)) : A("", !0)
           ], 512), [
             [Ss, e.config.pagination.from > 0]
           ])
-        ]),
-        p("ul", UO, [
+        ], 2),
+        e.config.pagination.limits ? (b(), y("ul", FO, [
           p("li", null, [
             (b(!0), y(W, null, z(e.config.pagination.limits, (o) => (b(), y("span", {
               class: $(["dropdown-item cursor-pointer", { selected: e.config.pagination.limit == o }]),
@@ -12763,36 +12766,42 @@ function oC(s, t, e, n, i, r) {
               onClick: (l) => r.setPageLimit(o)
             }, [
               p("strong", null, O(o), 1),
-              p("small", WO, O(r.translate("row")) + "/" + O(r.translate("page")), 1),
-              e.config.pagination.limit == o ? (b(), y("i", zO)) : A("", !0),
-              e.config.pagination.limit != o ? (b(), y("i", KO)) : A("", !0)
-            ], 10, HO))), 128))
+              p("small", HO, O(r.translate("row")) + "/" + O(r.translate("page")), 1),
+              e.config.pagination.limit == o ? (b(), y("i", WO)) : A("", !0),
+              e.config.pagination.limit != o ? (b(), y("i", zO)) : A("", !0)
+            ], 10, UO))), 128))
           ])
-        ])
+        ])) : A("", !0)
       ]),
-      G(p("div", GO, t[4] || (t[4] = [
+      G(p("div", KO, t[4] || (t[4] = [
         p("span", { class: "visually-hidden" }, "Loading...", -1)
       ]), 512), [
         [Ss, e.ui && e.ui.wait.table]
       ])
     ]),
-    p("ul", YO, [
-      p("li", XO, [
+    p("ul", GO, [
+      p("li", YO, [
         p("a", {
           class: $(["page-link cursor-pointer", { disabled: r.firstDisabled() }]),
           onClick: t[0] || (t[0] = (o) => r.setPage(1)),
           "aria-label": "{{  translate('First')  }}"
         }, [
-          p("span", ZO, O(r.translate("First")), 1)
+          p("span", {
+            "aria-hidden": "true",
+            innerHTML: r.translate("First")
+          }, null, 8, XO)
         ], 2)
       ]),
-      p("li", QO, [
+      p("li", ZO, [
         p("a", {
           class: $(["page-link cursor-pointer", { disabled: r.prevDisabled() }]),
           onClick: t[1] || (t[1] = (o) => r.setPage(e.config.pagination.page - 1)),
-          "aria-label": "{{  translate('Prev')  }}"
+          "aria-label": "{{ translate('Prev')  }}"
         }, [
-          p("span", JO, O(r.translate("Prev")), 1)
+          p("span", {
+            "aria-hidden": "true",
+            innerHTML: r.translate("Prev")
+          }, null, 8, QO)
         ], 2)
       ]),
       (b(!0), y(W, null, z(e.config.pagination.numbers, (o) => (b(), y("li", {
@@ -12805,39 +12814,43 @@ function oC(s, t, e, n, i, r) {
             current: o == e.config.pagination.page
           }]),
           onClick: (l) => r.setPage(o)
-        }, O(o), 11, tC)
+        }, O(o), 11, JO)
       ]))), 128)),
-      p("li", eC, [
+      p("li", tC, [
         p("a", {
           class: $(["page-link cursor-pointer", { disabled: r.nextDisabled() }]),
           onClick: t[2] || (t[2] = (o) => r.setPage(e.config.pagination.page + 1)),
           "aria-label": "{{  translate('Next')  }}"
         }, [
-          p("span", sC, [
-            p("span", nC, O(r.translate("Next")), 1)
-          ])
+          p("span", {
+            "aria-hidden": "true",
+            innerHTML: r.translate("Next")
+          }, null, 8, eC)
         ], 2)
       ]),
-      e.config.pagination.total ? (b(), y("li", iC, [
+      e.config.pagination.total ? (b(), y("li", sC, [
         p("a", {
           class: $(["page-link cursor-pointer", { disabled: r.lastDisabled() }]),
           onClick: t[3] || (t[3] = (o) => r.setPage(e.config.pagination.total)),
           "aria-label": "{{  translate('Last')  }}"
         }, [
-          p("span", rC, O(r.translate("Last")), 1)
+          p("span", {
+            "aria-hidden": "true",
+            innerHTML: r.translate("Last")
+          }, null, 8, nC)
         ], 2)
       ])) : A("", !0)
     ])
   ]));
 }
-const aC = /* @__PURE__ */ He(qO, [["render", oC], ["__scopeId", "data-v-5ba01873"]]), mu = jb(), lC = {
+const rC = /* @__PURE__ */ He(qO, [["render", iC], ["__scopeId", "data-v-a7fb8960"]]), mu = jb(), oC = {
   name: "VuAdminTable",
   props: {
     settings: Object
   },
   components: {
     VuAdminForm: MO,
-    VuAdminTablePagination: aC
+    VuAdminTablePagination: rC
   },
   data() {
     return {
@@ -13596,97 +13609,97 @@ const aC = /* @__PURE__ */ He(qO, [["render", oC], ["__scopeId", "data-v-5ba0187
     //   }
     // },
   }
-}, cC = { key: 0 }, uC = ["data-bs-theme"], hC = { class: "vua-table-title" }, dC = { class: "d-flex align-items-center justify-content-between" }, fC = { class: "d-inline-block" }, pC = {
+}, aC = { key: 0 }, lC = ["data-bs-theme"], cC = { class: "vua-table-title" }, uC = { class: "d-flex align-items-center justify-content-between" }, hC = { class: "d-inline-block" }, dC = {
   key: 0,
   class: "card-title d-inline-block mb-2"
-}, gC = {
+}, fC = {
   class: "spinner-border spinner-border-sm mx-2",
   role: "status"
-}, mC = {
+}, pC = {
   key: 0,
   class: "d-inline-block"
-}, bC = {
+}, gC = {
   key: 0,
   class: "d-inline-block px-1 mx-1"
-}, yC = ["innerHTML"], vC = { class: "dropdown d-inline-block" }, _C = ["innerHTML"], EC = { class: "dropdown-menu text-start" }, wC = { class: "me-2 text-muted" }, TC = ["innerHTML"], AC = ["onClick"], NC = {
+}, mC = ["innerHTML"], bC = { class: "dropdown d-inline-block" }, yC = ["innerHTML"], vC = { class: "dropdown-menu text-start" }, _C = { class: "me-2 text-muted" }, EC = ["innerHTML"], wC = ["onClick"], TC = {
   key: 1,
   class: "dropdown d-inline-block"
-}, OC = { class: "mx-1" }, CC = { key: 0 }, SC = { class: "dropdown-menu" }, LC = ["onClick"], kC = {
+}, AC = { class: "mx-1" }, NC = { key: 0 }, OC = { class: "dropdown-menu" }, CC = ["onClick"], SC = {
   key: 0,
   class: "bi bi-check-square-fill me-2"
-}, xC = {
+}, LC = {
   key: 1,
   class: "bi bi-x-square me-2 text-danger"
-}, IC = { class: "badge text-secondary fw-normal" }, $C = {
+}, kC = { class: "badge text-secondary fw-normal" }, xC = {
   key: 2,
   class: "dropdown d-inline-block"
-}, RC = { class: "mx-1" }, DC = { class: "dropdown-menu" }, MC = ["onClick"], qC = { class: "vua-table-header" }, BC = ["width"], PC = ["onClick"], jC = ["innerHTML"], VC = {
+}, IC = { class: "mx-1" }, $C = { class: "dropdown-menu" }, RC = ["onClick"], DC = { class: "vua-table-header" }, MC = ["width"], qC = ["onClick"], BC = ["innerHTML"], PC = {
   key: 0,
   class: "bi bi-arrow-down"
-}, FC = {
+}, jC = {
   key: 1,
   class: "bi bi-arrow-up"
-}, UC = { key: 0 }, HC = ["disabled", "onClick"], WC = {
+}, VC = { key: 0 }, FC = ["disabled", "onClick"], UC = {
   key: 0,
   class: "vua-table-filter"
-}, zC = ["width"], KC = {
+}, HC = ["width"], WC = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, GC = { class: "bi bi-check-all" }, YC = { class: "bi bi-x-lg" }, XC = {
+}, zC = { class: "bi bi-check-all" }, KC = { class: "bi bi-x-lg" }, GC = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, ZC = ["onUpdate:modelValue"], QC = ["disabled", "onClick"], JC = {
+}, YC = ["onUpdate:modelValue"], XC = ["disabled", "onClick"], ZC = {
   key: 2,
   class: "input-group input-group-sm my-1"
-}, tS = ["onUpdate:modelValue", "disabled"], eS = { value: "=" }, sS = { value: ">" }, nS = { value: ">=" }, iS = { value: "<" }, rS = { value: "<=" }, oS = ["onUpdate:modelValue", "disabled"], aS = ["value"], lS = ["onUpdate:modelValue", "disabled", "min", "max"], cS = ["disabled", "onClick"], uS = { key: 3 }, hS = {
+}, QC = ["onUpdate:modelValue", "disabled"], JC = { value: "=" }, tS = { value: ">" }, eS = { value: ">=" }, sS = { value: "<" }, nS = { value: "<=" }, iS = ["onUpdate:modelValue", "disabled"], rS = ["value"], oS = ["onUpdate:modelValue", "disabled", "min", "max"], aS = ["disabled", "onClick"], lS = { key: 3 }, cS = {
   key: 0,
   class: "dropdown"
-}, dS = {
+}, uS = {
   class: "btn btn-sm btn-secondary dropdown-toggle my-1",
   type: "button",
   "data-bs-auto-close": "outside",
   "data-bs-toggle": "dropdown",
   "aria-expanded": "false"
-}, fS = { class: "dropdown-menu" }, pS = ["onClick"], gS = {
+}, hS = { class: "dropdown-menu" }, dS = ["onClick"], fS = {
   key: 0,
   class: "bi bi-check-square"
-}, mS = {
+}, pS = {
   key: 1,
   class: "bi bi-square"
-}, bS = { key: 0 }, yS = { key: 1 }, vS = ["onClick"], _S = { key: 2 }, ES = ["onClick"], wS = { key: 3 }, TS = ["onClick"], AS = {
+}, gS = { key: 0 }, mS = { key: 1 }, bS = ["onClick"], yS = { key: 2 }, vS = ["onClick"], _S = { key: 3 }, ES = ["onClick"], wS = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, NS = ["onUpdate:modelValue", "multiple"], OS = ["value"], CS = ["disabled", "onClick"], SS = {
+}, TS = ["onUpdate:modelValue", "multiple"], AS = ["value"], NS = ["disabled", "onClick"], OS = {
   key: 4,
   class: "input-group input-group-sm my-1"
-}, LS = ["onUpdate:modelValue"], kS = { value: "=" }, xS = { value: ">" }, IS = { value: ">=" }, $S = { value: "<" }, RS = { value: "<=" }, DS = ["onUpdate:modelValue"], MS = ["value"], qS = ["type", "onUpdate:modelValue"], BS = ["disabled", "onClick"], PS = ["disabled", "onClick"], jS = { class: "align-middle" }, VS = ["data-label", "width", "onClick"], FS = {
+}, CS = ["onUpdate:modelValue"], SS = { value: "=" }, LS = { value: ">" }, kS = { value: ">=" }, xS = { value: "<" }, IS = { value: "<=" }, $S = ["onUpdate:modelValue"], RS = ["value"], DS = ["type", "onUpdate:modelValue"], MS = ["disabled", "onClick"], qS = ["disabled", "onClick"], BS = { class: "align-middle" }, PS = ["data-label", "width", "onClick"], jS = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, US = ["innerHTML"], HS = { key: 1 }, WS = ["innerHTML"], zS = ["aria-valuenow", "aria-valuemax"], KS = { key: 0 }, GS = {
+}, VS = ["innerHTML"], FS = { key: 1 }, US = ["innerHTML"], HS = ["aria-valuenow", "aria-valuemax"], WS = { key: 0 }, zS = {
   key: 4,
   class: "input-group input-group-sm"
-}, YS = ["innerHTML"], XS = ["type", "onChange", "onUpdate:modelValue"], ZS = ["onChange", "onUpdate:modelValue"], QS = ["value"], JS = ["innerHTML"], t2 = { key: 5 }, e2 = ["disabled", "onClick"], s2 = ["innerHTML"], n2 = { key: 2 }, i2 = { key: 0 }, r2 = ["colspan"], o2 = { class: "row g-3 align-items-center" }, a2 = { class: "col-form-label" }, l2 = ["type", "onUpdate:modelValue", "onChange"], c2 = ["onUpdate:modelValue", "onChange"], u2 = ["onUpdate:modelValue", "onChange"], h2 = ["value"], d2 = ["innerHTML"], f2 = {
+}, KS = ["innerHTML"], GS = ["type", "onChange", "onUpdate:modelValue"], YS = ["onChange", "onUpdate:modelValue"], XS = ["value"], ZS = ["innerHTML"], QS = { key: 5 }, JS = ["disabled", "onClick"], t2 = ["innerHTML"], e2 = { key: 2 }, s2 = { key: 0 }, n2 = ["colspan"], i2 = { class: "row g-3 align-items-center" }, r2 = { class: "col-form-label" }, o2 = ["type", "onUpdate:modelValue", "onChange"], a2 = ["onUpdate:modelValue", "onChange"], l2 = ["onUpdate:modelValue", "onChange"], c2 = ["value"], u2 = ["innerHTML"], h2 = {
   key: 0,
   class: "bg-light text-dark"
-}, p2 = {
+}, d2 = {
   key: 0,
   class: "vua-table-bulk border-info"
-}, g2 = ["data-label", "width"], m2 = {
+}, f2 = ["data-label", "width"], p2 = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, b2 = {
+}, g2 = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, y2 = ["type", "disabled", "onChange", "onUpdate:modelValue"], v2 = ["disabled", "onChange", "onUpdate:modelValue"], _2 = ["value"], E2 = ["onClick"], w2 = {
+}, m2 = ["type", "disabled", "onChange", "onUpdate:modelValue"], b2 = ["disabled", "onChange", "onUpdate:modelValue"], y2 = ["value"], v2 = ["onClick"], _2 = {
   key: 0,
   class: "bi bi-square text-secondary"
-}, T2 = {
+}, E2 = {
   key: 1,
   class: "bi bi-check-square"
-}, A2 = { key: 2 }, N2 = ["disabled", "onClick"], O2 = ["innerHTML"], C2 = { key: 2 }, S2 = ["id"], L2 = { class: "modal-dialog modal-xl" }, k2 = { class: "modal-content h-100" };
-function x2(s, t, e, n, i, r) {
+}, w2 = { key: 2 }, T2 = ["disabled", "onClick"], A2 = ["innerHTML"], N2 = { key: 2 }, O2 = ["id"], C2 = { class: "modal-dialog modal-xl" }, S2 = { class: "modal-content h-100" };
+function L2(s, t, e, n, i, r) {
   const o = Re("VuAdminTablePagination"), l = Re("VuAdminForm");
-  return e.settings && e.settings.table ? (b(), y("div", cC, [
+  return e.settings && e.settings.table ? (b(), y("div", aC, [
     p("div", {
       class: $(["vua-table-container", [e.settings.class]]),
       "data-bs-theme": [e.settings.theme]
@@ -13694,45 +13707,45 @@ function x2(s, t, e, n, i, r) {
       p("div", {
         class: $(["vua-overlay", { blocked: i.ui.block.table }])
       }, null, 2),
-      p("div", hC, [
-        p("div", dC, [
-          p("div", fC, [
-            e.settings.table.title ? (b(), y("h5", pC, O(e.settings.table.title), 1)) : A("", !0),
-            G(p("div", gC, t[15] || (t[15] = [
+      p("div", cC, [
+        p("div", uC, [
+          p("div", hC, [
+            e.settings.table.title ? (b(), y("h5", dC, O(e.settings.table.title), 1)) : A("", !0),
+            G(p("div", fC, t[15] || (t[15] = [
               p("span", { class: "visually-hidden" }, "Loading...", -1)
             ]), 512), [
               [Ss, i.ui.wait.table && e.settings.table.title]
             ])
           ]),
-          i.messages.table.length ? (b(), y("div", mC, [
-            i.message.table ? (b(), y("small", bC, [
+          i.messages.table.length ? (b(), y("div", pC, [
+            i.message.table ? (b(), y("small", gC, [
               p("span", {
                 class: $(["text-" + i.message.table.priority])
               }, [
                 p("span", {
                   class: "fw-bold",
                   innerHTML: i.message.table.msg
-                }, null, 8, yC)
+                }, null, 8, mC)
               ], 2)
             ])) : A("", !0),
-            p("div", vC, [
+            p("div", bC, [
               p("button", {
                 class: $(["btn btn-sm dropdown-toggle", ["btn-" + i.messages.table[0].priority]]),
                 type: "button",
                 "data-bs-toggle": "dropdown",
                 "aria-expanded": "false",
                 innerHTML: i.messages.table.length + " " + (i.messages.table.length > 1 ? r.translate("messages") : r.translate("message"))
-              }, null, 10, _C),
-              p("ul", EC, [
+              }, null, 10, yC),
+              p("ul", vC, [
                 (b(!0), y(W, null, z(i.messages.table, (a) => (b(), y("li", { key: a }, [
                   p("span", {
                     class: $(["dropdown-item", ["text-" + a.priority]])
                   }, [
-                    p("small", wC, O(a.datetime), 1),
+                    p("small", _C, O(a.datetime), 1),
                     p("span", {
                       class: "fw-bold",
                       innerHTML: a.msg
-                    }, null, 8, TC)
+                    }, null, 8, EC)
                   ], 2)
                 ]))), 128))
               ])
@@ -13767,8 +13780,8 @@ function x2(s, t, e, n, i, r) {
               ])
             }, null, 2),
             F(" " + O(r.translate(a.title)), 1)
-          ], 10, AC)) : A("", !0),
-          a.action === "TABLE_COLUMNS" ? (b(), y("div", NC, [
+          ], 10, wC)) : A("", !0),
+          a.action === "TABLE_COLUMNS" ? (b(), y("div", TC, [
             p("button", {
               type: "button",
               class: $([[
@@ -13778,7 +13791,7 @@ function x2(s, t, e, n, i, r) {
               "data-bs-auto-close": "outside",
               "aria-expanded": "false"
             }, [
-              G(p("span", OC, [
+              G(p("span", AC, [
                 p("i", {
                   class: $([
                     a.icon !== void 0 ? r.getValueOrFunction(a.icon, {
@@ -13788,22 +13801,22 @@ function x2(s, t, e, n, i, r) {
                   ])
                 }, null, 2),
                 F(" " + O(r.translate(a.title)) + " ", 1),
-                r.countHiddenColumns() ? (b(), y("span", CC, " ( " + O(r.countHiddenColumns()) + " " + O(r.translate("hidden")) + " ) ", 1)) : A("", !0)
+                r.countHiddenColumns() ? (b(), y("span", NC, " ( " + O(r.countHiddenColumns()) + " " + O(r.translate("hidden")) + " ) ", 1)) : A("", !0)
               ], 512), [
                 [Ss, e.settings.table.columns.length > 0]
               ])
             ], 2),
-            p("ul", SC, [
+            p("ul", OC, [
               (b(!0), y(W, null, z(e.settings.table.columns, (u) => (b(), y("li", { key: u }, [
                 p("span", {
                   class: "dropdown-item cursor-pointer",
                   onClick: (h) => r.toggleColumn(u)
                 }, [
-                  u.hidden ? A("", !0) : (b(), y("i", kC)),
-                  u.hidden ? (b(), y("i", xC)) : A("", !0),
+                  u.hidden ? A("", !0) : (b(), y("i", SC)),
+                  u.hidden ? (b(), y("i", LC)) : A("", !0),
                   F(" " + O(u.title) + " ", 1),
-                  p("small", IC, O(u.name), 1)
-                ], 8, LC)
+                  p("small", kC, O(u.name), 1)
+                ], 8, CC)
               ]))), 128)),
               t[16] || (t[16] = p("li", null, [
                 p("hr", { class: "dropdown-divider" })
@@ -13822,7 +13835,7 @@ function x2(s, t, e, n, i, r) {
               ])
             ])
           ])) : A("", !0),
-          a.dropdowns ? (b(), y("div", $C, [
+          a.dropdowns ? (b(), y("div", xC, [
             p("button", {
               type: "button",
               class: $([[a.class], "dropdown-toggle"]),
@@ -13830,7 +13843,7 @@ function x2(s, t, e, n, i, r) {
               "data-bs-auto-close": "outside",
               "aria-expanded": "false"
             }, [
-              p("span", RC, [
+              p("span", IC, [
                 p("i", {
                   class: $([
                     a.icon !== void 0 ? r.getValueOrFunction(a.icon, {
@@ -13842,7 +13855,7 @@ function x2(s, t, e, n, i, r) {
                 F(" " + O(r.translate(a.title)), 1)
               ])
             ], 2),
-            p("ul", DC, [
+            p("ul", $C, [
               (b(!0), y(W, null, z(a.dropdowns, (u) => (b(), y("li", { key: u }, [
                 p("span", {
                   class: $(["dropdown-item cursor-pointer", [u.class]]),
@@ -13856,7 +13869,7 @@ function x2(s, t, e, n, i, r) {
                     class: $([u.icon])
                   }, null, 2)) : A("", !0),
                   F(" " + O(r.translate(u.title)), 1)
-                ], 10, MC)
+                ], 10, RC)
               ]))), 128))
             ])
           ])) : A("", !0)
@@ -13867,7 +13880,7 @@ function x2(s, t, e, n, i, r) {
         class: $(["table vua-table mb-0", [e.settings.table.class]])
       }, [
         p("thead", null, [
-          p("tr", qC, [
+          p("tr", DC, [
             (b(!0), y(W, null, z(e.settings.table.columns, (a) => (b(), y("th", {
               class: $(["", [a.header ? a.header.class : ""]]),
               style: Zn([a.hidden ? "display: none" : ""]),
@@ -13880,19 +13893,19 @@ function x2(s, t, e, n, i, r) {
               }, [
                 p("span", {
                   innerHTML: a.header && a.header.title !== void 0 ? r.translate(a.header.title) : a.title ? r.translate(a.title) : r.translate(a.name)
-                }, null, 8, jC),
+                }, null, 8, BC),
                 i.config.order[a.name] ? (b(), y("span", {
                   key: 0,
                   class: $(["badge text-bg-light ms-1 p-badge", {
                     "opacity-50": i.config.order[a.name].fixed
                   }])
                 }, [
-                  i.config.order[a.name].dir === "ASC" ? (b(), y("i", VC)) : A("", !0),
-                  i.config.order[a.name].dir === "DESC" ? (b(), y("i", FC)) : A("", !0),
+                  i.config.order[a.name].dir === "ASC" ? (b(), y("i", PC)) : A("", !0),
+                  i.config.order[a.name].dir === "DESC" ? (b(), y("i", jC)) : A("", !0),
                   F(" " + O(i.config.order[a.name].idx + 1), 1)
                 ], 2)) : A("", !0)
-              ], 10, PC),
-              a.header && a.header.buttons ? (b(), y("span", UC, [
+              ], 10, qC),
+              a.header && a.header.buttons ? (b(), y("span", VC, [
                 (b(!0), y(W, null, z(a.header.buttons, (u) => (b(), y("button", {
                   key: u.action,
                   type: "button",
@@ -13915,31 +13928,31 @@ function x2(s, t, e, n, i, r) {
                     ])
                   }, null, 2),
                   F(" " + O(r.translate(u.title)), 1)
-                ], 10, HC))), 128))
+                ], 10, FC))), 128))
               ])) : A("", !0)
-            ], 14, BC))), 128))
+            ], 14, MC))), 128))
           ]),
-          r.countFilters() ? (b(), y("tr", WC, [
+          r.countFilters() ? (b(), y("tr", UC, [
             (b(!0), y(W, null, z(e.settings.table.columns, (a) => (b(), y("th", {
               style: Zn([a.hidden ? "display: none" : ""]),
               key: a,
               width: a.width,
               class: $([a.filter ? a.filter.class : ""])
             }, [
-              a.index && a.click ? (b(), y("div", KC, [
+              a.index && a.click ? (b(), y("div", WC, [
                 p("span", {
                   class: $(["cursor-pointer badge border badge-index-toggle py-1 px-2 me-1 my-2 w-100", { active: r.haveSelectedRowInPage() }]),
                   onClick: t[2] || (t[2] = (u) => r.toggleSelectedRowInPage())
                 }, [
-                  G(p("i", GC, null, 512), [
+                  G(p("i", zC, null, 512), [
                     [Ss, !r.haveSelectedRowInPage()]
                   ]),
-                  G(p("i", YC, null, 512), [
+                  G(p("i", KC, null, 512), [
                     [Ss, r.haveSelectedRowInPage()]
                   ])
                 ], 2)
               ])) : A("", !0),
-              a.filter && a.filter.type == "text" ? (b(), y("div", XC, [
+              a.filter && a.filter.type == "text" ? (b(), y("div", GC, [
                 G(p("input", {
                   type: "text",
                   class: $([{
@@ -13947,7 +13960,7 @@ function x2(s, t, e, n, i, r) {
                   }, "form-control form-control-sm"]),
                   "onUpdate:modelValue": (u) => a.filter.value = u,
                   onKeyup: t[3] || (t[3] = oi((u) => r.reloadTable(), ["enter"]))
-                }, null, 42, ZC), [
+                }, null, 42, YC), [
                   [jt, a.filter.value]
                 ]),
                 a.filter.buttonx && a.filter.buttonx != !1 ? (b(), y("button", {
@@ -13961,9 +13974,9 @@ function x2(s, t, e, n, i, r) {
                   }
                 }, t[17] || (t[17] = [
                   p("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, QC)) : A("", !0)
+                ]), 10, XC)) : A("", !0)
               ])) : A("", !0),
-              a.filter && a.filter.type == "number" ? (b(), y("div", JC, [
+              a.filter && a.filter.type == "number" ? (b(), y("div", ZC, [
                 a.filter.operators == !0 ? G((b(), y("select", {
                   key: 0,
                   "onUpdate:modelValue": (u) => a.filter.operator = u,
@@ -13971,12 +13984,12 @@ function x2(s, t, e, n, i, r) {
                   onChange: t[4] || (t[4] = (u) => r.reloadTable()),
                   class: "form-select form-select-sm pe-0"
                 }, [
-                  p("option", eS, O(r.translate("=")), 1),
-                  p("option", sS, O(r.translate(">")), 1),
-                  p("option", nS, O(r.translate(">=")), 1),
-                  p("option", iS, O(r.translate("<")), 1),
-                  p("option", rS, O(r.translate("<=")), 1)
-                ], 40, tS)), [
+                  p("option", JC, O(r.translate("=")), 1),
+                  p("option", tS, O(r.translate(">")), 1),
+                  p("option", eS, O(r.translate(">=")), 1),
+                  p("option", sS, O(r.translate("<")), 1),
+                  p("option", nS, O(r.translate("<=")), 1)
+                ], 40, QC)), [
                   [$e, a.filter.operator]
                 ]) : A("", !0),
                 a.filter.operators && a.filter.operators.length > 0 ? G((b(), y("select", {
@@ -13989,8 +14002,8 @@ function x2(s, t, e, n, i, r) {
                   (b(!0), y(W, null, z(a.filter.operators, (u) => (b(), y("option", {
                     key: u,
                     value: u.value
-                  }, O(u.label), 9, aS))), 128))
-                ], 40, oS)), [
+                  }, O(u.label), 9, rS))), 128))
+                ], 40, iS)), [
                   [$e, a.filter.operator]
                 ]) : A("", !0),
                 G(p("input", {
@@ -14004,7 +14017,7 @@ function x2(s, t, e, n, i, r) {
                   max: a.filter.max,
                   onChange: t[6] || (t[6] = (u) => r.reloadTable()),
                   onKeyup: t[7] || (t[7] = oi((u) => r.reloadTable(), ["enter"]))
-                }, null, 42, lS), [
+                }, null, 42, oS), [
                   [jt, a.filter.value]
                 ]),
                 !a.filter.fixed && a.filter.buttonx && a.filter.buttonx != !1 ? (b(), y("button", {
@@ -14018,45 +14031,45 @@ function x2(s, t, e, n, i, r) {
                   }
                 }, t[18] || (t[18] = [
                   p("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, cS)) : A("", !0)
+                ]), 10, aS)) : A("", !0)
               ])) : A("", !0),
-              a.filter && a.filter.type == "select" ? (b(), y("div", uS, [
-                a.filter.dropdown ? (b(), y("div", hS, [
-                  p("button", dS, O(a.filter.multiple ? a.filter.value.length + " selected" : a.filter.value ? a.filter.value : "not selected"), 1),
-                  p("ul", fS, [
+              a.filter && a.filter.type == "select" ? (b(), y("div", lS, [
+                a.filter.dropdown ? (b(), y("div", cS, [
+                  p("button", uS, O(a.filter.multiple ? a.filter.value.length + " selected" : a.filter.value ? a.filter.value : "not selected"), 1),
+                  p("ul", hS, [
                     p("li", null, [
                       (b(!0), y(W, null, z(a.filter.options, (u) => (b(), y("span", {
                         key: u,
                         class: $(["dropdown-item cursor-pointer", { selected: a.filter.multiple ? a.filter.value.indexOf(u.value) >= 0 : a.filter.value === u.value }]),
                         onClick: (h) => r.dropdownSelectToggleOne(a.filter, u)
                       }, [
-                        (a.filter.multiple ? a.filter.value.indexOf(u.value) >= 0 : a.filter.value === u.value) ? (b(), y("i", gS)) : (b(), y("i", mS)),
+                        (a.filter.multiple ? a.filter.value.indexOf(u.value) >= 0 : a.filter.value === u.value) ? (b(), y("i", fS)) : (b(), y("i", pS)),
                         F(" " + O(r.translate(u.label ? u.label : u.value)), 1)
-                      ], 10, pS))), 128))
+                      ], 10, dS))), 128))
                     ]),
-                    a.filter.multiple ? (b(), y("li", bS, t[19] || (t[19] = [
+                    a.filter.multiple ? (b(), y("li", gS, t[19] || (t[19] = [
                       p("hr", { class: "dropdown-divider" }, null, -1)
                     ]))) : A("", !0),
-                    a.filter.multiple ? (b(), y("li", yS, [
+                    a.filter.multiple ? (b(), y("li", mS, [
                       p("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (u) => r.dropdownSelectAll(a.filter.value, a.filter.options)
-                      }, O(r.translate("Select all")), 9, vS)
+                      }, O(r.translate("Select all")), 9, bS)
+                    ])) : A("", !0),
+                    a.filter.multiple ? (b(), y("li", yS, [
+                      p("span", {
+                        class: "dropdown-item cursor-pointer",
+                        onClick: (u) => r.dropdownSelectClear(a.filter.value)
+                      }, O(r.translate("Unselect all")), 9, vS)
                     ])) : A("", !0),
                     a.filter.multiple ? (b(), y("li", _S, [
                       p("span", {
                         class: "dropdown-item cursor-pointer",
-                        onClick: (u) => r.dropdownSelectClear(a.filter.value)
-                      }, O(r.translate("Unselect all")), 9, ES)
-                    ])) : A("", !0),
-                    a.filter.multiple ? (b(), y("li", wS, [
-                      p("span", {
-                        class: "dropdown-item cursor-pointer",
                         onClick: (u) => r.dropdownSelectInvert(a.filter.value, a.filter.options)
-                      }, O(r.translate("Invert all")), 9, TS)
+                      }, O(r.translate("Invert all")), 9, ES)
                     ])) : A("", !0)
                   ])
-                ])) : (b(), y("div", AS, [
+                ])) : (b(), y("div", wS, [
                   G(p("select", {
                     "onUpdate:modelValue": (u) => a.filter.value = u,
                     onChange: t[8] || (t[8] = (u) => r.reloadTable()),
@@ -14066,8 +14079,8 @@ function x2(s, t, e, n, i, r) {
                     (b(!0), y(W, null, z(a.filter.options, (u) => (b(), y("option", {
                       key: u,
                       value: u.value
-                    }, O(r.translate(u.label ? u.label : u.value)), 9, OS))), 128))
-                  ], 40, NS), [
+                    }, O(r.translate(u.label ? u.label : u.value)), 9, AS))), 128))
+                  ], 40, TS), [
                     [$e, a.filter.value]
                   ]),
                   a.filter.buttonx && a.filter.buttonx != !1 ? (b(), y("button", {
@@ -14081,22 +14094,22 @@ function x2(s, t, e, n, i, r) {
                     }
                   }, t[20] || (t[20] = [
                     p("i", { class: "bi bi-x" }, null, -1)
-                  ]), 10, CS)) : A("", !0)
+                  ]), 10, NS)) : A("", !0)
                 ]))
               ])) : A("", !0),
-              a.filter && (a.filter.type == "datetime-local" || a.filter.type == "date") ? (b(), y("div", SS, [
+              a.filter && (a.filter.type == "datetime-local" || a.filter.type == "date") ? (b(), y("div", OS, [
                 a.filter.operators == !0 ? G((b(), y("select", {
                   key: 0,
                   "onUpdate:modelValue": (u) => a.filter.operator = u,
                   onChange: t[9] || (t[9] = (u) => r.reloadTable()),
                   class: "form-select form-select-sm pe-0"
                 }, [
-                  p("option", kS, O(r.translate("=")), 1),
-                  p("option", xS, O(r.translate(">")), 1),
-                  p("option", IS, O(r.translate(">=")), 1),
-                  p("option", $S, O(r.translate("<")), 1),
-                  p("option", RS, O(r.translate("<=")), 1)
-                ], 40, LS)), [
+                  p("option", SS, O(r.translate("=")), 1),
+                  p("option", LS, O(r.translate(">")), 1),
+                  p("option", kS, O(r.translate(">=")), 1),
+                  p("option", xS, O(r.translate("<")), 1),
+                  p("option", IS, O(r.translate("<=")), 1)
+                ], 40, CS)), [
                   [$e, a.filter.operator]
                 ]) : A("", !0),
                 a.filter.operators && a.filter.operators.length > 0 ? G((b(), y("select", {
@@ -14108,8 +14121,8 @@ function x2(s, t, e, n, i, r) {
                   (b(!0), y(W, null, z(a.filter.operators, (u) => (b(), y("option", {
                     key: u,
                     value: u.value
-                  }, O(r.translate(u.label)), 9, MS))), 128))
-                ], 40, DS)), [
+                  }, O(r.translate(u.label)), 9, RS))), 128))
+                ], 40, $S)), [
                   [$e, a.filter.operator]
                 ]) : A("", !0),
                 G(p("input", {
@@ -14120,7 +14133,7 @@ function x2(s, t, e, n, i, r) {
                   "onUpdate:modelValue": (u) => a.filter.value = u,
                   onChange: t[11] || (t[11] = (u) => r.reloadTable()),
                   onKeyup: t[12] || (t[12] = oi((u) => r.reloadTable(), ["enter"]))
-                }, null, 42, qS), [
+                }, null, 42, DS), [
                   [gn, a.filter.value]
                 ]),
                 p("button", {
@@ -14133,7 +14146,7 @@ function x2(s, t, e, n, i, r) {
                   }
                 }, t[21] || (t[21] = [
                   p("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, BS)
+                ]), 10, MS)
               ])) : A("", !0),
               a.filter && a.filter.buttons ? (b(), y("span", {
                 key: 5,
@@ -14167,17 +14180,17 @@ function x2(s, t, e, n, i, r) {
                       ])
                     }, null, 2),
                     F(" " + O(r.translate(u.title)), 1)
-                  ], 10, PS)
+                  ], 10, qS)
                 ]))), 128))
               ], 2)) : A("", !0)
-            ], 14, zC))), 128))
+            ], 14, HC))), 128))
           ])) : A("", !0)
         ]),
         p("tbody", null, [
           (b(!0), y(W, null, z(this.items, (a, u) => (b(), y(W, {
             key: a.id
           }, [
-            p("tr", jS, [
+            p("tr", BS, [
               (b(!0), y(W, null, z(e.settings.table.columns, (h) => (b(), y("td", {
                 style: Zn([h.hidden ? "display: none" : ""]),
                 key: h.name,
@@ -14195,19 +14208,19 @@ function x2(s, t, e, n, i, r) {
                   $event: d
                 })
               }, [
-                h.index ? (b(), y("div", FS, [
+                h.index ? (b(), y("div", jS, [
                   p("span", {
                     class: $(["cursor-pointer badge border badge-index p-1 w-100", {
                       selected: i.selected.indexOf(a[e.settings.pkey]) >= 0
                     }]),
                     innerHTML: u + 1 + (i.config.pagination.page - 1) * i.config.pagination.limit
-                  }, null, 10, US)
+                  }, null, 10, VS)
                 ])) : A("", !0),
-                !h.template && !h.input && !h.progressbar ? (b(), y("span", HS, O(r.tableCellValue(h.name, a, u, h)), 1)) : A("", !0),
+                !h.template && !h.input && !h.progressbar ? (b(), y("span", FS, O(r.tableCellValue(h.name, a, u, h)), 1)) : A("", !0),
                 h.template ? (b(), y("span", {
                   key: 2,
                   innerHTML: r.tableCellTemplate(h.template, a, u, h)
-                }, null, 8, WS)) : A("", !0),
+                }, null, 8, US)) : A("", !0),
                 h.progressbar ? (b(), y("div", {
                   key: 3,
                   class: "progress",
@@ -14220,10 +14233,10 @@ function x2(s, t, e, n, i, r) {
                     class: $(["progress-bar", [h.progressbar.class]]),
                     style: Zn({ width: Math.round(a[h.name] / h.progressbar.max * 100) + "%" })
                   }, [
-                    h.progressbar.value ? (b(), y("span", KS, O(a[h.name]), 1)) : A("", !0)
+                    h.progressbar.value ? (b(), y("span", WS, O(a[h.name]), 1)) : A("", !0)
                   ], 6)
-                ], 8, zS)) : A("", !0),
-                h.input ? (b(), y("div", GS, [
+                ], 8, HS)) : A("", !0),
+                h.input ? (b(), y("div", zS, [
                   h.input.prefix ? (b(), y("span", {
                     key: 0,
                     class: "input-group-text",
@@ -14231,7 +14244,7 @@ function x2(s, t, e, n, i, r) {
                       column: h,
                       item: a
                     })
-                  }, null, 8, YS)) : A("", !0),
+                  }, null, 8, KS)) : A("", !0),
                   ["text", "number", "date", "datetime-local"].indexOf(
                     h.input.type
                   ) >= 0 ? G((b(), y("input", {
@@ -14243,7 +14256,7 @@ function x2(s, t, e, n, i, r) {
                     })]),
                     onChange: (d) => r.onRowInputChange(a[h.name], h, a, u),
                     "onUpdate:modelValue": (d) => a[h.name] = d
-                  }, null, 42, XS)), [
+                  }, null, 42, GS)), [
                     [gn, a[h.name]]
                   ]) : A("", !0),
                   h.input.type == "select" ? G((b(), y("select", {
@@ -14258,8 +14271,8 @@ function x2(s, t, e, n, i, r) {
                     (b(!0), y(W, null, z(h.input.options, (d) => (b(), y("option", {
                       value: d.value,
                       key: d
-                    }, O(r.translate(d.label)), 9, QS))), 128))
-                  ], 42, ZS)), [
+                    }, O(r.translate(d.label)), 9, XS))), 128))
+                  ], 42, YS)), [
                     [$e, a[h.name]]
                   ]) : A("", !0),
                   h.input.suffix ? (b(), y("span", {
@@ -14269,9 +14282,9 @@ function x2(s, t, e, n, i, r) {
                       column: h,
                       item: a
                     })
-                  }, null, 8, JS)) : A("", !0)
+                  }, null, 8, ZS)) : A("", !0)
                 ])) : A("", !0),
-                h.buttons ? (b(), y("span", t2, [
+                h.buttons ? (b(), y("span", QS, [
                   (b(!0), y(W, null, z(h.buttons, (d) => (b(), y("span", {
                     key: d.action
                   }, [
@@ -14307,13 +14320,13 @@ function x2(s, t, e, n, i, r) {
                       d.template ? (b(), y("span", {
                         key: 1,
                         innerHTML: r.tableCellTemplate(d.template, a, u, h)
-                      }, null, 8, s2)) : (b(), y("span", n2, O(r.translate(d.title)), 1))
-                    ], 10, e2)
+                      }, null, 8, t2)) : (b(), y("span", e2, O(r.translate(d.title)), 1))
+                    ], 10, JS)
                   ]))), 128))
                 ])) : A("", !0)
-              ], 14, VS))), 128))
+              ], 14, PS))), 128))
             ]),
-            e.settings.table.details && i.details.indexOf(a[e.settings.pkey]) >= 0 ? (b(), y("tr", i2, [
+            e.settings.table.details && i.details.indexOf(a[e.settings.pkey]) >= 0 ? (b(), y("tr", s2, [
               p("td", {
                 class: $([e.settings.table.details.class]),
                 colspan: e.settings.table.columns.length
@@ -14322,11 +14335,11 @@ function x2(s, t, e, n, i, r) {
                   class: "m-0",
                   key: h
                 }, [
-                  p("div", o2, [
+                  p("div", i2, [
                     p("div", {
                       class: $(["col text-end", [h.class]])
                     }, [
-                      p("label", a2, O(h.label), 1)
+                      p("label", r2, O(h.label), 1)
                     ], 2),
                     p("div", {
                       class: $(["col", [h.input.class]])
@@ -14337,7 +14350,7 @@ function x2(s, t, e, n, i, r) {
                         class: "form-control form-control-sm",
                         "onUpdate:modelValue": (d) => a[h.name] = d,
                         onChange: (d) => r.onRowInputChange(a[h.name], h, a, u)
-                      }, null, 40, l2)), [
+                      }, null, 40, o2)), [
                         [gn, a[h.name]]
                       ]) : A("", !0),
                       h.input.type == "textarea" ? G((b(), y("textarea", {
@@ -14347,7 +14360,7 @@ function x2(s, t, e, n, i, r) {
                         "onUpdate:modelValue": (d) => a[h.name] = d,
                         onChange: (d) => r.onRowInputChange(a[h.name], h, a, u)
                       }, `\r
-                    `, 40, c2)), [
+                    `, 40, a2)), [
                         [jt, a[h.name]]
                       ]) : A("", !0),
                       h.input.type == "select" ? G((b(), y("select", {
@@ -14359,8 +14372,8 @@ function x2(s, t, e, n, i, r) {
                         (b(!0), y(W, null, z(h.input.options, (d) => (b(), y("option", {
                           value: d.value,
                           key: d
-                        }, O(r.translate(d.label)), 9, h2))), 128))
-                      ], 40, u2)), [
+                        }, O(r.translate(d.label)), 9, c2))), 128))
+                      ], 40, l2)), [
                         [$e, a[h.name]]
                       ]) : A("", !0)
                     ], 2)
@@ -14368,15 +14381,15 @@ function x2(s, t, e, n, i, r) {
                 ]))), 128)),
                 p("span", {
                   innerHTML: e.settings.table.details.raw(a)
-                }, null, 8, d2),
-                e.settings.debug ? (b(), y("pre", f2, "                " + O(a) + `
+                }, null, 8, u2),
+                e.settings.debug ? (b(), y("pre", h2, "                " + O(a) + `
               `, 1)) : A("", !0)
-              ], 10, r2)
+              ], 10, n2)
             ])) : A("", !0)
           ], 64))), 128))
         ]),
         p("tfoot", null, [
-          i.selected.length > 0 ? (b(), y("tr", p2, [
+          i.selected.length > 0 ? (b(), y("tr", d2, [
             (b(!0), y(W, null, z(e.settings.table.columns, (a) => (b(), y("td", {
               style: Zn([a.hidden ? "display: none" : ""]),
               key: a.name,
@@ -14384,13 +14397,13 @@ function x2(s, t, e, n, i, r) {
               width: a.width,
               class: $(a.class)
             }, [
-              a.index ? (b(), y("div", m2, [
+              a.index ? (b(), y("div", p2, [
                 p("span", {
                   class: "cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100",
                   onClick: t[13] || (t[13] = (u) => r.toggleSelectedAll())
                 }, O(i.selected.length), 1)
               ])) : A("", !0),
-              a.input && a.bulk && a.bulk.enabled ? (b(), y("div", b2, [
+              a.input && a.bulk && a.bulk.enabled ? (b(), y("div", g2, [
                 ["text", "number", "date", "datetime-local"].indexOf(
                   a.input.type
                 ) >= 0 ? G((b(), y("input", {
@@ -14400,7 +14413,7 @@ function x2(s, t, e, n, i, r) {
                   disabled: i.bulkinputs.indexOf(a.name) < 0,
                   onChange: (u) => r.onBulkInputChange(i.bulkitem[a.name], i.bulkitem, a),
                   "onUpdate:modelValue": (u) => i.bulkitem[a.name] = u
-                }, null, 42, y2)), [
+                }, null, 42, m2)), [
                   [gn, i.bulkitem[a.name]]
                 ]) : A("", !0),
                 a.input.type == "select" ? G((b(), y("select", {
@@ -14413,18 +14426,18 @@ function x2(s, t, e, n, i, r) {
                   (b(!0), y(W, null, z(a.input.options, (u) => (b(), y("option", {
                     value: u.value,
                     key: u
-                  }, O(r.translate(u.label)), 9, _2))), 128))
-                ], 42, v2)), [
+                  }, O(r.translate(u.label)), 9, y2))), 128))
+                ], 42, b2)), [
                   [$e, i.bulkitem[a.name]]
                 ]) : A("", !0),
                 p("span", {
                   class: "input-group-text cursor-pointer",
                   onClick: (u) => r.ifBulkInputClick(a)
                 }, [
-                  i.bulkitem[a.name] === void 0 ? (b(), y("i", w2)) : (b(), y("i", T2))
-                ], 8, E2)
+                  i.bulkitem[a.name] === void 0 ? (b(), y("i", _2)) : (b(), y("i", E2))
+                ], 8, v2)
               ])) : A("", !0),
-              a.bulk ? (b(), y("span", A2, [
+              a.bulk ? (b(), y("span", w2, [
                 (b(!0), y(W, null, z(a.bulk.buttons, (u) => (b(), y("span", {
                   key: u.action
                 }, [
@@ -14449,11 +14462,11 @@ function x2(s, t, e, n, i, r) {
                     u.template ? (b(), y("span", {
                       key: 1,
                       innerHTML: r.tableCellTemplate(u.template, i.bulkitem, null, a)
-                    }, null, 8, O2)) : (b(), y("span", C2, O(r.translate(u.title)), 1))
-                  ], 10, N2)
+                    }, null, 8, A2)) : (b(), y("span", N2, O(r.translate(u.title)), 1))
+                  ], 10, T2)
                 ]))), 128))
               ])) : A("", !0)
-            ], 14, g2))), 128))
+            ], 14, f2))), 128))
           ])) : A("", !0)
         ])
       ], 2)) : A("", !0),
@@ -14470,8 +14483,8 @@ function x2(s, t, e, n, i, r) {
         id: i.modalId,
         tabindex: "-1"
       }, [
-        p("div", L2, [
-          p("div", k2, [
+        p("div", C2, [
+          p("div", S2, [
             e.settings.form.visible && e.settings.form.groups ? (b(), es(l, {
               key: 0,
               modelValue: i.item,
@@ -14486,11 +14499,11 @@ function x2(s, t, e, n, i, r) {
             }, null, 8, ["modelValue", "formid", "settings", "modalWindow", "saveItem", "deleteItem", "reloadTable", "fetchRelation"])) : A("", !0)
           ])
         ])
-      ], 8, S2)
-    ], 10, uC)
+      ], 8, O2)
+    ], 10, lC)
   ])) : A("", !0);
 }
-const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-7b081c7e"]]), $2 = {
+const k2 = /* @__PURE__ */ He(oC, [["render", L2], ["__scopeId", "data-v-7b081c7e"]]), x2 = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14614,38 +14627,38 @@ const I2 = /* @__PURE__ */ He(lC, [["render", x2], ["__scopeId", "data-v-7b081c7
   },
   created() {
     if (window.VuEntities && window.VuEntities[this.entity]) {
-      if (this.settings = Dr(this.defaults, window.VuEntities[this.entity]), this.settings.entity = this.entity, !this.settings.theme) {
+      if (this.settings = Dr(this.defaults, window.VuEntities[this.entity]), this.settings.entity = this.entity, this.settings.preset = this.preset ? this.preset : "default", !this.settings.theme) {
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.28"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.29"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.28"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.29"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
   methods: {},
   components: {
-    VuAdminTable: I2
+    VuAdminTable: k2
   }
-}, R2 = { key: 0 }, D2 = ["data-bs-theme"];
-function M2(s, t, e, n, i, r) {
+}, I2 = { key: 0 }, $2 = ["data-bs-theme"];
+function R2(s, t, e, n, i, r) {
   const o = Re("vu-admin-table");
-  return e.entity && i.settings ? (b(), y("div", R2, [
+  return e.entity && i.settings ? (b(), y("div", I2, [
     p("div", {
       class: "vu-admin",
       "data-bs-theme": [i.settings.theme]
     }, [
       bu(o, { settings: i.settings }, null, 8, ["settings"])
-    ], 8, D2)
+    ], 8, $2)
   ])) : A("", !0);
 }
-const q2 = /* @__PURE__ */ He($2, [["render", M2]]), W2 = {
+const D2 = /* @__PURE__ */ He(x2, [["render", R2]]), U2 = {
   install(s) {
-    s.component("VuAdmin", q2);
+    s.component("VuAdmin", D2);
   }
 };
 export {
-  q2 as VuAdmin,
-  W2 as default
+  D2 as VuAdmin,
+  U2 as default
 };

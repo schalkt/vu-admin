@@ -183,6 +183,11 @@ let columns = [
 let table = {
 	title: 'Posts',
 	class: 'table-hover table-responsive table-sm',
+	pagination: {
+		size: 10,
+		limit: 10,
+		limits: null,
+	},
 	control: {
 		class: 'text-center border rounded mt-2',
 		buttons: [
@@ -330,6 +335,14 @@ export default {
 	language: 'en',
 	table: table,
 	form: form,
+	translate: {
+		en: {
+			First: '<i class="bi bi-chevron-double-left"></i>',
+			Prev: '<i class="bi bi-chevron-left"></i>',
+			Next: '<i class="bi bi-chevron-right"></i>',			
+			Last: '<i class="bi bi-chevron-double-right"></i>',
+		}
+	},
 	relations: {
 		user1: {
 			entity: 'user',

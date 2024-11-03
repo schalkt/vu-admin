@@ -161,6 +161,7 @@ export default {
 
       this.settings = deepMerge(this.defaults, window.VuEntities[this.entity]);
       this.settings.entity = this.entity;
+      this.settings.preset = this.preset ? this.preset : "default";
 
       if (!this.settings.theme) {
         const theme = document.documentElement.getAttribute("data-bs-theme");
