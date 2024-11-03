@@ -14288,7 +14288,8 @@ function LL(s, t, e, n, i, r) {
                   (b(!0), y(W, null, z(h.buttons, (d) => (b(), y("span", {
                     key: d.action
                   }, [
-                    p("button", {
+                    d.hidden ? A("", !0) : (b(), y("button", {
+                      key: 0,
                       type: "button",
                       disabled: d.disabled !== void 0 ? r.getValueOrFunction(d.disabled) : null,
                       class: $([
@@ -14321,7 +14322,7 @@ function LL(s, t, e, n, i, r) {
                         key: 1,
                         innerHTML: r.tableCellTemplate(d.template, a, u, h)
                       }, null, 8, tL)) : (b(), y("span", eL, O(r.translate(d.title)), 1))
-                    ], 10, JS)
+                    ], 10, JS))
                   ]))), 128))
                 ])) : A("", !0)
               ], 14, PS))), 128))
@@ -14503,7 +14504,7 @@ function LL(s, t, e, n, i, r) {
     ], 10, lC)
   ])) : A("", !0);
 }
-const kL = /* @__PURE__ */ He(oC, [["render", LL], ["__scopeId", "data-v-7b081c7e"]]), xL = {
+const kL = /* @__PURE__ */ He(oC, [["render", LL], ["__scopeId", "data-v-9b760f0f"]]), xL = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14631,9 +14632,9 @@ const kL = /* @__PURE__ */ He(oC, [["render", LL], ["__scopeId", "data-v-7b081c7
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.30"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.31"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.30"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.31"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },

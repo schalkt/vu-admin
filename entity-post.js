@@ -161,6 +161,7 @@ let columns = [
 			},
 			{
 				action: 'TABLE_ROW_DELETE',
+				hidden: true,
 			},
 			// {
 			// 	action: 'TABLE_ROW_SAVE',

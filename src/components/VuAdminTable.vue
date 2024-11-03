@@ -434,7 +434,7 @@
 
                 <span v-if="column.buttons">
                   <span v-for="button in column.buttons" :key="button.action">
-                    <button type="button" :disabled="button.disabled !== undefined ? getValueOrFunction(button.disabled) : null" :class="[
+                    <button v-if="!button.hidden" type="button" :disabled="button.disabled !== undefined ? getValueOrFunction(button.disabled) : null" :class="[
                       button.class
                         ? getValueOrFunction(button.class, {
                           button: button,
