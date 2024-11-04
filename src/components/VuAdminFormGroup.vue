@@ -41,6 +41,9 @@
               <input v-if="field.type == 'date'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="date" :name="field.name" :id="formId + '_' + field.name"
                 v-model="item[field.name]" :readonly="field.readonly" :required="field.required" />
 
+              <input v-if="field.type == 'datetime-local'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="datetime-local" :name="field.name" :id="formId + '_' + field.name"
+                v-model="item[field.name]" :readonly="field.readonly" :required="field.required" />                
+
               <div v-if="field.type == 'checkbox'" class="form-check">
                 <input class="form-check-input" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="checkbox" :name="field.name" :id="formId + '_' + field.name"
                   :true-value="field.true != undefined ? field.true : true" :false-value="field.false != undefined ? field.false : false" v-model="item[field.name]"
