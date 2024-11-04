@@ -38,11 +38,8 @@
                 v-model="item[field.name]" :min="field.min" :max="field.max" :step="field.step" :placeholder="field.placeholder ? field.placeholder : ''" :readonly="field.readonly"
                 :required="field.required" />
 
-              <input v-if="field.type == 'date'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="date" :name="field.name" :id="formId + '_' + field.name"
-                v-model="item[field.name]" :readonly="field.readonly" :required="field.required" />
-
-              <input v-if="field.type == 'datetime-local'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="datetime-local" :name="field.name" :id="formId + '_' + field.name"
-                v-model="item[field.name]" :readonly="field.readonly" :required="field.required" />                
+              <input v-if="['date', 'datetime', 'datetime-local'].indexOf(field.type) >= 0" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" :type="field.type" :name="field.name" :id="formId + '_' + field.name"
+                v-model="item[field.name]" :min="field.min" :max="field.max" :readonly="field.readonly" :required="field.required" />
 
               <div v-if="field.type == 'checkbox'" class="form-check">
                 <input class="form-check-input" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="checkbox" :name="field.name" :id="formId + '_' + field.name"
