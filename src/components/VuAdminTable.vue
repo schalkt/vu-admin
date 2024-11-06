@@ -1524,7 +1524,7 @@ export default {
           return;
         }
 
-        const confirmed = confirm("Are you sure you want to delete this post");
+        const confirmed = confirm("Are you sure you want to delete this item");
 
         if (!confirmed) {
           return;

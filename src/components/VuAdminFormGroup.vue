@@ -3,9 +3,7 @@
   <div class="row m-1">
     <div v-for="group in settings.form.groups" :key="group" :class="[group.class ? group.class : 'col-md-12']">
 
-      <h2 class="form-row-title mb-4 fw-lighter">
-        {{ group.title }}
-      </h2>
+      <h2 v-if="group.title" class="form-row-title mb-4 fw-lighter" v-html="group.title ? group.title : ''"></h2>
 
       <div class="row" v-cloak v-if="item && group.fields">
         <div :class="[getValueOrFunction(field.class ? field.class : 'col-md-12') , 'input_type_' + field.type]" v-for="field in group.fields" :key="field">

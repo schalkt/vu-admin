@@ -584,7 +584,7 @@ let form = {
 	},
 	groups: [
 		{
-			title: 'Main parameters',
+			title: '<strong>Main</strong> parameters',
 			class: 'border border-dark rounded p-4 col-md-6',
 			fields: [
 				{
