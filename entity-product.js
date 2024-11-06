@@ -615,6 +615,14 @@ let form = {
 						}
 					]
 				},
+				{			
+					type: 'template',		
+					template: (value) => {
+						return `<div class="border rounded p-1 text-secondary fw-light overflow-auto"><small>${JSON.stringify(value)}</small></div>`
+					},
+					description: '<span>Field description here</span>',
+					class: 'o',
+				},
 				{
 					type: 'list',
 					name: 'links',

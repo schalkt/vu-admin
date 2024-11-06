@@ -1,7 +1,7 @@
 <template>
 
   <select class="form-select" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })" :name="field.name" :id="formId + '_' + field.name"
-    @change="handleChange($event)" v-model="newitem" :readonly="field.readonly" :required="field.required">
+    @change="handleChange($event)" v-model="newitem" :disabled="field.disabled" :readonly="field.readonly" :required="field.required">
     <option :class="getValueOrFunction(field.optionclass ? field.optionclass : '', { field: field, item: item, option: option })" v-for="option in options" :key="option"
       :value="option.value">
       {{ option.label ? option.label : option.value }}

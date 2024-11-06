@@ -6,58 +6,61 @@
       <h2 v-if="group.title" class="form-row-title mb-4 fw-lighter" v-html="group.title ? group.title : ''"></h2>
 
       <div class="row" v-cloak v-if="item && group.fields">
-        <div :class="[getValueOrFunction(field.class ? field.class : 'col-md-12') , 'input_type_' + field.type]" v-for="field in group.fields" :key="field">
+        <div :class="[getValueOrFunction(field.class ? field.class : 'col-md-12'), 'input_type_' + field.type]" v-for="field in group.fields" :key="field">
 
           <div class="form-group pb-3">
 
-            <span v-if="field.label !== null">
-              <label v-if="['html', 'image', 'upload'].indexOf(field.type) >= 0" :class="{'required' : field.required }" v-cloak class="form-label text-secondary mb-1">
+            <span v-if="field.label">
+              <label v-if="['html', 'image', 'upload'].indexOf(field.type) >= 0" :class="{ 'required': field.required }" v-cloak class="form-label text-secondary mb-1">
                 {{ field.label ? field.label : translate(field.name) }}
                 <span class="badge text-secondary fw-light" v-if="field.maxlength">
                   {{ item[field.name] ? item[field.name].length : 0 }} / {{ field.maxlength }}
                 </span>
               </label>
-              <label v-else :class="{'required' : field.required }" v-cloak class="form-label text-secondary mb-1" :for="formId + '_' + field.name"
+              <label v-else :class="{ 'required': field.required }" v-cloak class="form-label text-secondary mb-1" :for="formId + '_' + field.name"
                 v-html="getValueOrFunction(field.label ? field.label : translate(field.name), { field: field, item: item })">
               </label>
             </span>
 
-            <div class="input-group">
+            <div v-if="['html', 'image', 'list', 'addresses', 'template'].indexOf(field.type) < 0" class="input-group">
               <span v-if="field.prefix" class="input-group-text" v-html="getValueOrFunction(field.prefix, {
                 field: field,
                 item: item
               })"></span>
 
-              <input v-if="field.type == 'text'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="text" :name="field.name" :id="formId + '_' + field.name"
-                v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''"
-                :readonly="field.readonly" :required="field.required" />
+              <input v-if="field.type == 'text'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })"
+                type="text" :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength"
+                :placeholder="field.placeholder ? field.placeholder : ''" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
 
-              <input v-if="field.type == 'number'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="number" :name="field.name" :id="formId + '_' + field.name"
-                v-model="item[field.name]" :min="field.min" :max="field.max" :step="field.step" :placeholder="field.placeholder ? field.placeholder : ''" :readonly="field.readonly"
-                :required="field.required" />
+              <input v-if="field.type == 'number'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })"
+                type="number" :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]" :min="field.min" :max="field.max" :step="field.step"
+                :placeholder="field.placeholder ? field.placeholder : ''" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
 
-              <input v-if="['date', 'datetime', 'datetime-local'].indexOf(field.type) >= 0" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" :type="field.type" :name="field.name" :id="formId + '_' + field.name"
-                v-model="item[field.name]" :min="field.min" :max="field.max" :readonly="field.readonly" :required="field.required" />
+              <input v-if="['date', 'datetime', 'datetime-local'].indexOf(field.type) >= 0" class="form-control"
+                :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })" :type="field.type" :name="field.name"
+                :id="formId + '_' + field.name" v-model="item[field.name]" :min="field.min" :max="field.max" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
 
               <div v-if="field.type == 'checkbox'" class="form-check">
-                <input class="form-check-input" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="checkbox" :name="field.name" :id="formId + '_' + field.name"
-                  :true-value="field.true != undefined ? field.true : true" :false-value="field.false != undefined ? field.false : false" v-model="item[field.name]"
-                  :readonly="field.readonly" :required="field.required" />
+                <input class="form-check-input" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })" type="checkbox"
+                  :name="field.name" :id="formId + '_' + field.name" :true-value="field.true != undefined ? field.true : true"
+                  :false-value="field.false != undefined ? field.false : false" v-model="item[field.name]" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
                 <label class="form-check-label cursor-pointer" :for="formId + '_' + field.name">
                   {{ field.checkbox }}
                 </label>
               </div>
 
-              <input v-if="field.type == 'email'" autocomplete="on" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" type="email" :name="field.name" :id="formId + '_' + field.name"
+              <input v-if="field.type == 'email'" autocomplete="on" class="form-control"
+                :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })" type="email" :name="field.name" :id="formId + '_' + field.name"
                 v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''"
-                :readonly="field.readonly" :required="field.required" />
+                :readonly="field.readonly" :disabled="field.disabled" :required="field.required" />
 
 
-              <VuAdminFormSelect v-if="field.type == 'select' && (!field.relation || (field.relation && field.relation.items))" v-model="item[field.name]" :field="field" :item="item" :settings="settings" :formId="formId"></VuAdminFormSelect>             
+              <VuAdminFormSelect v-if="field.type == 'select' && (!field.relation || (field.relation && field.relation.items))" v-model="item[field.name]" :field="field"
+                :item="item" :settings="settings" :formId="formId"></VuAdminFormSelect>
 
-              <textarea v-if="field.type == 'textarea'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass  : '', { field: field, item:item })" :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]"
-                :rows="field.rows" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''" :readonly="field.readonly"
-                :required="field.required">
+              <textarea v-if="field.type == 'textarea'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })"
+                :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]" :rows="field.rows" :minlength="field.minlength" :maxlength="field.maxlength"
+                :placeholder="field.placeholder ? field.placeholder : ''" :disabled="field.disabled" :readonly="field.readonly" :required="field.required">
               </textarea>
 
               <span v-if="field.suffix" class="input-group-text" v-html="getValueOrFunction(field.suffix, {
@@ -70,8 +73,9 @@
             <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :class="[field.class]"></HtmlEditor>
 
             <FileUpload v-if="field.type == 'image' || field.type == 'upload'" v-model="item[field.name]" :class="[field.class]" :field="field" :settings="settings"></FileUpload>
-            
-            <VuAdminFormList v-if="field.type == 'list' && (!field.relation || (field.relation && field.relation.items))" v-model="item[field.name]" :field="field" :item="item" :settings="settings" :formId="formId"></VuAdminFormList>             
+
+            <VuAdminFormList v-if="field.type == 'list' && (!field.relation || (field.relation && field.relation.items))" v-model="item[field.name]" :field="field" :item="item"
+              :settings="settings" :formId="formId"></VuAdminFormList>
 
             <span v-if="field.type == 'addresses'">
               <div v-if="item[field.name]">
@@ -89,11 +93,18 @@
               </button>
             </span>
 
+            <div v-if="field.type == 'template'" v-html="getValueOrFunction(field.template, {
+                field: field,
+                item: item
+              })">
+            </div>
+
             <div class="p-1" v-if="field.description">
-              <i class="text-muted" v-html="getValueOrFunction(field.description, {
+              <small><i class="text-muted" v-html="getValueOrFunction(field.description, {
                 field: field,
                 item: item
               })"></i>
+              </small>
             </div>
 
 
