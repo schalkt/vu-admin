@@ -4,7 +4,6 @@
     <div class="vua-overlay" :class="{ blocked: ui.block.form }"></div>
     <div class="modal-header">
 
-
       <h5 v-if="loaded" class="modal-title">
         <span v-if="
           settings.form.title &&
@@ -34,23 +33,65 @@
 
     </div>
 
-    <div class="modal-header d-flex justify-content-between" v-cloak v-if="item">
-      <div>
-        <button type="button" class="btn btn-sm btn-secondary m-1" @click="reloadItem()" :disabled="!item[settings.pkey]">
-          <i class="bi bi-arrow-clockwise"></i> {{ translate('Reload') }}
-        </button>
+    <div class="modal-header bg-body sticky-top" v-cloak v-if="item">
+      
+      <div v-cloak v-if="settings.form.control" :class="settings.form.control.class ? settings.form.control.class : 'd-flex justify-content-between'">
 
-        <button type="button" class="btn btn-sm btn-outline-warning m-1" @click="createItem()">
-          <i class="bi bi-plus-circle"></i> {{ translate('New') }}
-        </button>
+        <span v-for="button in settings.form.control.header" :key="button.action">
+          <button v-if="!button.dropdowns" type="button" :disabled="button.disabled !== undefined
+            ? getValueOrFunction(button.disabled, {
+              button: button,
+              item: item,
+              form: this,
+            }) : false" :class="[
+              button.class ? button.class : getButtonClassByAction(button.action),
+            ]" @click="formAction(button, {
+              button: button,
+              item: item,
+              form: this,
+              $event: $event
+            })">
+            <i :class="[
+              button.icon !== undefined
+                ? getValueOrFunction(button.icon, {
+                  button: button,
+                  item: item,
+                  form: this,
+                })
+                : getButtonIconClassByAction(button.action),
+            ]"></i>
+            {{ translate(button.title) }}
+          </button>
 
-        <button type="button" class="btn btn-sm btn-outline-warning m-1" @click="copyItem()">
-          <i class="bi bi-copy"></i> {{ translate('Copy') }}
-        </button>
+          <div class="dropdown d-inline-block" v-cloak v-if="button.dropdowns">
+            <button type="button" :class="[button.class]" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+              <span class="mx-1">
+                <i :class="[
+                  button.icon !== undefined
+                    ? getValueOrFunction(button.icon, {
+                      button: button,
+                      table: this,
+                    })
+                    : getButtonIconClassByAction(button.action),
+                ]"></i> {{ translate(button.title) }}
+              </span>
+            </button>
+            <ul class="dropdown-menu">
+              <li v-for="dropdown in button.dropdowns" :key="dropdown">
+                <span class="dropdown-item cursor-pointer" :class="[dropdown.class]" @click="formAction(dropdown, {
+                  button: button,
+                  item: item,
+                  form: this,
+                  $event: $event
+                })">
+                  <i v-if="dropdown.icon" :class="[dropdown.icon]"></i>
+                  {{ translate(dropdown.title) }}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </span>
 
-        <button type="button" class="btn btn-sm btn-danger m-1" @click="deleteItem()" :disabled="!item[settings.pkey]">
-          <i class="bi bi-trash"></i> {{ translate('Delete') }}
-        </button>
       </div>
 
       <div>
@@ -72,17 +113,6 @@
           </div>
         </div>
 
-        <button type="button" class="btn btn-sm btn-secondary m-1" data-bs-dismiss="modal">
-          <i class="bi bi-x"></i> {{ translate('Close') }}
-        </button>
-
-        <button type="submit" class="btn btn-sm btn-primary m-1">
-          <i class="bi bi-save"></i> {{ translate('Save') }}
-        </button>
-
-        <button type="button" class="btn btn-sm btn-success m-1" @click="submitAndClose">
-          <i class="bi bi-save"></i> {{ translate('Save and close') }}
-        </button>
       </div>
 
     </div>
@@ -91,37 +121,7 @@
       <VuAdminFormGroup v-cloak v-if="settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings"></VuAdminFormGroup>
     </div>
     <div class="modal-footer d-flex justify-content-between" v-cloak v-if="item">
-      <div>
-        <button type="button" class="btn btn-secondary m-1" @click="reloadItem()" :disabled="!item[settings.pkey]">
-          <i class="bi bi-arrow-clockwise"></i> {{ translate('Reload') }}
-        </button>
-
-        <button type="button" class="btn btn-outline-warning m-1" @click="createItem()">
-          <i class="bi bi-plus-circle"></i> {{ translate('New') }}
-        </button>
-
-        <button type="button" class="btn btn-outline-warning m-1" @click="copyItem()">
-          <i class="bi bi-copy"></i> {{ translate('Copy') }}
-        </button>
-
-        <button type="button" class="btn btn-danger m-1" @click="deleteItem()" :disabled="!item[settings.pkey]">
-          <i class="bi bi-trash"></i> {{ translate('Delete') }}
-        </button>
-      </div>
-
-      <div>
-        <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">
-          <i class="bi bi-x"></i> {{ translate('Close') }}
-        </button>
-
-        <button type="submit" class="btn btn-primary m-1">
-          <i class="bi bi-save"></i> {{ translate('Save') }}
-        </button>
-
-        <button type="button" class="btn btn-success m-1" @click="submitAndClose">
-          <i class="bi bi-save"></i> {{ translate('Save and close') }}
-        </button>
-      </div>
+     
     </div>
 
     <pre class="bg-light text-dark" v-if="settings.debug">
@@ -141,7 +141,8 @@ import {
   prepareFetchUrl,
   prepareFetchOptions,
   deepMerge,
-  flattenObject,  
+  flattenObject,
+  getValueOrFunction,
   unflattenObject,
 
 } from "./helpers";
@@ -151,7 +152,7 @@ const VuAdminForm = {
   props: {
     modelValue: Object,
     modalWindow: Object,
-    saveItem: Function,    
+    saveItem: Function,
     reloadTable: Function,
     fetchRelation: Function,
     group: Object,
@@ -201,6 +202,10 @@ const VuAdminForm = {
       return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
     },
 
+    getValueOrFunction(object, params) {
+      return getValueOrFunction(object, params, this.settings, this);
+    },
+
     formWait(block) {
       this.ui.wait.form = true;
       this.ui.block.form = block;
@@ -216,6 +221,7 @@ const VuAdminForm = {
       this.addMessage('form', msg, timeout, priority, details);
 
     },
+
 
     addMessage(type, msg, timeout, priority, details) {
 
@@ -347,6 +353,17 @@ const VuAdminForm = {
       }
     },
 
+    async submit() {
+
+      let form = this.$refs.form;
+
+      if (form.checkValidity()) {
+        this.submitItem();
+      } else {
+        form.reportValidity();
+      }
+    },
+
     async submitAndClose() {
       let form = this.$refs.form;
 
@@ -457,6 +474,59 @@ const VuAdminForm = {
         this.formNoWait();
       }
     },
+
+    formAction(button, params) {
+
+      if (params.$event) {
+        params.$event.stopPropagation();
+      }
+
+      let action = button.action ? button.action
+        : (button.click ? button.click : null);
+
+      if (action && typeof action !== "string") {
+        action(params.item, params, this);
+        return;
+      }
+
+      switch (action) {
+        case "FORM_RELOAD":
+          if (!this.item[this.settings.pkey]) {
+            return;
+          }
+          this.reloadItem();
+          break;
+
+        case "FORM_NEW":
+          this.createItem();
+          break;
+
+        case "FORM_COPY":
+          this.copyItem();
+          break;
+
+        case "FORM_DELETE":
+          if (!this.item[this.settings.pkey]) {
+            return;
+          }
+          this.deleteItem();
+          break;
+
+        case "FORM_CLOSE":
+          this.modalWindow.hide();
+          break;
+
+        case "FORM_SAVE":
+          this.submit();
+          break;
+
+        case "FORM_SAVE_AND_CLOSE":
+          this.submitAndClose();
+          break;
+
+      }
+
+    }
 
   },
   components: {
