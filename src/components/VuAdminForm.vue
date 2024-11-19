@@ -34,10 +34,27 @@
     </div>
 
     <div class="modal-header bg-body sticky-top" v-cloak v-if="item">
-      
-      <div v-cloak v-if="settings.form.control" :class="settings.form.control.class ? settings.form.control.class : 'd-flex justify-content-between'">
 
-        <span v-for="button in settings.form.control.header" :key="button.action">
+      <div class="w-100" v-cloak v-if="settings.form.control" :class="settings.form.control.class == undefined ? 'd-flex justify-content-center' : settings.form.control.class">
+
+        <span class="d-inline-block m-1" v-if="messages.form.length">
+
+          <div class="dropdown d-inline-block">
+            <button class="btn btn-sm dropdown-toggle" :class="['btn-' + messages.form[0].priority]" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+              v-html="messages.form.length + ' ' + (messages.form.length > 1 ? translate('messages') : translate('message'))">
+            </button>
+            <ul class="dropdown-menu text-start">
+              <li v-for="message in messages.form" :key="message">
+                <span class="dropdown-item disabled" :class="['text-' + message.priority]">
+                  <small class="me-2 text-muted">{{ message.datetime }}</small>
+                  <span v-html="message.msg"></span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </span>
+
+        <span v-for="button in settings.form.control.buttons" :key="button.action">
           <button v-if="!button.dropdowns" type="button" :disabled="button.disabled !== undefined
             ? getValueOrFunction(button.disabled, {
               button: button,
@@ -76,9 +93,9 @@
                 ]"></i> {{ translate(button.title) }}
               </span>
             </button>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu px-2">
               <li v-for="dropdown in button.dropdowns" :key="dropdown">
-                <span class="dropdown-item cursor-pointer" :class="[dropdown.class]" @click="formAction(dropdown, {
+                <span :class="[dropdown.class ? dropdown.class : '']" @click="formAction(dropdown, {
                   button: button,
                   item: item,
                   form: this,
@@ -94,34 +111,13 @@
 
       </div>
 
-      <div>
-
-        <div class="d-inline-block m-1" v-if="messages.form.length">
-
-          <div class="dropdown d-inline-block">
-            <button class="btn btn-sm dropdown-toggle" :class="['btn-' + messages.form[0].priority]" type="button" data-bs-toggle="dropdown" aria-expanded="false"
-              v-html="messages.form.length + ' ' + (messages.form.length > 1 ? translate('messages') : translate('message'))">
-            </button>
-            <ul class="dropdown-menu text-start">
-              <li v-for="message in messages.form" :key="message">
-                <span class="dropdown-item" :class="['text-' + message.priority]">
-                  <small class="me-2 text-muted">{{ message.datetime }}</small>
-                  <span v-html="message.msg"></span>
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-      </div>
-
     </div>
 
     <div class="modal-body custom-scroll" v-if="settings.form">
       <VuAdminFormGroup v-cloak v-if="settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings"></VuAdminFormGroup>
     </div>
     <div class="modal-footer d-flex justify-content-between" v-cloak v-if="item">
-     
+
     </div>
 
     <pre class="bg-light text-dark" v-if="settings.debug">

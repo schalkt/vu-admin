@@ -12533,13 +12533,13 @@ const rO = /* @__PURE__ */ He(xN, [["render", iO], ["__scopeId", "data-v-1803ff0
 }, yO = {
   key: 0,
   class: "modal-header bg-body sticky-top"
-}, vO = ["disabled", "onClick"], _O = {
-  key: 1,
-  class: "dropdown d-inline-block"
-}, EO = { class: "mx-1" }, wO = { class: "dropdown-menu" }, TO = ["onClick"], AO = {
+}, vO = {
   key: 0,
   class: "d-inline-block m-1"
-}, NO = { class: "dropdown d-inline-block" }, OO = ["innerHTML"], CO = { class: "dropdown-menu text-start" }, LO = { class: "me-2 text-muted" }, SO = ["innerHTML"], kO = {
+}, _O = { class: "dropdown d-inline-block" }, EO = ["innerHTML"], wO = { class: "dropdown-menu text-start" }, TO = { class: "me-2 text-muted" }, AO = ["innerHTML"], NO = ["disabled", "onClick"], OO = {
+  key: 1,
+  class: "dropdown d-inline-block"
+}, CO = { class: "mx-1" }, LO = { class: "dropdown-menu px-2" }, SO = ["onClick"], kO = {
   key: 1,
   class: "modal-body custom-scroll"
 }, xO = {
@@ -12600,9 +12600,32 @@ function RO(s, t, e, n, i, r) {
     s.item ? (m(), y("div", yO, [
       s.settings.form.control ? (m(), y("div", {
         key: 0,
-        class: R(s.settings.form.control.class ? s.settings.form.control.class : "d-flex justify-content-between")
+        class: R(["w-100", s.settings.form.control.class == null ? "d-flex justify-content-center" : s.settings.form.control.class])
       }, [
-        (m(!0), y(H, null, W(s.settings.form.control.header, (l) => (m(), y("span", {
+        s.messages.form.length ? (m(), y("span", vO, [
+          g("div", _O, [
+            g("button", {
+              class: R(["btn btn-sm dropdown-toggle", ["btn-" + s.messages.form[0].priority]]),
+              type: "button",
+              "data-bs-toggle": "dropdown",
+              "aria-expanded": "false",
+              innerHTML: s.messages.form.length + " " + (s.messages.form.length > 1 ? s.translate("messages") : s.translate("message"))
+            }, null, 10, EO),
+            g("ul", wO, [
+              (m(!0), y(H, null, W(s.messages.form, (l) => (m(), y("li", { key: l }, [
+                g("span", {
+                  class: R(["dropdown-item disabled", ["text-" + l.priority]])
+                }, [
+                  g("small", TO, S(l.datetime), 1),
+                  g("span", {
+                    innerHTML: l.msg
+                  }, null, 8, AO)
+                ], 2)
+              ]))), 128))
+            ])
+          ])
+        ])) : A("", !0),
+        (m(!0), y(H, null, W(s.settings.form.control.buttons, (l) => (m(), y("span", {
           key: l.action
         }, [
           l.dropdowns ? A("", !0) : (m(), y("button", {
@@ -12633,8 +12656,8 @@ function RO(s, t, e, n, i, r) {
               ])
             }, null, 2),
             z(" " + S(s.translate(l.title)), 1)
-          ], 10, vO)),
-          l.dropdowns ? (m(), y("div", _O, [
+          ], 10, NO)),
+          l.dropdowns ? (m(), y("div", OO, [
             g("button", {
               type: "button",
               class: R([[l.class], "dropdown-toggle"]),
@@ -12642,7 +12665,7 @@ function RO(s, t, e, n, i, r) {
               "data-bs-auto-close": "outside",
               "aria-expanded": "false"
             }, [
-              g("span", EO, [
+              g("span", CO, [
                 g("i", {
                   class: R([
                     l.icon !== void 0 ? s.getValueOrFunction(l.icon, {
@@ -12654,10 +12677,10 @@ function RO(s, t, e, n, i, r) {
                 z(" " + S(s.translate(l.title)), 1)
               ])
             ], 2),
-            g("ul", wO, [
+            g("ul", LO, [
               (m(!0), y(H, null, W(l.dropdowns, (a) => (m(), y("li", { key: a }, [
                 g("span", {
-                  class: R(["dropdown-item cursor-pointer", [a.class]]),
+                  class: R([a.class ? a.class : ""]),
                   onClick: (u) => s.formAction(a, {
                     button: l,
                     item: s.item,
@@ -12670,37 +12693,12 @@ function RO(s, t, e, n, i, r) {
                     class: R([a.icon])
                   }, null, 2)) : A("", !0),
                   z(" " + S(s.translate(a.title)), 1)
-                ], 10, TO)
+                ], 10, SO)
               ]))), 128))
             ])
           ])) : A("", !0)
         ]))), 128))
-      ], 2)) : A("", !0),
-      g("div", null, [
-        s.messages.form.length ? (m(), y("div", AO, [
-          g("div", NO, [
-            g("button", {
-              class: R(["btn btn-sm dropdown-toggle", ["btn-" + s.messages.form[0].priority]]),
-              type: "button",
-              "data-bs-toggle": "dropdown",
-              "aria-expanded": "false",
-              innerHTML: s.messages.form.length + " " + (s.messages.form.length > 1 ? s.translate("messages") : s.translate("message"))
-            }, null, 10, OO),
-            g("ul", CO, [
-              (m(!0), y(H, null, W(s.messages.form, (l) => (m(), y("li", { key: l }, [
-                g("span", {
-                  class: R(["dropdown-item", ["text-" + l.priority]])
-                }, [
-                  g("small", LO, S(l.datetime), 1),
-                  g("span", {
-                    innerHTML: l.msg
-                  }, null, 8, SO)
-                ], 2)
-              ]))), 128))
-            ])
-          ])
-        ])) : A("", !0)
-      ])
+      ], 2)) : A("", !0)
     ])) : A("", !0),
     s.settings.form ? (m(), y("div", kO, [
       s.settings.form.visible && s.settings.form.groups ? (m(), es(o, {
@@ -12716,7 +12714,7 @@ function RO(s, t, e, n, i, r) {
     `, 1)) : A("", !0)
   ], 42, lO)) : A("", !0);
 }
-const $O = /* @__PURE__ */ He(aO, [["render", RO], ["__scopeId", "data-v-53754a37"]]), DO = {
+const $O = /* @__PURE__ */ He(aO, [["render", RO], ["__scopeId", "data-v-c42a5154"]]), DO = {
   name: "VuAdminTablePagination",
   emits: ["setPage", "setPageLimit", "translate"],
   props: {
@@ -14659,9 +14657,9 @@ const LS = /* @__PURE__ */ He(iC, [["render", CS], ["__scopeId", "data-v-8fb598a
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.38"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.39"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.38"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.39"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },

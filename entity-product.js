@@ -583,56 +583,64 @@ let form = {
 		title: 'New product'
 	},
 	control: {
-		class: null,
-		header: [
+		class: 'text-end',
+		buttons: [						
+			{
+				title: 'More actions',
+				class: 'btn btn-sm btn-outline-dark m-1',
+                icon: 'bi bi-list',
+                dropdowns: [
+					{
+						action: 'FORM_COPY',
+						title: 'Copy',	
+						class: 'dropdown-item cursor-pointer p-1',					
+						icon: 'bi bi-copy',
+					},
+					{
+						action: 'FORM_NEW',
+						title: 'New product',
+						class: 'dropdown-item cursor-pointer p-1',					
+						icon: 'bi bi-plus-circle',
+					},
+					{
+						title: 'Export data',
+						class: 'dropdown-item cursor-pointer p-1',		
+						icon: 'bi bi-filetype-csv',
+						action: (item, params) => {
+							console.log(item);
+							console.log(params);
+	
+							if (confirm('Are you sure?')) {
+								console.log(items);
+								alert('Hello :)');
+							}
+	
+						},
+						params: {
+							export: true,
+							type: 'default',
+						},						
+					},
+					{
+						action: 'FORM_DELETE',
+						title: 'Delete',						
+						class: 'dropdown-item cursor-pointer p-1 text-danger',					
+						icon: 'bi bi-trash',		
+						disabled: (params) => {					
+							return params.item[params.form.settings.pkey] ? false : true;					
+						}		
+					},
+				]
+			},
 			{
 				action: 'FORM_RELOAD',
 				title: 'Reload',
-				class: 'btn btn-sm btn-secondary m-1',
+				class: 'btn btn-sm btn-outline-dark m-1',
 				icon: 'bi bi-arrow-clockwise',
 				disabled: (params) => {
 					return params.item[params.form.settings.pkey] ? false : true;					
 				}
-			},
-			{
-				action: 'FORM_NEW',
-				title: 'New product',
-				class: 'btn btn-sm btn-outline-warning m-1',
-				icon: 'bi bi-plus-circle',
-			},
-			{
-				action: 'FORM_COPY',
-				title: 'Copy',
-				class: 'btn btn-sm btn-outline-warning m-1',
-				icon: 'bi bi-copy',
-			},
-			{
-				action: 'FORM_DELETE',
-				title: 'Delete',
-				class: 'btn btn-sm btn-danger m-1',
-				icon: 'bi bi-trash',		
-				disabled: (params) => {					
-					return params.item[params.form.settings.pkey] ? false : true;					
-				}		
-			},
-			{
-				title: 'Export',
-				class: 'btn btn-sm btn-primary m-1',
-				icon: 'bi bi-download',
-				dropdowns: [{
-					action: (item, params) => {
-						console.log(item);
-						console.log(params);
-					},
-					params: {
-						export: true,
-						type: 'default',
-					},
-					title: 'Default export',
-					class: 'fw-bolder',
-					icon: 'bi bi-filetype-csv'
-				}]
-			},
+			},					
 			{
 				action: 'FORM_CLOSE',
 				title: 'Close',
@@ -652,22 +660,7 @@ let form = {
 				icon: 'bi bi-save',
 			},		
 
-		],
-		footer: [
-			{
-				action: function (items) {
-
-					if (confirm('Are you sure?')) {
-						console.log(items);
-						alert('Hello :)');
-					}
-
-				},
-				title: 'Hello',
-				class: 'btn btn-sm btn-dark m-1',
-				icon: 'bi bi-emoji-smile',
-			},
-		]
+		],		
 	},
 	groups: [
 		{
