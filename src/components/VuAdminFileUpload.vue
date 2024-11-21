@@ -79,7 +79,7 @@
                         <ul class="dropdown-menu">
                           <li>
                             <span v-for="tag in params.tags" :key="tag" class="dropdown-item cursor-pointer" @click="dropdownSelectToggleOne(file.tags, tag.value)">
-                              <i v-if="(file.tags.indexOf(tag.value) >= 0)" class="bi bi-check-square"></i>
+                              <i v-if="(file.tags && file.tags.indexOf(tag.value) >= 0)" class="bi bi-check-square"></i>
                               <i v-else class="bi bi-square"></i>
                               {{ translate(tag.label ? tag.label : tag.value) }}
                             </span>
@@ -335,7 +335,7 @@
                   <ul class="dropdown-menu">
                     <li>
                       <span v-for="tag in params.tags" :key="tag" class="dropdown-item cursor-pointer" @click="dropdownSelectToggleOne(file.tags, tag.value)">
-                        <i v-if="(file.tags.indexOf(tag.value) >= 0)" class="bi bi-check-square"></i>
+                        <i v-if="(file.tags && file.tags.indexOf(tag.value) >= 0)" class="bi bi-check-square"></i>
                         <i v-else class="bi bi-square"></i>
                         {{ translate(tag.label ? tag.label : tag.value) }}
                       </span>
@@ -482,6 +482,11 @@ const FileUpload = {
     let uid = Math.round(Math.random() * 100000);
     this.uploadId = "image_upload_" + uid;
     this.params = this.field.params;
+
+    for (let file of this.files) {
+      this.setDefaults(file);      
+    }
+
   },
   mounted() {
 
@@ -489,13 +494,7 @@ const FileUpload = {
 
     if (!this.editfile) {
       this.editfile = [];
-    }
-
-    for (let file of this.files) {
-      if (this.params.tags && !file.tags) {
-        file.tags = [];
-      }
-    }
+    }   
 
   },
   watch: {
@@ -553,7 +552,18 @@ const FileUpload = {
 
     },
 
+
+    setDefaults(file) {
+
+      if (this.params.tags && !file.tags) {
+        file.tags = [];
+      }
+
+    },
+
     detect(file) {
+
+      this.setDefaults(file);
 
       file.bytes = 0;
       file.types = {
@@ -571,11 +581,7 @@ const FileUpload = {
         modified: file.lastModified,
         extension: this.extensionByFilename(file.name)
       };
-
-      if (this.params.tags) {
-        file.tags = [];
-      }
-
+     
       if (Object.values(fileType.video).indexOf(file.original.mime) >= 0) {
         file.isVideo = true;
       } else if (Object.values(fileType.image).indexOf(file.original.mime) >= 0) {

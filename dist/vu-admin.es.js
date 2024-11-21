@@ -11013,11 +11013,11 @@ const Qw = /* @__PURE__ */ He(Gw, [["render", Zw], ["__scopeId", "data-v-443c4ed
   created() {
     let s = Math.round(Math.random() * 1e5);
     this.uploadId = "image_upload_" + s, this.params = this.field.params;
+    for (let t of this.files)
+      this.setDefaults(t);
   },
   mounted() {
     this.editfile = this.modelValue, this.editfile || (this.editfile = []);
-    for (let s of this.files)
-      this.params.tags && !s.tags && (s.tags = []);
   },
   watch: {
     modelValue(s) {
@@ -11042,8 +11042,11 @@ const Qw = /* @__PURE__ */ He(Gw, [["render", Zw], ["__scopeId", "data-v-443c4ed
         }
       return t.join(",");
     },
+    setDefaults(s) {
+      this.params.tags && !s.tags && (s.tags = []);
+    },
     detect(s) {
-      s.bytes = 0, s.types = {
+      this.setDefaults(s), s.bytes = 0, s.types = {
         default: {}
       }, s.title = s.name.split(".").slice(0, -1).join("."), s.uid = Math.round(Math.random() * 9999999).toString(32) + Date.now().toString(32), s.slug = ti(s.title), s.timestamp = Math.round(Date.now() / 1e3), s.original = {
         bytes: s.size,
@@ -11051,7 +11054,7 @@ const Qw = /* @__PURE__ */ He(Gw, [["render", Zw], ["__scopeId", "data-v-443c4ed
         name: s.name,
         modified: s.lastModified,
         extension: this.extensionByFilename(s.name)
-      }, this.params.tags && (s.tags = []), Object.values(Bt.video).indexOf(s.original.mime) >= 0 ? s.isVideo = !0 : Object.values(Bt.image).indexOf(s.original.mime) >= 0 ? s.isImage = !0 : Object.values(Bt.document).indexOf(s.original.mime) >= 0 ? s.isDocument = !0 : s.isUnknown = !0, (s.isVideo || s.isImage && !this.params.presets.default) && (this.params.presets.default = {
+      }, Object.values(Bt.video).indexOf(s.original.mime) >= 0 ? s.isVideo = !0 : Object.values(Bt.image).indexOf(s.original.mime) >= 0 ? s.isImage = !0 : Object.values(Bt.document).indexOf(s.original.mime) >= 0 ? s.isDocument = !0 : s.isUnknown = !0, (s.isVideo || s.isImage && !this.params.presets.default) && (this.params.presets.default = {
         width: 1920,
         height: 1920,
         extension: "webp",
@@ -11407,7 +11410,7 @@ function fN(s, t, e, n, i, r) {
                             class: "dropdown-item cursor-pointer",
                             onClick: (u) => s.dropdownSelectToggleOne(o.tags, a.value)
                           }, [
-                            o.tags.indexOf(a.value) >= 0 ? (m(), b("i", xT)) : (m(), b("i", IT)),
+                            o.tags && o.tags.indexOf(a.value) >= 0 ? (m(), b("i", xT)) : (m(), b("i", IT)),
                             z(" " + S(s.translate(a.label ? a.label : a.value)), 1)
                           ], 8, kT))), 128))
                         ])
@@ -11680,7 +11683,7 @@ function fN(s, t, e, n, i, r) {
                         class: "dropdown-item cursor-pointer",
                         onClick: (u) => s.dropdownSelectToggleOne(o.tags, a.value)
                       }, [
-                        o.tags.indexOf(a.value) >= 0 ? (m(), b("i", XA)) : (m(), b("i", ZA)),
+                        o.tags && o.tags.indexOf(a.value) >= 0 ? (m(), b("i", XA)) : (m(), b("i", ZA)),
                         z(" " + S(s.translate(a.label ? a.label : a.value)), 1)
                       ], 8, YA))), 128))
                     ])
@@ -11756,7 +11759,7 @@ function fN(s, t, e, n, i, r) {
     ], 2)
   ]);
 }
-const pN = /* @__PURE__ */ He(tT, [["render", fN], ["__scopeId", "data-v-881aa5de"]]), gN = {
+const pN = /* @__PURE__ */ He(tT, [["render", fN], ["__scopeId", "data-v-7957b5c3"]]), gN = {
   props: {
     modelValue: String | Object | Number,
     optionValue: String,
@@ -14734,9 +14737,9 @@ const UL = /* @__PURE__ */ He(vC, [["render", FL], ["__scopeId", "data-v-8fb598a
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.42"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.43"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.42"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.43"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
