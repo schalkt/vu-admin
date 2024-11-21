@@ -84,6 +84,24 @@
                               {{ translate(tag.label ? tag.label : tag.value) }}
                             </span>
                           </li>
+                          <li>
+                            <hr class="dropdown-divider">
+                          </li>
+                          <li>
+                            <span class="dropdown-item cursor-pointer" @click="dropdownSelectAll(file.tags, params.tags)">
+                              {{ translate('Select all') }}
+                            </span>
+                          </li>
+                          <li>
+                            <span class="dropdown-item cursor-pointer" @click="dropdownSelectClear(file.tags)">
+                              {{ translate('Unselect all') }}
+                            </span>
+                          </li>
+                          <li>
+                            <span class="dropdown-item cursor-pointer" @click="dropdownSelectInvert(file.tags, params.tags)">
+                              {{ translate('Invert all') }}
+                            </span>
+                          </li>
                         </ul>
                       </div>
 
@@ -238,7 +256,7 @@
                 <img v-else class="img-fluid rounded transparent-background" :src="file.types[params.thumbnail].data" :alt="file.name" />
 
               </div>
-            
+
               <div class="display-3 w-100 h-100 text-center mb-auto d-flex align-items-center justify-content-center" v-if="file.isDocument">
                 <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
               </div>
@@ -987,12 +1005,12 @@ const FileUpload = {
 
     dropdownSelectAll(array, options) {
       arraySelectAll(array, options);
-      this.$forceUpdate();      
+      this.$forceUpdate();
     },
 
     dropdownSelectInvert(array, options) {
       arraySelectInvert(array, options);
-      this.$forceUpdate();      
+      this.$forceUpdate();
     },
 
     dropdownSelectClear(array) {
@@ -1004,7 +1022,7 @@ const FileUpload = {
       }
 
       this.$forceUpdate();
-      
+
     },
 
   },
