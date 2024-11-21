@@ -187,8 +187,14 @@ export default {
       }
 
       if (this.settings.debug) {
+        
         console.log('vu-admin ', __APP_VERSION__);
         console.log(`Entity config (${this.entity}) initialized`);
+        
+        if (this.settings.debug > 1) {
+          console.log(this.settings);
+        }
+
       }
 
     } else {

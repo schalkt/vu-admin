@@ -12794,11 +12794,11 @@ function GO(s, t, e, n, i, r) {
       }, null, 8, ["modelValue", "formid", "settings"])) : A("", !0)
     ])) : A("", !0),
     s.item ? (m(), b("div", zO)) : A("", !0),
-    s.settings.debug ? (m(), b("pre", KO, "        " + S(s.item) + `
+    s.settings.debug > 1 ? (m(), b("pre", KO, "        " + S(s.item) + `
     `, 1)) : A("", !0)
   ], 42, TO)) : A("", !0);
 }
-const YO = /* @__PURE__ */ He(wO, [["render", GO], ["__scopeId", "data-v-c42a5154"]]), XO = {
+const YO = /* @__PURE__ */ He(wO, [["render", GO], ["__scopeId", "data-v-4016e47a"]]), XO = {
   name: "VuAdminTablePagination",
   emits: ["setPage", "setPageLimit", "translate"],
   props: {
@@ -14492,8 +14492,8 @@ function FL(s, t, e, n, i, r) {
                 g("span", {
                   innerHTML: e.settings.table.details.raw(a)
                 }, null, 8, TL),
-                e.settings.debug ? (m(), b("pre", AL, "                " + S(a) + `
-              `, 1)) : A("", !0)
+                e.settings.debug > 1 ? (m(), b("pre", AL, "                  " + S(a) + `
+                `, 1)) : A("", !0)
               ], 10, mL)
             ])) : A("", !0)
           ], 64))), 128))
@@ -14613,7 +14613,7 @@ function FL(s, t, e, n, i, r) {
     ], 10, EC)
   ])) : A("", !0);
 }
-const UL = /* @__PURE__ */ He(vC, [["render", FL], ["__scopeId", "data-v-8fb598a9"]]), HL = {
+const UL = /* @__PURE__ */ He(vC, [["render", FL], ["__scopeId", "data-v-dbf03bec"]]), HL = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14741,9 +14741,9 @@ const UL = /* @__PURE__ */ He(vC, [["render", FL], ["__scopeId", "data-v-8fb598a
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.45"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.46"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.45"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.46"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },

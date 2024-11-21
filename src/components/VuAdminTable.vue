@@ -503,9 +503,9 @@
 
                 <span v-html="settings.table.details.raw(item)"></span>
 
-                <pre class="bg-light text-dark" v-if="settings.debug">
-                {{ item }}
-              </pre>
+                <pre class="bg-light text-dark" v-if="settings.debug > 1">
+                  {{ item }}
+                </pre>
 
               </td>
             </tr>

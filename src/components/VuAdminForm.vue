@@ -120,7 +120,7 @@
 
     </div>
 
-    <pre class="bg-light text-dark" v-if="settings.debug">
+    <pre class="bg-light text-dark" v-if="settings.debug > 1">
         {{ item }}
     </pre>
 
