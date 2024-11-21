@@ -340,6 +340,24 @@
                         {{ translate(tag.label ? tag.label : tag.value) }}
                       </span>
                     </li>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                      <span class="dropdown-item cursor-pointer" @click="dropdownSelectAll(file.tags, params.tags)">
+                        {{ translate('Select all') }}
+                      </span>
+                    </li>
+                    <li>
+                      <span class="dropdown-item cursor-pointer" @click="dropdownSelectClear(file.tags)">
+                        {{ translate('Unselect all') }}
+                      </span>
+                    </li>
+                    <li>
+                      <span class="dropdown-item cursor-pointer" @click="dropdownSelectInvert(file.tags, params.tags)">
+                        {{ translate('Invert all') }}
+                      </span>
+                    </li>
                   </ul>
                 </div>
 
@@ -430,7 +448,10 @@ import { nextTick } from 'vue';
 import {
   slugify,
   translate,
-  arrayToggleOne
+  arrayToggleOne,
+  arraySelectAll,
+  arraySelectInvert,
+  arraySelectClear,
 } from "./helpers";
 
 const fileType = {
@@ -962,6 +983,28 @@ const FileUpload = {
     dropdownSelectToggleOne(tags, value) {
       arrayToggleOne(tags, value);
       this.$forceUpdate();
+    },
+
+    dropdownSelectAll(array, options) {
+      arraySelectAll(array, options);
+      this.$forceUpdate();      
+    },
+
+    dropdownSelectInvert(array, options) {
+      arraySelectInvert(array, options);
+      this.$forceUpdate();      
+    },
+
+    dropdownSelectClear(array) {
+
+      if (typeof (array) != "object") {
+        array.value = null;
+      } else {
+        arraySelectClear(array);
+      }
+
+      this.$forceUpdate();
+      
     },
 
   },
