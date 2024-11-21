@@ -72,6 +72,21 @@
                         <img v-else height="32" width="auto" class="" :src="file.types[params.thumbnail].data" :alt="file.name" />
                       </span>
 
+                      <div class="dropdown rounded-bottom" v-if="params.tags">
+                        <button class="btn btn-sm bg-light text-dark w-100" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
+                          {{ file.tags ? file.tags.length : 0 }} tag(s)
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li>
+                            <span v-for="tag in params.tags" :key="tag" class="dropdown-item cursor-pointer" @click="dropdownSelectToggleOne(file.tags, tag.value)">
+                              <i v-if="(file.tags.indexOf(tag.value) >= 0)" class="bi bi-check-square"></i>
+                              <i v-else class="bi bi-square"></i>
+                              {{ translate(tag.label ? tag.label : tag.value) }}
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+
                       <div class="dropdown">
                         <button class="btn btn-sm bg-light text-dark dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         </button>
@@ -215,7 +230,7 @@
               </div>
 
               <div v-if="file.types && file.types[params.thumbnail]" class="vsa-image-frame mb-auto text-center">
-                <img class="img-fluid" :src="file.types[params.thumbnail].url
+                <img class="img-fluid rounded transparent-background" :src="file.types[params.thumbnail].url
                   ? file.types[params.thumbnail].url
                   : file.types[params.thumbnail].data
                   " :alt="file.name" />
@@ -225,87 +240,105 @@
                 <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
               </div>
 
-              <input required="text" class="form-control rounded-0 rounded-top py-1 px-2 fw-light" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
+              <input required="text" class="form-control rounded-0 rounded-top py-1 px-2 fw-light mt-1" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
+              <div class="w-100 d-flex justify-content-around align-items-center">
 
-              <div class="dropdown rounded-bottom border w-100">
-                <button class="btn btn-sm bg-light text-dark dropdown-toggle w-100 h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                </button>
-                <ul class="dropdown-menu">
-                  <li>
-                    <button class="dropdown-item text-danger py-1" @click="remove(index)" type="button">
-                      <i class="bi bi-x-circle"></i> Remove
-                    </button>
-                  </li>
-
-                  <li v-if="file.uploaded">
-                    <button class="dropdown-item text-primary py-1" @click="download(index, params)" type="button">
-                      <i class="bi bi-download"></i> Download
-                    </button>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li v-if="file.original.width">
-                    <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">original resolution</span> {{ file.original.width }} x {{ file.original.height }}
-                    </small>
-                  </li>
-                  <li v-if="!file.isDocument">
-                    <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">original size & extension</span>
-                      <span>
-                        <span v-html="roundFileSize(file.original.bytes, true)"></span>
-                        <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ file.original.extension }}</small>
-                      </span>
-                    </small>
-                  </li>
-
-                  <template v-for="(type, preset) in file.types" :key="type">
-
-                    <li v-if="!file.isDocument">
-                      <hr class="dropdown-divider">
+                <div class="dropdown rounded-bottom border w-100">
+                  <button class="btn btn-sm bg-light text-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Menu
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <button class="dropdown-item text-danger py-1" @click="remove(index)" type="button">
+                        <i class="bi bi-x-circle"></i> Remove
+                      </button>
                     </li>
 
+                    <li v-if="file.uploaded">
+                      <button class="dropdown-item text-primary py-1" @click="download(index, params)" type="button">
+                        <i class="bi bi-download"></i> Download
+                      </button>
+                    </li>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
                     <li v-if="file.original.width">
                       <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-4"><span class="text-primary">{{ preset }}</span> resolution & crop</span>
+                        <span class="text-muted fw-light me-3">original resolution</span> {{ file.original.width }} x {{ file.original.height }}
+                      </small>
+                    </li>
+                    <li v-if="!file.isDocument">
+                      <small class="dropdown-item py-0 d-flex justify-content-between">
+                        <span class="text-muted fw-light me-3">original size & extension</span>
                         <span>
-                          {{ type.width }} x {{ type.height }}
-                          <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm" v-if="type.crop">{{ type.crop }}</small>
+                          <span v-html="roundFileSize(file.original.bytes, true)"></span>
+                          <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ file.original.extension }}</small>
                         </span>
+                      </small>
+                    </li>
+
+                    <template v-for="(type, preset) in file.types" :key="type">
+
+                      <li v-if="!file.isDocument">
+                        <hr class="dropdown-divider">
+                      </li>
+
+                      <li v-if="file.original.width">
+                        <small class="dropdown-item py-0 d-flex justify-content-between">
+                          <span class="text-muted fw-light me-4"><span class="text-primary">{{ preset }}</span> resolution & crop</span>
+                          <span>
+                            {{ type.width }} x {{ type.height }}
+                            <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm" v-if="type.crop">{{ type.crop }}</small>
+                          </span>
+                        </small>
+                      </li>
+                      <li>
+                        <small class="dropdown-item py-0 d-flex justify-content-between">
+                          <span class="text-muted fw-light me-1"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> size & extension</span>
+                          <span>
+                            <span :class="{ 'text-danger': type.bytes > file.original.bytes }" v-html="roundFileSize(type.bytes, true)"></span>
+                            <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ type.extension }}</small>
+                          </span>
+                        </small>
+                      </li>
+
+                    </template>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li v-if="file.uploaded">
+                      <small class="dropdown-item py-0 d-flex justify-content-between">
+                        <span class="text-muted fw-light me-3">uploaded at</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
                       </small>
                     </li>
                     <li>
                       <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-1"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> size & extension</span>
-                        <span>
-                          <span :class="{ 'text-danger': type.bytes > file.original.bytes }" v-html="roundFileSize(type.bytes, true)"></span>
-                          <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ type.extension }}</small>
-                        </span>
+                        <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
                       </small>
                     </li>
+                    <li>
+                      <small class="dropdown-item py-0 d-flex justify-content-between">
+                        <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} filename</span> <span>{{ file.slug }}</span>
+                      </small>
+                    </li>
+                  </ul>
 
-                  </template>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li v-if="file.uploaded">
-                    <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">uploaded at</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
-                    </small>
-                  </li>
-                  <li>
-                    <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
-                    </small>
-                  </li>
-                  <li>
-                    <small class="dropdown-item py-0 d-flex justify-content-between">
-                      <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} filename</span> <span>{{ file.slug }}</span>
-                    </small>
-                  </li>
-                </ul>
+                </div>
 
+                <div class="dropdown rounded-bottom border w-100" v-if="params.tags">
+                  <button class="btn btn-sm bg-light text-dark w-100" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ file.tags ? file.tags.length : 0 }} tag(s)
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <span v-for="tag in params.tags" :key="tag" class="dropdown-item cursor-pointer" @click="dropdownSelectToggleOne(file.tags, tag.value)">
+                        <i v-if="(file.tags.indexOf(tag.value) >= 0)" class="bi bi-check-square"></i>
+                        <i v-else class="bi bi-square"></i>
+                        {{ translate(tag.label ? tag.label : tag.value) }}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
 
               </div>
 
@@ -389,7 +422,13 @@
 
 <script>
 
-import { slugify } from "./helpers";
+import { nextTick } from 'vue';
+
+import {
+  slugify,
+  translate,
+  arrayToggleOne
+} from "./helpers";
 
 const fileType = {
   "image": {
@@ -522,6 +561,10 @@ const FileUpload = {
         modified: file.lastModified,
         extension: this.extensionByFilename(file.name)
       };
+
+      if (this.params.tags) {
+        file.tags = [];
+      }
 
       if (Object.values(fileType.video).indexOf(file.original.mime) >= 0) {
         file.isVideo = true;
@@ -891,6 +934,16 @@ const FileUpload = {
       return null; // Ha nem található a MIME-típus
 
     },
+
+    translate(key, vars, language) {
+      return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
+    },
+
+    dropdownSelectToggleOne(tags, value) {
+      arrayToggleOne(tags, value);
+      this.$forceUpdate();
+    },
+
   },
 };
 
@@ -900,6 +953,15 @@ export default FileUpload;
 <style lang="scss" scoped>
 .vu-admin {
   .vsa-upload {
+
+    .transparent-background {
+      background:
+        linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%, #cccccc),
+        linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%, #cccccc);
+      background-position: 0 0, 4px 4px;
+      background-size: 8px 8px;
+    }
+
 
     @keyframes vsa-spin {
       to {

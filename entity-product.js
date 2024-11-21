@@ -584,51 +584,51 @@ let form = {
 	},
 	control: {
 		class: 'text-end',
-		buttons: [						
+		buttons: [
 			{
 				title: 'More actions',
 				class: 'btn btn-sm btn-outline-dark m-1',
-                icon: 'bi bi-list',
-                dropdowns: [
+				icon: 'bi bi-list',
+				dropdowns: [
 					{
 						action: 'FORM_COPY',
-						title: 'Copy',	
-						class: 'dropdown-item cursor-pointer p-1',					
+						title: 'Copy',
+						class: 'dropdown-item cursor-pointer p-1',
 						icon: 'bi bi-copy',
 					},
 					{
 						action: 'FORM_NEW',
 						title: 'New product',
-						class: 'dropdown-item cursor-pointer p-1',					
+						class: 'dropdown-item cursor-pointer p-1',
 						icon: 'bi bi-plus-circle',
 					},
 					{
 						title: 'Export data',
-						class: 'dropdown-item cursor-pointer p-1',		
+						class: 'dropdown-item cursor-pointer p-1',
 						icon: 'bi bi-filetype-csv',
 						action: (item, params) => {
 							console.log(item);
 							console.log(params);
-	
+
 							if (confirm('Are you sure?')) {
 								console.log(items);
 								alert('Hello :)');
 							}
-	
+
 						},
 						params: {
 							export: true,
 							type: 'default',
-						},						
+						},
 					},
 					{
 						action: 'FORM_DELETE',
-						title: 'Delete',						
-						class: 'dropdown-item cursor-pointer p-1 text-danger',					
-						icon: 'bi bi-trash',		
-						disabled: (params) => {					
-							return params.item[params.form.settings.pkey] ? false : true;					
-						}		
+						title: 'Delete',
+						class: 'dropdown-item cursor-pointer p-1 text-danger',
+						icon: 'bi bi-trash',
+						disabled: (params) => {
+							return params.item[params.form.settings.pkey] ? false : true;
+						}
 					},
 				]
 			},
@@ -638,9 +638,9 @@ let form = {
 				class: 'btn btn-sm btn-outline-dark m-1',
 				icon: 'bi bi-arrow-clockwise',
 				disabled: (params) => {
-					return params.item[params.form.settings.pkey] ? false : true;					
+					return params.item[params.form.settings.pkey] ? false : true;
 				}
-			},					
+			},
 			{
 				action: 'FORM_CLOSE',
 				title: 'Close',
@@ -658,9 +658,9 @@ let form = {
 				title: 'Save and close',
 				class: 'btn btn-sm btn-success m-1',
 				icon: 'bi bi-save',
-			},		
+			},
 
-		],		
+		],
 	},
 	groups: [
 		{
@@ -695,8 +695,8 @@ let form = {
 						}
 					]
 				},
-				{			
-					type: 'template',		
+				{
+					type: 'template',
 					template: (value) => {
 						return `<div class="border rounded p-1 text-secondary fw-light overflow-auto"><small>${JSON.stringify(value)}</small></div>`
 					},
@@ -759,7 +759,7 @@ let form = {
 				{
 					type: 'list',
 					name: 'owners',
-					label: 'Owners',					
+					label: 'Owners',
 					sortable: true,
 					elements: {
 						owner: {
@@ -908,7 +908,7 @@ let form = {
 					params: {
 						ui: 'list',
 						limit: 15,
-						colclass: 'col-4',
+						colclass: 'col-6',
 						text: 'Click here to upload',
 						accept: [
 							"txt",
@@ -922,6 +922,14 @@ let form = {
 							"webp",
 							"mp4"
 						],
+						tags: [{
+							value: 'public',
+							label: 'Public',
+						},
+						{
+							value: 'hidden',
+							label: 'Hidden',
+						}],
 						thumbnail: 'thumbnail',
 						presets: {
 							thumbnail: {
