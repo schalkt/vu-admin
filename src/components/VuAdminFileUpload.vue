@@ -230,10 +230,13 @@
               </div>
 
               <div v-if="file.types && file.types[params.thumbnail]" class="vsa-image-frame mb-auto text-center">
-                <img class="img-fluid rounded transparent-background" :src="file.types[params.thumbnail].url
-                  ? file.types[params.thumbnail].url
-                  : file.types[params.thumbnail].data
-                  " :alt="file.name" />
+
+                <a v-if="file.types[params.thumbnail].url">
+                  <img class="img-fluid rounded transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
+                </a>
+
+                <img v-else class="img-fluid rounded transparent-background" :src="file.types[params.thumbnail].data" :alt="file.name" />
+
               </div>
 
               <div class="display-3 w-100 text-center mb-auto" v-if="file.isDocument">
@@ -487,6 +490,13 @@ const FileUpload = {
     if (!this.editfile) {
       this.editfile = [];
     }
+
+    for (let file of this.files) {
+      if (this.params.tags && !file.tags) {
+        file.tags = [];
+      }
+    }
+
   },
   watch: {
     modelValue(newValue) {
