@@ -11260,7 +11260,7 @@ const Qw = /* @__PURE__ */ He(Gw, [["render", Zw], ["__scopeId", "data-v-443c4ed
   class: "vsa-image-frame mb-auto text-center"
 }, hA = { key: 0 }, dA = ["src", "alt"], fA = ["src", "alt"], pA = {
   key: 2,
-  class: "display-3 w-100 text-center mb-auto"
+  class: "display-3 w-100 h-100 text-center mb-auto d-flex align-items-center justify-content-center"
 }, gA = ["onUpdate:modelValue", "onInput"], mA = { class: "w-100 d-flex justify-content-around align-items-center" }, bA = { class: "dropdown rounded-bottom border w-100" }, yA = { class: "dropdown-menu" }, vA = ["onClick"], _A = { key: 0 }, EA = ["onClick"], wA = { key: 1 }, TA = { class: "dropdown-item py-0 d-flex justify-content-between" }, AA = { key: 2 }, NA = { class: "dropdown-item py-0 d-flex justify-content-between" }, OA = ["innerHTML"], CA = { class: "fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm" }, SA = { key: 0 }, LA = { key: 1 }, kA = { class: "dropdown-item py-0 d-flex justify-content-between" }, xA = { class: "text-muted fw-light me-4" }, IA = { class: "text-primary" }, $A = {
   key: 0,
   class: "fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm"
@@ -11763,7 +11763,7 @@ function fN(s, t, e, n, i, r) {
     ], 2)
   ]);
 }
-const pN = /* @__PURE__ */ He(tT, [["render", fN], ["__scopeId", "data-v-f25cc76e"]]), gN = {
+const pN = /* @__PURE__ */ He(tT, [["render", fN], ["__scopeId", "data-v-2805f76d"]]), gN = {
   props: {
     modelValue: String | Object | Number,
     optionValue: String,
@@ -14741,9 +14741,9 @@ const UL = /* @__PURE__ */ He(vC, [["render", FL], ["__scopeId", "data-v-8fb598a
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.44"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.45"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.44"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.45"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
