@@ -482,11 +482,6 @@ const FileUpload = {
     let uid = Math.round(Math.random() * 100000);
     this.uploadId = "image_upload_" + uid;
     this.params = this.field.params;
-
-    for (let file of this.files) {
-      this.setDefaults(file);      
-    }
-
   },
   mounted() {
 
@@ -494,15 +489,24 @@ const FileUpload = {
 
     if (!this.editfile) {
       this.editfile = [];
-    }   
+    }
 
   },
   watch: {
     modelValue(newValue) {
+
       if (newValue === undefined || newValue === null) {
+
         this.reset();
+
       } else {
+
+        for (let file of newValue) {
+          this.setDefaults(file);
+        }
+
         this.files = newValue;
+
       }
     },
   },
@@ -581,7 +585,7 @@ const FileUpload = {
         modified: file.lastModified,
         extension: this.extensionByFilename(file.name)
       };
-     
+
       if (Object.values(fileType.video).indexOf(file.original.mime) >= 0) {
         file.isVideo = true;
       } else if (Object.values(fileType.image).indexOf(file.original.mime) >= 0) {

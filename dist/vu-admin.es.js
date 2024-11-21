@@ -11013,15 +11013,19 @@ const Qw = /* @__PURE__ */ He(Gw, [["render", Zw], ["__scopeId", "data-v-443c4ed
   created() {
     let s = Math.round(Math.random() * 1e5);
     this.uploadId = "image_upload_" + s, this.params = this.field.params;
-    for (let t of this.files)
-      this.setDefaults(t);
   },
   mounted() {
     this.editfile = this.modelValue, this.editfile || (this.editfile = []);
   },
   watch: {
     modelValue(s) {
-      s == null ? this.reset() : this.files = s;
+      if (s == null)
+        this.reset();
+      else {
+        for (let t of s)
+          this.setDefaults(t);
+        this.files = s;
+      }
     }
   },
   methods: {
@@ -11759,7 +11763,7 @@ function fN(s, t, e, n, i, r) {
     ], 2)
   ]);
 }
-const pN = /* @__PURE__ */ He(tT, [["render", fN], ["__scopeId", "data-v-7957b5c3"]]), gN = {
+const pN = /* @__PURE__ */ He(tT, [["render", fN], ["__scopeId", "data-v-f25cc76e"]]), gN = {
   props: {
     modelValue: String | Object | Number,
     optionValue: String,
@@ -14737,9 +14741,9 @@ const UL = /* @__PURE__ */ He(vC, [["render", FL], ["__scopeId", "data-v-8fb598a
         const s = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = s || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.43"), console.log(`Entity config (${this.entity}) initialized`));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.44"), console.log(`Entity config (${this.entity}) initialized`));
     } else
-      console.log("vu-admin ", "1.2.43"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.44"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
