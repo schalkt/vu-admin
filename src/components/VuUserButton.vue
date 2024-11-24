@@ -23,7 +23,7 @@
         </ul>
 
     </div>
-    <div v-else>
+    <div v-else class="d-inline-block">
         <button class="btn btn-outline-secondary" type="button" @click="togglePanel">
             <i class="bi bi-box-arrow-in-right"></i> Bejelentkezés
         </button>
