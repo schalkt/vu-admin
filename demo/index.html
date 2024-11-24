@@ -19,17 +19,73 @@
 </head>
 
 <body>
-  
+
   <div class="container-fluid" id="app">
-    <vu-admin :entity="'carts'"></vu-admin>
+
+    <vu-user-button v-model="auth"></vu-user-button>
+
+    <vu-auth v-model="auth" :settings="{
+      maxwidth: 400,
+      api: {
+        login: 'https://dummyjson.com/auth/login',
+        register: '/api/auth/register',
+        password: '/api/auth/password',
+      },
+      username: {
+        value: 'emilys',
+        type: 'text',
+        label: 'Felhasználónév',
+        icon: 'bi bi-envelope',
+        placeholder: 'Add meg a felhasználóneved',
+        help: 'A Freemail és Citromail szolgáltatók nem minden esetben fogadják be megfelelően az e-maileket, így a kézbesítés nem garantált.'
+      },
+      password: {
+        icon: 'bi bi-key-fill',
+        help: 'Kisbetű, nagybetű, szám, min. 8 karakter.'
+      },
+      _help: '<strong>Segítség</strong><br>Az alábbiakban...',
+      accepts: [{
+        text: 'Elfogadom az ÁSZF-et',
+        link:
+        {
+          label: 'ÁSZF',
+          url: '/aszf.pdf'
+        },
+
+      },
+      {
+        text: 'Elfogadom az ÁSZF-et',
+        link:
+        {
+          label: 'Adatkezelési tájékoztató',
+          url: '/adatkezelesi-tajekoztato.pdf'
+        }
+
+      }],
+      onsuccess: (responseData) => {
+
+       
+        // console.log(userdata);
+      }
+    }"></vu-auth>
+
+    <vu-admin :entity="'carts'" :auth="auth"></vu-admin>
   </div>
 
   <script src="./entity-demo.js"></script>
   <script src="./../dist/vu-admin.umd.js"></script>
   <script>
 
-    const app = Vue.createApp();
+    const app = Vue.createApp({
+      data() {
+        return {
+          auth: null
+        }
+      },
+    });
     app.component('vu-admin', VuAdmin.VuAdmin);
+    app.component('vu-auth', VuAdmin.VuAuth);
+    app.component('vu-user-button', VuAdmin.VuUserButton);
     app.mount('#app');
 
   </script>

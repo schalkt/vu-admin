@@ -5,7 +5,7 @@
             <img height="22" :src="auth.user.image">
             {{ auth.user.username }}
         </button>
-        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
             <li>
                 <span class="dropdown-item text-muted fw-light">
                     {{ auth.user.firstName }}
