@@ -14800,9 +14800,9 @@ const GS = /* @__PURE__ */ ue(Nk, [["render", KS], ["__scopeId", "data-v-973beb0
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.50"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.51"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.50"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.51"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -15204,7 +15204,7 @@ const I2 = {
   "data-bs-toggle": "dropdown",
   "aria-expanded": "false"
 }, D2 = ["src"], M2 = {
-  class: "dropdown-menu",
+  class: "dropdown-menu dropdown-menu-end",
   "aria-labelledby": "userDropdown"
 }, q2 = { class: "dropdown-item text-muted fw-light" }, B2 = { key: 1 };
 function P2(e, t, s, n, i, r) {
@@ -15247,7 +15247,7 @@ function P2(e, t, s, n, i, r) {
     ]))
   ]));
 }
-const j2 = /* @__PURE__ */ ue(x2, [["render", P2], ["__scopeId", "data-v-184ac4a2"]]), G2 = {
+const j2 = /* @__PURE__ */ ue(x2, [["render", P2], ["__scopeId", "data-v-44fee08b"]]), G2 = {
   install(e) {
     e.component("VuAdmin", t2), e.component("VuAuth", L2), e.component("VuUserButton", j2);
   }
