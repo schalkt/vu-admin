@@ -11814,7 +11814,7 @@ function vN(e, t, s, n, i, r) {
     ], 2)
   ]);
 }
-const _N = /* @__PURE__ */ ue(tT, [["render", vN], ["__scopeId", "data-v-c479efa1"]]), EN = {
+const _N = /* @__PURE__ */ ue(tT, [["render", vN], ["__scopeId", "data-v-606ed6ec"]]), EN = {
   props: {
     modelValue: String | Object | Number,
     optionValue: String,
@@ -14800,9 +14800,9 @@ const GS = /* @__PURE__ */ ue(Nk, [["render", KS], ["__scopeId", "data-v-973beb0
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.51"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.52"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.51"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.52"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
