@@ -1,7 +1,7 @@
 <template>
-  <div v-cloak v-if="entity && settings">
-    <div class="vu-admin" :data-bs-theme="[settings.theme]">
-      <vu-admin-table :settings="settings"></vu-admin-table>
+  <div v-cloak v-if="entity && settings">    
+    <div v-if="auth" class="vu-admin" :data-bs-theme="[settings.theme]">
+      <vu-admin-table :settings="settings" :auth="auth"></vu-admin-table>
     </div>
   </div>
 </template>
@@ -11,12 +11,15 @@
 import VuAdminTable from "./VuAdminTable.vue";
 import { deepMerge } from "./helpers";
 
-export default {
+const VuAdmin = {
   name: "VuAdmin",
   props: {
     entity: {
       type: String,
       required: true,
+    },
+    auth: {
+      type: Object,      
     }
   },
   init: (params) => {
@@ -25,8 +28,7 @@ export default {
     }
   },
   data() {
-    return {
-
+    return {     
       settings: undefined,
       defaults: {
         // primary id field name
@@ -182,6 +184,8 @@ export default {
       //   );
       // }
 
+      this.settings.auth = this.auth;
+
       if (this.settings.events.afterSettingsInit) {
         this.settings.events.afterSettingsInit(this.settings);
       }
@@ -209,6 +213,9 @@ export default {
     VuAdminTable,
   },
 };
+
+export default VuAdmin;
+export { VuAdmin };
 
 </script>
 

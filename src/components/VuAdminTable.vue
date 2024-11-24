@@ -1,7 +1,7 @@
 <template>
-  <div v-cloak v-if="settings && settings.table">
+  <div>
 
-    <div class="vua-table-container" :class="[settings.class]" :data-bs-theme="[settings.theme]">
+    <div v-cloak v-if="authAndSettings()" class="vua-table-container" :class="[settings.class]" :data-bs-theme="[settings.theme]">
 
       <div class="vua-overlay" :class="{ blocked: ui.block.table }"></div>
       <div class="vua-table-title">
@@ -579,8 +579,10 @@
       </table>
 
       <VuAdminTablePagination :settings="settings" :config="config" :ui="ui" @setPage="setPage" @setPageLimit="setPageLimit" @translate="translate"></VuAdminTablePagination>
+      
+    </div>
 
-      <div class="modal shadow" :id="modalId" tabindex="-1">
+    <div class="modal shadow" :id="modalId" tabindex="-1">
         <div class="modal-dialog modal-xl">
           <div class="modal-content h-100">
             <VuAdminForm v-cloak v-if="settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings" :modalWindow="modalWindow"
@@ -588,9 +590,8 @@
           </div>
         </div>
       </div>
-    </div>
 
-  </div>
+  </div>  
 </template>
 
 <script>
@@ -632,6 +633,7 @@ export default {
   name: "VuAdminTable",
   props: {
     settings: Object,
+    auth: Object,          
   },
   components: {
     VuAdminForm,
@@ -774,6 +776,7 @@ export default {
     this.resetTable();
   },
   mounted() {
+    
     this.modalElement = document.getElementById(this.modalId);
     this.modalWindow = new Modal(this.modalElement);
 
@@ -790,6 +793,10 @@ export default {
   },
 
   methods: {
+
+    authAndSettings() {
+      return this.auth && this.auth.user && this.settings && this.settings.table;
+    },
 
     sendEvent(eventName, eventTarget, payload) {
       eventBus.emit(eventName + '-' + eventTarget, {
