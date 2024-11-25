@@ -51,7 +51,7 @@
           class: 'btn btn-warning me-2',
           label: 'Regisztráció',
           icon: 'bi bi-person-plus me-2',
-          panel: 'registration'
+          panel: 'registration',
         }"></vu-user-button>
         <vu-user-button v-model="auth" :settings="{
           class: 'btn btn-primary',

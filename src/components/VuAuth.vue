@@ -315,6 +315,13 @@ const VuAuth = {
 
         console.log(this.settings);
         
+        if (!this.auth) {
+            this.auth = {
+                user: undefined,
+                success: false
+            };
+        }
+
         this.userUpdate();
         this.checkStorage();
         this.reset();

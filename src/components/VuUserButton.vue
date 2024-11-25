@@ -1,33 +1,34 @@
 <template>
 
-    <div v-if="auth && auth.user" class="dropdown">
-        <button class="dropdown-toggle" :class="[settings.class]" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <img class="img-fluid rounded" width="22" :src="auth.user.image">
-            {{ auth.user.username }}
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li>
-                <span class="dropdown-item text-muted fw-light">
-                    {{ auth.user.firstName }}
-                    {{ auth.user.lastName }}
-                    <br>
-                    {{ auth.user.email }}
-                </span>
-            </li>
-            <li class="dropdown-divider"></li>
-            <li>
-                <button type="button" class="dropdown-item" @click="logout">
-                    <i class="bi bi-door-open"></i> Kilépés
-                </button>
-            </li>
-        </ul>
-
-    </div>
-    <div v-else class="d-inline-block">
-        <button :class="[settings.class]" type="button" @click="togglePanel">
-            <i v-if="settings.icon" :class="[settings.icon]"></i>
-            <span v-html="settings.label"></span>
-        </button>
+    <div v-if="(!auth || !auth.user && settings.panel != 'login') || settings.panel == 'login'" class="d-inline-block">
+        <div v-if="auth && auth.user" class="dropdown">
+            <button class="dropdown-toggle" :class="[settings.class]" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-fluid rounded" width="22" :src="auth.user.image">
+                {{ auth.user.username }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li>
+                    <span class="dropdown-item text-muted fw-light">
+                        {{ auth.user.firstName }}
+                        {{ auth.user.lastName }}
+                        <br>
+                        {{ auth.user.email }}
+                    </span>
+                </li>
+                <li class="dropdown-divider"></li>
+                <li>
+                    <button type="button" class="dropdown-item" @click="logout">
+                        <i class="bi bi-door-open"></i> Kilépés
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div v-else class="d-inline-block">
+            <button :class="[settings.class]" type="button" @click="togglePanel">
+                <i v-if="settings.icon" :class="[settings.icon]"></i>
+                <span v-html="settings.label"></span>
+            </button>
+        </div>
     </div>
 
 </template>

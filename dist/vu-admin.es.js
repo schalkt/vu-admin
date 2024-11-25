@@ -14800,9 +14800,9 @@ const GS = /* @__PURE__ */ ue(Nk, [["render", KS], ["__scopeId", "data-v-973beb0
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.54"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.55"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.54"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.55"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -14923,7 +14923,10 @@ const e2 = {
       const e = document.createElement("script");
       e.src = "https://www.google.com/recaptcha/api.js", e.async = !0, e.defer = !0, document.head.appendChild(e);
     }
-    this.settings.username.value && (this.username = this.settings.username.value), console.log(this.settings), this.userUpdate(), this.checkStorage(), this.reset();
+    this.settings.username.value && (this.username = this.settings.username.value), console.log(this.settings), this.auth || (this.auth = {
+      user: void 0,
+      success: !1
+    }), this.userUpdate(), this.checkStorage(), this.reset();
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
@@ -15159,7 +15162,7 @@ function R2(e, t, s, n, i, r) {
     ])
   ])) : T("", !0);
 }
-const M2 = /* @__PURE__ */ ue(s2, [["render", R2], ["__scopeId", "data-v-ee31e8f7"]]);
+const M2 = /* @__PURE__ */ ue(s2, [["render", R2], ["__scopeId", "data-v-734ca795"]]);
 ol();
 const D2 = {
   name: "VuUserButton",
@@ -15202,74 +15205,79 @@ const D2 = {
   }
 }, q2 = D2, B2 = {
   key: 0,
+  class: "d-inline-block"
+}, P2 = {
+  key: 0,
   class: "dropdown"
-}, P2 = ["src"], j2 = {
+}, j2 = ["src"], V2 = {
   class: "dropdown-menu dropdown-menu-end",
   "aria-labelledby": "userDropdown"
-}, V2 = { class: "dropdown-item text-muted fw-light" }, F2 = {
+}, F2 = { class: "dropdown-item text-muted fw-light" }, U2 = {
   key: 1,
   class: "d-inline-block"
-}, U2 = ["innerHTML"];
-function H2(e, t, s, n, i, r) {
-  return e.auth && e.auth.user ? (g(), b("div", B2, [
-    f("button", {
-      class: L(["dropdown-toggle", [e.settings.class]]),
-      type: "button",
-      id: "userDropdown",
-      "data-bs-toggle": "dropdown",
-      "aria-expanded": "false"
-    }, [
-      f("img", {
-        class: "img-fluid rounded",
-        width: "22",
-        src: e.auth.user.image
-      }, null, 8, P2),
-      F(" " + O(e.auth.user.username), 1)
-    ], 2),
-    f("ul", j2, [
-      f("li", null, [
-        f("span", V2, [
-          F(O(e.auth.user.firstName) + " " + O(e.auth.user.lastName) + " ", 1),
-          t[2] || (t[2] = f("br", null, null, -1)),
-          F(" " + O(e.auth.user.email), 1)
+}, H2 = ["innerHTML"];
+function z2(e, t, s, n, i, r) {
+  return !e.auth || !e.auth.user && e.settings.panel != "login" || e.settings.panel == "login" ? (g(), b("div", B2, [
+    e.auth && e.auth.user ? (g(), b("div", P2, [
+      f("button", {
+        class: L(["dropdown-toggle", [e.settings.class]]),
+        type: "button",
+        id: "userDropdown",
+        "data-bs-toggle": "dropdown",
+        "aria-expanded": "false"
+      }, [
+        f("img", {
+          class: "img-fluid rounded",
+          width: "22",
+          src: e.auth.user.image
+        }, null, 8, j2),
+        F(" " + O(e.auth.user.username), 1)
+      ], 2),
+      f("ul", V2, [
+        f("li", null, [
+          f("span", F2, [
+            F(O(e.auth.user.firstName) + " " + O(e.auth.user.lastName) + " ", 1),
+            t[2] || (t[2] = f("br", null, null, -1)),
+            F(" " + O(e.auth.user.email), 1)
+          ])
+        ]),
+        t[4] || (t[4] = f("li", { class: "dropdown-divider" }, null, -1)),
+        f("li", null, [
+          f("button", {
+            type: "button",
+            class: "dropdown-item",
+            onClick: t[0] || (t[0] = (...o) => e.logout && e.logout(...o))
+          }, t[3] || (t[3] = [
+            f("i", { class: "bi bi-door-open" }, null, -1),
+            F(" Kilépés ")
+          ]))
         ])
-      ]),
-      t[4] || (t[4] = f("li", { class: "dropdown-divider" }, null, -1)),
-      f("li", null, [
-        f("button", {
-          type: "button",
-          class: "dropdown-item",
-          onClick: t[0] || (t[0] = (...o) => e.logout && e.logout(...o))
-        }, t[3] || (t[3] = [
-          f("i", { class: "bi bi-door-open" }, null, -1),
-          F(" Kilépés ")
-        ]))
       ])
-    ])
-  ])) : (g(), b("div", F2, [
-    f("button", {
-      class: L([e.settings.class]),
-      type: "button",
-      onClick: t[1] || (t[1] = (...o) => e.togglePanel && e.togglePanel(...o))
-    }, [
-      e.settings.icon ? (g(), b("i", {
-        key: 0,
-        class: L([e.settings.icon])
-      }, null, 2)) : T("", !0),
-      f("span", {
-        innerHTML: e.settings.label
-      }, null, 8, U2)
-    ], 2)
-  ]));
+    ])) : (g(), b("div", U2, [
+      f("button", {
+        class: L([e.settings.class]),
+        type: "button",
+        onClick: t[1] || (t[1] = (...o) => e.togglePanel && e.togglePanel(...o))
+      }, [
+        e.settings.icon ? (g(), b("i", {
+          key: 0,
+          class: L([e.settings.icon])
+        }, null, 2)) : T("", !0),
+        f("span", {
+          innerHTML: e.settings.label
+        }, null, 8, H2)
+      ], 2)
+    ]))
+  ])) : T("", !0);
 }
-const z2 = /* @__PURE__ */ ue(q2, [["render", H2], ["__scopeId", "data-v-f130091d"]]), J2 = {
+const W2 = /* @__PURE__ */ ue(q2, [["render", z2], ["__scopeId", "data-v-250fe1f0"]]), tL = {
   install(e) {
-    e.component("VuAdmin", t2), e.component("VuAuth", M2), e.component("VuUserButton", z2);
+    e.component("VuAdmin", t2), e.component("VuAuth", M2), e.component("VuUserButton", W2);
   }
 };
 export {
   t2 as VuAdmin,
   M2 as VuAuth,
-  z2 as VuUserButton,
-  J2 as default
+  W2 as VuUserButton,
+  tL as default
 };
