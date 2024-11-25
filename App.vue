@@ -15,11 +15,25 @@
             label: 'Felhasználónév',
             icon: 'bi bi-envelope',
             placeholder: 'Add meg a felhasználóneved',
-            help: 'A Freemail és Citromail szolgáltatók nem minden esetben fogadják be megfelelően az e-maileket, így a kézbesítés nem garantált.'
+            _help: 'A Freemail és Citromail szolgáltatók nem minden esetben fogadják be megfelelően az e-maileket, így a kézbesítés nem garantált.'
           },
           password: {
+            label: 'Jelszó',
             icon: 'bi bi-key-fill',
-            help: 'Kisbetű, nagybetű, szám, min. 8 karakter.'
+            placeholder: 'Add meg a jelszavad',
+            type: 'password',
+            help: 'Legyen benne legalább 1 kisbetű, 1 nagybetű és 1 szám. Minimum 4 karakter.',
+            _pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
+            pattern: '^(?=.*[a-z]).+$',
+            minlength: 4,
+            hash: 0
+          },
+          password_again: {
+            label: 'Jelszó ismét',
+            icon: 'bi bi-key-fill',
+            type: 'password',
+            placeholder: 'Ismételd meg a jelszavad',
+            _help: 'Ide gépeld be újra a jelszavadat amit megadtál.'
           },
           _help: '<strong>Segítség</strong><br>Az alábbiakban...',
           accepts: [{

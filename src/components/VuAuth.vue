@@ -2,9 +2,10 @@
 
     <div v-if="auth && auth.visible" class="vua-auth position-fixed">
         <div class="d-flex justify-content-center align-items-center min-vh-100" @click.stop="close">
-            <div class="card shadow p-4 position-relative" :style="{ 'max-width': (settings.maxwidth ? settings.maxwidth : 400) + 'px' }" _style="width: 100%;">
+            <div class="card shadow p-4 position-relative bg-light" @click.stop="" :style="{ 'max-width': (settings.maxwidth ? settings.maxwidth : 400) + 'px' }"
+                _style="width: 100%;">
 
-                <button type="button" class="btn btn- position-absolute top-0 end-0 p-0 m-2 bg-light" @click.stop="close">
+                <button type="button" class="btn position-absolute top-0 end-0 p-0 m-2" @click.stop="close">
                     <i class="bi bi-x px-1 text-muted"></i>
                 </button>
 
@@ -38,10 +39,10 @@
                     <div class="mb-3">
                         <label for="username" class="form-label text-primary">{{ settings.username.label }}</label>
                         <div class="input-group">
-                            <span v-if="settings.username.icon" class="input-group-text rounded-bottom-0">
+                            <span v-if="settings.username.icon" class="input-group-text" :class="{ 'rounded-bottom-0': settings.username.help }">
                                 <i :class="[settings.username.icon]"></i>
                             </span>
-                            <input id="username" :type="settings.username.type" v-model="username" class="form-control rounded-bottom-0"
+                            <input id="username" :type="settings.username.type" v-model="username" class="form-control" :class="{ 'rounded-bottom-0': settings.username.help }"
                                 :placeholder="settings.username.placeholder" required />
                         </div>
                         <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="settings.username.help" v-html="settings.username.help"></small>
@@ -51,30 +52,62 @@
                     <template v-if="auth.panel != 'forgot'">
 
                         <div class="mb-3">
-                            <label for="password" class="form-label text-primary">Jelszó</label>
+                            <label for="password" class="form-label text-primary">
+                                {{ settings.password.label }}
+                            </label>
                             <div class="input-group">
                                 <span v-if="settings.password.icon" class="input-group-text"
-                                    :class="{'rounded-bottom-0' : auth.panel == 'registration'}">
+                                    :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }">
                                     <i :class="[settings.password.icon]"></i>
                                 </span>
-                                <input id="password" type="password" v-model="password" class="form-control" 
-                                    :class="{'rounded-bottom-0' : auth.panel == 'registration'}"
-                                    placeholder="Add meg a jelszavad" minlength="8"
-                                    required />
+                                <input id="password" :type="settings.password.type" v-model="password" class="form-control"
+                                    :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }" :placeholder="settings.password.placeholder"
+                                    :pattern="settings.password.pattern" :minlength="auth.panel == 'registration' ? settings.password.minlength : 1" required />
+                                <span v-if="auth.panel == 'registration'" class="input-group-text"
+                                    :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }">
+                                    <small class="" :class="{
+                                        'text-success': password.length >= settings.password.minlength,
+                                        'text-danger': password.length < settings.password.minlength,
+                                    }">{{ password.length }}</small>
+                                </span>
+                                <span class="cursor-pointer input-group-text" @click.stop="toggleType('password')"
+                                    :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }">
+                                    <i v-if="settings.password.type == 'password'" class="bi bi-eye"></i>
+                                    <i v-else class="bi bi-eye-slash"></i>
+                                </span>
                             </div>
-                            <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted"                                 
-                                v-if="auth.panel == 'registration' && settings.password.help" v-html="settings.password.help"></small>
+                            <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="auth.panel == 'registration' && settings.password.help"
+                                v-html="settings.password.help"></small>
                         </div>
 
                         <div class="mb-4" v-if="auth.panel === 'registration'">
-                            <label for="password_again" class="form-label text-primary">Jelszó ismét</label>
+                            <label for="password_again" class="form-label text-primary">
+                                {{ settings.password_again.label }}
+                                <small v-if="password_again.length > 0 && password_again != password" class="text-danger">
+                                    ( a két jelszó nem egyezik )
+                                </small>
+                            </label>
                             <div class="input-group">
-                                <span v-if="settings.password.icon" class="input-group-text">
-                                    <i :class="[settings.password.icon]"></i>
+                                <span v-if="settings.password.icon" class="input-group-text" :class="{ 'rounded-bottom-0': settings.password_again.help }">
+                                    <i :class="[settings.password_again.icon]"></i>
                                 </span>
-                                <input id="password_again" type="password" v-model="password_again" class="form-control" placeholder="Ismételd meg a jelszavad" minlength="8"
-                                    required />
+                                <input id="password_again" :type="settings.password_again.type" v-model="password_again" class="form-control"
+                                    :class="{ 'rounded-bottom-0': settings.password_again.help }" :placeholder="settings.password_again.placeholder"
+                                    :minlength="settings.password.minlength" required />
+                                <span class="input-group-text" :class="{ 'rounded-bottom-0': settings.password_again.help }">
+                                    <small class="" :class="{
+                                        'text-success': password_again.length >= settings.password.minlength,
+                                        'text-danger': password_again.length < settings.password.minlength,
+                                    }">{{ password_again.length }}</small>
+                                </span>
+                                <span class="cursor-pointer input-group-text" @click.stop="toggleType('password_again')"
+                                    :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password_again.help }">
+                                    <i v-if="settings.password_again.type == 'password'" class="bi bi-eye"></i>
+                                    <i v-else class="bi bi-eye-slash"></i>
+                                </span>
                             </div>
+                            <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="auth.panel == 'registration' && settings.password_again.help"
+                                v-html="settings.password_again.help"></small>
                         </div>
 
                         <!-- reCAPTCHA -->
@@ -84,10 +117,10 @@
                     </template>
 
                     <div class="mb-3 text-center" v-if="auth.panel == 'login'">
-                        <button type="button" class="btn btn-link p-0 text-decoration-none" @click.stop="toggleForgotPassword">
+                        <button type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleForgotPassword">
                             Elfelejtetted a jelszavad?
                         </button>
-                        <button v-if="settings.help" type="button" class="btn btn-link p-0 text-decoration-none" @click.stop="toggleHelp">
+                        <button v-if="settings.help" type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleHelp">
                             Segítségre van szükséged?
                         </button>
                     </div>
@@ -102,13 +135,13 @@
 
                     <!-- Beküldés gomb -->
                     <div class="d-flex justify-content-between">
-                        <button v-if="auth.panel != 'login'" type="button" @click.stop="toggleClear" class="btn btn-secondary w-100 me-2">
+                        <button v-if="auth.panel != 'login'" type="button" @click.stop="toggleClear" class="btn btn-secondary w-100 me-2 text-nowrap">
                             <i class="bi bi-arrow-left-square mx-1"></i> Bejelentkezés
                         </button>
-                        <button v-if="auth.panel == 'login'" type="button" class="btn btn-warning w-100 me-2" @click.stop="toggleNewRegistration">
+                        <button v-if="auth.panel == 'login'" type="button" class="btn btn-warning w-100 me-2 text-nowrap" @click.stop="toggleNewRegistration">
                             <i class="bi bi-person-plus mx-1"></i> Regisztráció
                         </button>
-                        <button type="submit" class="btn w-100" :class="{'btn-primary' : auth.panel != 'registration', 'btn-warning': auth.panel == 'registration'}">
+                        <button type="submit" class="btn w-100 text-nowrap" :class="{ 'btn-primary': auth.panel != 'registration', 'btn-warning': auth.panel == 'registration' }">
                             {{ auth.panel == 'forgot' ? 'Új jelszó kérése' : (auth.panel == 'registration' ? 'Regisztráció' : 'Bejelentkezés') }}
                             <i v-if="auth.panel == 'registration'" class="bi bi-person-plus mx-1"></i>
                             <i v-else class="bi bi-arrow-right-square mx-1"></i>
@@ -135,6 +168,7 @@
 <script>
 
 import mitt from 'mitt';
+import { sha384 } from 'crypto-hash';
 const eventBus = mitt();
 
 const VuAuth = {
@@ -183,7 +217,7 @@ const VuAuth = {
                 this.handleForgotPasswordSubmit();
             }
 
-            if (this.auth.panel == 'registraton') {
+            if (this.auth.panel == 'registration') {
                 this.handleNewRegistrationSubmit();
             }
 
@@ -197,23 +231,20 @@ const VuAuth = {
                 return;
             }
 
-            const response = await fetch(
-                this.settings.api.login,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        username: this.username,
-                        password: this.password,
-                    }),
-                }
+            const response = await fetch(this.settings.api.login, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: this.username,
+                    password: await this.hashPassword(this.password)
+                }),
+            }
             );
 
             if (response.ok) {
 
                 const responseData = await response.json();
+
                 this.userUpdate(responseData);
 
                 this.responseOk = true;
@@ -235,6 +266,41 @@ const VuAuth = {
 
         },
 
+        async handleNewRegistrationSubmit() {
+
+            if (!this.username || !this.password || !this.password_again) {
+                return;
+            }
+
+            if (this.password != this.password_again) {
+                return;
+            }
+
+            const response = await fetch(this.settings.api.register, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: this.username,
+                    password: await this.hashPassword(this.password)
+                }),
+            });
+
+            if (response.ok) {
+
+                const responseData = await response.json();
+                this.responseOk = true;
+                this.responseMessage = 'Sikeres regisztráció';                
+                
+
+            } else {
+                this.responseOk = false;
+                this.responseMessage = 'Sikertelen regisztráció';
+            }
+
+
+
+        },
+
         handleForgotPasswordSubmit() {
             // Elfelejtett jelszó logika
             console.log("Elfelejtett jelszó e-mail beküldve:", this.email);
@@ -243,13 +309,26 @@ const VuAuth = {
             this.reset();
         },
 
+        async hashPassword(password) {
+
+            this.settings.password.hash = this.settings.password.hash === undefined ? 0 : this.settings.password.hash;
+            let password_hashed = password;
+
+            for (let i = 0; i < this.settings.password.hash; i++) {
+                password_hashed = await sha384(password_hashed);
+            }
+
+            return password_hashed;
+
+        },
+
         reset() {
 
             this.password = "";
             this.password_again = "";
             this.responseMessage = "";
             this.responseOk = false;
-           
+
         },
 
         close() {
@@ -278,6 +357,11 @@ const VuAuth = {
             this.reset();
         },
 
+        toggleType(field) {
+            this.settings[field].type = this.settings[field].type != 'password' ? 'password' : 'text';
+            this.$forceUpdate();
+        },
+
         onCaptchaClick() {
             // reCAPTCHA validálás
             console.log("reCAPTCHA clicked");
@@ -291,7 +375,7 @@ const VuAuth = {
 
         handleEscapeKey(event) {
             if (event.key === "Escape") {
-                this.close(); 
+                this.close();
             }
         },
 
@@ -314,7 +398,7 @@ const VuAuth = {
         }
 
         console.log(this.settings);
-        
+
         if (!this.auth) {
             this.auth = {
                 user: undefined,
@@ -342,6 +426,10 @@ export { VuAuth };
     inset: 0px;
     background-color: rgba(242, 242, 242, 0.95);
     z-index: 99999;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }
 
 .container {
