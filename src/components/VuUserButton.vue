@@ -1,8 +1,8 @@
 <template>
 
     <div v-if="auth && auth.user" class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <img height="22" :src="auth.user.image">
+        <button class="dropdown-toggle" :class="[settings.class]" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <img class="img-fluid rounded" width="22" :src="auth.user.image">
             {{ auth.user.username }}
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -24,8 +24,9 @@
 
     </div>
     <div v-else class="d-inline-block">
-        <button class="btn btn-outline-secondary" type="button" @click="togglePanel">
-            <i class="bi bi-box-arrow-in-right"></i> Bejelentkezés
+        <button :class="[settings.class]" type="button" @click="togglePanel">
+            <i v-if="settings.icon" :class="[settings.icon]"></i>
+            <span v-html="settings.label"></span>
         </button>
     </div>
 
@@ -39,9 +40,8 @@ const eventBus = mitt();
 const VuUserButton = {
     name: "VuUserButton",
     props: {
-        modelValue: {
-            type: Object,
-        },
+        modelValue: Object,
+        settings: Object
     },
     data() {
         return {
@@ -71,24 +71,24 @@ const VuUserButton = {
 
         togglePanel() {
             this.auth.visible = !this.auth.visible;
-            this.auth.panel = 'login';
+            this.auth.panel = this.settings.panel ? this.settings.panel : 'login';
             this.updateAuth();
         },
 
         logout() {
-            
+
             this.auth.visible = false;
             this.auth.user = null;
-            
+
             localStorage.removeItem('vu-token');
             localStorage.removeItem('vu-user');
 
             this.updateAuth();
+
         },
     },
     mounted() {
-        // this.auth = { visible: false };
-        // this.updateAuth();
+
     }
 };
 

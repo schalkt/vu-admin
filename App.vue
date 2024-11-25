@@ -41,17 +41,26 @@
 
           }],
           onsuccess: (responseData) => {
-
-           
             // console.log(userdata);
           }
         }"></vu-auth>
       </div>
 
       <header class="sticky-top text-end p-2">
-        <vu-user-button v-model="auth"></vu-user-button>
+        <vu-user-button v-model="auth" :settings="{
+          class: 'btn btn-warning me-2',
+          label: 'Regisztráció',
+          icon: 'bi bi-person-plus me-2',
+          panel: 'registration'
+        }"></vu-user-button>
+        <vu-user-button v-model="auth" :settings="{
+          class: 'btn btn-primary',
+          label: 'Bejelentkezés',
+          icon: 'bi bi-box-arrow-in-right me-2',
+          panel: 'login'
+        }"></vu-user-button>
       </header>
-      
+
       <div class="col-md-12">
         <vu-admin :entity="'product'" :auth="auth"></vu-admin>
       </div>

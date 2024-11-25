@@ -1,7 +1,7 @@
 <template>
 
-    <div v-if="auth.visible" class="position-fixed">
-        <div class="shadow d-flex justify-content-center align-items-center min-vh-100" @click.stop="close">
+    <div v-if="auth && auth.visible" class="vua-auth position-fixed">
+        <div class="d-flex justify-content-center align-items-center min-vh-100" @click.stop="close">
             <div class="card shadow p-4 position-relative" :style="{ 'max-width': (settings.maxwidth ? settings.maxwidth : 400) + 'px' }" _style="width: 100%;">
 
                 <button type="button" class="btn btn- position-absolute top-0 end-0 p-0 m-2 bg-light" @click.stop="close">
@@ -9,7 +9,19 @@
                 </button>
 
                 <h1 class="text-center mt-2 mb-4">
-                    {{ title }}
+
+                    <span v-if="auth.panel == 'forgot'">
+                        Elfelejtett jelszó
+                    </span>
+                    <span v-if="auth.panel == 'registration'">
+                        Regisztráció
+                    </span>
+                    <span v-if="auth.panel == 'help'">
+                        Segítség
+                    </span>
+                    <span v-if="auth.panel == 'login'">
+                        Bejelentkezés
+                    </span>
                 </h1>
 
                 <div v-if="auth.panel == 'help'">
@@ -54,7 +66,7 @@
                                 v-if="auth.panel == 'registration' && settings.password.help" v-html="settings.password.help"></small>
                         </div>
 
-                        <div class="mb-5" v-if="auth.panel === 'registration'">
+                        <div class="mb-4" v-if="auth.panel === 'registration'">
                             <label for="password_again" class="form-label text-primary">Jelszó ismét</label>
                             <div class="input-group">
                                 <span v-if="settings.password.icon" class="input-group-text">
@@ -90,15 +102,16 @@
 
                     <!-- Beküldés gomb -->
                     <div class="d-flex justify-content-between">
-                        <button v-if="auth.panel != 'login'" type="button" @click.stop="toggleClear" class="btn btn-secondary w-100 me-1">
-                            <i class="bi bi-arrow-left-square mx-1"></i> Vissza
+                        <button v-if="auth.panel != 'login'" type="button" @click.stop="toggleClear" class="btn btn-secondary w-100 me-2">
+                            <i class="bi bi-arrow-left-square mx-1"></i> Bejelentkezés
                         </button>
-                        <button v-if="auth.panel == 'login'" type="button" class="btn btn-warning w-100 me-1" @click.stop="toggleNewRegistration">
-                            <i class="bi bi-plus-square mx-1"></i> Új regisztráció
+                        <button v-if="auth.panel == 'login'" type="button" class="btn btn-warning w-100 me-2" @click.stop="toggleNewRegistration">
+                            <i class="bi bi-person-plus mx-1"></i> Regisztráció
                         </button>
-                        <button type="submit" class="btn btn-primary w-100">
+                        <button type="submit" class="btn w-100" :class="{'btn-primary' : auth.panel != 'registration', 'btn-warning': auth.panel == 'registration'}">
                             {{ auth.panel == 'forgot' ? 'Új jelszó kérése' : (auth.panel == 'registration' ? 'Regisztráció' : 'Bejelentkezés') }}
-                            <i class="bi bi-arrow-right-square mx-1"></i>
+                            <i v-if="auth.panel == 'registration'" class="bi bi-person-plus mx-1"></i>
+                            <i v-else class="bi bi-arrow-right-square mx-1"></i>
                         </button>
                     </div>
 
@@ -106,8 +119,8 @@
                         <div :class="{ 'text-danger': !responseOk, 'text-success': responseOk }" v-html="responseMessage"></div>
                     </div>
 
-                    <div class="mt-3 text-end">
-                        <button type="button" @click.stop="close" class="btn btn-sm btn-light border w-100 me-1">
+                    <div class="mt-2 text-end">
+                        <button type="button" @click.stop="close" class="btn btn-light border w-100 me-1">
                             <i class="bi bi-x-square mx-1"></i> Mégsem
                         </button>
                     </div>
@@ -135,11 +148,7 @@ const VuAuth = {
     },
     data() {
         return {
-            auth: {
-                user: {},
-                panel: 'login',
-            },            
-            title: null,
+            auth: undefined,
             username: "",
             password: "",
             password_again: "",
@@ -240,17 +249,7 @@ const VuAuth = {
             this.password_again = "";
             this.responseMessage = "";
             this.responseOk = false;
-
-            if (this.auth.panel === 'forgot') {
-                this.title = 'Elfelejtett jelszó';
-            } else if (this.auth.panel === 'registration') {
-                this.title = 'Új regisztráció';
-            } else if (this.auth.panel === 'help') {
-                this.title = 'Segítség';
-            } else {
-                this.title = 'Bejelentkezés';
-            }
-
+           
         },
 
         close() {
@@ -314,12 +313,11 @@ const VuAuth = {
             this.username = this.settings.username.value;
         }
 
-        console.log(this.apiurl);
         console.log(this.settings);
-
-        this.reset();
+        
         this.userUpdate();
         this.checkStorage();
+        this.reset();
 
     },
     beforeUnmount() {
