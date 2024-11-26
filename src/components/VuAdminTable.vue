@@ -579,19 +579,19 @@
       </table>
 
       <VuAdminTablePagination :settings="settings" :config="config" :ui="ui" @setPage="setPage" @setPageLimit="setPageLimit" @translate="translate"></VuAdminTablePagination>
-      
+
     </div>
 
-    <div class="modal shadow" :id="modalId" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content h-100">
-            <VuAdminForm v-cloak v-if="settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings" :modalWindow="modalWindow"
-              :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation"></VuAdminForm>
-          </div>
+    <div v-cloak class="modal shadow" :id="modalId" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content h-100">
+          <VuAdminForm v-cloak v-if="authAndSettings() && settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings" :modalWindow="modalWindow"
+            :auth="auth" :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation"></VuAdminForm>
         </div>
       </div>
+    </div>
 
-  </div>  
+  </div>
 </template>
 
 <script>
@@ -633,7 +633,7 @@ export default {
   name: "VuAdminTable",
   props: {
     settings: Object,
-    auth: Object,          
+    auth: Object,
   },
   components: {
     VuAdminForm,
@@ -689,94 +689,28 @@ export default {
       messageTimeOut: null,
     };
   },
+  watch: {
+    auth: {
+      immediate: true,
+      handler(newVal, oldVal) {
 
+        if (newVal && newVal.header) {
+          this.init();
+        }
+
+      }
+    }
+  },
   created() {
-    if (!this.settings.table) {
-      return false;
-    }
-
-    if (this.settings.table.pagination) {
-      this.config.pagination = Object.assign(
-        {},
-        this.config.pagination,
-        this.settings.table.pagination
-      );
-    }
-
-    this.setPage(this.config.pagination.page, false);
-
-    if (this.settings.table.order) {
-      this.config.order = Object.assign(
-        {},
-        this.config.order,
-        this.settings.table.order
-      );
-    }
-
-    if (!this.settings.table.header) {
-      this.settings.table.header = {};
-    }
-
-    if (!this.settings.api) {
-      this.settings.api = {};
-    }
-
-    this.settings.api = Object.assign(
-      {
-        url: null,
-        input: {},
-        output: {},
-        options: {},
-      },
-      this.settings.api
-    );
-
-    if (!this.settings.table.api) {
-      this.settings.table.api = {};
-    }
-
-    if (!this.settings.form) {
-      this.settings.form = {};
-    }
-
-    if (!this.settings.form.api) {
-      this.settings.form.api = {};
-    }
-
-    this.settings.table.api = Object.assign(
-      {},
-      this.settings.api,
-      this.settings.table.api
-    );
-    this.settings.form.api = Object.assign(
-      {},
-      this.settings.api,
-      this.settings.form.api
-    );
-
-    // this.modalElement.addEventListener('hide.bs.modal', event => {
-
-    // 	if (!this.ui.wait.form && this.itemIsModified()) {
-
-    // 		const confirmed = confirm('Are you sure?');
-
-    // 		if (!confirmed) {
-    // 			event.preventDefault();
-    // 		}
-
-    // 	}
-
-    // })
 
     let uid = Math.round(Math.random() * 100000);
 
     this.formId = "form_" + this.settings.entity + "_" + uid;
     this.modalId = "modal_" + this.settings.entity + "_" + uid;
 
-    this.resetTable();
   },
   mounted() {
-    
+
     this.modalElement = document.getElementById(this.modalId);
     this.modalWindow = new Modal(this.modalElement);
 
@@ -788,14 +722,84 @@ export default {
       this.settings.form.visible = true;
     });
 
-    this.listenEvent();
-
   },
 
   methods: {
 
+    init() {
+
+      if (!this.settings.table) {
+        return false;
+      }
+
+      if (this.settings.table.pagination) {
+        this.config.pagination = Object.assign(
+          {},
+          this.config.pagination,
+          this.settings.table.pagination
+        );
+      }
+
+      this.setPage(this.config.pagination.page, false);
+
+      if (this.settings.table.order) {
+        this.config.order = Object.assign(
+          {},
+          this.config.order,
+          this.settings.table.order
+        );
+      }
+
+      if (!this.settings.table.header) {
+        this.settings.table.header = {};
+      }
+
+      if (!this.settings.api) {
+        this.settings.api = {};
+      }
+
+      this.settings.api = Object.assign(
+        {
+          url: null,
+          input: {},
+          output: {},
+          options: {},
+        },
+        this.settings.api
+      );
+
+      if (!this.settings.table.api) {
+        this.settings.table.api = {};
+      }
+
+      if (!this.settings.form) {
+        this.settings.form = {};
+      }
+
+      if (!this.settings.form.api) {
+        this.settings.form.api = {};
+      }
+
+      this.settings.table.api = Object.assign(
+        {},
+        this.settings.api,
+        this.settings.table.api
+      );
+      this.settings.form.api = Object.assign(
+        {},
+        this.settings.api,
+        this.settings.form.api
+      );
+
+      this.settings.initialized = true;
+      
+      this.listenEvent();      
+      this.resetTable();
+
+    },
+
     authAndSettings() {
-      return this.auth && this.auth.user && this.settings && this.settings.table;
+      return this.settings.initialized && this.auth && this.auth.header && this.settings && this.settings.table;
     },
 
     sendEvent(eventName, eventTarget, payload) {
@@ -1291,7 +1295,7 @@ export default {
 
           column.relation.ids = arrayUnique(ids);
 
-          await this.fetchRelation(column, items);
+          await this.fetchRelation(column, items, this.auth);
 
         }
 
@@ -1343,7 +1347,7 @@ export default {
           urlParams.skip = (urlParams.page - 1) * urlParams.limit;
         }
 
-        let items = await this.fetchItems(this.settings, urlParams, this.config);
+        let items = await this.fetchItems(this.settings, urlParams, this.config, this.auth);
 
         if (items === false) {
           this.tableNoWait();
@@ -1357,14 +1361,14 @@ export default {
 
       } catch (error) {
 
-        console.error(error.message);
+        console.error(error);
 
         this.addTableMessage(error.message, 3500, "danger");
         this.tableNoWait();
       }
     },
 
-    async fetchItems(settings, urlParams, config) {
+    async fetchItems(settings, urlParams, config, auth) {
 
       if (settings.events && settings.events.beforeItemsLoad) {
         // settings.debug && console.log('@beforeItemsLoad', urlParams);
@@ -1373,7 +1377,7 @@ export default {
 
       const response = await fetch(
         prepareFetchUrl("GET", settings.table.api, null, urlParams),
-        prepareFetchOptions("GET", settings.table.api)
+        prepareFetchOptions("GET", settings.table.api, null, auth)
       );
 
       const json = await getResponseJson(response);
@@ -1427,11 +1431,11 @@ export default {
 
     },
 
-    async fetchRelation(column, items) {
+    async fetchRelation(column, items, auth) {
 
       try {
 
-        let searchParams = column.relation.params ? column.relation.params : {};        
+        let searchParams = column.relation.params ? column.relation.params : {};
 
         if (column.relation.columns) {
           searchParams.columns = JSON.stringify(column.relation.columns);
@@ -1445,7 +1449,7 @@ export default {
           let values =
             type === "string"
               ? "'" + column.relation.ids.join("','") + "'"
-              : column.relation.ids.join(",");          
+              : column.relation.ids.join(",");
 
           filter[column.relation.foreign] = {
             type: "array",
@@ -1463,7 +1467,7 @@ export default {
 
         const response = await fetch(
           prepareFetchUrl("GET", column.relation.api, null, searchParams),
-          prepareFetchOptions("GET", column.relation.api)
+          prepareFetchOptions("GET", column.relation.api, null, auth)
         );
 
         if (response.status !== 200) {
@@ -1500,7 +1504,7 @@ export default {
           }
         }
       } catch (error) {
-        console.error(error.message);
+        console.error(error);
       }
     },
 
@@ -1550,7 +1554,7 @@ export default {
             primaryId,
             urlParams
           ),
-          prepareFetchOptions("DELETE", this.settings.api)
+          prepareFetchOptions("DELETE", this.settings.api, null, this.auth)
         );
 
         if (response.status !== 200) {
@@ -1582,7 +1586,7 @@ export default {
         //this.tableNoWait();
 
       } catch (error) {
-        console.error(error.message);
+        console.error(error);
         this.tableNoWait();
       }
     },
@@ -1610,7 +1614,7 @@ export default {
             body: JSON.stringify({
               ids: ids,
             }),
-          })
+          }, this.auth)
         );
 
         if (response.status !== 200) {
@@ -1626,7 +1630,7 @@ export default {
         this.reloadTable();
         this.tableNoWait();
       } catch (error) {
-        console.error(error.message);
+        console.error(error);
         this.tableNoWait();
       }
     },
@@ -1833,7 +1837,7 @@ export default {
           prepareFetchUrl(method, this.settings.form.api, primaryId, urlParams),
           prepareFetchOptions(method, this.settings.form.api, {
             body: body
-          })
+          }, this.auth)
         );
 
         const json = await getResponseJson(response);
@@ -1911,9 +1915,9 @@ export default {
               item: item,
               ids: this.selected,
             }),
-          })
+          }, this.auth)
         ).catch((err) => {
-          console.error(err.message);
+          console.error(err);
           this.addTableMessage(err.message, 3500, "danger", err);
         });
 
@@ -1933,7 +1937,7 @@ export default {
         // this.selected = [];
         this.reloadTable();
       } catch (error) {
-        console.error(error.message);
+        console.error(error);
 
         this.addTableMessage(error.message, 3500, "danger", error);
         this.tableNoWait();
@@ -2065,6 +2069,7 @@ export default {
 
     async exportTable(urlParams) {
       try {
+        fetchItems
 
         urlParams.limit = this.config.pagination.total ? this.config.pagination.total : 0;
 
@@ -2083,9 +2088,9 @@ export default {
         urlParams.filter = filter;
         urlParams.order = order;
 
-        let items = await this.fetchItems(this.settings, urlParams, null, () => {
+        // let items = await this.fetchItems(this.settings, urlParams, null, () => {
 
-        });
+        // });
 
         if (this.settings.events && this.settings.events.beforeItemsExport) {
           this.settings.events.beforeItemsExport(items);
@@ -2120,7 +2125,7 @@ export default {
         //   items = unflattenObjects(items)
         // }
       } catch (error) {
-        console.error(error.message);
+        console.error(error);
 
         this.addTableMessage(error.message, 3500, "danger");
       }

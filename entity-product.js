@@ -2,10 +2,6 @@ import VuAdmin from "./src/components/VuAdmin.vue";
 
 let api = {
 	url: '/api/products',
-	// auth: {
-	// 	type: 'Bearer',
-	// 	token: 'token-123456789',
-	// },
 	// options: {
 	// 	mode: "cors",
 	// },
@@ -769,10 +765,9 @@ let form = {
 								return selected.owner.label;
 								return JSON.stringify(selected);
 							},
-							options: async (item, field, self) => {
+							options: async (item, field, self) => {								
 
-								const response = await fetch('/api/users', {});
-								const data = await response.json();
+								const data = await self.fetchCustom('/api/users');								
 								const options = data.users.reduce((acc, item) => {
 									acc.push({
 										label: item.email,

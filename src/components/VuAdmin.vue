@@ -49,7 +49,7 @@ const VuAdmin = {
         language: document.documentElement ? document.documentElement.lang : 'hu',
 
         api: {
-          auth: undefined,
+          auth: {},
           options: {},
           input: {
             // when item is null -> item = response.data

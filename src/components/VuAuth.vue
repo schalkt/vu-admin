@@ -205,8 +205,9 @@ const VuAuth = {
         checkStorage() {
 
             this.auth.user = {};
-            this.auth.token = localStorage.getItem('vu-token');
+            // this.auth.token = localStorage.getItem('vu-token');
             this.auth.user = JSON.parse(localStorage.getItem('vu-user'));
+            this.auth.header = JSON.parse(localStorage.getItem('vu-header'));
             this.$emit("update:modelValue", this.auth);
 
         },
@@ -250,8 +251,9 @@ const VuAuth = {
 
                 if (this.settings.onsuccess) {
                     this.settings.onsuccess(responseData, this.auth);
-                    localStorage.setItem('vu-token', this.auth.token);
+                    // localStorage.setItem('vu-token', this.auth.token);
                     localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
+                    localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
                 }
 
                 this.userUpdate(responseData);
@@ -398,7 +400,7 @@ const VuAuth = {
         if (!this.auth) {
             this.auth = {
                 user: undefined,
-                token: undefined,
+                header: undefined,
             };
         }
 

@@ -80,8 +80,9 @@ const VuUserButton = {
 
             this.auth.visible = false;
             this.auth.user = null;
+            this.auth.header = null;
 
-            localStorage.removeItem('vu-token');
+            localStorage.removeItem('vu-header');
             localStorage.removeItem('vu-user');
 
             this.updateAuth();

@@ -38,12 +38,14 @@
 
               <input v-if="['date', 'datetime', 'datetime-local'].indexOf(field.type) >= 0" class="form-control"
                 :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })" :type="field.type" :name="field.name"
-                :id="formId + '_' + field.name" v-model="item[field.name]" :min="field.min" :max="field.max" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
+                :id="formId + '_' + field.name" v-model="item[field.name]" :min="field.min" :max="field.max" :disabled="field.disabled" :readonly="field.readonly"
+                :required="field.required" />
 
               <div v-if="field.type == 'checkbox'" class="form-check">
                 <input class="form-check-input" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })" type="checkbox"
                   :name="field.name" :id="formId + '_' + field.name" :true-value="field.true != undefined ? field.true : true"
-                  :false-value="field.false != undefined ? field.false : false" v-model="item[field.name]" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
+                  :false-value="field.false != undefined ? field.false : false" v-model="item[field.name]" :disabled="field.disabled" :readonly="field.readonly"
+                  :required="field.required" />
                 <label class="form-check-label cursor-pointer" :for="formId + '_' + field.name">
                   {{ field.checkbox }}
                 </label>
@@ -56,7 +58,7 @@
 
 
               <VuAdminFormSelect v-if="field.type == 'select' && (!field.relation || (field.relation && field.relation.items))" v-model="item[field.name]" :field="field"
-                :item="item" :settings="settings" :formId="formId"></VuAdminFormSelect>
+                :item="item" :settings="settings" :formId="formId" :auth="auth"></VuAdminFormSelect>
 
               <textarea v-if="field.type == 'textarea'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })"
                 :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]" :rows="field.rows" :minlength="field.minlength" :maxlength="field.maxlength"
@@ -94,9 +96,9 @@
             </span>
 
             <div v-if="field.type == 'template'" v-html="getValueOrFunction(field.template, {
-                field: field,
-                item: item
-              })">
+              field: field,
+              item: item
+            })">
             </div>
 
             <div class="p-1" v-if="field.description">
@@ -117,7 +119,11 @@
 </template>
 
 <script>
-import { translate, getValueOrFunction, arrayItemMoveUp, arrayItemMoveDown } from "./helpers";
+import { translate, 
+  getValueOrFunction, 
+  arrayItemMoveUp, 
+  arrayItemMoveDown,
+} from "./helpers";
 import HtmlEditor from "./VuAdminHtmlEditor.vue";
 import FileUpload from "./VuAdminFileUpload.vue";
 import VuAdminFormSelect from "./VuAdminFormSelect.vue";
@@ -129,6 +135,7 @@ const VuAdminFormGroup = {
     group: Object,
     formId: String,
     settings: Object,
+    auth: Object,
   },
   data: function () {
     return {
@@ -177,7 +184,7 @@ const VuAdminFormGroup = {
       }
 
       return options;
-    },
+    },   
 
     arrayAddNewItem(field, item) {
 

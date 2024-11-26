@@ -69,7 +69,7 @@ export function getResponseErrors(response, data) {
 
 
 
-export function prepareFetchOptions(method, api, options) {
+export function prepareFetchOptions(method, api, options, auth) {
 
     if (!api.options) {
         api.options = {};
@@ -86,17 +86,21 @@ export function prepareFetchOptions(method, api, options) {
         }
     }
 
-    if (api.auth) {
-        if (api.auth.type == 'Basic' && api.auth.user) {
-            api.options.headers['Authorization'] = "Basic " + btoa(api.auth.user + ":" + api.auth.password);
-        }
-        if (api.auth.type == 'Bearer' && api.auth.token) {
-            api.options.headers['Authorization'] = "Bearer " + api.auth.token;
-        }
-        if (api.auth.type == 'Cookie') {
-            api.options.credentials = 'include';
-            // api.options.headers['Cookie'] = "";
-        }
+    if (auth && auth.header && auth.header[0]) {
+        
+        api.options.headers[auth.header[0]] = auth.header[1];
+        
+        // if (api.auth.type == 'Basic' && api.auth.user) {
+        //     api.options.headers['Authorization'] = "Basic " + btoa(api.auth.user + ":" + api.auth.password);
+        // }
+        // if (api.auth.type == 'Bearer' && api.auth.token) {
+        //     api.options.headers['Authorization'] = "Bearer " + api.auth.token;
+        // }
+        // if (api.auth.type == 'Cookie') {
+        //     api.options.credentials = 'include';
+        //     // api.options.headers['Cookie'] = "";
+        // }
+        
     }
 
     api.options.body = undefined;
@@ -131,7 +135,7 @@ export function prepareFetchUrl(method, api, id, urlParams) {
 
         haveParams = Object.keys(queryParams).length;
     }
-
+    
     return api.url + (id ? '/' + id : '') + (haveParams ? "?" + (new URLSearchParams(queryParams)).toString() : '');
 
 }

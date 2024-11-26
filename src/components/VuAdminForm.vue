@@ -154,6 +154,7 @@ const VuAdminForm = {
     group: Object,
     formId: String,
     settings: Object,
+    auth: Object,
   },
   data: function () {
     return {
@@ -184,7 +185,7 @@ const VuAdminForm = {
   mounted() {
     this.item = this.modelValue;
     let primaryId = this.item[this.settings.pkey];
-    this.fetchItem(primaryId, this.settings);
+    this.fetchItem(primaryId, this.settings, this.auth);
 
   },
   watch: {
@@ -270,10 +271,10 @@ const VuAdminForm = {
 
     reloadItem() {
       let primaryId = this.item[this.settings.pkey];
-      this.fetchItem(primaryId);
+      this.fetchItem(primaryId, null, this.auth);
     },
 
-    async fetchItem(primaryId, settings) {
+    async fetchItem(primaryId, settings, auth) {
 
       try {
 
@@ -287,7 +288,7 @@ const VuAdminForm = {
 
         const response = await fetch(
           prepareFetchUrl("GET", settings.form.api, primaryId),
-          prepareFetchOptions("GET", settings.api)
+          prepareFetchOptions("GET", settings.api, null, auth)
         ).catch((err) => {
 
 
@@ -332,7 +333,8 @@ const VuAdminForm = {
 
               // console.log(field, settings.relations[field.relation.config]);
               field.relation = deepMerge(settings.relations[field.relation.config], field.relation);
-              await this.fetchRelation(field, [item]);
+              console.log(field.relation, auth);
+              await this.fetchRelation(field, [item], auth);
 
             }
           }
@@ -442,7 +444,7 @@ const VuAdminForm = {
             primaryId,
             urlParams
           ),
-          prepareFetchOptions("DELETE", this.settings.api)
+          prepareFetchOptions("DELETE", this.settings.api, null, this.auth)
         );
 
         if (response.status !== 200) {

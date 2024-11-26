@@ -56,7 +56,8 @@
           }],
           onsuccess: (responseData, auth) => {
             auth.user = responseData;
-            auth.token = responseData.accessToken;
+            // auth.token = responseData.accessToken;
+            auth.header = ['X-Auth-Token', responseData.accessToken]
           }
         }"></vu-auth>
       </div>
