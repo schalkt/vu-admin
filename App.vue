@@ -54,8 +54,9 @@
             }
 
           }],
-          onsuccess: (responseData) => {
-            // console.log(userdata);
+          onsuccess: (responseData, auth) => {
+            auth.user = responseData;
+            auth.token = responseData.accessToken;
           }
         }"></vu-auth>
       </div>

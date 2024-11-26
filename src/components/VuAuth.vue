@@ -245,18 +245,16 @@ const VuAuth = {
 
                 const responseData = await response.json();
 
-                this.userUpdate(responseData);
-
                 this.responseOk = true;
                 this.responseMessage = 'Sikeres bejelentkezés';
 
                 if (this.settings.onsuccess) {
-
-                    localStorage.setItem('vu-token', responseData.accessToken);
-                    localStorage.setItem('vu-user', JSON.stringify(responseData));
-                    this.settings.onsuccess(responseData);
+                    this.settings.onsuccess(responseData, this.auth);
+                    localStorage.setItem('vu-token', this.auth.token);
+                    localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
                 }
 
+                this.userUpdate(responseData);
                 this.close();
 
             } else {
@@ -289,8 +287,8 @@ const VuAuth = {
 
                 const responseData = await response.json();
                 this.responseOk = true;
-                this.responseMessage = 'Sikeres regisztráció';                
-                
+                this.responseMessage = 'Sikeres regisztráció';
+
 
             } else {
                 this.responseOk = false;
@@ -397,12 +395,10 @@ const VuAuth = {
             this.username = this.settings.username.value;
         }
 
-        console.log(this.settings);
-
         if (!this.auth) {
             this.auth = {
                 user: undefined,
-                success: false
+                token: undefined,
             };
         }
 
