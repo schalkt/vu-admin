@@ -70,10 +70,38 @@
           panel: 'registration',
         }"></vu-user-button>
         <vu-user-button v-model="auth" :settings="{
-          class: 'btn btn-primary',
-          label: 'Bejelentkezés',
+          class: 'btn btn-outline-primary',
           icon: 'bi bi-box-arrow-in-right me-2',
-          panel: 'login'
+          panel: 'login',
+          dropdowns: [
+            {
+              class: 'dropdown-item fw-light',
+              label: (params, settings, self) => {
+                return self.auth.user.email;
+              },
+            }, {
+              class: 'dropdown-divider'
+            }, {
+              class: 'dropdown-item cursor-pointer',
+              label: (params, settings, self) => {
+                return `<i class='bi bi-box-arrow-right me-1'></i> Kilépés`
+              },
+              action: (params, self) => {
+                self.logout();
+              }
+            }],
+          label: (params, settings, self) => {
+
+            if (!self.auth || !self.auth.user) {
+              return 'Bejelentkezés';
+            }
+
+            let fullName = [self.auth.user.firstName, self.auth.user.lastName].join(' ');
+            let img = `<img class='img-fluid rounded me-2' width='22' src='${self.auth.user.image}' />`;
+
+            return img + fullName;
+
+          }
         }"></vu-user-button>
       </header>
 
@@ -108,3 +136,5 @@ export default {
   }
 };
 </script>
+
+<style></style>

@@ -3,30 +3,17 @@
     <div v-if="(!auth || !auth.user && settings.panel != 'login') || settings.panel == 'login'" class="d-inline-block">
         <div v-if="auth && auth.user" class="dropdown">
             <button class="dropdown-toggle" :class="[settings.class]" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="img-fluid rounded" width="22" :src="auth.user.image">
-                {{ auth.user.username }}
+                <span v-html="getValueOrFunction(settings.label)"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li>
-                    <span class="dropdown-item text-muted fw-light">
-                        {{ auth.user.firstName }}
-                        {{ auth.user.lastName }}
-                        <br>
-                        {{ auth.user.email }}
-                    </span>
-                </li>
-                <li class="dropdown-divider"></li>
-                <li>
-                    <button type="button" class="dropdown-item" @click="logout">
-                        <i class="bi bi-door-open"></i> Kilépés
-                    </button>
-                </li>
+                <li :class="[dropdown.class]" v-for="dropdown in settings.dropdowns" :key="dropdown" @click="dropdownAction(dropdown)" v-html="getValueOrFunction(dropdown.label)">
+                </li>                
             </ul>
         </div>
         <div v-else class="d-inline-block">
             <button :class="[settings.class]" type="button" @click="togglePanel">
                 <i v-if="settings.icon" :class="[settings.icon]"></i>
-                <span v-html="settings.label"></span>
+                <span v-html="getValueOrFunction(settings.label)"></span>
             </button>
         </div>
     </div>
@@ -36,6 +23,10 @@
 <script>
 
 import mitt from 'mitt';
+import {
+    getValueOrFunction,
+} from "./helpers";
+
 const eventBus = mitt();
 
 const VuUserButton = {
@@ -65,6 +56,28 @@ const VuUserButton = {
         // },
     },
     methods: {
+
+        getValueOrFunction(object, params) {
+            return getValueOrFunction(object, params, this.settings, this);
+        },
+
+        dropdownAction(dropdown, $event) {
+
+            if ($event) {
+                $event.stopPropagation();
+            }
+
+            let params = {
+                dropdown: dropdown,
+                settings: this.settings,
+            }
+
+            if (dropdown.action) {
+                dropdown.action(params, this);
+                return;
+            }
+
+        },
 
         updateAuth() {
             this.$emit("update:modelValue", this.auth);
@@ -99,8 +112,12 @@ export { VuUserButton };
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .dropdown {
     display: inline-block;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }
 </style>

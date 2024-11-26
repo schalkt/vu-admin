@@ -208,6 +208,11 @@ const VuAuth = {
             // this.auth.token = localStorage.getItem('vu-token');
             this.auth.user = JSON.parse(localStorage.getItem('vu-user'));
             this.auth.header = JSON.parse(localStorage.getItem('vu-header'));
+
+            if (this.auth.user) {
+                this.auth.success = true;
+            }
+
             this.$emit("update:modelValue", this.auth);
 
         },
@@ -256,11 +261,14 @@ const VuAuth = {
                     localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
                 }
 
+                this.auth.success = true;
                 this.userUpdate(responseData);
                 this.close();
 
+
             } else {
                 this.responseOk = false;
+                this.auth.success = false;
                 this.responseMessage = 'Sikertelen bejelentkezés';
             }
 
@@ -379,6 +387,17 @@ const VuAuth = {
             }
         },
 
+        logout() {
+            this.auth.success = false;
+            this.auth.header = null;
+            this.auth.user = null;
+            this.$emit("update:modelValue", this.auth);
+
+            localStorage.removeItem('vu-user');
+            localStorage.removeItem('vu-header');
+
+        }
+
     },
     mounted() {
 
@@ -401,6 +420,7 @@ const VuAuth = {
             this.auth = {
                 user: undefined,
                 header: undefined,
+                success: false,
             };
         }
 

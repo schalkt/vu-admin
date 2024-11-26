@@ -21,6 +21,7 @@ export function getValueOrFunction(object, params, settings, vua) {
         return object;
 
     } catch (error) {
+        console.error(error);
         return null;
     }
 }
