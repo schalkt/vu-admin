@@ -14800,9 +14800,9 @@ const G2 = /* @__PURE__ */ ue(Nk, [["render", K2], ["__scopeId", "data-v-973beb0
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.58"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.59"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.58"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.59"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -14891,7 +14891,7 @@ const iS = {
       );
       if (e.ok) {
         const t = await e.json();
-        this.userUpdate(t), this.responseOk = !0, this.responseMessage = "Sikeres bejelentkezés", this.settings.onsuccess && (localStorage.setItem("vu-token", t.accessToken), localStorage.setItem("vu-user", JSON.stringify(t)), this.settings.onsuccess(t)), this.close();
+        this.responseOk = !0, this.responseMessage = "Sikeres bejelentkezés", this.settings.onsuccess && (this.settings.onsuccess(t, this.auth), localStorage.setItem("vu-token", this.auth.token), localStorage.setItem("vu-user", JSON.stringify(this.auth.user))), this.userUpdate(t), this.close();
       } else
         this.responseOk = !1, this.responseMessage = "Sikertelen bejelentkezés";
     },
@@ -14954,9 +14954,9 @@ const iS = {
       const e = document.createElement("script");
       e.src = "https://www.google.com/recaptcha/api.js", e.async = !0, e.defer = !0, document.head.appendChild(e);
     }
-    this.settings.username.value && (this.username = this.settings.username.value), console.log(this.settings), this.auth || (this.auth = {
+    this.settings.username.value && (this.username = this.settings.username.value), this.auth || (this.auth = {
       user: void 0,
-      success: !1
+      token: void 0
     }), this.userUpdate(), this.checkStorage(), this.reset();
   },
   beforeUnmount() {
@@ -15252,7 +15252,7 @@ function zS(e, t, s, n, i, r) {
     ])
   ])) : T("", !0);
 }
-const WS = /* @__PURE__ */ ue(rS, [["render", zS], ["__scopeId", "data-v-aa439406"]]);
+const WS = /* @__PURE__ */ ue(rS, [["render", zS], ["__scopeId", "data-v-8feeb544"]]);
 ol();
 const KS = {
   name: "VuUserButton",
