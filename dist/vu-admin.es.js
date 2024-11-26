@@ -14820,9 +14820,9 @@ const GS = /* @__PURE__ */ ue(Ok, [["render", KS], ["__scopeId", "data-v-def0797
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.61"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.62"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.61"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.62"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -15291,7 +15291,7 @@ const K2 = {
   },
   watch: {
     modelValue(e) {
-      this.auth = e || void 0;
+      this.auth = e || void 0, this.$forceUpdate();
     }
   },
   computed: {
@@ -15383,7 +15383,7 @@ function sL(e, t, s, n, i, r) {
     ]))
   ])) : T("", !0);
 }
-const nL = /* @__PURE__ */ ue(G2, [["render", sL], ["__scopeId", "data-v-9ec0d341"]]), dL = {
+const nL = /* @__PURE__ */ ue(G2, [["render", sL], ["__scopeId", "data-v-ddc1dca7"]]), dL = {
   install(e) {
     e.component("VuAdmin", t2), e.component("VuAuth", W2), e.component("VuUserButton", nL);
   }

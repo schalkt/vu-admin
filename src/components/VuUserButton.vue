@@ -43,6 +43,7 @@ const VuUserButton = {
     watch: {
         modelValue(newValue) {
             this.auth = newValue ? newValue : undefined;
+            this.$forceUpdate();
         },
     },
     computed: {
