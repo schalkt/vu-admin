@@ -253,16 +253,7 @@ const VuAuth = {
 
                 this.responseOk = true;
                 this.responseMessage = 'Sikeres bejelentkezés';
-
-                if (this.settings.onsuccess) {
-                    this.settings.onsuccess(responseData, this.auth);
-                    // localStorage.setItem('vu-token', this.auth.token);
-                    localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
-                    localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
-                }
-
-                this.auth.success = true;
-                this.userUpdate(responseData);
+                this.login(responseData);
                 this.close();
 
 
@@ -385,6 +376,24 @@ const VuAuth = {
             if (event.key === "Escape") {
                 this.close();
             }
+        },
+
+        login(responseData) {
+
+            if (this.settings.onsuccess) {
+                this.settings.onsuccess(responseData, this.auth);
+                // localStorage.setItem('vu-token', this.auth.token);
+                localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
+                localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
+            }
+
+            this.auth.success = true;
+
+            setTimeout(() => {                
+                this.userUpdate(responseData);
+                this.$forceUpdate();
+            }, 0)
+
         },
 
         logout() {

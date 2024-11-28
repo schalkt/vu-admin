@@ -7,7 +7,7 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li :class="[dropdown.class]" v-for="dropdown in settings.dropdowns" :key="dropdown" @click="dropdownAction(dropdown)" v-html="getValueOrFunction(dropdown.label)">
-                </li>                
+                </li>
             </ul>
         </div>
         <div v-else class="d-inline-block">
@@ -43,7 +43,11 @@ const VuUserButton = {
     watch: {
         modelValue(newValue) {
             this.auth = newValue ? newValue : undefined;
-            this.$forceUpdate();
+            
+            setTimeout(() => {
+                this.$forceUpdate();
+            }, 10);
+
         },
     },
     computed: {
