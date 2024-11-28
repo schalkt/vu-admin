@@ -398,9 +398,7 @@ const VuAuth = {
             console.log("reCAPTCHA clicked");
         },
 
-        userUpdate(userData) {
-
-            this.auth.user = userData;
+        authUpdate() {
             this.$emit("update:modelValue", this.auth);
         },
 
@@ -422,7 +420,7 @@ const VuAuth = {
             this.auth.success = true;
 
             setTimeout(() => {
-                this.userUpdate(responseData);
+                this.authUpdate(responseData);
                 this.$forceUpdate();
             }, 0)
 
@@ -469,7 +467,7 @@ const VuAuth = {
             };
         }
 
-        this.userUpdate();
+        this.authUpdate();
         this.checkStorage();
         this.reset();
 

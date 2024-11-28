@@ -14825,9 +14825,9 @@ const G2 = /* @__PURE__ */ ue(Ok, [["render", K2], ["__scopeId", "data-v-846ddb4
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.65"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.66"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.65"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.66"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -14981,15 +14981,15 @@ const iS = {
     onCaptchaClick() {
       console.log("reCAPTCHA clicked");
     },
-    userUpdate(e) {
-      this.auth.user = e, this.$emit("update:modelValue", this.auth);
+    authUpdate() {
+      this.$emit("update:modelValue", this.auth);
     },
     handleEscapeKey(e) {
       e.key === "Escape" && this.close();
     },
     login(e) {
       this.settings.onsuccess && (this.settings.onsuccess(e, this.auth), localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header))), this.auth.success = !0, setTimeout(() => {
-        this.userUpdate(e), this.$forceUpdate();
+        this.authUpdate(e), this.$forceUpdate();
       }, 0);
     },
     logout() {
@@ -15008,7 +15008,7 @@ const iS = {
       user: void 0,
       header: void 0,
       success: !1
-    }), this.userUpdate(), this.checkStorage(), this.reset();
+    }), this.authUpdate(), this.checkStorage(), this.reset();
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
@@ -15330,7 +15330,7 @@ function XS(e, t, s, n, i, r) {
     ])
   ])) : w("", !0);
 }
-const ZS = /* @__PURE__ */ ue(rS, [["render", XS], ["__scopeId", "data-v-521fe077"]]);
+const ZS = /* @__PURE__ */ ue(rS, [["render", XS], ["__scopeId", "data-v-4d14a41d"]]);
 ol();
 const QS = {
   name: "VuUserButton",
