@@ -1,6 +1,6 @@
 <template>
 
-    <div v-if="auth && auth.visible" class="vua-auth">
+    <div v-if="auth && auth.visible" class="vua-auth underlay">
         <div class="row d-flex justify-content-center align-items-center min-vh-100" @click.stop="close">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto">
                 <div class="card shadow p-4 position-relative bg-light" @click.stop="">
@@ -484,7 +484,7 @@ export { VuAuth };
 
 <style lang="scss" scoped>
 
-.vua-auth {
+.underlay {
     position: fixed;
     inset: 0px;
     background-color: rgba(242, 242, 242, 0.95);
