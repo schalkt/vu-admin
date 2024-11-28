@@ -14825,9 +14825,9 @@ const G2 = /* @__PURE__ */ ue(Ok, [["render", K2], ["__scopeId", "data-v-846ddb4
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.64"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.65"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.64"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.65"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -14890,8 +14890,8 @@ const iS = {
     };
   },
   watch: {
-    modelValue(e) {
-      this.auth = e;
+    modelValue(e, t) {
+      e != t && (this.auth = e, this.$forceUpdate());
     }
   },
   methods: {
@@ -15330,7 +15330,7 @@ function XS(e, t, s, n, i, r) {
     ])
   ])) : w("", !0);
 }
-const ZS = /* @__PURE__ */ ue(rS, [["render", XS], ["__scopeId", "data-v-96e1fa10"]]);
+const ZS = /* @__PURE__ */ ue(rS, [["render", XS], ["__scopeId", "data-v-521fe077"]]);
 ol();
 const QS = {
   name: "VuUserButton",
@@ -15344,10 +15344,8 @@ const QS = {
     };
   },
   watch: {
-    modelValue(e) {
-      this.auth = e || void 0, setTimeout(() => {
-        this.$forceUpdate();
-      }, 100);
+    modelValue(e, t) {
+      e != t && (this.auth = e, this.$forceUpdate());
     }
   },
   computed: {
@@ -15439,7 +15437,7 @@ function aL(e, t, s, n, i, r) {
     ]))
   ])) : w("", !0);
 }
-const lL = /* @__PURE__ */ ue(JS, [["render", aL], ["__scopeId", "data-v-466886cf"]]), mL = {
+const lL = /* @__PURE__ */ ue(JS, [["render", aL], ["__scopeId", "data-v-8a921816"]]), mL = {
   install(e) {
     e.component("VuAdmin", tS), e.component("VuAuth", ZS), e.component("VuUserButton", lL);
   }

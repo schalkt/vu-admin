@@ -41,13 +41,12 @@ const VuUserButton = {
         }
     },
     watch: {
-        modelValue(newValue) {
+        modelValue(newValue, oldValue) {
 
-            this.auth = newValue ? newValue : undefined;
-
-            setTimeout(() => {
+            if (newValue != oldValue) {
+                this.auth = newValue;
                 this.$forceUpdate();
-            }, 100);
+            }            
 
         },
     },

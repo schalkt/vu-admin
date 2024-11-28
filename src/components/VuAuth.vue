@@ -218,8 +218,11 @@ const VuAuth = {
         };
     },
     watch: {
-        modelValue(newValue) {
-            this.auth = newValue;
+        modelValue(newValue, oldValue) {
+            if (newValue != oldValue) {
+                this.auth = newValue;
+                this.$forceUpdate();
+            }
         },
     },
     methods: {
