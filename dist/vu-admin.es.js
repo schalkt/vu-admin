@@ -14820,9 +14820,9 @@ const GS = /* @__PURE__ */ ue(Ok, [["render", KS], ["__scopeId", "data-v-def0797
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.62"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.auth = this.auth, this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.63"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.62"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.63"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -14911,7 +14911,7 @@ const i2 = {
       );
       if (e.ok) {
         const t = await e.json();
-        this.responseOk = !0, this.responseMessage = "Sikeres bejelentkezés", this.settings.onsuccess && (this.settings.onsuccess(t, this.auth), localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header))), this.auth.success = !0, this.userUpdate(t), this.close();
+        this.responseOk = !0, this.responseMessage = "Sikeres bejelentkezés", this.login(t), this.close();
       } else
         this.responseOk = !1, this.auth.success = !1, this.responseMessage = "Sikertelen bejelentkezés";
     },
@@ -14967,6 +14967,11 @@ const i2 = {
     },
     handleEscapeKey(e) {
       e.key === "Escape" && this.close();
+    },
+    login(e) {
+      this.settings.onsuccess && (this.settings.onsuccess(e, this.auth), localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header))), this.auth.success = !0, setTimeout(() => {
+        this.userUpdate(e), this.$forceUpdate();
+      }, 0);
     },
     logout() {
       this.auth.success = !1, this.auth.header = null, this.auth.user = null, this.$emit("update:modelValue", this.auth), localStorage.removeItem("vu-user"), localStorage.removeItem("vu-header");
@@ -15276,7 +15281,7 @@ function z2(e, t, s, n, i, r) {
     ])
   ])) : T("", !0);
 }
-const W2 = /* @__PURE__ */ ue(r2, [["render", z2], ["__scopeId", "data-v-07dc88e3"]]);
+const W2 = /* @__PURE__ */ ue(r2, [["render", z2], ["__scopeId", "data-v-48a42567"]]);
 ol();
 const K2 = {
   name: "VuUserButton",
@@ -15291,7 +15296,9 @@ const K2 = {
   },
   watch: {
     modelValue(e) {
-      this.auth = e || void 0, this.$forceUpdate();
+      this.auth = e || void 0, setTimeout(() => {
+        this.$forceUpdate();
+      }, 10);
     }
   },
   computed: {
@@ -15383,7 +15390,7 @@ function sL(e, t, s, n, i, r) {
     ]))
   ])) : T("", !0);
 }
-const nL = /* @__PURE__ */ ue(G2, [["render", sL], ["__scopeId", "data-v-ddc1dca7"]]), dL = {
+const nL = /* @__PURE__ */ ue(G2, [["render", sL], ["__scopeId", "data-v-df2ea18e"]]), dL = {
   install(e) {
     e.component("VuAdmin", t2), e.component("VuAuth", W2), e.component("VuUserButton", nL);
   }
