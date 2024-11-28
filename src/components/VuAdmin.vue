@@ -1,5 +1,5 @@
 <template>
-  <div v-cloak v-if="entity && settings">    
+  <div v-cloak v-if="entity && settings">
     <div v-if="auth" class="vu-admin" :data-bs-theme="[settings.theme]">
       <vu-admin-table :settings="settings" :auth="auth"></vu-admin-table>
     </div>
@@ -19,7 +19,7 @@ const VuAdmin = {
       required: true,
     },
     auth: {
-      type: Object,      
+      type: Object,
     }
   },
   init: (params) => {
@@ -27,8 +27,15 @@ const VuAdmin = {
       return;
     }
   },
+  watch: {
+    auth(newValue, oldValue) {
+      if (newValue != oldValue) {        
+        this.$forceUpdate();
+      }
+    },
+  },
   data() {
-    return {     
+    return {
       settings: undefined,
       defaults: {
         // primary id field name
@@ -184,17 +191,15 @@ const VuAdmin = {
       //   );
       // }
 
-      this.settings.auth = this.auth;
-
       if (this.settings.events.afterSettingsInit) {
         this.settings.events.afterSettingsInit(this.settings);
       }
 
       if (this.settings.debug) {
-        
+
         console.log('vu-admin ', __APP_VERSION__);
         console.log(`Entity config (${this.entity}) initialized`);
-        
+
         if (this.settings.debug > 1) {
           console.log(this.settings);
         }

@@ -585,8 +585,8 @@
     <div v-cloak class="modal shadow" :id="modalId" tabindex="-1">
       <div class="modal-dialog modal-xl">
         <div class="modal-content h-100">
-          <VuAdminForm v-cloak v-if="authAndSettings() && settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings" :modalWindow="modalWindow"
-            :auth="auth" :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation"></VuAdminForm>
+          <VuAdminForm v-cloak v-if="authAndSettings() && settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings"
+            :modalWindow="modalWindow" :auth="auth" :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation"></VuAdminForm>
         </div>
       </div>
     </div>
@@ -694,7 +694,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
 
-        if (newVal && newVal.header) {
+        if (newVal != oldVal) {
           this.init();
         }
 
@@ -792,8 +792,8 @@ export default {
       );
 
       this.settings.initialized = true;
-      
-      this.listenEvent();      
+
+      this.listenEvent();
       this.resetTable();
 
     },
