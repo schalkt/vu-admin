@@ -798,8 +798,8 @@ export default {
 
     },
 
-    authAndSettings() {
-      return this.settings.initialized && this.auth && this.auth.header && this.settings && this.settings.table;
+    authAndSettings() {      
+      return this.settings.initialized && this.auth && this.auth.success && this.settings && this.settings.table;
     },
 
     sendEvent(eventName, eventTarget, payload) {

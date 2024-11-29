@@ -1,13 +1,14 @@
 <template>
 
-    <div v-if="(!auth || !auth.user && settings.panel != 'login') || settings.panel == 'login'" class="d-inline-block">
-        <div v-if="auth && auth.user" class="dropdown">
+    <div v-if="(!auth.user && settings.panel != 'login') || settings.panel == 'login'" class="d-inline-block">
+        <div v-if="auth.user" class="dropdown">
             <button class="dropdown-toggle" :class="[settings.class]" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <span v-html="getValueOrFunction(settings.label)"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li :class="[dropdown.class]" v-for="dropdown in settings.dropdowns" :key="dropdown" @click="dropdownAction(dropdown)" v-html="getValueOrFunction(dropdown.label)">
-                </li>
+                <template v-for="dropdown in settings.dropdowns" :key="dropdown">
+                    <li :class="[dropdown.class]" @click="dropdownAction(dropdown)" v-html="getValueOrFunction(dropdown.label)"></li>
+                </template>
             </ul>
         </div>
         <div v-else class="d-inline-block">
@@ -37,7 +38,7 @@ const VuUserButton = {
     },
     data() {
         return {
-            auth: undefined,
+            auth: {},
         }
     },
     watch: {
@@ -46,7 +47,7 @@ const VuUserButton = {
             if (newValue != oldValue) {
                 this.auth = newValue;
                 this.$forceUpdate();
-            }            
+            }
 
         },
     },
@@ -99,6 +100,7 @@ const VuUserButton = {
             this.auth.visible = false;
             this.auth.user = null;
             this.auth.header = null;
+            this.auth.success = false;
 
             localStorage.removeItem('vu-header');
             localStorage.removeItem('vu-user');
