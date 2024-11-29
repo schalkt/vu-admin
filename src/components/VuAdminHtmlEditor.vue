@@ -74,7 +74,7 @@ export default HtmlEditor;
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
 .vu-admin {
   [data-bs-theme="light"] {
     .ql-container .ql-snow {

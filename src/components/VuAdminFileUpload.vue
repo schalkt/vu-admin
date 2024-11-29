@@ -1029,7 +1029,7 @@ const FileUpload = {
 export default FileUpload;
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .vu-admin {
   .vsa-upload {
 

@@ -2279,8 +2279,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .vu-admin {
+  
   @keyframes fadeIn {
     0% {
       opacity: 0;

@@ -229,4 +229,4 @@ const VuAdminFormList = {
 export default VuAdminFormList;
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss"></style>

@@ -482,66 +482,69 @@ export { VuAuth };
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.vua-auth {
 
-.underlay {
-    position: fixed;
-    inset: 0px;
-    background-color: rgba(242, 242, 242, 0.95);
-    z-index: 99999;
-}
+    .underlay {
+        position: fixed;
+        inset: 0px;
+        background-color: rgba(242, 242, 242, 0.95);
+        z-index: 99999;
+    }
 
-.cursor-pointer {
-    cursor: pointer;
-}
+    .cursor-pointer {
+        cursor: pointer;
+    }
 
-.container {
-    background-color: #f8f9fa;
-}
+    .container {
+        background-color: #f8f9fa;
+    }
 
-.card {
+    .card {
 
-    border-radius: 8px;
-    max-height: 100vh;
-    overflow-y: auto;
+        border-radius: 8px;
+        max-height: 100vh;
+        overflow-y: auto;
 
-    input {
+        input {
 
-        font-weight: bold;
+            font-weight: bold;
 
-        &::placeholder {
-            font-weight: lighter;
-            opacity: 0.5;
+            &::placeholder {
+                font-weight: lighter;
+                opacity: 0.5;
+            }
+
         }
 
-    }
+        a.link {
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
 
-    a.link {
-        position: relative;
-        display: inline-block;
-        text-decoration: none;
-        transition: all 0.15s ease;
-    }
+        a.link:before {
+            content: "\F135";
+            padding-left: 3px;
+            padding-right: 6px;
+            display: inline-block;
+            font-family: "bootstrap-icons" !important;
+            font-weight: 100;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            transition: all 0.25s;
+            vertical-align: text-top;
+            color: #4b89e7;
+        }
 
-    a.link:before {
-        content: "\F135";
-        padding-left: 3px;
-        padding-right: 6px;
-        display: inline-block;
-        font-family: "bootstrap-icons" !important;
-        font-weight: 100;
-        font-style: normal;
-        font-variant: normal;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        transition: all 0.25s;
-        vertical-align: text-top;
-        color: #4b89e7;
-    }
+        a.link:hover:before {
+            padding-left: 6px;
+            padding-right: 3px;
+        }
 
-    a.link:hover:before {
-        padding-left: 6px;
-        padding-right: 3px;
     }
 
 }

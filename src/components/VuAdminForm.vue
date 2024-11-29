@@ -536,9 +536,9 @@ export default VuAdminForm;
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss" >
 .vu-admin {
-
+  
   [data-bs-theme="light"] {}
 
   [data-bs-theme="dark"] {}

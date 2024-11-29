@@ -1,6 +1,6 @@
 <template>
 
-    <div v-if="(!auth.user && settings.panel != 'login') || settings.panel == 'login'" class="d-inline-block">
+    <div v-if="(!auth.user && settings.panel != 'login') || settings.panel == 'login'" class="vua-user-button d-inline-block">
         <div v-if="auth.user" class="dropdown">
             <button class="dropdown-toggle" :class="[settings.class]" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <span v-html="getValueOrFunction(settings.label)"></span>
@@ -119,12 +119,15 @@ export { VuUserButton };
 
 </script>
 
-<style lang="scss" scoped>
-.dropdown {
-    display: inline-block;
-}
+<style lang="scss">
+.vua-user-button {
 
-.cursor-pointer {
-    cursor: pointer;
+    .dropdown {
+        display: inline-block;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
 }
 </style>

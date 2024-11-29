@@ -119,9 +119,10 @@
 </template>
 
 <script>
-import { translate, 
-  getValueOrFunction, 
-  arrayItemMoveUp, 
+import {
+  translate,
+  getValueOrFunction,
+  arrayItemMoveUp,
   arrayItemMoveDown,
 } from "./helpers";
 import HtmlEditor from "./VuAdminHtmlEditor.vue";
@@ -184,7 +185,7 @@ const VuAdminFormGroup = {
       }
 
       return options;
-    },   
+    },
 
     arrayAddNewItem(field, item) {
 
@@ -247,15 +248,16 @@ export default VuAdminFormGroup;
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
 .vu-admin {
 
-  label.required::after {
-    content: " *";
-    color: red;
-  }
-
   form {
+
+    label.required::after {
+      content: " *";
+      color: red;
+    }
+
     .form-control {
       font-weight: 500;
     }
@@ -264,5 +266,6 @@ export default VuAdminFormGroup;
   [data-bs-theme="light"] {}
 
   [data-bs-theme="dark"] {}
+  
 }
 </style>

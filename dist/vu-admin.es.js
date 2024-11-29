@@ -10968,7 +10968,7 @@ function Zw(e, t, s, n, i, r) {
     f("div", Xw, null, 512)
   ]);
 }
-const Qw = /* @__PURE__ */ ue(Gw, [["render", Zw], ["__scopeId", "data-v-443c4edc"]]), Pt = {
+const Qw = /* @__PURE__ */ ue(Gw, [["render", Zw]]), Pt = {
   image: {
     jpg: "image/jpeg",
     jpeg: "image/jpeg",
@@ -11814,7 +11814,7 @@ function vO(e, t, s, n, i, r) {
     ], 2)
   ]);
 }
-const _O = /* @__PURE__ */ ue(tT, [["render", vO], ["__scopeId", "data-v-606ed6ec"]]), EO = {
+const _O = /* @__PURE__ */ ue(tT, [["render", vO]]), EO = {
   props: {
     modelValue: String | Object | Number,
     optionValue: String,
@@ -12464,7 +12464,7 @@ function ON(e, t, s, n, i, r) {
     ], 2))), 128))
   ]);
 }
-const NN = /* @__PURE__ */ ue(QO, [["render", ON], ["__scopeId", "data-v-9d078f58"]]), kN = {
+const NN = /* @__PURE__ */ ue(QO, [["render", ON]]), kN = {
   props: {
     modelValue: Object,
     modalWindow: Object,
@@ -12861,7 +12861,7 @@ function tk(e, t, s, n, i, r) {
     `, 1)) : w("", !0)
   ], 42, SN)) : w("", !0);
 }
-const ek = /* @__PURE__ */ ue(CN, [["render", tk], ["__scopeId", "data-v-e9fbbf5c"]]), sk = {
+const ek = /* @__PURE__ */ ue(CN, [["render", tk]]), sk = {
   name: "VuAdminTablePagination",
   emits: ["setPage", "setPageLimit", "translate"],
   props: {
@@ -13015,7 +13015,7 @@ function Tk(e, t, s, n, i, r) {
     ])
   ]));
 }
-const Ak = /* @__PURE__ */ ue(sk, [["render", Tk], ["__scopeId", "data-v-a7fb8960"]]), bu = ol(), Ok = {
+const Ak = /* @__PURE__ */ ue(sk, [["render", Tk]]), bu = ol(), Ok = {
   name: "VuAdminTable",
   props: {
     settings: Object,
@@ -13816,71 +13816,71 @@ const Ak = /* @__PURE__ */ ue(sk, [["render", Tk], ["__scopeId", "data-v-a7fb896
 }, Gk = { class: "badge text-secondary fw-normal" }, Yk = {
   key: 2,
   class: "dropdown d-inline-block"
-}, Xk = { class: "mx-1" }, Zk = { class: "dropdown-menu" }, Qk = ["onClick"], Jk = { class: "vua-table-header" }, t2 = ["width"], e2 = ["onClick"], s2 = ["innerHTML"], n2 = {
+}, Xk = { class: "mx-1" }, Zk = { class: "dropdown-menu" }, Qk = ["onClick"], Jk = { class: "vua-table-header" }, tC = ["width"], eC = ["onClick"], sC = ["innerHTML"], nC = {
   key: 0,
   class: "bi bi-arrow-down"
-}, i2 = {
+}, iC = {
   key: 1,
   class: "bi bi-arrow-up"
-}, r2 = { key: 0 }, o2 = ["disabled", "onClick"], a2 = {
+}, rC = { key: 0 }, oC = ["disabled", "onClick"], aC = {
   key: 0,
   class: "vua-table-filter"
-}, l2 = ["width"], c2 = {
+}, lC = ["width"], cC = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, u2 = { class: "bi bi-check-all" }, d2 = { class: "bi bi-x-lg" }, h2 = {
+}, uC = { class: "bi bi-check-all" }, dC = { class: "bi bi-x-lg" }, hC = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, f2 = ["onUpdate:modelValue"], p2 = ["disabled", "onClick"], g2 = {
+}, fC = ["onUpdate:modelValue"], pC = ["disabled", "onClick"], gC = {
   key: 2,
   class: "input-group input-group-sm my-1"
-}, m2 = ["onUpdate:modelValue", "disabled"], b2 = { value: "=" }, y2 = { value: ">" }, v2 = { value: ">=" }, _2 = { value: "<" }, E2 = { value: "<=" }, w2 = ["onUpdate:modelValue", "disabled"], T2 = ["value"], A2 = ["onUpdate:modelValue", "disabled", "min", "max"], O2 = ["disabled", "onClick"], N2 = { key: 3 }, k2 = {
+}, mC = ["onUpdate:modelValue", "disabled"], bC = { value: "=" }, yC = { value: ">" }, vC = { value: ">=" }, _C = { value: "<" }, EC = { value: "<=" }, wC = ["onUpdate:modelValue", "disabled"], TC = ["value"], AC = ["onUpdate:modelValue", "disabled", "min", "max"], OC = ["disabled", "onClick"], NC = { key: 3 }, kC = {
   key: 0,
   class: "dropdown"
-}, C2 = {
+}, CC = {
   class: "btn btn-sm btn-secondary dropdown-toggle my-1",
   type: "button",
   "data-bs-auto-close": "outside",
   "data-bs-toggle": "dropdown",
   "aria-expanded": "false"
-}, S2 = { class: "dropdown-menu" }, L2 = ["onClick"], I2 = {
+}, SC = { class: "dropdown-menu" }, LC = ["onClick"], IC = {
   key: 0,
   class: "bi bi-check-square"
-}, x2 = {
+}, xC = {
   key: 1,
   class: "bi bi-square"
-}, $2 = { key: 0 }, R2 = { key: 1 }, M2 = ["onClick"], D2 = { key: 2 }, q2 = ["onClick"], B2 = { key: 3 }, P2 = ["onClick"], j2 = {
+}, $C = { key: 0 }, RC = { key: 1 }, MC = ["onClick"], DC = { key: 2 }, qC = ["onClick"], BC = { key: 3 }, PC = ["onClick"], jC = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, V2 = ["onUpdate:modelValue", "multiple"], U2 = ["value"], F2 = ["disabled", "onClick"], H2 = {
+}, VC = ["onUpdate:modelValue", "multiple"], UC = ["value"], FC = ["disabled", "onClick"], HC = {
   key: 4,
   class: "input-group input-group-sm my-1"
-}, z2 = ["onUpdate:modelValue"], W2 = { value: "=" }, K2 = { value: ">" }, G2 = { value: ">=" }, Y2 = { value: "<" }, X2 = { value: "<=" }, Z2 = ["onUpdate:modelValue"], Q2 = ["value"], J2 = ["type", "onUpdate:modelValue"], tC = ["disabled", "onClick"], eC = ["disabled", "onClick"], sC = { class: "align-middle" }, nC = ["data-label", "width", "onClick"], iC = {
+}, zC = ["onUpdate:modelValue"], WC = { value: "=" }, KC = { value: ">" }, GC = { value: ">=" }, YC = { value: "<" }, XC = { value: "<=" }, ZC = ["onUpdate:modelValue"], QC = ["value"], JC = ["type", "onUpdate:modelValue"], t2 = ["disabled", "onClick"], e2 = ["disabled", "onClick"], s2 = { class: "align-middle" }, n2 = ["data-label", "width", "onClick"], i2 = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, rC = ["innerHTML"], oC = { key: 1 }, aC = ["innerHTML"], lC = ["aria-valuenow", "aria-valuemax"], cC = { key: 0 }, uC = {
+}, r2 = ["innerHTML"], o2 = { key: 1 }, a2 = ["innerHTML"], l2 = ["aria-valuenow", "aria-valuemax"], c2 = { key: 0 }, u2 = {
   key: 4,
   class: "input-group input-group-sm"
-}, dC = ["innerHTML"], hC = ["type", "onChange", "onUpdate:modelValue"], fC = ["onChange", "onUpdate:modelValue"], pC = ["value"], gC = ["innerHTML"], mC = { key: 5 }, bC = ["disabled", "onClick"], yC = ["innerHTML"], vC = { key: 2 }, _C = { key: 0 }, EC = ["colspan"], wC = { class: "row g-3 align-items-center" }, TC = { class: "col-form-label" }, AC = ["type", "onUpdate:modelValue", "onChange"], OC = ["onUpdate:modelValue", "onChange"], NC = ["onUpdate:modelValue", "onChange"], kC = ["value"], CC = ["innerHTML"], SC = {
+}, d2 = ["innerHTML"], h2 = ["type", "onChange", "onUpdate:modelValue"], f2 = ["onChange", "onUpdate:modelValue"], p2 = ["value"], g2 = ["innerHTML"], m2 = { key: 5 }, b2 = ["disabled", "onClick"], y2 = ["innerHTML"], v2 = { key: 2 }, _2 = { key: 0 }, E2 = ["colspan"], w2 = { class: "row g-3 align-items-center" }, T2 = { class: "col-form-label" }, A2 = ["type", "onUpdate:modelValue", "onChange"], O2 = ["onUpdate:modelValue", "onChange"], N2 = ["onUpdate:modelValue", "onChange"], k2 = ["value"], C2 = ["innerHTML"], S2 = {
   key: 0,
   class: "bg-light text-dark"
-}, LC = {
+}, L2 = {
   key: 0,
   class: "vua-table-bulk border-info"
-}, IC = ["data-label", "width"], xC = {
+}, I2 = ["data-label", "width"], x2 = {
   key: 0,
   class: "d-inline-block w-100 px-1"
-}, $C = {
+}, $2 = {
   key: 1,
   class: "input-group input-group-sm my-1"
-}, RC = ["type", "disabled", "onChange", "onUpdate:modelValue"], MC = ["disabled", "onChange", "onUpdate:modelValue"], DC = ["value"], qC = ["onClick"], BC = {
+}, R2 = ["type", "disabled", "onChange", "onUpdate:modelValue"], M2 = ["disabled", "onChange", "onUpdate:modelValue"], D2 = ["value"], q2 = ["onClick"], B2 = {
   key: 0,
   class: "bi bi-square text-secondary"
-}, PC = {
+}, P2 = {
   key: 1,
   class: "bi bi-check-square"
-}, jC = { key: 2 }, VC = ["disabled", "onClick"], UC = ["innerHTML"], FC = { key: 2 }, HC = ["id"], zC = { class: "modal-dialog modal-xl" }, WC = { class: "modal-content h-100" };
-function KC(e, t, s, n, i, r) {
+}, j2 = { key: 2 }, V2 = ["disabled", "onClick"], U2 = ["innerHTML"], F2 = { key: 2 }, H2 = ["id"], z2 = { class: "modal-dialog modal-xl" }, W2 = { class: "modal-content h-100" };
+function K2(e, t, s, n, i, r) {
   const o = Pe("VuAdminTablePagination"), l = Pe("VuAdminForm");
   return g(), m("div", null, [
     r.authAndSettings() ? (g(), m("div", {
@@ -14077,19 +14077,19 @@ function KC(e, t, s, n, i, r) {
               }, [
                 f("span", {
                   innerHTML: a.header && a.header.title !== void 0 ? r.translate(a.header.title) : a.title ? r.translate(a.title) : r.translate(a.name)
-                }, null, 8, s2),
+                }, null, 8, sC),
                 i.config.order[a.name] ? (g(), m("span", {
                   key: 0,
                   class: S(["badge text-bg-light ms-1 p-badge", {
                     "opacity-50": i.config.order[a.name].fixed
                   }])
                 }, [
-                  i.config.order[a.name].dir === "ASC" ? (g(), m("i", n2)) : w("", !0),
-                  i.config.order[a.name].dir === "DESC" ? (g(), m("i", i2)) : w("", !0),
+                  i.config.order[a.name].dir === "ASC" ? (g(), m("i", nC)) : w("", !0),
+                  i.config.order[a.name].dir === "DESC" ? (g(), m("i", iC)) : w("", !0),
                   F(" " + N(i.config.order[a.name].idx + 1), 1)
                 ], 2)) : w("", !0)
-              ], 10, e2),
-              a.header && a.header.buttons ? (g(), m("span", r2, [
+              ], 10, eC),
+              a.header && a.header.buttons ? (g(), m("span", rC, [
                 (g(!0), m(U, null, H(a.header.buttons, (u) => (g(), m("button", {
                   key: u.action,
                   type: "button",
@@ -14112,31 +14112,31 @@ function KC(e, t, s, n, i, r) {
                     ])
                   }, null, 2),
                   F(" " + N(r.translate(u.title)), 1)
-                ], 10, o2))), 128))
+                ], 10, oC))), 128))
               ])) : w("", !0)
-            ], 14, t2))), 128))
+            ], 14, tC))), 128))
           ]),
-          r.countFilters() ? (g(), m("tr", a2, [
+          r.countFilters() ? (g(), m("tr", aC, [
             (g(!0), m(U, null, H(s.settings.table.columns, (a) => (g(), m("th", {
               style: ei([a.hidden ? "display: none" : ""]),
               key: a,
               width: a.width,
               class: S([a.filter ? a.filter.class : ""])
             }, [
-              a.index && a.click ? (g(), m("div", c2, [
+              a.index && a.click ? (g(), m("div", cC, [
                 f("span", {
                   class: S(["cursor-pointer badge border badge-index-toggle py-1 px-2 me-1 my-2 w-100", { active: r.haveSelectedRowInPage() }]),
                   onClick: t[2] || (t[2] = (u) => r.toggleSelectedRowInPage())
                 }, [
-                  K(f("i", u2, null, 512), [
+                  K(f("i", uC, null, 512), [
                     [Ls, !r.haveSelectedRowInPage()]
                   ]),
-                  K(f("i", d2, null, 512), [
+                  K(f("i", dC, null, 512), [
                     [Ls, r.haveSelectedRowInPage()]
                   ])
                 ], 2)
               ])) : w("", !0),
-              a.filter && a.filter.type == "text" ? (g(), m("div", h2, [
+              a.filter && a.filter.type == "text" ? (g(), m("div", hC, [
                 K(f("input", {
                   type: "text",
                   class: S([{
@@ -14144,7 +14144,7 @@ function KC(e, t, s, n, i, r) {
                   }, "form-control form-control-sm"]),
                   "onUpdate:modelValue": (u) => a.filter.value = u,
                   onKeyup: t[3] || (t[3] = li((u) => r.reloadTable(), ["enter"]))
-                }, null, 42, f2), [
+                }, null, 42, fC), [
                   [se, a.filter.value]
                 ]),
                 a.filter.buttonx && a.filter.buttonx != !1 ? (g(), m("button", {
@@ -14158,9 +14158,9 @@ function KC(e, t, s, n, i, r) {
                   }
                 }, t[17] || (t[17] = [
                   f("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, p2)) : w("", !0)
+                ]), 10, pC)) : w("", !0)
               ])) : w("", !0),
-              a.filter && a.filter.type == "number" ? (g(), m("div", g2, [
+              a.filter && a.filter.type == "number" ? (g(), m("div", gC, [
                 a.filter.operators == !0 ? K((g(), m("select", {
                   key: 0,
                   "onUpdate:modelValue": (u) => a.filter.operator = u,
@@ -14168,12 +14168,12 @@ function KC(e, t, s, n, i, r) {
                   onChange: t[4] || (t[4] = (u) => r.reloadTable()),
                   class: "form-select form-select-sm pe-0"
                 }, [
-                  f("option", b2, N(r.translate("=")), 1),
-                  f("option", y2, N(r.translate(">")), 1),
-                  f("option", v2, N(r.translate(">=")), 1),
-                  f("option", _2, N(r.translate("<")), 1),
-                  f("option", E2, N(r.translate("<=")), 1)
-                ], 40, m2)), [
+                  f("option", bC, N(r.translate("=")), 1),
+                  f("option", yC, N(r.translate(">")), 1),
+                  f("option", vC, N(r.translate(">=")), 1),
+                  f("option", _C, N(r.translate("<")), 1),
+                  f("option", EC, N(r.translate("<=")), 1)
+                ], 40, mC)), [
                   [De, a.filter.operator]
                 ]) : w("", !0),
                 a.filter.operators && a.filter.operators.length > 0 ? K((g(), m("select", {
@@ -14186,8 +14186,8 @@ function KC(e, t, s, n, i, r) {
                   (g(!0), m(U, null, H(a.filter.operators, (u) => (g(), m("option", {
                     key: u,
                     value: u.value
-                  }, N(u.label), 9, T2))), 128))
-                ], 40, w2)), [
+                  }, N(u.label), 9, TC))), 128))
+                ], 40, wC)), [
                   [De, a.filter.operator]
                 ]) : w("", !0),
                 K(f("input", {
@@ -14201,7 +14201,7 @@ function KC(e, t, s, n, i, r) {
                   max: a.filter.max,
                   onChange: t[6] || (t[6] = (u) => r.reloadTable()),
                   onKeyup: t[7] || (t[7] = li((u) => r.reloadTable(), ["enter"]))
-                }, null, 42, A2), [
+                }, null, 42, AC), [
                   [se, a.filter.value]
                 ]),
                 !a.filter.fixed && a.filter.buttonx && a.filter.buttonx != !1 ? (g(), m("button", {
@@ -14215,45 +14215,45 @@ function KC(e, t, s, n, i, r) {
                   }
                 }, t[18] || (t[18] = [
                   f("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, O2)) : w("", !0)
+                ]), 10, OC)) : w("", !0)
               ])) : w("", !0),
-              a.filter && a.filter.type == "select" ? (g(), m("div", N2, [
-                a.filter.dropdown ? (g(), m("div", k2, [
-                  f("button", C2, N(a.filter.multiple ? a.filter.value.length + " selected" : a.filter.value ? a.filter.value : "not selected"), 1),
-                  f("ul", S2, [
+              a.filter && a.filter.type == "select" ? (g(), m("div", NC, [
+                a.filter.dropdown ? (g(), m("div", kC, [
+                  f("button", CC, N(a.filter.multiple ? a.filter.value.length + " selected" : a.filter.value ? a.filter.value : "not selected"), 1),
+                  f("ul", SC, [
                     f("li", null, [
                       (g(!0), m(U, null, H(a.filter.options, (u) => (g(), m("span", {
                         key: u,
                         class: S(["dropdown-item cursor-pointer", { selected: a.filter.multiple ? a.filter.value.indexOf(u.value) >= 0 : a.filter.value === u.value }]),
                         onClick: (h) => r.dropdownSelectToggleOne(a.filter, u)
                       }, [
-                        (a.filter.multiple ? a.filter.value.indexOf(u.value) >= 0 : a.filter.value === u.value) ? (g(), m("i", I2)) : (g(), m("i", x2)),
+                        (a.filter.multiple ? a.filter.value.indexOf(u.value) >= 0 : a.filter.value === u.value) ? (g(), m("i", IC)) : (g(), m("i", xC)),
                         F(" " + N(r.translate(u.label ? u.label : u.value)), 1)
-                      ], 10, L2))), 128))
+                      ], 10, LC))), 128))
                     ]),
-                    a.filter.multiple ? (g(), m("li", $2, t[19] || (t[19] = [
+                    a.filter.multiple ? (g(), m("li", $C, t[19] || (t[19] = [
                       f("hr", { class: "dropdown-divider" }, null, -1)
                     ]))) : w("", !0),
-                    a.filter.multiple ? (g(), m("li", R2, [
+                    a.filter.multiple ? (g(), m("li", RC, [
                       f("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (u) => r.dropdownSelectAll(a.filter.value, a.filter.options)
-                      }, N(r.translate("Select all")), 9, M2)
+                      }, N(r.translate("Select all")), 9, MC)
                     ])) : w("", !0),
-                    a.filter.multiple ? (g(), m("li", D2, [
+                    a.filter.multiple ? (g(), m("li", DC, [
                       f("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (u) => r.dropdownSelectClear(a.filter.value)
-                      }, N(r.translate("Unselect all")), 9, q2)
+                      }, N(r.translate("Unselect all")), 9, qC)
                     ])) : w("", !0),
-                    a.filter.multiple ? (g(), m("li", B2, [
+                    a.filter.multiple ? (g(), m("li", BC, [
                       f("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (u) => r.dropdownSelectInvert(a.filter.value, a.filter.options)
-                      }, N(r.translate("Invert all")), 9, P2)
+                      }, N(r.translate("Invert all")), 9, PC)
                     ])) : w("", !0)
                   ])
-                ])) : (g(), m("div", j2, [
+                ])) : (g(), m("div", jC, [
                   K(f("select", {
                     "onUpdate:modelValue": (u) => a.filter.value = u,
                     onChange: t[8] || (t[8] = (u) => r.reloadTable()),
@@ -14263,8 +14263,8 @@ function KC(e, t, s, n, i, r) {
                     (g(!0), m(U, null, H(a.filter.options, (u) => (g(), m("option", {
                       key: u,
                       value: u.value
-                    }, N(r.translate(u.label ? u.label : u.value)), 9, U2))), 128))
-                  ], 40, V2), [
+                    }, N(r.translate(u.label ? u.label : u.value)), 9, UC))), 128))
+                  ], 40, VC), [
                     [De, a.filter.value]
                   ]),
                   a.filter.buttonx && a.filter.buttonx != !1 ? (g(), m("button", {
@@ -14278,22 +14278,22 @@ function KC(e, t, s, n, i, r) {
                     }
                   }, t[20] || (t[20] = [
                     f("i", { class: "bi bi-x" }, null, -1)
-                  ]), 10, F2)) : w("", !0)
+                  ]), 10, FC)) : w("", !0)
                 ]))
               ])) : w("", !0),
-              a.filter && (a.filter.type == "datetime-local" || a.filter.type == "date") ? (g(), m("div", H2, [
+              a.filter && (a.filter.type == "datetime-local" || a.filter.type == "date") ? (g(), m("div", HC, [
                 a.filter.operators == !0 ? K((g(), m("select", {
                   key: 0,
                   "onUpdate:modelValue": (u) => a.filter.operator = u,
                   onChange: t[9] || (t[9] = (u) => r.reloadTable()),
                   class: "form-select form-select-sm pe-0"
                 }, [
-                  f("option", W2, N(r.translate("=")), 1),
-                  f("option", K2, N(r.translate(">")), 1),
-                  f("option", G2, N(r.translate(">=")), 1),
-                  f("option", Y2, N(r.translate("<")), 1),
-                  f("option", X2, N(r.translate("<=")), 1)
-                ], 40, z2)), [
+                  f("option", WC, N(r.translate("=")), 1),
+                  f("option", KC, N(r.translate(">")), 1),
+                  f("option", GC, N(r.translate(">=")), 1),
+                  f("option", YC, N(r.translate("<")), 1),
+                  f("option", XC, N(r.translate("<=")), 1)
+                ], 40, zC)), [
                   [De, a.filter.operator]
                 ]) : w("", !0),
                 a.filter.operators && a.filter.operators.length > 0 ? K((g(), m("select", {
@@ -14305,8 +14305,8 @@ function KC(e, t, s, n, i, r) {
                   (g(!0), m(U, null, H(a.filter.operators, (u) => (g(), m("option", {
                     key: u,
                     value: u.value
-                  }, N(r.translate(u.label)), 9, Q2))), 128))
-                ], 40, Z2)), [
+                  }, N(r.translate(u.label)), 9, QC))), 128))
+                ], 40, ZC)), [
                   [De, a.filter.operator]
                 ]) : w("", !0),
                 K(f("input", {
@@ -14317,7 +14317,7 @@ function KC(e, t, s, n, i, r) {
                   "onUpdate:modelValue": (u) => a.filter.value = u,
                   onChange: t[11] || (t[11] = (u) => r.reloadTable()),
                   onKeyup: t[12] || (t[12] = li((u) => r.reloadTable(), ["enter"]))
-                }, null, 42, J2), [
+                }, null, 42, JC), [
                   [ye, a.filter.value]
                 ]),
                 f("button", {
@@ -14330,7 +14330,7 @@ function KC(e, t, s, n, i, r) {
                   }
                 }, t[21] || (t[21] = [
                   f("i", { class: "bi bi-x" }, null, -1)
-                ]), 10, tC)
+                ]), 10, t2)
               ])) : w("", !0),
               a.filter && a.filter.buttons ? (g(), m("span", {
                 key: 5,
@@ -14364,17 +14364,17 @@ function KC(e, t, s, n, i, r) {
                       ])
                     }, null, 2),
                     F(" " + N(r.translate(u.title)), 1)
-                  ], 10, eC)
+                  ], 10, e2)
                 ]))), 128))
               ], 2)) : w("", !0)
-            ], 14, l2))), 128))
+            ], 14, lC))), 128))
           ])) : w("", !0)
         ]),
         f("tbody", null, [
           (g(!0), m(U, null, H(this.items, (a, u) => (g(), m(U, {
             key: a.id
           }, [
-            f("tr", sC, [
+            f("tr", s2, [
               (g(!0), m(U, null, H(s.settings.table.columns, (h) => (g(), m("td", {
                 style: ei([h.hidden ? "display: none" : ""]),
                 key: h.name,
@@ -14392,19 +14392,19 @@ function KC(e, t, s, n, i, r) {
                   $event: d
                 })
               }, [
-                h.index ? (g(), m("div", iC, [
+                h.index ? (g(), m("div", i2, [
                   f("span", {
                     class: S(["cursor-pointer badge border badge-index p-1 w-100", {
                       selected: i.selected.indexOf(a[s.settings.pkey]) >= 0
                     }]),
                     innerHTML: u + 1 + (i.config.pagination.page - 1) * i.config.pagination.limit
-                  }, null, 10, rC)
+                  }, null, 10, r2)
                 ])) : w("", !0),
-                !h.template && !h.input && !h.progressbar ? (g(), m("span", oC, N(r.tableCellValue(h.name, a, u, h)), 1)) : w("", !0),
+                !h.template && !h.input && !h.progressbar ? (g(), m("span", o2, N(r.tableCellValue(h.name, a, u, h)), 1)) : w("", !0),
                 h.template ? (g(), m("span", {
                   key: 2,
                   innerHTML: r.tableCellTemplate(h.template, a, u, h)
-                }, null, 8, aC)) : w("", !0),
+                }, null, 8, a2)) : w("", !0),
                 h.progressbar ? (g(), m("div", {
                   key: 3,
                   class: "progress",
@@ -14417,10 +14417,10 @@ function KC(e, t, s, n, i, r) {
                     class: S(["progress-bar", [h.progressbar.class]]),
                     style: ei({ width: Math.round(a[h.name] / h.progressbar.max * 100) + "%" })
                   }, [
-                    h.progressbar.value ? (g(), m("span", cC, N(a[h.name]), 1)) : w("", !0)
+                    h.progressbar.value ? (g(), m("span", c2, N(a[h.name]), 1)) : w("", !0)
                   ], 6)
-                ], 8, lC)) : w("", !0),
-                h.input ? (g(), m("div", uC, [
+                ], 8, l2)) : w("", !0),
+                h.input ? (g(), m("div", u2, [
                   h.input.prefix ? (g(), m("span", {
                     key: 0,
                     class: "input-group-text",
@@ -14428,7 +14428,7 @@ function KC(e, t, s, n, i, r) {
                       column: h,
                       item: a
                     })
-                  }, null, 8, dC)) : w("", !0),
+                  }, null, 8, d2)) : w("", !0),
                   ["text", "number", "date", "datetime-local"].indexOf(
                     h.input.type
                   ) >= 0 ? K((g(), m("input", {
@@ -14440,7 +14440,7 @@ function KC(e, t, s, n, i, r) {
                     })]),
                     onChange: (d) => r.onRowInputChange(a[h.name], h, a, u),
                     "onUpdate:modelValue": (d) => a[h.name] = d
-                  }, null, 42, hC)), [
+                  }, null, 42, h2)), [
                     [ye, a[h.name]]
                   ]) : w("", !0),
                   h.input.type == "select" ? K((g(), m("select", {
@@ -14455,8 +14455,8 @@ function KC(e, t, s, n, i, r) {
                     (g(!0), m(U, null, H(h.input.options, (d) => (g(), m("option", {
                       value: d.value,
                       key: d
-                    }, N(r.translate(d.label)), 9, pC))), 128))
-                  ], 42, fC)), [
+                    }, N(r.translate(d.label)), 9, p2))), 128))
+                  ], 42, f2)), [
                     [De, a[h.name]]
                   ]) : w("", !0),
                   h.input.suffix ? (g(), m("span", {
@@ -14466,9 +14466,9 @@ function KC(e, t, s, n, i, r) {
                       column: h,
                       item: a
                     })
-                  }, null, 8, gC)) : w("", !0)
+                  }, null, 8, g2)) : w("", !0)
                 ])) : w("", !0),
-                h.buttons ? (g(), m("span", mC, [
+                h.buttons ? (g(), m("span", m2, [
                   (g(!0), m(U, null, H(h.buttons, (d) => (g(), m("span", {
                     key: d.action
                   }, [
@@ -14505,13 +14505,13 @@ function KC(e, t, s, n, i, r) {
                       d.template ? (g(), m("span", {
                         key: 1,
                         innerHTML: r.tableCellTemplate(d.template, a, u, h)
-                      }, null, 8, yC)) : (g(), m("span", vC, N(r.translate(d.title)), 1))
-                    ], 10, bC))
+                      }, null, 8, y2)) : (g(), m("span", v2, N(r.translate(d.title)), 1))
+                    ], 10, b2))
                   ]))), 128))
                 ])) : w("", !0)
-              ], 14, nC))), 128))
+              ], 14, n2))), 128))
             ]),
-            s.settings.table.details && i.details.indexOf(a[s.settings.pkey]) >= 0 ? (g(), m("tr", _C, [
+            s.settings.table.details && i.details.indexOf(a[s.settings.pkey]) >= 0 ? (g(), m("tr", _2, [
               f("td", {
                 class: S([s.settings.table.details.class]),
                 colspan: s.settings.table.columns.length
@@ -14520,11 +14520,11 @@ function KC(e, t, s, n, i, r) {
                   class: "m-0",
                   key: h
                 }, [
-                  f("div", wC, [
+                  f("div", w2, [
                     f("div", {
                       class: S(["col text-end", [h.class]])
                     }, [
-                      f("label", TC, N(h.label), 1)
+                      f("label", T2, N(h.label), 1)
                     ], 2),
                     f("div", {
                       class: S(["col", [h.input.class]])
@@ -14535,7 +14535,7 @@ function KC(e, t, s, n, i, r) {
                         class: "form-control form-control-sm",
                         "onUpdate:modelValue": (d) => a[h.name] = d,
                         onChange: (d) => r.onRowInputChange(a[h.name], h, a, u)
-                      }, null, 40, AC)), [
+                      }, null, 40, A2)), [
                         [ye, a[h.name]]
                       ]) : w("", !0),
                       h.input.type == "textarea" ? K((g(), m("textarea", {
@@ -14545,7 +14545,7 @@ function KC(e, t, s, n, i, r) {
                         "onUpdate:modelValue": (d) => a[h.name] = d,
                         onChange: (d) => r.onRowInputChange(a[h.name], h, a, u)
                       }, `\r
-                    `, 40, OC)), [
+                    `, 40, O2)), [
                         [se, a[h.name]]
                       ]) : w("", !0),
                       h.input.type == "select" ? K((g(), m("select", {
@@ -14557,8 +14557,8 @@ function KC(e, t, s, n, i, r) {
                         (g(!0), m(U, null, H(h.input.options, (d) => (g(), m("option", {
                           value: d.value,
                           key: d
-                        }, N(r.translate(d.label)), 9, kC))), 128))
-                      ], 40, NC)), [
+                        }, N(r.translate(d.label)), 9, k2))), 128))
+                      ], 40, N2)), [
                         [De, a[h.name]]
                       ]) : w("", !0)
                     ], 2)
@@ -14566,15 +14566,15 @@ function KC(e, t, s, n, i, r) {
                 ]))), 128)),
                 f("span", {
                   innerHTML: s.settings.table.details.raw(a)
-                }, null, 8, CC),
-                s.settings.debug > 1 ? (g(), m("pre", SC, "                  " + N(a) + `
+                }, null, 8, C2),
+                s.settings.debug > 1 ? (g(), m("pre", S2, "                  " + N(a) + `
                 `, 1)) : w("", !0)
-              ], 10, EC)
+              ], 10, E2)
             ])) : w("", !0)
           ], 64))), 128))
         ]),
         f("tfoot", null, [
-          i.selected.length > 0 ? (g(), m("tr", LC, [
+          i.selected.length > 0 ? (g(), m("tr", L2, [
             (g(!0), m(U, null, H(s.settings.table.columns, (a) => (g(), m("td", {
               style: ei([a.hidden ? "display: none" : ""]),
               key: a.name,
@@ -14582,13 +14582,13 @@ function KC(e, t, s, n, i, r) {
               width: a.width,
               class: S(a.class)
             }, [
-              a.index ? (g(), m("div", xC, [
+              a.index ? (g(), m("div", x2, [
                 f("span", {
                   class: "cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100",
                   onClick: t[13] || (t[13] = (u) => r.toggleSelectedAll())
                 }, N(i.selected.length), 1)
               ])) : w("", !0),
-              a.input && a.bulk && a.bulk.enabled ? (g(), m("div", $C, [
+              a.input && a.bulk && a.bulk.enabled ? (g(), m("div", $2, [
                 ["text", "number", "date", "datetime-local"].indexOf(
                   a.input.type
                 ) >= 0 ? K((g(), m("input", {
@@ -14598,7 +14598,7 @@ function KC(e, t, s, n, i, r) {
                   disabled: i.bulkinputs.indexOf(a.name) < 0,
                   onChange: (u) => r.onBulkInputChange(i.bulkitem[a.name], i.bulkitem, a),
                   "onUpdate:modelValue": (u) => i.bulkitem[a.name] = u
-                }, null, 42, RC)), [
+                }, null, 42, R2)), [
                   [ye, i.bulkitem[a.name]]
                 ]) : w("", !0),
                 a.input.type == "select" ? K((g(), m("select", {
@@ -14611,18 +14611,18 @@ function KC(e, t, s, n, i, r) {
                   (g(!0), m(U, null, H(a.input.options, (u) => (g(), m("option", {
                     value: u.value,
                     key: u
-                  }, N(r.translate(u.label)), 9, DC))), 128))
-                ], 42, MC)), [
+                  }, N(r.translate(u.label)), 9, D2))), 128))
+                ], 42, M2)), [
                   [De, i.bulkitem[a.name]]
                 ]) : w("", !0),
                 f("span", {
                   class: "input-group-text cursor-pointer",
                   onClick: (u) => r.ifBulkInputClick(a)
                 }, [
-                  i.bulkitem[a.name] === void 0 ? (g(), m("i", BC)) : (g(), m("i", PC))
-                ], 8, qC)
+                  i.bulkitem[a.name] === void 0 ? (g(), m("i", B2)) : (g(), m("i", P2))
+                ], 8, q2)
               ])) : w("", !0),
-              a.bulk ? (g(), m("span", jC, [
+              a.bulk ? (g(), m("span", j2, [
                 (g(!0), m(U, null, H(a.bulk.buttons, (u) => (g(), m("span", {
                   key: u.action
                 }, [
@@ -14647,11 +14647,11 @@ function KC(e, t, s, n, i, r) {
                     u.template ? (g(), m("span", {
                       key: 1,
                       innerHTML: r.tableCellTemplate(u.template, i.bulkitem, null, a)
-                    }, null, 8, UC)) : (g(), m("span", FC, N(r.translate(u.title)), 1))
-                  ], 10, VC)
+                    }, null, 8, U2)) : (g(), m("span", F2, N(r.translate(u.title)), 1))
+                  ], 10, V2)
                 ]))), 128))
               ])) : w("", !0)
-            ], 14, IC))), 128))
+            ], 14, I2))), 128))
           ])) : w("", !0)
         ])
       ], 2)) : w("", !0),
@@ -14669,8 +14669,8 @@ function KC(e, t, s, n, i, r) {
       id: i.modalId,
       tabindex: "-1"
     }, [
-      f("div", zC, [
-        f("div", WC, [
+      f("div", z2, [
+        f("div", W2, [
           r.authAndSettings() && s.settings.form.visible && s.settings.form.groups ? (g(), ns(l, {
             key: 0,
             modelValue: i.item,
@@ -14686,10 +14686,10 @@ function KC(e, t, s, n, i, r) {
           }, null, 8, ["modelValue", "formid", "settings", "modalWindow", "auth", "saveItem", "deleteItem", "reloadTable", "fetchRelation"])) : w("", !0)
         ])
       ])
-    ], 8, HC)
+    ], 8, H2)
   ]);
 }
-const GC = /* @__PURE__ */ ue(Ok, [["render", KC], ["__scopeId", "data-v-10a5e322"]]), YC = {
+const G2 = /* @__PURE__ */ ue(Ok, [["render", K2]]), Y2 = {
   name: "VuAdmin",
   props: {
     entity: {
@@ -14825,20 +14825,20 @@ const GC = /* @__PURE__ */ ue(Ok, [["render", KC], ["__scopeId", "data-v-10a5e32
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.70"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.71"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.70"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.71"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
   methods: {},
   components: {
-    VuAdminTable: GC
+    VuAdminTable: G2
   }
-}, XC = YC, ZC = { key: 0 }, QC = ["data-bs-theme"];
-function JC(e, t, s, n, i, r) {
+}, X2 = Y2, Z2 = { key: 0 }, Q2 = ["data-bs-theme"];
+function J2(e, t, s, n, i, r) {
   const o = Pe("vu-admin-table");
-  return e.entity && e.settings ? (g(), m("div", ZC, [
+  return e.entity && e.settings ? (g(), m("div", Z2, [
     e.auth ? (g(), m("div", {
       key: 0,
       class: "vu-admin",
@@ -14848,10 +14848,10 @@ function JC(e, t, s, n, i, r) {
         settings: e.settings,
         auth: e.auth
       }, null, 8, ["settings", "auth"])
-    ], 8, QC)) : w("", !0)
+    ], 8, Q2)) : w("", !0)
   ])) : w("", !0);
 }
-const tS = /* @__PURE__ */ ue(XC, [["render", JC]]), eS = (e) => {
+const tS = /* @__PURE__ */ ue(X2, [["render", J2]]), eS = (e) => {
   const t = new DataView(e);
   let s = "";
   for (let n = 0; n < t.byteLength; n += 4)
@@ -15330,7 +15330,7 @@ function XS(e, t, s, n, i, r) {
     ])
   ])) : w("", !0);
 }
-const ZS = /* @__PURE__ */ ue(rS, [["render", XS], ["__scopeId", "data-v-876f5121"]]);
+const ZS = /* @__PURE__ */ ue(rS, [["render", XS]]);
 ol();
 const QS = {
   name: "VuUserButton",
@@ -15387,7 +15387,7 @@ const QS = {
   }
 }, JS = QS, tL = {
   key: 0,
-  class: "d-inline-block"
+  class: "vua-user-button d-inline-block"
 }, eL = {
   key: 0,
   class: "dropdown"
@@ -15437,7 +15437,7 @@ function aL(e, t, s, n, i, r) {
     ]))
   ])) : w("", !0);
 }
-const lL = /* @__PURE__ */ ue(JS, [["render", aL], ["__scopeId", "data-v-0cae5dac"]]), mL = {
+const lL = /* @__PURE__ */ ue(JS, [["render", aL]]), mL = {
   install(e) {
     e.component("VuAdmin", tS), e.component("VuAuth", ZS), e.component("VuUserButton", lL);
   }

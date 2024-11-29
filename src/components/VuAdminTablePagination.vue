@@ -102,7 +102,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .vu-admin {
   nav {
     user-select: none;
