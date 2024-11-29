@@ -14825,9 +14825,9 @@ const G2 = /* @__PURE__ */ ue(Ok, [["render", K2]]), Y2 = {
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.71"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.72"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.71"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.72"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -15015,7 +15015,7 @@ const iS = {
   }
 }, rS = iS, oS = {
   key: 0,
-  class: "vua-auth underlay"
+  class: "vua-auth"
 }, aS = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, lS = { class: "text-center mt-2 mb-4" }, cS = { key: 0 }, uS = { key: 1 }, dS = { key: 2 }, hS = { key: 3 }, fS = { key: 0 }, pS = ["innerHTML"], gS = { class: "d-flex justify-content-between" }, mS = { class: "mb-3" }, bS = {
   for: "email",
   class: "form-label text-primary"
