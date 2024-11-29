@@ -172,10 +172,8 @@
                         </div>
 
 
-
-
                         <div v-if="auth.panel == 'registration' && settings.registration" class="mt-4">
-                            <div v-if="settings.registration.help" v-html="settings.registration.help"></div>
+                            <div v-if="settings.registration.help" v-html="getValueOrFunction(settings.registration.help)"></div>
                         </div>
 
 
