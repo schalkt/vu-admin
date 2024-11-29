@@ -137,26 +137,23 @@
                         <div v-if="auth.panel == 'registration'">
                             <div v-for="input in settings.inputs" :key="input" class="mb-4">
 
-                                <label :for="input.name" class="form-label text-primary">
-                                    {{ input.label }}
-                                </label>
+                                <label :for="input.name" class="form-label text-primary" v-html="getValueOrFunction(input.label)"></label>
                                 <div class="input-group">
-                                    <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="input.prefix"> </span>
+                                    <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.prefix)"> </span>
 
                                     <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[input.name]" :multiple="input.multiple">
                                         <option></option>
-                                        <option v-for="option in input.options" :key="option" :value="option.value">
-                                            {{ option.label }}
+                                        <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">                                            
                                         </option>
                                     </select>
 
                                     <input v-else :id="input.name" :name="input.name" :type="input.type" v-model="inputs[input.name]" class="form-control"
                                         :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" />
 
-                                    <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="input.suffix"> </span>
+                                    <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.suffix)"></span>
 
                                 </div>
-                                <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="input.help" v-html="input.help">
+                                <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="input.help" v-html="getValueOrFunction(input.help)">
                                 </small>
 
                             </div>
