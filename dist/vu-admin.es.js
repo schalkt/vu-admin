@@ -14825,9 +14825,9 @@ const GC = /* @__PURE__ */ de(Ok, [["render", KC]]), YC = {
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.73"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.74"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.73"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.74"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -15051,7 +15051,7 @@ const iS = {
 }, PS = {
   key: 2,
   class: "d-flex mb-4"
-}, jS = { key: 3 }, VS = ["for"], US = { class: "input-group" }, FS = ["innerHTML"], HS = ["required", "onUpdate:modelValue", "multiple"], zS = ["value"], WS = ["id", "name", "type", "onUpdate:modelValue", "placeholder", "required"], KS = ["innerHTML"], GS = ["innerHTML"], YS = {
+}, jS = { key: 3 }, VS = ["for", "innerHTML"], US = { class: "input-group" }, FS = ["innerHTML"], HS = ["required", "onUpdate:modelValue", "multiple"], zS = ["value", "innerHTML"], WS = ["id", "name", "type", "onUpdate:modelValue", "placeholder", "required"], KS = ["innerHTML"], GS = ["innerHTML"], YS = {
   key: 0,
   class: "form-check"
 }, XS = ["id", "name", "onUpdate:modelValue", "required"], ZS = ["for", "innerHTML"], QS = {
@@ -15272,13 +15272,14 @@ function oL(e, t, s, n, i, r) {
               }, [
                 f("label", {
                   for: o.name,
-                  class: "form-label text-primary"
-                }, N(o.label), 9, VS),
+                  class: "form-label text-primary",
+                  innerHTML: e.getValueOrFunction(o.label)
+                }, null, 8, VS),
                 f("div", US, [
                   o.prefix ? (g(), m("span", {
                     key: 0,
                     class: k(["input-group-text", { "rounded-bottom-0": o.help }]),
-                    innerHTML: o.prefix
+                    innerHTML: e.getValueOrFunction(o.prefix)
                   }, null, 10, FS)) : E("", !0),
                   o.type == "select" ? K((g(), m("select", {
                     key: 1,
@@ -15290,8 +15291,9 @@ function oL(e, t, s, n, i, r) {
                     t[20] || (t[20] = f("option", null, null, -1)),
                     (g(!0), m(U, null, H(o.options, (l) => (g(), m("option", {
                       key: l,
-                      value: l.value
-                    }, N(l.label), 9, zS))), 128))
+                      value: l.value,
+                      innerHTML: e.getValueOrFunction(l.label)
+                    }, null, 8, zS))), 128))
                   ], 8, HS)), [
                     [ye, e.inputs[o.name]]
                   ]) : K((g(), m("input", {
@@ -15309,13 +15311,13 @@ function oL(e, t, s, n, i, r) {
                   o.suffix ? (g(), m("span", {
                     key: 3,
                     class: k(["input-group-text", { "rounded-bottom-0": o.help }]),
-                    innerHTML: o.suffix
+                    innerHTML: e.getValueOrFunction(o.suffix)
                   }, null, 10, KS)) : E("", !0)
                 ]),
                 o.help ? (g(), m("small", {
                   key: 0,
                   class: "d-block border border-top-0 rounded-bottom bg-light p-2 text-muted",
-                  innerHTML: o.help
+                  innerHTML: e.getValueOrFunction(o.help)
                 }, null, 8, GS)) : E("", !0)
               ]))), 128))
             ])) : E("", !0),
