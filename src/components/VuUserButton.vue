@@ -1,6 +1,6 @@
 <template>
 
-    <div v-if="(!auth.user && settings.panel != 'login') || settings.panel == 'login'" class="vua-user-button d-inline-block">
+    <div v-if="(!auth.user && panel != 'login') || panel == 'login'" class="vua-user-button d-inline-block">
         <div v-if="auth.user" class="dropdown">
             <button class="dropdown-toggle" :class="[settings.class]" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <span v-html="getValueOrFunction(settings.label)"></span>
@@ -25,6 +25,7 @@
 
 import mitt from 'mitt';
 import {
+    deepMerge,
     getValueOrFunction,
 } from "./helpers";
 
@@ -34,11 +35,12 @@ const VuUserButton = {
     name: "VuUserButton",
     props: {
         modelValue: Object,
-        settings: Object
+        panel: String
     },
     data() {
         return {
             auth: {},
+            settings: {},
         }
     },
     watch: {
@@ -91,7 +93,7 @@ const VuUserButton = {
 
         togglePanel() {
             this.auth.visible = !this.auth.visible;
-            this.auth.panel = this.settings.panel ? this.settings.panel : 'login';
+            this.auth.panel = this.panel ? this.panel : 'login';
             this.updateAuth();
         },
 
@@ -109,6 +111,14 @@ const VuUserButton = {
 
         },
     },
+    created() {
+        if (window.VuSettings && window.VuSettings.button) {
+            if (window.VuSettings.button[this.panel]) {
+                this.settings = window.VuSettings.button[this.panel];
+            }
+        }
+    },
+
     mounted() {
 
     }

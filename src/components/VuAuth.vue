@@ -139,11 +139,12 @@
 
                                 <label :for="input.name" class="form-label text-primary" v-html="getValueOrFunction(input.label)"></label>
                                 <div class="input-group">
-                                    <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.prefix)"> </span>
+                                    <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.prefix)">
+                                    </span>
 
                                     <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[input.name]" :multiple="input.multiple">
                                         <option></option>
-                                        <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">                                            
+                                        <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">
                                         </option>
                                     </select>
 
@@ -224,10 +225,6 @@ const VuAuth = {
     name: "VuAuth",
     props: {
         modelValue: Object,
-        api_login: String,
-        api_register: String,
-        api_password: String,
-        settings: Object
     },
     data() {
         return {
@@ -471,6 +468,11 @@ const VuAuth = {
             return getValueOrFunction(object, params, this.settings, this);
         },
 
+    },
+    created() {
+        if (window.VuSettings && window.VuSettings.auth) {
+            this.settings = window.VuSettings.auth;
+        }
     },
     mounted() {
 

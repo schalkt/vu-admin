@@ -166,9 +166,9 @@ const VuAdmin = {
   },
   created() {
 
-    if (window.VuEntities && window.VuEntities[this.entity]) {
+    if (window.VuSettings && window.VuSettings.entity[this.entity]) {
 
-      this.settings = deepMerge(this.defaults, window.VuEntities[this.entity]);
+      this.settings = deepMerge(this.defaults, window.VuSettings.entity[this.entity]);
       this.settings.entity = this.entity;
       this.settings.preset = this.preset ? this.preset : "default";
 
