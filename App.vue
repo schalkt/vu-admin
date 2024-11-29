@@ -69,7 +69,7 @@
             label: 'Felhasználónév',
             icon: 'bi bi-envelope',
             placeholder: 'Add meg a felhasználóneved',
-            _help: 'A Freemail és Citromail szolgáltatók nem minden esetben fogadják be megfelelően az e-maileket, így a kézbesítés nem garantált.'
+            help: 'A Freemail és Citromail szolgáltatók nem minden esetben fogadják be megfelelően az e-maileket, így a kézbesítés nem garantált.'
           },
           password: {
             label: 'Jelszó',
@@ -89,7 +89,28 @@
             placeholder: 'Ismételd meg a jelszavad',
             _help: 'Ide gépeld be újra a jelszavadat amit megadtál.'
           },
-          _help: '<strong>Segítség</strong><br>Az alábbiakban...',
+          registration: {
+            help: `<div class='bg-white text-muted p-2 rounded shadow-sm'>A regisztráció beküldése után egy <strong>visszaigazoló levél</strong> fog érkezni az e-mail címedre, melyben az aktiváló linkre kell <strong>kattintani</strong>, hogy a regisztráció érvényesítve legyen. A kattintás után megjelenik weboldalunk, ahol <strong>további adatok</strong> megadására van lehetőség.</div>`,
+          },     
+          inputs: [{
+            label: 'Szerepkörök',
+            prefix: `<i class='bi bi-person-badge'></i>`,
+            type: 'select',
+            placeholder: null,
+            multiple: false,
+            required: true,
+            options: [{
+              label: 'Tulajdonos',
+              value: 'owner'
+            },
+            {
+              label: 'Bérlő',
+              value: 'tenant'
+            }],
+            suffix: null,
+            name: 'role',
+            help: 'Ha ugyanazzal az e-mail címmel, de másik szerepkörrel is regisztrálsz, akkor mindkét szerepkört használni tudod a rendszerben. A jelszavad pedig az lesz, amit utoljára megadtál.'
+          }],     
           accepts: [{
             label: () => {
                 return `Elfogadom az <a href='/aszf.pdf'>Általános Szerződési Feltételeket</a>`

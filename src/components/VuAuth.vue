@@ -133,19 +133,52 @@
                             </small>
                         </div>
 
-                        <div class="">
 
-                            <div v-for="accept in settings.accepts" :key="accept">
+                        <div v-if="auth.panel == 'registration'">
+                            <div v-for="input in settings.inputs" :key="input" class="mb-4">
 
-                                <div v-if="accept.panels.indexOf(auth.panel) >= 0" class="form-check">
-                                    <input type="checkbox" class="form-check-input" :id="'accept_' + accept.name" :name="'accept_' + accept.name" v-model="accepts[accept.name]"
-                                        :required="accept.required" />
-                                    <label class="form-check-label" :for="'accept_' + accept.name" v-html="getValueOrFunction(accept.label)">
-                                    </label>
+                                <label :for="input.name" class="form-label text-primary">
+                                    {{ input.label }}
+                                </label>
+                                <div class="input-group">
+                                    <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="input.prefix"> </span>
+
+                                    <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[input.name]" :multiple="input.multiple">
+                                        <option></option>
+                                        <option v-for="option in input.options" :key="option" :value="option.value">
+                                            {{ option.label }}
+                                        </option>
+                                    </select>
+
+                                    <input v-else :id="input.name" :name="input.name" :type="input.type" v-model="inputs[input.name]" class="form-control"
+                                        :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" />
+
+                                    <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="input.suffix"> </span>
+
                                 </div>
+                                <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="input.help" v-html="input.help">
+                                </small>
 
                             </div>
+                        </div>
 
+
+                        <div v-for="accept in settings.accepts" :key="accept">
+
+                            <div v-if="accept.panels.indexOf(auth.panel) >= 0" class="form-check">
+                                <input type="checkbox" class="form-check-input" :id="'accept_' + accept.name" :name="'accept_' + accept.name" v-model="accepts[accept.name]"
+                                    :required="accept.required" />
+                                <label class="form-check-label" :for="'accept_' + accept.name" v-html="getValueOrFunction(accept.label)">
+                                </label>
+                            </div>
+
+                        </div>
+
+
+
+
+                        <div v-if="auth.panel == 'registration' && settings.registration" class="mt-4">
+                            <div v-if="settings.registration.help" v-html="settings.registration.help"></div>
                         </div>
 
 
@@ -208,6 +241,7 @@ const VuAuth = {
             password: "",
             password_again: "",
             accepts: {},
+            inputs: {},
             recaptchaSiteKey: null, // Itt add meg a reCAPTCHA kulcsot
             responseMessage: null,
             captcha: {
@@ -313,6 +347,7 @@ const VuAuth = {
                     username: this.username,
                     password: await this.hashPassword(this.password),
                     accept: this.accepts,
+                    input: this.inputs,
                 }),
             });
 
@@ -465,9 +500,9 @@ const VuAuth = {
                 header: undefined,
                 success: false,
             };
+            this.authUpdate();
         }
 
-        this.authUpdate();
         this.checkStorage();
         this.reset();
 
