@@ -135,28 +135,28 @@
 
 
                         <div v-if="auth.panel == 'registration'">
-                            <div v-for="(input,key) in settings.inputs" :key="key" class="mb-4">
+                            <div v-for="(input, key) in settings.inputs" :key="key" class="mb-4">
+                                <div v-if="!input.hidden">
+                                    <label :for="key" class="form-label text-primary" v-html="getValueOrFunction(input.label)"></label>
+                                    <div class="input-group">
+                                        <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.prefix)">
+                                        </span>
 
-                                <label :for="key" class="form-label text-primary" v-html="getValueOrFunction(input.label)"></label>
-                                <div class="input-group">
-                                    <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.prefix)">
-                                    </span>
+                                        <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[key]" :multiple="input.multiple">
+                                            <option></option>
+                                            <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">
+                                            </option>
+                                        </select>
 
-                                    <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[key]" :multiple="input.multiple">
-                                        <option></option>
-                                        <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">
-                                        </option>
-                                    </select>
+                                        <input v-else :id="key" :name="key" :type="input.type" v-model="inputs[key]" class="form-control" :class="{ 'rounded-bottom-0': input.help }"
+                                            :placeholder="input.placeholder" :required="input.required" />
 
-                                    <input v-else :id="key" :name="key" :type="input.type" v-model="inputs[key]" class="form-control"
-                                        :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" />
+                                        <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.suffix)"></span>
 
-                                    <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.suffix)"></span>
-
+                                    </div>
+                                    <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="input.help" v-html="getValueOrFunction(input.help)">
+                                    </small>
                                 </div>
-                                <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="input.help" v-html="getValueOrFunction(input.help)">
-                                </small>
-
                             </div>
                         </div>
 
@@ -201,11 +201,7 @@
                             <button type="button" @click.stop="close" class="btn btn-light border w-100 me-1">
                                 <i class="bi bi-x-square mx-1"></i> Mégsem
                             </button>
-                        </div>
-
-                        <pre>
-                        {{ inputs }}
-                    </pre>
+                        </div>                        
 
                     </form>
 
@@ -250,19 +246,21 @@ const VuAuth = {
     watch: {
         modelValue(newValue, oldValue) {
             if (newValue != oldValue) {
-                
                 this.auth = newValue;
-
-                if (this.auth.inputs) {
-                    this.inputs = Object.assign(this.inputs, this.auth.inputs);
-                }
-
+                this.updateInputs();
                 this.$forceUpdate();
-                
             }
         },
     },
     methods: {
+
+        updateInputs() {
+
+            if (this.auth.inputs) {
+                this.inputs = Object.assign(this.inputs, this.auth.inputs);
+            }
+
+        },
 
         checkStorage() {
 
@@ -341,7 +339,7 @@ const VuAuth = {
 
             if (this.password != this.password_again) {
                 return;
-            }            
+            }
 
             const response = await fetch(this.settings.api.register, {
                 method: "POST",
@@ -513,6 +511,8 @@ const VuAuth = {
 
         this.checkStorage();
         this.reset();
+        this.updateInputs();
+        this.$forceUpdate();
 
     },
     beforeUnmount() {

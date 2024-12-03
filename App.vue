@@ -41,7 +41,8 @@ export default {
   },
   mounted() {
     this.auth.inputs = {
-      'role': 'owner'
+      'role': 'owner',
+      'secret': '...'
     }
   },
   components: {
