@@ -21,6 +21,9 @@
       <vu-auth v-model="auth" :settings="'auth'"></vu-auth>
 
     </div>
+
+    {{ auth }}
+
   </div>
 
 </template>
@@ -34,6 +37,11 @@ export default {
   data() {
     return {
       auth: {}
+    }
+  },
+  mounted() {
+    this.auth.inputs = {
+      'role': 'owner'
     }
   },
   components: {

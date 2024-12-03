@@ -83,25 +83,26 @@ window.VuSettings = {
         registration: {
             help: `<div class='bg-white text-muted p-2 rounded shadow-sm'>A regisztráció beküldése után egy <strong>visszaigazoló levél</strong> fog érkezni az e-mail címedre, melyben az aktiváló linkre kell <strong>kattintani</strong>, hogy a regisztráció érvényesítve legyen. A kattintás után megjelenik weboldalunk, ahol <strong>további adatok</strong> megadására van lehetőség.</div>`,
         },
-        inputs: [{
-            label: 'Szerepkörök',
-            prefix: `<i class='bi bi-person-badge'></i>`,
-            type: 'select',
-            placeholder: null,
-            multiple: false,
-            required: true,
-            options: [{
-                label: 'Tulajdonos',
-                value: 'owner'
-            },
-            {
-                label: 'Bérlő',
-                value: 'tenant'
-            }],
-            suffix: null,
-            name: 'role',
-            help: 'Ha ugyanazzal az e-mail címmel, de másik szerepkörrel is regisztrálsz, akkor mindkét szerepkört használni tudod a rendszerben. A jelszavad pedig az lesz, amit utoljára megadtál.'
-        }],
+        inputs: {
+            'role': {
+                label: 'Szerepkörök',
+                prefix: `<i class='bi bi-person-badge'></i>`,
+                type: 'select',
+                placeholder: null,
+                multiple: false,
+                required: true,
+                options: [{
+                    label: 'Tulajdonos',
+                    value: 'owner'
+                },
+                {
+                    label: 'Bérlő',
+                    value: 'tenant'
+                }],
+                suffix: null,
+                help: 'Ha ugyanazzal az e-mail címmel, de másik szerepkörrel is regisztrálsz, akkor mindkét szerepkört használni tudod a rendszerben. A jelszavad pedig az lesz, amit utoljára megadtál.'
+            }
+        },
         accepts: [{
             label: () => {
                 return `Elfogadom az <a href='/aszf.pdf'>Általános Szerződési Feltételeket</a>`

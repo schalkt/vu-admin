@@ -135,20 +135,20 @@
 
 
                         <div v-if="auth.panel == 'registration'">
-                            <div v-for="input in settings.inputs" :key="input" class="mb-4">
+                            <div v-for="(input,key) in settings.inputs" :key="key" class="mb-4">
 
-                                <label :for="input.name" class="form-label text-primary" v-html="getValueOrFunction(input.label)"></label>
+                                <label :for="key" class="form-label text-primary" v-html="getValueOrFunction(input.label)"></label>
                                 <div class="input-group">
                                     <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.prefix)">
                                     </span>
 
-                                    <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[input.name]" :multiple="input.multiple">
+                                    <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[key]" :multiple="input.multiple">
                                         <option></option>
                                         <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">
                                         </option>
                                     </select>
 
-                                    <input v-else :id="input.name" :name="input.name" :type="input.type" v-model="inputs[input.name]" class="form-control"
+                                    <input v-else :id="key" :name="key" :type="input.type" v-model="inputs[key]" class="form-control"
                                         :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" />
 
                                     <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.suffix)"></span>
@@ -203,6 +203,10 @@
                             </button>
                         </div>
 
+                        <pre>
+                        {{ inputs }}
+                    </pre>
+
                     </form>
 
                 </div>
@@ -246,8 +250,15 @@ const VuAuth = {
     watch: {
         modelValue(newValue, oldValue) {
             if (newValue != oldValue) {
+                
                 this.auth = newValue;
+
+                if (this.auth.inputs) {
+                    this.inputs = Object.assign(this.inputs, this.auth.inputs);
+                }
+
                 this.$forceUpdate();
+                
             }
         },
     },
@@ -331,10 +342,6 @@ const VuAuth = {
             if (this.password != this.password_again) {
                 return;
             }            
-
-            if (this.auth.input) {
-                this.inputs = Object.assign(this.inputs, this.auth.inputs);
-            }
 
             const response = await fetch(this.settings.api.register, {
                 method: "POST",

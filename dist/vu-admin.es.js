@@ -14825,9 +14825,9 @@ const GS = /* @__PURE__ */ de(Ok, [["render", KS]]), YS = {
         const e = document.documentElement.getAttribute("data-bs-theme");
         this.settings.theme = e || "light";
       }
-      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.79"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+      this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.80"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
     } else
-      console.log("vu-admin ", "1.2.79"), console.error(`Entity config (${this.entity}) not found`);
+      console.log("vu-admin ", "1.2.80"), console.error(`Entity config (${this.entity}) not found`);
   },
   mounted() {
   },
@@ -14888,7 +14888,7 @@ const iC = {
   },
   watch: {
     modelValue(e, t) {
-      e != t && (this.auth = e, this.$forceUpdate());
+      e != t && (this.auth = e, this.auth.inputs && (this.inputs = Object.assign(this.inputs, this.auth.inputs)), this.$forceUpdate());
     }
   },
   methods: {
@@ -14933,7 +14933,6 @@ const iC = {
     async handleNewRegistrationSubmit() {
       if (!this.username || !this.password || !this.password_again || this.password != this.password_again)
         return;
-      this.auth.input && (this.inputs = Object.assign(this.inputs, this.auth.inputs));
       const e = await fetch(this.settings.api.register, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -15266,12 +15265,12 @@ function oL(e, t, s, n, i, r) {
               f("small", { class: "text-muted" }, " A megadott e-mail címre ( amennyiben az szerepel az adatbázisunkban ) egy levelet küldünk, melyben az új jelszó igénylése linkre kattintva egy weboldalra jutsz. Ott tudod megadni az új jelszavadat. Az e-mailben szereplő link csak 1 óráig érvényes. ", -1)
             ]))) : E("", !0),
             e.auth.panel == "registration" ? (g(), m("div", jC, [
-              (g(!0), m(F, null, H(e.settings.inputs, (o) => (g(), m("div", {
-                key: o,
+              (g(!0), m(F, null, H(e.settings.inputs, (o, l) => (g(), m("div", {
+                key: l,
                 class: "mb-4"
               }, [
                 f("label", {
-                  for: o.name,
+                  for: l,
                   class: "form-label text-primary",
                   innerHTML: e.getValueOrFunction(o.label)
                 }, null, 8, VC),
@@ -15285,28 +15284,28 @@ function oL(e, t, s, n, i, r) {
                     key: 1,
                     class: "form-select",
                     required: o.required,
-                    "onUpdate:modelValue": (l) => e.inputs[o.name] = l,
+                    "onUpdate:modelValue": (a) => e.inputs[l] = a,
                     multiple: o.multiple
                   }, [
                     t[20] || (t[20] = f("option", null, null, -1)),
-                    (g(!0), m(F, null, H(o.options, (l) => (g(), m("option", {
-                      key: l,
-                      value: l.value,
-                      innerHTML: e.getValueOrFunction(l.label)
+                    (g(!0), m(F, null, H(o.options, (a) => (g(), m("option", {
+                      key: a,
+                      value: a.value,
+                      innerHTML: e.getValueOrFunction(a.label)
                     }, null, 8, zC))), 128))
                   ], 8, HC)), [
-                    [ye, e.inputs[o.name]]
+                    [ye, e.inputs[l]]
                   ]) : K((g(), m("input", {
                     key: 2,
-                    id: o.name,
-                    name: o.name,
+                    id: l,
+                    name: l,
                     type: o.type,
-                    "onUpdate:modelValue": (l) => e.inputs[o.name] = l,
+                    "onUpdate:modelValue": (a) => e.inputs[l] = a,
                     class: k(["form-control", { "rounded-bottom-0": o.help }]),
                     placeholder: o.placeholder,
                     required: o.required
                   }, null, 10, WC)), [
-                    [ie, e.inputs[o.name]]
+                    [ie, e.inputs[l]]
                   ]),
                   o.suffix ? (g(), m("span", {
                     key: 3,
@@ -15388,7 +15387,9 @@ function oL(e, t, s, n, i, r) {
                 f("i", { class: "bi bi-x-square mx-1" }, null, -1),
                 U(" Mégsem ")
               ]))
-            ])
+            ]),
+            f("pre", null, "                        " + N(e.inputs) + `
+                    `, 1)
           ], 32))
         ])
       ])
