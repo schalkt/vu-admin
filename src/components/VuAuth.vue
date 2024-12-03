@@ -330,6 +330,10 @@ const VuAuth = {
 
             if (this.password != this.password_again) {
                 return;
+            }            
+
+            if (this.auth.input) {
+                this.inputs = Object.assign(this.inputs, this.auth.inputs);
             }
 
             const response = await fetch(this.settings.api.register, {
