@@ -263,7 +263,7 @@
 
               <div v-if="file.types && file.types[params.thumbnail]" class="vsa-image-frame mb-auto text-center">
 
-                <a v-if="file.types.default.url" :href="file.types.default.url">
+                <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url">
                   <img class="img-fluid transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
                 </a>
 
