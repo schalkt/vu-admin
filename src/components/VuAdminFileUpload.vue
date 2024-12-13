@@ -44,12 +44,20 @@
             <tbody>
               <template v-for="(file, index) in files" :key="index">
                 <tr>
-                  <td class="align-middle text-center ps-0">
-                    <small>{{ index + 1 }}</small>
-                  </td>
                   <td class="align-middle px-0">
 
-                    <div class="input-group border rounded">
+                    <div class="input-group border">
+
+                      <span class="d-block p-1 px-2 bg-secondary text-light opacity-50">
+                        <small>{{ index + 1 }}</small>
+                      </span>
+
+                      <span class="cursor-pointer p-1 border-end bg-white h-100" @click="arrayItemMoveDown(files, index)">
+                        <i class="bi bi-arrow-up" :class="{ 'opacity-25': index < 1 }"></i>
+                      </span>
+                      <span class="cursor-pointer p-1 border-start border-end bg-white h-100" @click="arrayItemMoveUp(files, index + 1)">
+                        <i class="bi bi-arrow-down" :class="{ 'opacity-25': index >= files.length - 1 }"></i>
+                      </span>
 
                       <span class="fs-5 ms-2" v-if="file.isDocument">
                         <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
@@ -66,15 +74,19 @@
                       <input required="text" class="form-control py-1 px-2 border-0 fw-light" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
 
                       <span v-if="!file.isDocument && file.types && file.types[params.thumbnail]" class="mx-1">
-                        <a v-if="file.types[params.thumbnail].url" target="_blank" :href="file.types[params.thumbnail].url">
-                          <img height="32" width="auto" class="rounded border" :src="file.types[params.thumbnail].url" :alt="file.name" />
+                        
+                        <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url">
+                          <img height="32" width="auto" class="transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
                         </a>
-                        <img v-else height="32" width="auto" class="" :src="file.types[params.thumbnail].data" :alt="file.name" />
+
+                        <img v-else height="32" width="auto" class="transparent-background" :src="file.types[params.thumbnail].data" :alt="file.name" />                     
+
                       </span>
 
                       <div class="dropdown rounded-bottom" v-if="params.tags">
                         <button class="btn btn-sm bg-light text-dark w-100" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                          {{ file.tags ? file.tags.length : 0 }} tag(s)
+                          <i class="bi bi-tag"></i>
+                          {{ file.tags ? file.tags.length : 0 }}
                         </button>
                         <ul class="dropdown-menu">
                           <li>
@@ -106,23 +118,16 @@
                       </div>
 
                       <div class="dropdown">
-                        <button class="btn btn-sm bg-light text-dark dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-sm bg-light text-dark _dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="bi bi-list"></i>
                         </button>
                         <ul class="dropdown-menu">
-                          <li>
-                            <button class="dropdown-item text-danger py-1" @click="remove(index)" type="button">
-                              <i class="bi bi-x-circle"></i> Remove
-                            </button>
-                          </li>
-
-                          <li v-if="file.uploaded">
+                          <li v-if="file.uploadedXXX">
                             <button class="dropdown-item text-primary py-1" @click="download(index, params)" type="button">
                               <i class="bi bi-download"></i> Download
                             </button>
                           </li>
-                          <li>
-                            <hr class="dropdown-divider">
-                          </li>
+
                           <li v-if="file.original.width">
                             <small class="dropdown-item py-0 d-flex justify-content-between">
                               <span class="text-muted fw-light me-3">original resolution</span> {{ file.original.width }} x {{ file.original.height }}
@@ -135,6 +140,11 @@
                                 <span v-html="roundFileSize(file.original.bytes, true)"></span>
                                 <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ file.original.extension }}</small>
                               </span>
+                            </small>
+                          </li>
+                          <li>
+                            <small class="dropdown-item py-0 d-flex justify-content-between">
+                              <span class="text-muted fw-light me-3">original filename</span> {{ file.original.name }}
                             </small>
                           </li>
 
@@ -188,6 +198,10 @@
 
                       </div>
 
+                      <button class="btn text-danger px-2 py-1" @click="remove(index)" type="button">
+                        <i class="bi bi-x-circle"></i>
+                      </button>
+
                     </div>
 
                   </td>
@@ -200,7 +214,7 @@
         </div>
 
         <div v-else :class="[params.colclass ? params.colclass : 'col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3']" v-for="(file, index) in files" :key="index">
-          <div class="vsa-image-container h-100 position-relative border p-1 rounded">
+          <div class="vsa-image-container h-100 position-relative border p-1 bg-light">
             <div v-if="file.loaded" class="w-100 h-100 d-flex align-items-center flex-column">
 
               <div v-if="0" class="vsa-image-info position-absolute start-0 bottom-0 end-0 p-2 text-center text-light">
@@ -249,11 +263,11 @@
 
               <div v-if="file.types && file.types[params.thumbnail]" class="vsa-image-frame mb-auto text-center">
 
-                <a v-if="file.types[params.thumbnail].url">
-                  <img class="img-fluid rounded transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
+                <a v-if="file.types.default.url" :href="file.types.default.url">
+                  <img class="img-fluid transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
                 </a>
 
-                <img v-else class="img-fluid rounded transparent-background" :src="file.types[params.thumbnail].data" :alt="file.name" />
+                <img v-else class="img-fluid transparent-background" :src="file.types[params.thumbnail].data" :alt="file.name" />
 
               </div>
 
@@ -261,28 +275,34 @@
                 <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
               </div>
 
-              <input required="text" class="form-control rounded-0 rounded-top py-1 px-2 fw-light mt-1" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
+              <input required="text" class="form-control rounded-0 bg-white text-dark border-bottom-0 py-1 px-2 fw-light mt-1" v-model="file.title" @input="slug(file)"
+                @keydown.enter.prevent />
+
               <div class="w-100 d-flex justify-content-around align-items-center">
 
-                <div class="dropdown rounded-bottom border w-100">
-                  <button class="btn btn-sm bg-light text-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Menu
+                <span class="p-1 px-2 bg-secondary text-light border border-end-0 h-100 opacity-50">
+                  <small>{{ index + 1 }}</small>
+                </span>
+
+                <span class="cursor-pointer p-1 bg-white border border-end-0 h-100" @click="arrayItemMoveDown(files, index)">
+                  <i class="bi bi-arrow-up" :class="{ 'opacity-25': index < 1 }"></i>
+                </span>
+                <span class="cursor-pointer p-1 bg-white border border-end-0 h-100" @click="arrayItemMoveUp(files, index + 1)">
+                  <i class="bi bi-arrow-down" :class="{ 'opacity-25': index >= files.length - 1 }"></i>
+                </span>
+
+                <div class="dropdown border h-100 w-100">
+                  <button class="btn btn-sm bg-light text-dark _dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-list"></i>
                   </button>
                   <ul class="dropdown-menu">
-                    <li>
-                      <button class="dropdown-item text-danger py-1" @click="remove(index)" type="button">
-                        <i class="bi bi-x-circle"></i> Remove
-                      </button>
-                    </li>
 
-                    <li v-if="file.uploaded">
+                    <li v-if="file.uploadedXXX">
                       <button class="dropdown-item text-primary py-1" @click="download(index, params)" type="button">
                         <i class="bi bi-download"></i> Download
                       </button>
                     </li>
-                    <li>
-                      <hr class="dropdown-divider">
-                    </li>
+
                     <li v-if="file.original.width">
                       <small class="dropdown-item py-0 d-flex justify-content-between">
                         <span class="text-muted fw-light me-3">original resolution</span> {{ file.original.width }} x {{ file.original.height }}
@@ -295,6 +315,11 @@
                           <span v-html="roundFileSize(file.original.bytes, true)"></span>
                           <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ file.original.extension }}</small>
                         </span>
+                      </small>
+                    </li>
+                    <li>
+                      <small class="dropdown-item py-0 d-flex justify-content-between">
+                        <span class="text-muted fw-light me-3">original filename</span> {{ file.original.name }}
                       </small>
                     </li>
 
@@ -334,7 +359,8 @@
                     </li>
                     <li>
                       <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} bytes</span> <span v-html="roundFileSize(file.bytes, true)"></span>
+                        <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} bytes sum</span> <span
+                          v-html="roundFileSize(file.bytes, true)"></span>
                       </small>
                     </li>
                     <li>
@@ -346,9 +372,10 @@
 
                 </div>
 
-                <div class="dropdown rounded-bottom border w-100" v-if="params.tags">
+                <div class="dropdown border h-100 w-100" v-if="params.tags">
                   <button class="btn btn-sm bg-light text-dark w-100" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ file.tags ? file.tags.length : 0 }} tag(s)
+                    <i class="bi bi-tag"></i>
+                    {{ file.tags ? file.tags.length : 0 }}
                   </button>
                   <ul class="dropdown-menu">
                     <li>
@@ -378,6 +405,10 @@
                     </li>
                   </ul>
                 </div>
+
+                <button class="btn border rounded-0 border-start-0 text-danger px-2 py-1" @click="remove(index)" type="button">
+                  <i class="bi bi-x-circle"></i>
+                </button>
 
               </div>
 
@@ -468,6 +499,8 @@ import {
   arraySelectAll,
   arraySelectInvert,
   arraySelectClear,
+  arrayItemMoveUp,
+  arrayItemMoveDown,
 } from "./helpers";
 
 const fileType = {
@@ -596,7 +629,11 @@ const FileUpload = {
 
     setDefaults(file) {
 
-      if (this.params.tags && !file.tags) {
+      if (!file || typeof (file) != 'object') {
+        return;
+      }
+
+      if (this.params && this.params.tags && !file.tags) {
         file.tags = [];
       }
 
@@ -908,6 +945,14 @@ const FileUpload = {
 
     },
 
+    arrayItemMoveUp(array, index) {
+      arrayItemMoveUp(array, index);
+    },
+
+    arrayItemMoveDown(array, index) {
+      arrayItemMoveDown(array, index);
+    },
+
     download(index, params) {
       let file = this.files[index].types[params.download];
       let link = document.createElement("a");
@@ -1037,8 +1082,8 @@ export default FileUpload;
       background:
         linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%, #cccccc),
         linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%, #cccccc);
-      background-position: 0 0, 4px 4px;
-      background-size: 8px 8px;
+      background-position: 0 0, 3px 3px;
+      background-size: 6px 6px;
     }
 
 

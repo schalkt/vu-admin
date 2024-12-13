@@ -765,9 +765,9 @@ let form = {
 								return selected.owner.label;
 								return JSON.stringify(selected);
 							},
-							options: async (item, field, self) => {								
+							options: async (item, field, self) => {
 
-								const data = await self.fetchCustom('/api/users');								
+								const data = await self.fetchCustom('/api/users');
 								const options = data.users.reduce((acc, item) => {
 									acc.push({
 										label: item.email,
@@ -871,6 +871,14 @@ let form = {
 						thumbnail: 'small',
 						download: 'large',
 						editor: false,
+						tags: [{
+							value: 'public',
+							label: 'Public',
+						},
+						{
+							value: 'hidden',
+							label: 'Hidden',
+						}],
 						presets: {
 							default: {
 								width: 1920,

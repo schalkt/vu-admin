@@ -22,8 +22,6 @@
 
     </div>
 
-    {{ auth }}
-
   </div>
 
 </template>
