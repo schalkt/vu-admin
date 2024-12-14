@@ -869,7 +869,7 @@ let form = {
 						text: 'Click here to upload',
 						accept: ["png", "jpg", "jpeg", "webp"],
 						thumbnail: 'small',
-						download: 'large',
+						// download: 'default',
 						editor: false,
 						tags: [{
 							value: 'public',
@@ -889,14 +889,14 @@ let form = {
 							small: {
 								width: 400,
 								height: 320,
-								extension: "png",
+								extension: "webp",
 								quality: 0.75,
 								crop: 'contain',
 							},
 							tiny: {
 								width: 160,
 								height: 100,
-								crop: 'fit',
+								crop: 'contain',
 								extension: "webp",
 								quality: 0.7
 							},

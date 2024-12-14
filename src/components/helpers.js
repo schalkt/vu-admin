@@ -88,9 +88,9 @@ export function prepareFetchOptions(method, api, options, auth) {
     }
 
     if (auth && auth.header && auth.header[0]) {
-        
+
         api.options.headers[auth.header[0]] = auth.header[1];
-        
+
         // if (api.auth.type == 'Basic' && api.auth.user) {
         //     api.options.headers['Authorization'] = "Basic " + btoa(api.auth.user + ":" + api.auth.password);
         // }
@@ -101,7 +101,7 @@ export function prepareFetchOptions(method, api, options, auth) {
         //     api.options.credentials = 'include';
         //     // api.options.headers['Cookie'] = "";
         // }
-        
+
     }
 
     api.options.body = undefined;
@@ -136,7 +136,7 @@ export function prepareFetchUrl(method, api, id, urlParams) {
 
         haveParams = Object.keys(queryParams).length;
     }
-    
+
     return api.url + (id ? '/' + id : '') + (haveParams ? "?" + (new URLSearchParams(queryParams)).toString() : '');
 
 }
@@ -345,4 +345,26 @@ export function executeFunctions(obj, params) {
         }
     });
 
+}
+
+
+export function roundFileSize(fileSize, suffix) {
+
+    const KB = 1024;
+    const MB = KB * 1024;
+    const GB = MB * 1024;
+
+    if (fileSize < KB) {
+        return fileSize + (suffix ? " Byte" : '');
+    } else if (fileSize < MB) {
+        return (fileSize / KB).toFixed(0) + (suffix ? '<span class="text-muted fw-light"> KB</span>' : '');
+    } else if (fileSize < GB) {
+        return (fileSize / MB).toFixed(2) + (suffix ? '<span class="text-muted fw-light"> MB</span>' : '');
+    } else {
+        return (fileSize / GB).toFixed(2) + (suffix ? '<span class="text-muted fw-light"> GB</span>' : '');
+    }
+}
+
+export function extensionByFilename(filename) {
+    return filename.split(".").reverse()[0];
 }

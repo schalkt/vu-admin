@@ -74,12 +74,12 @@
                       <input required="text" class="form-control py-1 px-2 border-0 fw-light" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
 
                       <span v-if="!file.isDocument && file.types && file.types[params.thumbnail]" class="mx-1">
-                        
+
                         <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url">
                           <img height="32" width="auto" class="transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
                         </a>
 
-                        <img v-else height="32" width="auto" class="transparent-background" :src="file.types[params.thumbnail].data" :alt="file.name" />                     
+                        <img v-else height="32" width="auto" class="transparent-background" :src="file.types[params.thumbnail].data" :alt="file.name" />
 
                       </span>
 
@@ -122,79 +122,12 @@
                           <i class="bi bi-list"></i>
                         </button>
                         <ul class="dropdown-menu">
-                          <li v-if="file.uploadedXXX">
-                            <button class="dropdown-item text-primary py-1" @click="download(index, params)" type="button">
-                              <i class="bi bi-download"></i> Download
-                            </button>
-                          </li>
-
-                          <li v-if="file.original.width">
-                            <small class="dropdown-item py-0 d-flex justify-content-between">
-                              <span class="text-muted fw-light me-3">original resolution</span> {{ file.original.width }} x {{ file.original.height }}
-                            </small>
-                          </li>
-                          <li v-if="!file.isDocument">
-                            <small class="dropdown-item py-0 d-flex justify-content-between">
-                              <span class="text-muted fw-light me-3">original size & extension</span>
-                              <span>
-                                <span v-html="roundFileSize(file.original.bytes, true)"></span>
-                                <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ file.original.extension }}</small>
-                              </span>
-                            </small>
-                          </li>
-                          <li>
-                            <small class="dropdown-item py-0 d-flex justify-content-between">
-                              <span class="text-muted fw-light me-3">original filename</span> {{ file.original.name }}
-                            </small>
-                          </li>
-
-                          <template v-for="(type, preset) in file.types" :key="type">
-
-                            <li v-if="!file.isDocument">
-                              <hr class="dropdown-divider">
-                            </li>
-
-                            <li v-if="file.original.width">
-                              <small class="dropdown-item py-0 d-flex justify-content-between">
-                                <span class="text-muted fw-light me-4"><span class="text-primary">{{ preset }}</span> resolution & crop</span>
-                                <span>
-                                  {{ type.width }} x {{ type.height }}
-                                  <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm" v-if="type.crop">{{ type.crop }}</small>
-                                </span>
-                              </small>
-                            </li>
-                            <li>
-                              <small class="dropdown-item py-0 d-flex justify-content-between">
-                                <span class="text-muted fw-light me-1"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> size & extension</span>
-                                <span>
-                                  <span :class="{ 'text-danger': type.bytes > file.original.bytes }" v-html="roundFileSize(type.bytes, true)"></span>
-                                  <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ type.extension }}</small>
-                                </span>
-                              </small>
-                            </li>
-
-                          </template>
-                          <li>
-                            <hr class="dropdown-divider">
-                          </li>
-                          <li v-if="file.uploaded">
-                            <small class="dropdown-item py-0 d-flex justify-content-between">
-                              <span class="text-muted fw-light me-3">uploaded at</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
-                            </small>
-                          </li>
-                          <li>
-                            <small class="dropdown-item py-0 d-flex justify-content-between">
-                              <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} bytes</span> <span
-                                v-html="roundFileSize(file.bytes, true)"></span>
-                            </small>
-                          </li>
-                          <li>
-                            <small class="dropdown-item py-0 d-flex justify-content-between">
-                              <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} filename</span> <span>{{ file.slug }}</span>
+                          <li class="p-2">
+                            <small class="fw-light">
+                              <VuAdminFileUploadInfo :file="file"></VuAdminFileUploadInfo>
                             </small>
                           </li>
                         </ul>
-
 
                       </div>
 
@@ -214,7 +147,9 @@
         </div>
 
         <div v-else :class="[params.colclass ? params.colclass : 'col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3']" v-for="(file, index) in files" :key="index">
-          <div class="vsa-image-container h-100 position-relative border p-1 bg-light">
+
+          <div class="vsa-image-container h-100 position-relative">
+
             <div v-if="file.loaded" class="w-100 h-100 d-flex align-items-center flex-column">
 
               <div v-if="0" class="vsa-image-info position-absolute start-0 bottom-0 end-0 p-2 text-center text-light">
@@ -261,7 +196,8 @@
                 </div>
               </div>
 
-              <div v-if="file.types && file.types[params.thumbnail]" class="vsa-image-frame mb-auto text-center">
+              <div v-if="file.types && file.types[params.thumbnail]"
+                class="vsa-image-frame mb-auto border border-bottom-0 p-1 text-center w-100 h-100 d-flex justify-content-center align-items-center">
 
                 <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url">
                   <img class="img-fluid transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
@@ -275,10 +211,10 @@
                 <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
               </div>
 
-              <input required="text" class="form-control rounded-0 bg-white text-dark border-bottom-0 py-1 px-2 fw-light mt-1" v-model="file.title" @input="slug(file)"
+              <input required="text" class="form-control rounded-0 bg-white text-dark border-bottom-0 py-1 px-2 fw-light" v-model="file.title" @input="slug(file)"
                 @keydown.enter.prevent />
 
-              <div class="w-100 d-flex justify-content-around align-items-center">
+              <div class="w-100 mb-2 d-flex justify-content-around align-items-center">
 
                 <span class="p-1 px-2 bg-secondary text-light border border-end-0 h-100 opacity-50">
                   <small>{{ index + 1 }}</small>
@@ -296,76 +232,9 @@
                     <i class="bi bi-list"></i>
                   </button>
                   <ul class="dropdown-menu">
-
-                    <li v-if="file.uploadedXXX">
-                      <button class="dropdown-item text-primary py-1" @click="download(index, params)" type="button">
-                        <i class="bi bi-download"></i> Download
-                      </button>
-                    </li>
-
-                    <li v-if="file.original.width">
-                      <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3">original resolution</span> {{ file.original.width }} x {{ file.original.height }}
-                      </small>
-                    </li>
-                    <li v-if="!file.isDocument">
-                      <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3">original size & extension</span>
-                        <span>
-                          <span v-html="roundFileSize(file.original.bytes, true)"></span>
-                          <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ file.original.extension }}</small>
-                        </span>
-                      </small>
-                    </li>
-                    <li>
-                      <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3">original filename</span> {{ file.original.name }}
-                      </small>
-                    </li>
-
-                    <template v-for="(type, preset) in file.types" :key="type">
-
-                      <li v-if="!file.isDocument">
-                        <hr class="dropdown-divider">
-                      </li>
-
-                      <li v-if="file.original.width">
-                        <small class="dropdown-item py-0 d-flex justify-content-between">
-                          <span class="text-muted fw-light me-4"><span class="text-primary">{{ preset }}</span> resolution & crop</span>
-                          <span>
-                            {{ type.width }} x {{ type.height }}
-                            <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm" v-if="type.crop">{{ type.crop }}</small>
-                          </span>
-                        </small>
-                      </li>
-                      <li>
-                        <small class="dropdown-item py-0 d-flex justify-content-between">
-                          <span class="text-muted fw-light me-1"><span class="text-primary" v-if="!file.isDocument">{{ preset }}</span> size & extension</span>
-                          <span>
-                            <span :class="{ 'text-danger': type.bytes > file.original.bytes }" v-html="roundFileSize(type.bytes, true)"></span>
-                            <small class="fw-normal bg-light text-dark rounded border px-2 ms-2 shadow-sm">{{ type.extension }}</small>
-                          </span>
-                        </small>
-                      </li>
-
-                    </template>
-                    <li>
-                      <hr class="dropdown-divider">
-                    </li>
-                    <li v-if="file.uploaded">
-                      <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3">uploaded at</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
-                      </small>
-                    </li>
-                    <li>
-                      <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} bytes sum</span> <span
-                          v-html="roundFileSize(file.bytes, true)"></span>
-                      </small>
-                    </li>
-                    <li>
-                      <small class="dropdown-item py-0 d-flex justify-content-between">
-                        <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} filename</span> <span>{{ file.slug }}</span>
+                    <li class="p-2">
+                      <small class="fw-light">
+                        <VuAdminFileUploadInfo :file="file"></VuAdminFileUploadInfo>
                       </small>
                     </li>
                   </ul>
@@ -501,7 +370,11 @@ import {
   arraySelectClear,
   arrayItemMoveUp,
   arrayItemMoveDown,
+  roundFileSize,
+  extensionByFilename
 } from "./helpers";
+
+import VuAdminFileUploadInfo from "./VuAdminFileUploadInfo.vue";
 
 const fileType = {
   "image": {
@@ -548,6 +421,9 @@ const FileUpload = {
       uploadEvent: null,
     };
   },
+  components: {
+    VuAdminFileUploadInfo
+  },
   created() {
     let uid = Math.round(Math.random() * 100000);
     this.uploadId = "image_upload_" + uid;
@@ -584,26 +460,12 @@ const FileUpload = {
   methods: {
 
     roundFileSize(fileSize, suffix) {
-
-      const KB = 1024;
-      const MB = KB * 1024;
-      const GB = MB * 1024;
-
-      if (fileSize < KB) {
-        return fileSize + (suffix ? " Byte" : '');
-      } else if (fileSize < MB) {
-        return (fileSize / KB).toFixed(0) + (suffix ? '<span class="text-muted fw-light"> KB</span>' : '');
-      } else if (fileSize < GB) {
-        return (fileSize / MB).toFixed(2) + (suffix ? '<span class="text-muted fw-light"> MB</span>' : '');
-      } else {
-        return (fileSize / GB).toFixed(2) + (suffix ? '<span class="text-muted fw-light"> GB</span>' : '');
-      }
+      return roundFileSize(fileSize, suffix);
     },
 
     extensionByFilename(filename) {
-      return filename.split(".").reverse()[0];
+      return extensionByFilename(filename);
     },
-
 
     getAcceptMimeTypes(extensions) {
 
@@ -791,6 +653,7 @@ const FileUpload = {
 
       file.original.width = width;
       file.original.height = height;
+      file.original.ratio = this.calculateAspectRatio(width, height);
 
       for (let key in this.params.presets) {
 
@@ -805,7 +668,7 @@ const FileUpload = {
         let targetWidth = preset.width;
         let targetHeight = preset.height;
 
-        if (preset.crop === "fit") {
+        if (preset.crop === "cover") {
           // Fit mód: a kép közepéről vágunk ki részt, hogy kitöltse a célméretet
           let scale = Math.max(targetWidth / width, targetHeight / height);
           let drawWidth = width * scale;
@@ -854,6 +717,7 @@ const FileUpload = {
         file.types[preset.key] = {
           width: canvas.width,
           height: canvas.height,
+          ratio: this.calculateAspectRatio(canvas.width, canvas.height),
           extension: preset.extension ? preset.extension : this.getExtensionByMimeType(file.type),
           quality: preset.quality ? preset.quality : 0.9,
           crop: preset.crop ? preset.crop : null
@@ -954,13 +818,15 @@ const FileUpload = {
     },
 
     download(index, params) {
-      let file = this.files[index].types[params.download];
+      
+      let file = this.files[index].types[params.download ? params.download : 'default'];
       let link = document.createElement("a");
 
       link.href = file.url;
 
       link.download = file.slug + "." + file.extension;
       link.click();
+      
     },
 
     remove(index) {
@@ -1034,6 +900,50 @@ const FileUpload = {
       }
 
       return null; // Ha nem található a MIME-típus
+
+    },
+
+    calculateAspectRatio(width, height) {
+
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
+
+      if (width <= 0 || height <= 0) {
+        throw new Error("Width and height must be positive numbers.");
+      }
+
+      const divisor = gcd(width, height);
+      const aspectWidth = width / divisor;
+      const aspectHeight = height / divisor;
+
+      // If either dimension is greater than 99, return "?"
+      if (aspectWidth > 99 || aspectHeight > 99) {
+        return "?";
+      }
+
+      // If the ratio simplifies to 1:1, return it explicitly
+      if (aspectWidth === aspectHeight) {
+        return "1:1";
+      }
+
+      // If the ratio is an integer (e.g., 2:1), return it as "N:1"
+      if (aspectWidth % aspectHeight === 0) {
+        return `${aspectWidth / aspectHeight}:1`;
+      }
+
+      const aspectRatio = `${aspectWidth}:${aspectHeight}`;
+
+      // Map only fractional ratios to names
+      const commonRatios = {
+        "2.35:1": "2.35:1",
+        "2.39:1": "2.39:1",
+        "2.76:1": "2.76:1", // Ultra Panavision 70
+        "1.85:1": "1.85:1",
+      };
+
+      // Match to common fractional ratios or return simplified ratio
+      return commonRatios[aspectRatio] || aspectRatio;
 
     },
 
