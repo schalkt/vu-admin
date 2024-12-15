@@ -48,6 +48,7 @@ window.VuSettings = {
         }
     },
     auth: {
+        debug: true,
         api: {
             login: '/api/auth/login',
             register: '/api/auth/register',

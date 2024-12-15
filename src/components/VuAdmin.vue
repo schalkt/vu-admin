@@ -47,7 +47,6 @@ const VuAdmin = {
 
         if (newValue != oldValue) {
           this.loadSettings();
-          //this.$forceUpdate();
         }
 
       }
@@ -195,9 +194,10 @@ const VuAdmin = {
     async loadSettings() {
 
       if (!this.auth.settings || !this.auth.settings.entities || !this.auth.settings.entities[this.entity]) {
+        console.error(`Entity config (${this.entity}) not found`);
         return;
       }
-      
+
       const module = await import(/* @vite-ignore */ this.auth.settings.entities[this.entity]);
       this.init(module.default(this.preset));
 
@@ -235,7 +235,7 @@ const VuAdmin = {
         }
 
         if (this.settings.debug) {
-          
+
           console.log(`Entity config (${this.entity}) initialized`);
 
           if (this.settings.debug > 1) {
@@ -247,6 +247,8 @@ const VuAdmin = {
       } else {
         console.error(`Entity config (${this.entity}) not found`);
       }
+
+      this.$forceUpdate();
 
     }
 
