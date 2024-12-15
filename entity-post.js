@@ -1,5 +1,3 @@
-import VuAdmin from "./src/components/VuAdmin.vue";
-
 let api = {
 	url: '/api/posts',
 	input: {

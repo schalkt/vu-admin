@@ -1,14 +1,5 @@
 
-import product from './entity-product.js';
-import post from './entity-post.js';
-import user from './entity-user.js';
-
 window.VuSettings = {
-    entity: {
-        product: product,
-        post: post,
-        user: user,
-    },
     button: {
         registration: {
             label: 'Regisztráció',
@@ -25,6 +16,14 @@ window.VuSettings = {
                 },
             }, {
                 class: 'dropdown-divider'
+            }, {
+                class: 'dropdown-item cursor-pointer',
+                label: (params, settings, self) => {
+                    return `<i class='bi bi-person me-1'></i> Profil adatok`
+                },
+                action: (params, self) => {
+                    self.showProfilModal();
+                }
             }, {
                 class: 'dropdown-item cursor-pointer',
                 label: (params, settings, self) => {
@@ -128,9 +127,16 @@ window.VuSettings = {
             name: 'newsletter',
 
         }],
-        onsuccess: (responseData, auth) => {
+        onSuccess: (responseData, auth) => {
             auth.user = responseData;
             auth.header = ['X-Auth-Token', responseData.accessToken]
+            auth.settings = {
+                entities: {
+                    post: '/entity-post.js',
+                    product: '/entity-product.js',
+                    user: '/entity-user.js',
+                }
+            };
         }
     }
 };

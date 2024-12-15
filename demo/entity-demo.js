@@ -170,7 +170,7 @@ window.VuSettings = {
 			name: 'newsletter',
 
 		}],
-		onsuccess: (responseData, auth) => {
+		onSuccess: (responseData, auth) => {
 			auth.user = responseData;
 			// auth.token = responseData.accessToken;
 			auth.header = ['X-Auth-Token', responseData.accessToken]

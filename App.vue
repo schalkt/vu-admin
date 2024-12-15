@@ -6,7 +6,7 @@
       <vu-user-button v-model="auth" :panel="'login'"></vu-user-button>
     </header>
 
-    <div class="row">
+    <div class="row" v-if="auth && auth.user">
 
       <div class="col-md-12">
         <vu-admin :entity="'product'" :auth="auth"></vu-admin>
@@ -17,10 +17,10 @@
       <div class="col-md-12">
         <vu-admin :entity="'user'" :auth="auth"></vu-admin>
       </div>
-
-      <vu-auth v-model="auth" :settings="'auth'"></vu-auth>
-
+    
     </div>
+
+    <vu-auth v-model="auth" :settings="'auth'"></vu-auth>
 
   </div>
 

@@ -9,7 +9,16 @@
 <script>
 
 import VuAdminTable from "./VuAdminTable.vue";
-import { deepMerge } from "./helpers";
+
+import {
+  translate,
+  deepMerge,
+  getValueOrFunction,
+  getResponseJson,
+  getResponseErrors,
+  prepareFetchUrl,
+  prepareFetchOptions
+} from "./helpers";
 
 const VuAdmin = {
   name: "VuAdmin",
@@ -28,12 +37,19 @@ const VuAdmin = {
     }
   },
   watch: {
-    auth(newValue, oldValue) {
-      if (newValue != oldValue) {        
-        this.$forceUpdate();
+    auth: {
+      immediate: true,
+      handler(newValue, oldValue) {
+
+        if (newValue != oldValue) {
+          this.loadSettings();
+          //this.$forceUpdate();
+        }
+
       }
-    },
+    }
   },
+
   data() {
     return {
       settings: undefined,
@@ -166,54 +182,74 @@ const VuAdmin = {
   },
   created() {
 
-    if (window.VuSettings && window.VuSettings.entity[this.entity]) {
 
-      this.settings = deepMerge(this.defaults, window.VuSettings.entity[this.entity]);
-      this.settings.entity = this.entity;
-      this.settings.preset = this.preset ? this.preset : "default";
-
-      if (!this.settings.theme) {
-        const theme = document.documentElement.getAttribute("data-bs-theme");
-        this.settings.theme = theme ? theme : "light";
-      }
-
-      // if (!this.settings.translate) {
-      //   this.settings.translate = {};
-      // }
-
-      // for (let language in this.translate) {
-      //   this.settings.translate[language] = Object.assign(
-      //     {},
-      //     this.translate[language] ? this.translate[language] : {},
-      //     this.settings.translate[language]
-      //       ? this.settings.translate[language]
-      //       : {}
-      //   );
-      // }
-
-      if (this.settings.events.afterSettingsInit) {
-        this.settings.events.afterSettingsInit(this.settings);
-      }
-
-      if (this.settings.debug) {
-
-        console.log('vu-admin ', __APP_VERSION__);
-        console.log(`Entity config (${this.entity}) initialized`);
-
-        if (this.settings.debug > 1) {
-          console.log(this.settings);
-        }
-
-      }
-
-    } else {
-      console.log('vu-admin ', __APP_VERSION__);
-      console.error(`Entity config (${this.entity}) not found`);
-    }
 
   },
   mounted() { },
-  methods: {},
+  methods: {
+
+    async loadSettings() {
+
+      if (!this.auth.settings || !this.auth.settings.entities || !this.auth.settings.entities[this.entity]) {
+        return;
+      }
+      
+      const module = await import(/* @vite-ignore */ this.auth.settings.entities[this.entity]);
+      this.init(module.default);
+
+    },
+
+    init(entitySettings) {
+
+      if (entitySettings) {
+
+        this.settings = deepMerge(this.defaults, entitySettings);
+        this.settings.entity = this.entity;
+        this.settings.preset = this.preset ? this.preset : "default";
+
+        if (!this.settings.theme) {
+          const theme = document.documentElement.getAttribute("data-bs-theme");
+          this.settings.theme = theme ? theme : "light";
+        }
+
+        // if (!this.settings.translate) {
+        //   this.settings.translate = {};
+        // }
+
+        // for (let language in this.translate) {
+        //   this.settings.translate[language] = Object.assign(
+        //     {},
+        //     this.translate[language] ? this.translate[language] : {},
+        //     this.settings.translate[language]
+        //       ? this.settings.translate[language]
+        //       : {}
+        //   );
+        // }
+
+        if (this.settings.events.afterSettingsInit) {
+          this.settings.events.afterSettingsInit(this.settings);
+        }
+
+        if (this.settings.debug) {
+
+          console.log('vu-admin ', __APP_VERSION__);
+          console.log(`Entity config (${this.entity}) initialized`);
+
+          if (this.settings.debug > 1) {
+            console.log(this.settings);
+          }
+
+        }
+
+      } else {
+        console.log('vu-admin ', __APP_VERSION__);
+        console.error(`Entity config (${this.entity}) not found`);
+      }
+
+    }
+
+
+  },
   components: {
     VuAdminTable,
   },

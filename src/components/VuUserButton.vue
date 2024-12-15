@@ -95,6 +95,9 @@ const VuUserButton = {
             this.auth.visible = !this.auth.visible;
             this.auth.panel = this.panel ? this.panel : 'login';
             this.updateAuth();
+
+            console.log(this.auth);
+
         },
 
         logout() {
@@ -120,6 +123,8 @@ const VuUserButton = {
     },
 
     mounted() {
+
+        
 
     }
 };

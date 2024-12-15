@@ -148,10 +148,11 @@
                                             </option>
                                         </select>
 
-                                        <input v-else :id="key" :name="key" :type="input.type" v-model="inputs[key]" class="form-control" :class="{ 'rounded-bottom-0': input.help }"
-                                            :placeholder="input.placeholder" :required="input.required" />
+                                        <input v-else :id="key" :name="key" :type="input.type" v-model="inputs[key]" class="form-control"
+                                            :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" />
 
-                                        <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.suffix)"></span>
+                                        <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }"
+                                            v-html="getValueOrFunction(input.suffix)"></span>
 
                                     </div>
                                     <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="input.help" v-html="getValueOrFunction(input.help)">
@@ -201,23 +202,40 @@
                             <button type="button" @click.stop="close" class="btn btn-light border w-100 me-1">
                                 <i class="bi bi-x-square mx-1"></i> Mégsem
                             </button>
-                        </div>                        
+                        </div>
 
                     </form>
 
                 </div>
             </div>
         </div>
+
+        <div v-cloak class="modal shadow" :id="modalId" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content h-100">
+                <VuAdminForm v-cloak v-if="settings.form && settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings"
+                    :modalWindow="modalWindow" :auth="auth" :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation">
+                </VuAdminForm>
+            </div>
+        </div>
     </div>
+
+    </div>
+
+
+
 </template>
 
 <script>
 
 import mitt from 'mitt';
 import { sha384 } from 'crypto-hash';
+import VuAdminForm from "./VuAdminForm.vue";
+import { Modal } from "bootstrap";
 import {
     getValueOrFunction,
 } from "./helpers";
+
 
 const eventBus = mitt();
 
@@ -240,8 +258,14 @@ const VuAuth = {
                 items: ["A", "B", "C", "D", "E"],
                 required: "D",
                 selected: null
-            }
+            },
+            modalId: null,
+            modalElement: null,
+            modalWindow: null,
         };
+    },
+    components: {
+        VuAdminForm
     },
     watch: {
         modelValue(newValue, oldValue) {
@@ -252,6 +276,8 @@ const VuAuth = {
             }
         },
     },
+
+
     methods: {
 
         updateInputs() {
@@ -268,6 +294,7 @@ const VuAuth = {
             // this.auth.token = localStorage.getItem('vu-token');
             this.auth.user = JSON.parse(localStorage.getItem('vu-user'));
             this.auth.header = JSON.parse(localStorage.getItem('vu-header'));
+            this.auth.settings = JSON.parse(localStorage.getItem('vu-settings'));
 
             if (this.auth.user) {
                 this.auth.success = true;
@@ -446,11 +473,12 @@ const VuAuth = {
 
         login(responseData) {
 
-            if (this.settings.onsuccess) {
-                this.settings.onsuccess(responseData, this.auth);
+            if (this.settings.onSuccess) {
+                this.settings.onSuccess(responseData, this.auth);
                 // localStorage.setItem('vu-token', this.auth.token);
                 localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
                 localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
+                localStorage.setItem('vu-settings', JSON.stringify(this.auth.settings));
             }
 
             this.auth.success = true;
@@ -465,12 +493,18 @@ const VuAuth = {
         logout() {
             this.auth.success = false;
             this.auth.header = null;
+            this.auth.settings = null;
             this.auth.user = null;
             this.$emit("update:modelValue", this.auth);
 
             localStorage.removeItem('vu-user');
             localStorage.removeItem('vu-header');
+            localStorage.removeItem('vu-settings');
 
+        },
+
+        showProfilModal() {
+            this.modalWindow.show();
         },
 
         getValueOrFunction(object, params) {
@@ -478,10 +512,17 @@ const VuAuth = {
         },
 
     },
+
     created() {
         if (window.VuSettings && window.VuSettings.auth) {
             this.settings = window.VuSettings.auth;
         }
+
+        let uid = Math.round(Math.random() * 100000);
+
+        this.formId = "form_profil_" + uid;
+        this.modalId = "modal_profil_" + uid;
+
     },
     mounted() {
 
@@ -504,6 +545,7 @@ const VuAuth = {
             this.auth = {
                 user: undefined,
                 header: undefined,
+                settings: undefined,                
                 success: false,
             };
             this.authUpdate();
@@ -513,6 +555,20 @@ const VuAuth = {
         this.reset();
         this.updateInputs();
         this.$forceUpdate();
+
+        
+
+        // this.modalElement = document.getElementById(this.modalId);
+        // this.modalWindow = new Modal(this.modalElement);
+
+        // this.modalElement.addEventListener('hidden.bs.modal', event => {
+        //     this.settings.form.visible = false;
+        // });
+
+        // this.modalElement.addEventListener('show.bs.modal', event => {
+        //     this.settings.form.visible = true;
+        // });
+
 
     },
     beforeUnmount() {
