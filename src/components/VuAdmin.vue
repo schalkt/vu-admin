@@ -235,8 +235,7 @@ const VuAdmin = {
         }
 
         if (this.settings.debug) {
-
-          console.log('vu-admin ', __APP_VERSION__);
+          
           console.log(`Entity config (${this.entity}) initialized`);
 
           if (this.settings.debug > 1) {
@@ -246,7 +245,6 @@ const VuAdmin = {
         }
 
       } else {
-        console.log('vu-admin ', __APP_VERSION__);
         console.error(`Entity config (${this.entity}) not found`);
       }
 

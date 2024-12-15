@@ -211,14 +211,14 @@
         </div>
 
         <div v-cloak class="modal shadow" :id="modalId" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content h-100">
-                <VuAdminForm v-cloak v-if="settings.form && settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings"
-                    :modalWindow="modalWindow" :auth="auth" :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation">
-                </VuAdminForm>
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content h-100">
+                    <VuAdminForm v-cloak v-if="settings.form && settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings"
+                        :modalWindow="modalWindow" :auth="auth" :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation">
+                    </VuAdminForm>
+                </div>
             </div>
         </div>
-    </div>
 
     </div>
 
@@ -545,7 +545,7 @@ const VuAuth = {
             this.auth = {
                 user: undefined,
                 header: undefined,
-                settings: undefined,                
+                settings: undefined,
                 success: false,
             };
             this.authUpdate();
@@ -556,7 +556,9 @@ const VuAuth = {
         this.updateInputs();
         this.$forceUpdate();
 
-        
+        if (this.settings.debug) {
+            console.log('vu-auth mounted ', __APP_VERSION__);
+        }
 
         // this.modalElement = document.getElementById(this.modalId);
         // this.modalWindow = new Modal(this.modalElement);

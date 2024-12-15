@@ -14868,9 +14868,9 @@ const dC = /* @__PURE__ */ oe(UN, [["render", hC]]), fC = {
           const t = document.documentElement.getAttribute("data-bs-theme");
           this.settings.theme = t || "light";
         }
-        this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.87"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+        this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
       } else
-        console.log("vu-admin ", "1.2.87"), console.error(`Entity config (${this.entity}) not found`);
+        console.error(`Entity config (${this.entity}) not found`);
     }
   },
   components: {
@@ -15065,7 +15065,7 @@ const wC = {
       header: void 0,
       settings: void 0,
       success: !1
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate();
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.settings.debug && console.log("vu-auth mounted ", "1.2.88");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
