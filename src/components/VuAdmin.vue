@@ -27,6 +27,10 @@ const VuAdmin = {
       type: String,
       required: true,
     },
+    preset: {
+      type: String,
+      required: false,
+    },
     auth: {
       type: Object,
     }
@@ -195,7 +199,7 @@ const VuAdmin = {
       }
       
       const module = await import(/* @vite-ignore */ this.auth.settings.entities[this.entity]);
-      this.init(module.default);
+      this.init(module.default(this.preset));
 
     },
 

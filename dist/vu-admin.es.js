@@ -14718,6 +14718,10 @@ const dC = /* @__PURE__ */ oe(UN, [["render", hC]]), fC = {
       type: String,
       required: !0
     },
+    preset: {
+      type: String,
+      required: !1
+    },
     auth: {
       type: Object
     }
@@ -14856,7 +14860,7 @@ const dC = /* @__PURE__ */ oe(UN, [["render", hC]]), fC = {
         /* @vite-ignore */
         this.auth.settings.entities[this.entity]
       );
-      this.init(e.default);
+      this.init(e.default(this.preset));
     },
     init(e) {
       if (e) {
@@ -14864,9 +14868,9 @@ const dC = /* @__PURE__ */ oe(UN, [["render", hC]]), fC = {
           const t = document.documentElement.getAttribute("data-bs-theme");
           this.settings.theme = t || "light";
         }
-        this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.86"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
+        this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && (console.log("vu-admin ", "1.2.87"), console.log(`Entity config (${this.entity}) initialized`), this.settings.debug > 1 && console.log(this.settings));
       } else
-        console.log("vu-admin ", "1.2.86"), console.error(`Entity config (${this.entity}) not found`);
+        console.log("vu-admin ", "1.2.87"), console.error(`Entity config (${this.entity}) not found`);
     }
   },
   components: {

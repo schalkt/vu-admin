@@ -949,32 +949,36 @@ let form = {
 	]
 }
 
-export default {
+export default (preset) => {
 
-	// set the primary key field
-	pkey: 'id',
-	debug: true,
-	api: api,
-	events: events,
-	language: 'en',
-	_theme: 'dark',
-	translate: {
-		'en': {
-			'New': 'New product',
-			'Thumb': 'Photo',
-			'Title': 'Product'
-		}
-	},
-	// relations: {
-	// 	user: {
-	// 		entity: 'user',
-	// 		local: 'user_id',
-	// 		foreign: 'id',
-	// 		type: '1-8',
-	// 	}
-	// },
-	table: table,
-	form: form,
+	return {
+
+		// set the primary key field
+		pkey: 'id',
+		debug: true,
+		api: api,
+		events: events,
+		language: 'en',
+		_theme: 'dark',
+		translate: {
+			'en': {
+				'New': 'New product',
+				'Thumb': 'Photo',
+				'Title': 'Product'
+			}
+		},
+		// relations: {
+		// 	user: {
+		// 		entity: 'user',
+		// 		local: 'user_id',
+		// 		foreign: 'id',
+		// 		type: '1-8',
+		// 	}
+		// },
+		table: table,
+		form: form,
+
+	};
 
 };
 

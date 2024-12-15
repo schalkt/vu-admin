@@ -266,7 +266,7 @@ let form = {
 							value: person.id,
 							label: `${person.firstName} ${person.lastName}`
 						}));
-						
+
 					},
 					required: false,
 					description: (params, settings) => {
@@ -283,22 +283,22 @@ let form = {
 							type: 'select',
 							options: () => {
 								return [
-                                    {
-                                        label: 'Google',										
-                                        value: {
+									{
+										label: 'Google',
+										value: {
 											id: 1,
 											link: 'https://www.google.com/'
 										}
-                                    },
-                                    {
-                                        label: 'Youtube',
+									},
+									{
+										label: 'Youtube',
 										value: {
 											id: 2,
 											link: 'https://www.youtube.com/'
 										}
-                                        
-                                    }
-                                ];
+
+									}
+								];
 							},
 							class: 'col-md-10',
 							template: (value, params) => {
@@ -306,7 +306,7 @@ let form = {
 								return value.owner.link + ' ' + value.owner.id;;
 							},
 							required: true
-						},						
+						},
 					}
 				},
 				{
@@ -326,54 +326,57 @@ let form = {
 	]
 };
 
-export default {
+export default (preset) => {
 
-	pkey: 'id',
-	debug: true,
-	api: api,
-	language: 'en',
-	table: table,
-	form: form,
-	translate: {
-		en: {
-			First: '<i class="bi bi-chevron-double-left"></i>',
-			Prev: '<i class="bi bi-chevron-left"></i>',
-			Next: '<i class="bi bi-chevron-right"></i>',			
-			Last: '<i class="bi bi-chevron-double-right"></i>',
-		}
-	},
-	relations: {
-		user1: {
-			entity: 'user',
-			local: 'userId',
-			foreign: 'id',
-			api: {
-				url: '/api/users',
-				options: {
-					mode: "cors",
-					cache: "no-cache"
-				},
-				input: {
-					items: 'users'
-				}
-			},
+	return {
+		pkey: 'id',
+		debug: true,
+		api: api,
+		language: 'en',
+		table: table,
+		form: form,
+		translate: {
+			en: {
+				First: '<i class="bi bi-chevron-double-left"></i>',
+				Prev: '<i class="bi bi-chevron-left"></i>',
+				Next: '<i class="bi bi-chevron-right"></i>',
+				Last: '<i class="bi bi-chevron-double-right"></i>',
+			}
 		},
-		user2: {
-			entity: 'user',
-			local: 'userId',
-			foreign: 'id',
-			api: {
-				url: '/api/users',
-				options: {
-					mode: "cors",
-					cache: "no-cache"
+		relations: {
+			user1: {
+				entity: 'user',
+				local: 'userId',
+				foreign: 'id',
+				api: {
+					url: '/api/users',
+					options: {
+						mode: "cors",
+						cache: "no-cache"
+					},
+					input: {
+						items: 'users'
+					}
 				},
-				input: {
-					items: 'users'
-				}
 			},
-		}
-	},
+			user2: {
+				entity: 'user',
+				local: 'userId',
+				foreign: 'id',
+				api: {
+					url: '/api/users',
+					options: {
+						mode: "cors",
+						cache: "no-cache"
+					},
+					input: {
+						items: 'users'
+					}
+				},
+			}
+		},
+
+	};
 
 };
 
