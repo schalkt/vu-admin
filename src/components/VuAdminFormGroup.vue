@@ -79,6 +79,49 @@
             <VuAdminFormList v-if="field.type == 'list' && (!field.relation || (field.relation && field.relation.items))" v-model="item[field.name]" :field="field" :item="item"
               :settings="settings" :formId="formId"></VuAdminFormList>
 
+
+            <div v-cloak v-if="field.type == 'dropdown' && item[field.name]" :class="[field.class]">
+              <div class="dropdown d-inline-block">
+                <button class="btn dropdown-toggle" :class="[field.dropdown.class]" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span>{{ translate(field.dropdown.label) }}</span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <span v-for="option in field.options" :key="option" class="dropdown-item cursor-pointer" :class="{ 'selected': item[field.name].indexOf(option.value) >= 0 }"
+                      @click="dropdownSelectToggleOne(field, item[field.name], option)">
+                      <i v-if="item[field.name].indexOf(option.value) >= 0" class="bi bi-check-square"></i>
+                      <i v-else class="bi bi-square"></i>
+                      {{ translate(option.label ? option.label : option.value) }}
+                    </span>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <span class="dropdown-item cursor-pointer" @click="dropdownSelectAll(item[field.name], field.options)">
+                      {{ translate('Select all') }}
+                    </span>
+                  </li>
+                  <li>
+                    <span class="dropdown-item cursor-pointer" @click="dropdownSelectClear(item[field.name])">
+                      {{ translate('Unselect all') }}
+                    </span>
+                  </li>
+                  <li>
+                    <span class="dropdown-item cursor-pointer" @click="dropdownSelectInvert(item[field.name], field.options)">
+                      {{ translate('Invert all') }}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <span v-if="item[field.name].length">
+                <span class="cursor-pointer" :class="[field.list.class]" v-for="el in item[field.name]" :key="el" @click="dropdownSelectToggleOne(field, item[field.name], el)">
+                  {{ translate(el) }} <i class="bi bi-x"></i>
+                </span>
+              </span>
+            </div>
+
+
             <span v-if="field.type == 'addresses'">
               <div v-if="item[field.name]">
                 <div v-for="address in item[field.name]" :key="address">
@@ -124,6 +167,10 @@ import {
   getValueOrFunction,
   arrayItemMoveUp,
   arrayItemMoveDown,
+  arraySelectAll,
+  arrayToggleOne,
+  arraySelectClear,
+  arraySelectInvert
 } from "./helpers";
 import HtmlEditor from "./VuAdminHtmlEditor.vue";
 import FileUpload from "./VuAdminFileUpload.vue";
@@ -235,6 +282,32 @@ const VuAdminFormGroup = {
 
       // console.log(this.item[fieldName]);
     },
+
+    dropdownSelectToggleOne(field, value, option) {
+
+      let ovalue = option.value ? option.value : option;
+      arrayToggleOne(value, ovalue);
+
+    },
+
+    dropdownSelectAll(array, options) {
+      arraySelectAll(array, options);
+    },
+
+    dropdownSelectInvert(array, options) {
+      arraySelectInvert(array, options);
+    },
+
+    dropdownSelectClear(array) {
+
+      if (typeof (array) != "object") {
+        array.value = null;
+      } else {
+        arraySelectClear(array);
+      }
+
+    },
+
   },
   components: {
     HtmlEditor,
@@ -266,6 +339,6 @@ export default VuAdminFormGroup;
   [data-bs-theme="light"] {}
 
   [data-bs-theme="dark"] {}
-  
+
 }
 </style>

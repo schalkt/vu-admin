@@ -325,6 +325,12 @@ const VuAdminForm = {
 
         for (let group of settings.form.groups) {
           for (let field of group.fields) {
+            
+            // preset dropdowns multiple
+            if (field.type === "dropdown" && !item[field.name]) {
+              item[field.name] = [];
+            }
+            
             // collect relations
             if (
               field.relation &&
@@ -337,6 +343,10 @@ const VuAdminForm = {
               await this.fetchRelation(field, [item], auth);
 
             }
+
+
+
+
           }
         }
 

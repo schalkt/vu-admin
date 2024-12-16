@@ -862,6 +862,32 @@ window.VuEntities.product = (preset) => {
 						}
 					},
 					{
+						type: 'dropdown',
+						name: 'roles',
+						label: 'Roles',						
+						dropdown: {
+							label: 'Select',
+							class: 'btn btn-sm btn-primary me-2'							
+						},
+						list: {
+							class: 'badge bg-light text-dark me-1'
+						},
+						options: [
+							{
+								value: 'admin',
+								label: 'Admin'
+							},
+							{
+								value: 'editor',
+								label: 'Editor'
+							},
+							{
+								value: 'user',
+								label: 'User'
+							}
+						]
+					},
+					{
 						type: 'upload',
 						name: 'images',
 						label: 'Images',
@@ -967,7 +993,7 @@ window.VuEntities.product = (preset) => {
 			'en': {
 				'New': 'New product',
 				'Thumb': 'Photo',
-				'Title': 'Product'
+				'Title': 'Product',				
 			}
 		},
 		// relations: {
