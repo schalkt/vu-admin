@@ -2,7 +2,6 @@
   <div>
 
     <div v-cloak v-if="authAndSettings()" class="vua-table-container" :class="[settings.class]" :data-bs-theme="[settings.theme]">
-
       <div class="vua-overlay" :class="{ blocked: ui.block.table }"></div>
       <div class="vua-table-title">
         <div class="d-flex align-items-center justify-content-between">

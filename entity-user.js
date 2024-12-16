@@ -1,4 +1,7 @@
-export default (preset) => {
+
+window.VuEntities = window.VuEntities ? window.VuEntities : {};
+
+window.VuEntities.user = (preset) => {
 
 	return {
 		pkey: 'id',

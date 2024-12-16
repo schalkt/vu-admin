@@ -132,6 +132,7 @@ window.VuSettings = {
             auth.user = responseData;
             auth.header = ['X-Auth-Token', responseData.accessToken]
             auth.settings = {
+                entitiesVariable: 'VuEntities',
                 entities: {
                     post: '/entity-post.js',
                     product: '/entity-product.js',

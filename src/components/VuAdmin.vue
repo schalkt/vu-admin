@@ -1,5 +1,5 @@
 <template>
-  <div v-cloak v-if="entity && settings">
+  <div v-cloak v-if="entity && settings">    
     <div v-if="auth" class="vu-admin" :data-bs-theme="[settings.theme]">
       <vu-admin-table :settings="settings" :auth="auth"></vu-admin-table>
     </div>
@@ -198,8 +198,37 @@ const VuAdmin = {
         return;
       }
 
-      const module = await import(/* @vite-ignore */ this.auth.settings.entities[this.entity]);
-      this.init(module.default(this.preset));
+      const entitiesVariable = this.auth.settings.entitiesVariable ? this.auth.settings.entitiesVariable : 'VuEntities';
+
+      // const module = await import(/* @vite-ignore */ this.auth.settings.entities[this.entity]);
+      this.loadScript(this.auth.settings.entities[this.entity], () => {
+        
+        if (window[entitiesVariable] && window[entitiesVariable][this.entity]) {
+          this.init(window[entitiesVariable][this.entity](this.preset));
+        } else {
+          console.error(`Entity config (${this.entity}) not found`);
+        }
+
+      });
+
+
+    },
+
+    loadScript(path, callback) {
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = path;
+      script.onload = () => {
+
+        if (callback) {
+          callback();
+        }
+
+      };
+      script.onerror = () => { };
+
+      document.head.appendChild(script);
 
     },
 
