@@ -83,7 +83,7 @@
             <div v-cloak v-if="field.type == 'dropdown' && item[field.name]" :class="[field.class]">
               <div class="dropdown d-inline-block">
                 <button class="btn dropdown-toggle" :class="[field.dropdown ? field.dropdown.class : '']" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                  <span>{{ translate(field.dropdown.label) }}</span>
+                  <span>{{ translate(field.dropdown ? field.dropdown.label : 'Select') }}</span>
                 </button>
                 <ul class="dropdown-menu">
                   <li>

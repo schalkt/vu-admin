@@ -12468,7 +12468,7 @@ function tN(e, t, s, n, i, r) {
                   "data-bs-toggle": "dropdown",
                   "aria-expanded": "false"
                 }, [
-                  f("span", null, L(e.translate(d.dropdown.label)), 1)
+                  f("span", null, L(e.translate(d.dropdown ? d.dropdown.label : "Select")), 1)
                 ], 2),
                 f("ul", qO, [
                   f("li", null, [
@@ -15156,7 +15156,7 @@ const $C = {
       header: void 0,
       settings: void 0,
       success: !1
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.settings.debug && console.log("vu-auth mounted ", "1.2.93");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.settings.debug && console.log("vu-auth mounted ", "1.2.95");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);

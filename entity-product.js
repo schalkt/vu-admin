@@ -865,13 +865,13 @@ window.VuEntities.product = (preset) => {
 						type: 'dropdown',
 						name: 'roles',
 						label: 'Roles',						
-						dropdown: {
-							label: 'Select',
-							class: 'btn btn-sm btn-primary me-2'							
-						},
-						list: {
-							class: 'badge bg-light text-dark me-1'
-						},
+						// dropdown: {
+						// 	label: 'Select',
+						// 	class: 'btn btn-sm btn-primary me-2'							
+						// },
+						// list: {
+						// 	class: 'badge bg-light text-dark me-1'
+						// },
 						options: [
 							{
 								value: 'admin',
