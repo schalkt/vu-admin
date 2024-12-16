@@ -12462,7 +12462,7 @@ function tN(e, t, s, n, i, r) {
             }, [
               f("div", DO, [
                 f("button", {
-                  class: C(["btn dropdown-toggle", [d.dropdown.class]]),
+                  class: C(["btn dropdown-toggle", [d.dropdown ? d.dropdown.class : ""]]),
                   type: "button",
                   "data-bs-auto-close": "outside",
                   "data-bs-toggle": "dropdown",
@@ -12506,7 +12506,7 @@ function tN(e, t, s, n, i, r) {
               ]),
               e.item[d.name].length ? (g(), b("span", HO, [
                 (g(!0), b(J, null, et(e.item[d.name], (m) => (g(), b("span", {
-                  class: C(["cursor-pointer", [d.list.class]]),
+                  class: C(["cursor-pointer", [d.list ? d.list.class : ""]]),
                   key: m,
                   onClick: (y) => e.dropdownSelectToggleOne(d, e.item[d.name], m)
                 }, [
@@ -15156,7 +15156,7 @@ const $C = {
       header: void 0,
       settings: void 0,
       success: !1
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.settings.debug && console.log("vu-auth mounted ", "1.2.91");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.settings.debug && console.log("vu-auth mounted ", "1.2.93");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
