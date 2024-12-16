@@ -7,7 +7,7 @@
     </header>
 
     <div class="row" v-if="auth && auth.user">
-
+    
       <div class="col-md-12">
         <vu-admin :entity="'product'" :auth="auth" :preset="'dash'"></vu-admin>
       </div>

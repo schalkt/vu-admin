@@ -14861,14 +14861,18 @@ const dS = /* @__PURE__ */ oe(UN, [["render", hS]]), fS = {
       const e = this.auth.settings.entitiesVariable ? this.auth.settings.entitiesVariable : "VuEntities";
       this.loadScript(this.auth.settings.entities[this.entity], () => {
         window[e] && window[e][this.entity] ? this.init(window[e][this.entity](this.preset)) : console.error(`Entity config (${this.entity}) not found`);
-      });
+      }, e);
     },
-    loadScript(e, t) {
-      const s = document.createElement("script");
-      s.async = !0, s.src = e, s.onload = () => {
+    loadScript(e, t, s) {
+      if (window[s] && window[s][this.entity]) {
         t && t();
-      }, s.onerror = () => {
-      }, document.head.appendChild(s);
+        return;
+      }
+      const n = document.createElement("script");
+      n.async = !0, n.src = e, n.onload = () => {
+        t && t();
+      }, n.onerror = () => {
+      }, document.head.appendChild(n);
     },
     init(e) {
       if (e) {
@@ -15074,7 +15078,7 @@ const wS = {
       header: void 0,
       settings: void 0,
       success: !1
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.settings.debug && console.log("vu-auth mounted ", "1.2.89");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.settings.debug && console.log("vu-auth mounted ", "1.2.90");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);

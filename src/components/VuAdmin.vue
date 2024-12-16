@@ -1,5 +1,5 @@
 <template>
-  <div v-cloak v-if="entity && settings">    
+  <div v-cloak v-if="entity && settings">
     <div v-if="auth" class="vu-admin" :data-bs-theme="[settings.theme]">
       <vu-admin-table :settings="settings" :auth="auth"></vu-admin-table>
     </div>
@@ -202,19 +202,29 @@ const VuAdmin = {
 
       // const module = await import(/* @vite-ignore */ this.auth.settings.entities[this.entity]);
       this.loadScript(this.auth.settings.entities[this.entity], () => {
-        
+
         if (window[entitiesVariable] && window[entitiesVariable][this.entity]) {
           this.init(window[entitiesVariable][this.entity](this.preset));
         } else {
           console.error(`Entity config (${this.entity}) not found`);
         }
 
-      });
+      }, entitiesVariable);
 
 
     },
 
-    loadScript(path, callback) {
+    loadScript(path, callback, entitiesVariable) {
+
+      if (window[entitiesVariable] && window[entitiesVariable][this.entity]) {
+        
+        if (callback) {
+          callback();
+        }        
+
+        return;
+
+      }
 
       const script = document.createElement("script");
       script.async = true;
