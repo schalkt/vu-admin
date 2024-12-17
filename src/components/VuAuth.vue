@@ -1,6 +1,9 @@
 <template>
 
     <div v-if="auth && auth.visible" class="vua-auth">
+
+        {{ auth.inputs }}
+
         <div class="row d-flex justify-content-center align-items-center min-vh-100" @click.stop="close">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto">
                 <div class="card shadow p-4 position-relative bg-light" @click.stop="">
@@ -10,33 +13,13 @@
                     </button>
 
                     <h1 class="text-center mt-2 mb-4">
-
-                        <span v-if="auth.panel == 'forgot'">
-                            Elfelejtett jelszó
-                        </span>
-                        <span v-if="auth.panel == 'registration'">
-                            Regisztráció
-                        </span>
-                        <span v-if="auth.panel == 'help'">
-                            Segítség
-                        </span>
-                        <span v-if="auth.panel == 'login'">
-                            Bejelentkezés
-                        </span>
+                        {{ settings.title[auth.panel] }}
                     </h1>
 
-                    <div v-if="auth.panel == 'help'">
-                        <div v-html="settings.help" class="mb-4"></div>
-                        <div class="d-flex justify-content-between">
-                            <button v-if="auth.panel != 'login'" type="button" @click.stop="toggleClear" class="btn btn-secondary w-100 me-1">
-                                <i class="bi bi-arrow-left-square mx-1"></i> Vissza
-                            </button>
-                        </div>
-                    </div>
+                    <form @submit.prevent="handleSubmit()" @click.stop="">
 
-                    <form v-else @submit.prevent="handleSubmit()" @click.stop="">
                         <!-- E-mail mező -->
-                        <div class="mb-3">
+                        <div class="mb-3" v-if="auth.panel != 'activation'">
                             <label for="email" class="form-label text-primary">{{ settings.username.label }}</label>
                             <div class="input-group">
                                 <span v-if="settings.username.icon" class="input-group-text" :class="{ 'rounded-bottom-0': settings.username.help }">
@@ -49,7 +32,7 @@
                         </div>
 
                         <!-- Jelszó mező és Elfelejtett jelszó gomb -->
-                        <template v-if="auth.panel != 'forgot'">
+                        <template v-if="auth.panel != 'forgot' && auth.panel != 'activation'">
 
                             <div class="mb-3">
                                 <label for="password" class="form-label text-primary">
@@ -133,34 +116,35 @@
                             </small>
                         </div>
 
+                        <div class="row">
+                            <template v-for="(input, key) in settings.inputs" :key="key">
+                                <div v-if="input.panels.indexOf(auth.panel) >= 0 && !input.hidden" :class="[input.colclass ? input.colclass : 'col-md-12']">
+                                    <div class="mb-3">
+                                        <label :for="key" class="form-label text-primary" :class="{ 'required': input.required }" v-html="getValueOrFunction(input.label)"></label>
+                                        <div class="input-group">
+                                            <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }"
+                                                v-html="getValueOrFunction(input.prefix)">
+                                            </span>
 
-                        <div v-if="auth.panel == 'registration'">
-                            <div v-for="(input, key) in settings.inputs" :key="key" class="mb-4">
-                                <div v-if="!input.hidden">
-                                    <label :for="key" class="form-label text-primary" v-html="getValueOrFunction(input.label)"></label>
-                                    <div class="input-group">
-                                        <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }" v-html="getValueOrFunction(input.prefix)">
-                                        </span>
+                                            <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[key]" :multiple="input.multiple">
+                                                <option></option>
+                                                <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">
+                                                </option>
+                                            </select>
 
-                                        <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[key]" :multiple="input.multiple">
-                                            <option></option>
-                                            <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">
-                                            </option>
-                                        </select>
+                                            <input v-else :id="key" :name="key" :type="input.type" v-model="inputs[key]" class="form-control"
+                                                :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" />
 
-                                        <input v-else :id="key" :name="key" :type="input.type" v-model="inputs[key]" class="form-control"
-                                            :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" />
+                                            <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }"
+                                                v-html="getValueOrFunction(input.suffix)"></span>
 
-                                        <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }"
-                                            v-html="getValueOrFunction(input.suffix)"></span>
-
+                                        </div>
+                                        <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="input.help" v-html="getValueOrFunction(input.help)">
+                                        </small>
                                     </div>
-                                    <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="input.help" v-html="getValueOrFunction(input.help)">
-                                    </small>
                                 </div>
-                            </div>
+                            </template>
                         </div>
-
 
                         <div v-for="accept in settings.accepts" :key="accept">
 
@@ -180,7 +164,8 @@
 
 
                         <div class="mt-4 d-flex justify-content-between">
-                            <button v-if="auth.panel != 'login'" type="button" @click.stop="toggleClear" class="btn btn-secondary w-100 me-2 text-nowrap">
+                            <button v-if="auth.panel != 'login' && auth.panel != 'activation'" type="button" @click.stop="toggleClear"
+                                class="btn btn-secondary w-100 me-2 text-nowrap">
                                 <i class="bi bi-arrow-left-square mx-1"></i> Bejelentkezés
                             </button>
                             <button v-if="auth.panel == 'login'" type="button" class="btn btn-warning w-100 me-2 text-nowrap" @click.stop="toggleNewRegistration">
@@ -188,7 +173,7 @@
                             </button>
                             <button type="submit" class="btn w-100 text-nowrap"
                                 :class="{ 'btn-primary': auth.panel != 'registration', 'btn-warning': auth.panel == 'registration' }">
-                                {{ auth.panel == 'forgot' ? 'Új jelszó kérése' : (auth.panel == 'registration' ? 'Regisztráció' : 'Bejelentkezés') }}
+                                {{ settings.submit[auth.panel] }}
                                 <i v-if="auth.panel == 'registration'" class="bi bi-person-plus mx-1"></i>
                                 <i v-else class="bi bi-arrow-right-square mx-1"></i>
                             </button>
@@ -200,7 +185,7 @@
 
                         <div class="mt-2 text-end">
                             <button type="button" @click.stop="close" class="btn btn-light border w-100 me-1">
-                                <i class="bi bi-x-square mx-1"></i> Mégsem
+                                Mégsem <i class="bi bi-x-square mx-1"></i>
                             </button>
                         </div>
 
@@ -233,6 +218,7 @@ import { sha384 } from 'crypto-hash';
 import VuAdminForm from "./VuAdminForm.vue";
 import { Modal } from "bootstrap";
 import {
+    translate,
     getValueOrFunction,
 } from "./helpers";
 
@@ -280,6 +266,34 @@ const VuAuth = {
 
     methods: {
 
+        detectQuery() {
+
+            const url = new URL(window.location.href);
+
+            if (url.searchParams.has('vuparams')) {
+
+                let vuparams = url.searchParams.get('vuparams');
+
+                if (vuparams) {
+
+                    let params = JSON.parse(vuparams);
+
+                    if (params.panel) {
+                        this.auth.panel = params.panel
+                        this.auth.visible = true;
+                        this.auth.inputs = params.inputs ? params.inputs : null;
+                        this.updateInputs();
+                    }
+
+                    // url.searchParams.delete('vuparams');
+                    // window.history.replaceState({}, '', url.toString());
+
+                }
+
+            }
+
+        },
+
         updateInputs() {
 
             if (this.auth.inputs) {
@@ -318,6 +332,11 @@ const VuAuth = {
 
             if (this.auth.panel == 'registration') {
                 this.handleNewRegistrationSubmit();
+                return;
+            }
+
+            if (this.auth.panel == 'activation') {
+                this.handleActivationSubmit();
                 return;
             }
 
@@ -392,6 +411,28 @@ const VuAuth = {
             }
 
 
+
+        },
+
+        async handleActivationSubmit() {
+
+            const response = await fetch(this.settings.api.activation, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(this.inputs),
+            });
+
+            if (response.ok) {
+
+                const responseData = await response.json();
+                this.responseOk = true;
+                this.responseMessage = 'Sikeres aktiválás';
+
+
+            } else {
+                this.responseOk = false;
+                this.responseMessage = 'Sikertelen aktiválás';
+            }
 
         },
 
@@ -511,6 +552,10 @@ const VuAuth = {
             return getValueOrFunction(object, params, this.settings, this);
         },
 
+        translate(key, vars, language) {
+            return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
+        },
+
     },
 
     created() {
@@ -551,14 +596,17 @@ const VuAuth = {
             this.authUpdate();
         }
 
+
         this.checkStorage();
         this.reset();
         this.updateInputs();
         this.$forceUpdate();
+        this.detectQuery();
 
         if (this.settings.debug) {
             console.log('vu-auth mounted ', __APP_VERSION__);
         }
+
 
         // this.modalElement = document.getElementById(this.modalId);
         // this.modalWindow = new Modal(this.modalElement);
@@ -604,6 +652,10 @@ export { VuAuth };
         border-radius: 8px;
         max-height: 100vh;
         overflow-y: auto;
+
+        label.required::after {
+            content: " *";                   
+        }
 
         input {
 

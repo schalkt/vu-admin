@@ -48,11 +48,24 @@ window.VuSettings = {
         }
     },
     auth: {
-        debug: true,
+        debug: true,        
+        title: {
+            login: 'Bejelentkezés',
+            registration: 'Regisztráció',
+            forgot: 'Elfelejtett jelszó',
+            activation: 'Aktiválás',
+        },
+        submit: {
+            login: 'Bejelentkezés',
+            registration: 'Regisztráció',
+            forgot: 'Elfelejtett jelszó',
+            activation: 'Aktiválás',
+        },    
         api: {
             login: '/api/auth/login',
             register: '/api/auth/register',
             password: '/api/auth/password',
+            activation: '/api/auth/activate',
         },
         username: {
             value: 'emilys',
@@ -92,6 +105,7 @@ window.VuSettings = {
                 placeholder: null,
                 multiple: false,
                 required: true,
+                panels: ['registration'],
                 options: [{
                     label: 'Tulajdonos',
                     value: 'owner'
@@ -102,6 +116,46 @@ window.VuSettings = {
                 }],
                 suffix: null,
                 help: 'Ha ugyanazzal az e-mail címmel, de másik szerepkörrel is regisztrálsz, akkor mindkét szerepkört használni tudod a rendszerben. A jelszavad pedig az lesz, amit utoljára megadtál.'
+            },
+            'lastname': {
+                panels: ['activation'],
+                label: 'Vezetéknév',                
+                prefix: null,
+                suffix: null,
+                type: 'text',
+                placeholder: null,
+                required: true,
+                colclass: 'col-md-6',
+            },
+            'firstname': {                
+                panels: ['activation'],
+                label: 'Keresztnév',
+                prefix: null,
+                suffix: null,
+                type: 'text',
+                placeholder: null,
+                required: true,
+                colclass: 'col-md-6'
+            },
+            'phone1': {                
+                panels: ['activation'],
+                label: 'Telefonszám',
+                prefix: null,
+                suffix: null,
+                type: 'text',
+                placeholder: 'pl.: +36 70 1111-222',                
+                required: true,
+                colclass: 'col-md-6'
+            },
+            'birthdate': {                
+                panels: ['activation'],
+                label: 'Születési dátum',
+                prefix: null,
+                suffix: null,
+                type: 'date',
+                placeholder: null,
+                required: true,
+                colclass: 'col-md-6'
             }
         },
         accepts: [{
