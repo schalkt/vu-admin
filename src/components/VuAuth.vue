@@ -515,7 +515,7 @@ const VuAuth = {
         onSuccess(panel, responseData) {
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
-                this.settings.onSuccess[panel](responseData, this.auth);
+                this.settings.onSuccess[panel](responseData, this.auth);                
                 this.auth.success = true;
                 
                 localStorage.setItem('vu-user', JSON.stringify(this.auth.user));

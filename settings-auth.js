@@ -184,6 +184,9 @@ window.VuSettings = {
         }],
         onSuccess: {
             login: (responseData, auth) => {
+
+                console.log(responseData, auth);
+
                 auth.user = responseData;
                 auth.header = ['X-Auth-Token', responseData.accessToken]
                 auth.settings = {
@@ -196,6 +199,9 @@ window.VuSettings = {
                 };
             },
             activation: (responseData, auth) => {
+
+                console.log(responseData, auth);
+
                 auth.user = responseData;
                 auth.header = ['X-Auth-Token', responseData.accessToken]
                 auth.settings = {
