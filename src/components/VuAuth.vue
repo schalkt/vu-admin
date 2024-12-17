@@ -304,8 +304,7 @@ const VuAuth = {
 
         checkStorage() {
 
-            this.auth.user = {};
-            // this.auth.token = localStorage.getItem('vu-token');
+            this.auth.user = {};            
             this.auth.user = JSON.parse(localStorage.getItem('vu-user'));
             this.auth.header = JSON.parse(localStorage.getItem('vu-header'));
             this.auth.settings = JSON.parse(localStorage.getItem('vu-settings'));
@@ -364,8 +363,8 @@ const VuAuth = {
                 const responseData = await response.json();
 
                 this.responseOk = true;
-                this.responseMessage = 'Sikeres bejelentkezés';
-                this.login(responseData);
+                this.responseMessage = 'Sikeres bejelentkezés';                
+                this.onSuccess('login', responseData);
                 this.close();
 
 
@@ -427,7 +426,8 @@ const VuAuth = {
                 const responseData = await response.json();
                 this.responseOk = true;
                 this.responseMessage = 'Sikeres aktiválás';
-
+                this.onSuccess('activation', responseData);
+                this.close();
 
             } else {
                 this.responseOk = false;
@@ -512,20 +512,20 @@ const VuAuth = {
             }
         },
 
-        login(responseData) {
+        onSuccess(panel, responseData) {
 
-            if (this.settings.onSuccess) {
-                this.settings.onSuccess(responseData, this.auth);
-                // localStorage.setItem('vu-token', this.auth.token);
+            if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
+                this.settings.onSuccess[panel](responseData, this.auth);
+                this.auth.success = true;
+                
                 localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
                 localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
-                localStorage.setItem('vu-settings', JSON.stringify(this.auth.settings));
-            }
-
-            this.auth.success = true;
-
+                localStorage.setItem('vu-settings', JSON.stringify(this.auth.settings));                                
+                
+            }            
+            
             setTimeout(() => {
-                this.authUpdate(responseData);
+                this.authUpdate();
                 this.$forceUpdate();
             }, 0)
 

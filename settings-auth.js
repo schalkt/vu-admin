@@ -48,7 +48,7 @@ window.VuSettings = {
         }
     },
     auth: {
-        debug: true,        
+        debug: true,
         title: {
             login: 'Bejelentkezés',
             registration: 'Regisztráció',
@@ -60,7 +60,7 @@ window.VuSettings = {
             registration: 'Regisztráció',
             forgot: 'Elfelejtett jelszó',
             activation: 'Aktiválás',
-        },    
+        },
         api: {
             login: '/api/auth/login',
             register: '/api/auth/register',
@@ -119,7 +119,7 @@ window.VuSettings = {
             },
             'lastname': {
                 panels: ['activation'],
-                label: 'Vezetéknév',                
+                label: 'Vezetéknév',
                 prefix: null,
                 suffix: null,
                 type: 'text',
@@ -127,7 +127,7 @@ window.VuSettings = {
                 required: true,
                 colclass: 'col-md-6',
             },
-            'firstname': {                
+            'firstname': {
                 panels: ['activation'],
                 label: 'Keresztnév',
                 prefix: null,
@@ -137,17 +137,17 @@ window.VuSettings = {
                 required: true,
                 colclass: 'col-md-6'
             },
-            'phone1': {                
+            'phone1': {
                 panels: ['activation'],
                 label: 'Telefonszám',
                 prefix: null,
                 suffix: null,
                 type: 'text',
-                placeholder: 'pl.: +36 70 1111-222',                
+                placeholder: 'pl.: +36 70 1111-222',
                 required: true,
                 colclass: 'col-md-6'
             },
-            'birthdate': {                
+            'birthdate': {
                 panels: ['activation'],
                 label: 'Születési dátum',
                 prefix: null,
@@ -182,17 +182,31 @@ window.VuSettings = {
             name: 'newsletter',
 
         }],
-        onSuccess: (responseData, auth) => {
-            auth.user = responseData;
-            auth.header = ['X-Auth-Token', responseData.accessToken]
-            auth.settings = {
-                entitiesVariable: 'VuEntities',
-                entities: {
-                    post: '/entity-post.js',
-                    product: '/entity-product.js',
-                    user: '/entity-user.js',
-                }
-            };
+        onSuccess: {
+            login: (responseData, auth) => {
+                auth.user = responseData;
+                auth.header = ['X-Auth-Token', responseData.accessToken]
+                auth.settings = {
+                    entitiesVariable: 'VuEntities',
+                    entities: {
+                        post: '/entity-post.js',
+                        product: '/entity-product.js',
+                        user: '/entity-user.js',
+                    }
+                };
+            },
+            activation: (responseData, auth) => {
+                auth.user = responseData;
+                auth.header = ['X-Auth-Token', responseData.accessToken]
+                auth.settings = {
+                    entitiesVariable: 'VuEntities',
+                    entities: {
+                        post: '/entity-post.js',
+                        product: '/entity-product.js',
+                        user: '/entity-user.js',
+                    }
+                };
+            }
         }
     }
 };
