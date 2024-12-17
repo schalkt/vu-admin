@@ -285,8 +285,8 @@ const VuAuth = {
                         this.updateInputs();
                     }
 
-                    // url.searchParams.delete('vuparams');
-                    // window.history.replaceState({}, '', url.toString());
+                    url.searchParams.delete('vuparams');
+                    window.history.replaceState({}, '', url.toString());
 
                 }
 
@@ -304,7 +304,7 @@ const VuAuth = {
 
         checkStorage() {
 
-            this.auth.user = {};            
+            this.auth.user = {};
             this.auth.user = JSON.parse(localStorage.getItem('vu-user'));
             this.auth.header = JSON.parse(localStorage.getItem('vu-header'));
             this.auth.settings = JSON.parse(localStorage.getItem('vu-settings'));
@@ -363,7 +363,7 @@ const VuAuth = {
                 const responseData = await response.json();
 
                 this.responseOk = true;
-                this.responseMessage = 'Sikeres bejelentkezés';                
+                this.responseMessage = 'Sikeres bejelentkezés';
                 this.onSuccess('login', responseData);
                 this.close();
 
@@ -515,15 +515,15 @@ const VuAuth = {
         onSuccess(panel, responseData) {
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
-                this.settings.onSuccess[panel](responseData, this.auth);                
+                this.settings.onSuccess[panel](responseData, this.auth);
                 this.auth.success = true;
-                
+
                 localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
                 localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
-                localStorage.setItem('vu-settings', JSON.stringify(this.auth.settings));                                
-                
-            }            
-            
+                localStorage.setItem('vu-settings', JSON.stringify(this.auth.settings));
+
+            }
+
             setTimeout(() => {
                 this.authUpdate();
                 this.$forceUpdate();
@@ -654,7 +654,7 @@ export { VuAuth };
         overflow-y: auto;
 
         label.required::after {
-            content: " *";                   
+            content: " *";
         }
 
         input {
