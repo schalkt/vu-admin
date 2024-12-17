@@ -15081,7 +15081,7 @@ const x2 = {
       );
       if (e.ok) {
         const t = await e.json();
-        this.responseOk = !0, this.responseMessage = "Sikeres bejelentkezés", this.login(t), this.close();
+        this.responseOk = !0, this.responseMessage = "Sikeres bejelentkezés", this.onSuccess("login", t), this.close();
       } else
         this.responseOk = !1, this.auth.success = !1, this.responseMessage = "Sikertelen bejelentkezés";
     },
@@ -15106,7 +15106,11 @@ const x2 = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(this.inputs)
       });
-      e.ok ? (await e.json(), this.responseOk = !0, this.responseMessage = "Sikeres aktiválás") : (this.responseOk = !1, this.responseMessage = "Sikertelen aktiválás");
+      if (e.ok) {
+        const t = await e.json();
+        this.responseOk = !0, this.responseMessage = "Sikeres aktiválás", this.onSuccess("activation", t), this.close();
+      } else
+        this.responseOk = !1, this.responseMessage = "Sikertelen aktiválás";
     },
     handleForgotPasswordSubmit() {
       console.log("Elfelejtett jelszó e-mail beküldve:", this.email), alert("E-mail elküldve a megadott címre!"), this.reset();
@@ -15148,9 +15152,9 @@ const x2 = {
     handleEscapeKey(e) {
       e.key === "Escape" && this.close();
     },
-    login(e) {
-      this.settings.onSuccess && (this.settings.onSuccess(e, this.auth), localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header)), localStorage.setItem("vu-settings", JSON.stringify(this.auth.settings))), this.auth.success = !0, setTimeout(() => {
-        this.authUpdate(e), this.$forceUpdate();
+    onSuccess(e, t) {
+      this.settings.onSuccess && this.settings.onSuccess[e] && (this.settings.onSuccess[e](t, this.auth), this.auth.success = !0, localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header)), localStorage.setItem("vu-settings", JSON.stringify(this.auth.settings))), setTimeout(() => {
+        this.authUpdate(), this.$forceUpdate();
       }, 0);
     },
     logout() {
@@ -15181,7 +15185,7 @@ const x2 = {
       header: void 0,
       settings: void 0,
       success: !1
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.96");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.97");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
