@@ -6,8 +6,18 @@
                 <span v-html="getValueOrFunction(settings.label)"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+
                 <template v-for="dropdown in settings.dropdowns" :key="dropdown">
-                    <li :class="[dropdown.class]" @click="dropdownAction(dropdown)" v-html="getValueOrFunction(dropdown.label)"></li>
+                    <li v-if="dropdown.action == 'BUTTON_ROLES'" :class="[dropdown.class]" class="d-flex items-align-center">
+                        <span v-html="getValueOrFunction(dropdown.label)" class="me-2"></span>
+                        <button v-for="role in auth.user.roles" :key="role" @click="setSelectedRole(role)"                                
+                                class="btn btn-sm btn-secondary p-0 px-1 me-1"
+                                :class="{'bg-primary text-light' : role == auth.user.role}">
+                            {{ role }}
+                        </button>
+                    </li>
+                    <li v-else :class="[dropdown.class]" @click="dropdownAction(dropdown)" v-html="getValueOrFunction(dropdown.label)"></li>
+
                 </template>
             </ul>
         </div>
@@ -100,15 +110,24 @@ const VuUserButton = {
 
         },
 
+        setSelectedRole(role) {
+            this.auth.user.role = role;
+            this.auth.header['X-Auth-Role'] = this.auth.user.role;
+
+            localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
+            localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
+
+        },
+
         logout() {
 
             this.auth.visible = false;
-            this.auth.user = null;
+            this.auth.user = null;            
             this.auth.header = null;
             this.auth.success = false;
 
             localStorage.removeItem('vu-header');
-            localStorage.removeItem('vu-user');
+            localStorage.removeItem('vu-user');            
 
             this.updateAuth();
 
@@ -124,7 +143,7 @@ const VuUserButton = {
 
     mounted() {
 
-        
+
 
     }
 };

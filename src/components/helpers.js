@@ -87,10 +87,13 @@ export function prepareFetchOptions(method, api, options, auth) {
         }
     }
 
-    if (auth && auth.header && auth.header[0]) {
+    if (auth && auth.header) {
 
-        api.options.headers[auth.header[0]] = auth.header[1];
 
+        for (let headerKey of Object.keys(auth.header)) {
+            api.options.headers[headerKey] = auth.header[headerKey];
+        }
+        
         // if (api.auth.type == 'Basic' && api.auth.user) {
         //     api.options.headers['Authorization'] = "Basic " + btoa(api.auth.user + ":" + api.auth.password);
         // }

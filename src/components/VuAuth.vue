@@ -305,7 +305,7 @@ const VuAuth = {
         checkStorage() {
 
             this.auth.user = {};
-            this.auth.user = JSON.parse(localStorage.getItem('vu-user'));
+            this.auth.user = JSON.parse(localStorage.getItem('vu-user'));            
             this.auth.header = JSON.parse(localStorage.getItem('vu-header'));
             this.auth.settings = JSON.parse(localStorage.getItem('vu-settings'));
 
@@ -515,7 +515,24 @@ const VuAuth = {
         onSuccess(panel, responseData) {
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
+
                 this.settings.onSuccess[panel](responseData, this.auth);
+
+                if (!this.auth.header) {
+                    this.auth.header = {};
+                }
+
+                if (this.auth.user.role) {
+                    this.auth.header['X-Auth-Role'] = this.auth.user.role;
+                } else if (this.auth.user.roles) {
+                    this.auth.user.role = this.auth.user.roles[0];
+                    this.auth.header['X-Auth-Role'] = this.auth.user.roles;
+                }
+
+                if (this.auth.user.token) {
+                    this.auth.header['X-Auth-Token'] = this.auth.user.token;
+                }
+
                 this.auth.success = true;
 
                 localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
@@ -538,7 +555,7 @@ const VuAuth = {
             this.auth.user = null;
             this.$emit("update:modelValue", this.auth);
 
-            localStorage.removeItem('vu-user');
+            localStorage.removeItem('vu-user');            
             localStorage.removeItem('vu-header');
             localStorage.removeItem('vu-settings');
 

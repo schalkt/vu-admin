@@ -9,30 +9,6 @@ window.VuSettings = {
         login: {
             class: 'btn btn-outline-primary',
             icon: 'bi bi-box-arrow-in-right me-2',
-            dropdowns: [{
-                class: 'dropdown-item fw-light',
-                label: (params, settings, self) => {
-                    return self.auth.user.email;
-                },
-            }, {
-                class: 'dropdown-divider'
-            }, {
-                class: 'dropdown-item cursor-pointer',
-                label: (params, settings, self) => {
-                    return `<i class='bi bi-person me-1'></i> Profil adatok`
-                },
-                action: (params, self) => {
-                    self.showProfilModal();
-                }
-            }, {
-                class: 'dropdown-item cursor-pointer',
-                label: (params, settings, self) => {
-                    return `<i class='bi bi-box-arrow-right me-1'></i> Kilépés`
-                },
-                action: (params, self) => {
-                    self.logout();
-                }
-            }],
             label: (params, settings, self) => {
 
                 if (!self.auth || !self.auth.user) {
@@ -40,11 +16,45 @@ window.VuSettings = {
                 }
 
                 let fullName = [self.auth.user.firstName, self.auth.user.lastName].join(' ');
+                let role = self.auth.user.role ? ` (${self.auth.user.role})` : '';
                 let img = `<img class='img-fluid rounded me-2' width='22' src='${self.auth.user.image}' />`;
 
-                return img + fullName;
+                return img + fullName + role;
 
-            }
+            },
+            dropdowns: [
+                {
+                    action: 'BUTTON_ROLES',
+                    class: 'dropdown-item',
+                    label: (params, settings, self) => {
+                        return 'Szerepkörök'
+                    },
+                },
+                {
+                    class: 'dropdown-item fw-light',
+                    label: (params, settings, self) => {
+                        return self.auth.user.email;
+                    },
+                }, {
+                    class: 'dropdown-divider'
+                }, {
+                    class: 'dropdown-item cursor-pointer',
+                    label: (params, settings, self) => {
+                        return `<i class='bi bi-person me-1'></i> Profil adatok`
+                    },
+                    action: (params, self) => {
+                        self.showProfilModal();
+                    }
+                }, {
+                    class: 'dropdown-item cursor-pointer',
+                    label: (params, settings, self) => {
+                        return `<i class='bi bi-box-arrow-right me-1'></i> Kilépés`
+                    },
+                    action: (params, self) => {
+                        self.logout();
+                    }
+                }
+            ],
         }
     },
     auth: {
@@ -186,9 +196,10 @@ window.VuSettings = {
             login: (responseData, auth) => {
 
                 console.log(responseData, auth);
-
+                
                 auth.user = responseData;
-                auth.header = ['X-Auth-Token', responseData.accessToken]
+                auth.user.token = responseData.accessToken;
+                auth.user.roles = ['admin', 'guest'];            
                 auth.settings = {
                     entitiesVariable: 'VuEntities',
                     entities: {
@@ -201,9 +212,10 @@ window.VuSettings = {
             activation: (responseData, auth) => {
 
                 console.log(responseData, auth);
-
+            
                 auth.user = responseData;
-                auth.header = ['X-Auth-Token', responseData.accessToken]
+                auth.user.token = responseData.accessToken;
+                auth.user.roles = ['admin', 'guest'];            
                 auth.settings = {
                     entitiesVariable: 'VuEntities',
                     entities: {
