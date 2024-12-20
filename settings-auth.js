@@ -94,7 +94,7 @@ window.VuSettings = {
             _pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
             pattern: '^(?=.*[a-z]).+$',
             minlength: 4,
-            hash: 0
+            hash: 11
         },
         password_again: {
             label: 'Jelszó ismét',

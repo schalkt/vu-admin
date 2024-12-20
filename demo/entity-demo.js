@@ -114,11 +114,25 @@ window.VuSettings = {
 		}
 	},
 	auth: {
-		api: {
-			login: '/api/auth/login',
-			register: '/api/auth/register',
-			password: '/api/auth/password',
-		},
+		debug: true,
+        title: {
+            login: 'Bejelentkezés',
+            registration: 'Regisztráció',
+            forgot: 'Elfelejtett jelszó',
+            activation: 'Aktiválás',
+        },
+        submit: {
+            login: 'Bejelentkezés',
+            registration: 'Regisztráció',
+            forgot: 'Elfelejtett jelszó',
+            activation: 'Aktiválás',
+        },
+        api: {
+            login: '/api/auth/login',
+            register: '/api/auth/register',
+            password: '/api/auth/password',
+            activation: '/api/auth/activate',
+        },
 		username: {
 			value: 'emilys',
 			type: 'text',
@@ -136,7 +150,7 @@ window.VuSettings = {
 			_pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
 			pattern: '^(?=.*[a-z]).+$',
 			minlength: 4,
-			hash: 0
+			hash: 11
 		},
 		password_again: {
 			label: 'Jelszó ismét',

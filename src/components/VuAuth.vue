@@ -214,7 +214,6 @@
 <script>
 
 import mitt from 'mitt';
-import { sha384 } from 'crypto-hash';
 import VuAdminForm from "./VuAdminForm.vue";
 import { Modal } from "bootstrap";
 import {
@@ -305,7 +304,7 @@ const VuAuth = {
         checkStorage() {
 
             this.auth.user = {};
-            this.auth.user = JSON.parse(localStorage.getItem('vu-user'));            
+            this.auth.user = JSON.parse(localStorage.getItem('vu-user'));
             this.auth.header = JSON.parse(localStorage.getItem('vu-header'));
             this.auth.settings = JSON.parse(localStorage.getItem('vu-settings'));
 
@@ -450,10 +449,22 @@ const VuAuth = {
             let password_hashed = password;
 
             for (let i = 0; i < this.settings.password.hash; i++) {
-                password_hashed = await sha384(password_hashed);
+                password_hashed = await this.generateHash(password_hashed, 'SHA-384');
             }
 
             return password_hashed;
+
+        },
+
+        async generateHash(input, type) {
+            
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hash = await crypto.subtle.digest(type ? type : 'SHA-256', data);
+
+            return Array.from(new Uint8Array(hash))
+                .map(byte => byte.toString(16).padStart(2, '0'))
+                .join('');
 
         },
 
@@ -555,7 +566,7 @@ const VuAuth = {
             this.auth.user = null;
             this.$emit("update:modelValue", this.auth);
 
-            localStorage.removeItem('vu-user');            
+            localStorage.removeItem('vu-user');
             localStorage.removeItem('vu-header');
             localStorage.removeItem('vu-settings');
 
