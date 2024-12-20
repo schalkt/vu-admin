@@ -1,6 +1,6 @@
 {
   "name": "vu-admin",
-  "version": "1.2.103",
+  "version": "1.2.104",
   "description": "VU Admin",
   "main": "src/index.js",
   "module": "src/index.js",

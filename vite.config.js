@@ -31,10 +31,11 @@ export default defineConfig({
       fileName: (format) => `vu-admin.${format}.js`
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', 'crypto'],
       output: {
         globals: {
-          vue: 'Vue'
+          vue: 'Vue',
+          crypto: 'crypto',
         },
         assetFileNames: (assetInfo) => {
           if (assetInfo.name == 'style.css')
