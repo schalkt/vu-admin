@@ -14986,19 +14986,9 @@ function k2(e, t, s, n, i, r) {
     ], 8, N2)) : T("", !0)
   ])) : T("", !0);
 }
-const S2 = /* @__PURE__ */ oe(A2, [["render", k2]]), C2 = (e) => {
-  const t = new DataView(e);
-  let s = "";
-  for (let n = 0; n < t.byteLength; n += 4)
-    s += t.getUint32(n).toString(16).padStart(8, "0");
-  return s;
-}, L2 = (e) => async (t, { outputFormat: s = "hex" } = {}) => {
-  typeof t == "string" && (t = new globalThis.TextEncoder().encode(t));
-  const n = await globalThis.crypto.subtle.digest(e, t);
-  return s === "hex" ? C2(n) : n;
-}, I2 = L2("SHA-384");
+const S2 = /* @__PURE__ */ oe(A2, [["render", k2]]);
 sl();
-const $2 = {
+const C2 = {
   name: "VuAuth",
   props: {
     modelValue: Object
@@ -15122,8 +15112,12 @@ const $2 = {
       this.settings.password.hash = this.settings.password.hash === void 0 ? 0 : this.settings.password.hash;
       let t = e;
       for (let s = 0; s < this.settings.password.hash; s++)
-        t = await I2(t);
+        t = await this.generateHash(t, "SHA-384");
       return t;
+    },
+    async generateHash(e, t) {
+      const n = new TextEncoder().encode(e), i = await crypto.subtle.digest(t || "SHA-256", n);
+      return Array.from(new Uint8Array(i)).map((r) => r.toString(16).padStart(2, "0")).join("");
     },
     reset() {
       this.password = "", this.password_again = "", this.responseMessage = "", this.responseOk = !1;
@@ -15188,75 +15182,75 @@ const $2 = {
       header: void 0,
       settings: void 0,
       success: !1
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.102");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.103");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
   }
-}, x2 = $2, R2 = {
+}, L2 = C2, I2 = {
   key: 0,
   class: "vua-auth"
-}, M2 = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, D2 = { class: "text-center mt-2 mb-4" }, q2 = {
+}, $2 = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, x2 = { class: "text-center mt-2 mb-4" }, R2 = {
   key: 0,
   class: "mb-3"
-}, B2 = {
+}, M2 = {
   for: "email",
   class: "form-label text-primary"
-}, P2 = { class: "input-group" }, V2 = ["type", "placeholder"], j2 = ["innerHTML"], U2 = { class: "mb-3" }, F2 = {
+}, D2 = { class: "input-group" }, q2 = ["type", "placeholder"], B2 = ["innerHTML"], P2 = { class: "mb-3" }, V2 = {
   for: "password",
   class: "form-label text-primary"
-}, H2 = { class: "input-group" }, W2 = ["type", "placeholder", "pattern", "minlength"], z2 = {
+}, j2 = { class: "input-group" }, U2 = ["type", "placeholder", "pattern", "minlength"], F2 = {
   key: 0,
   class: "bi bi-eye"
-}, K2 = {
+}, H2 = {
   key: 1,
   class: "bi bi-eye-slash"
-}, G2 = ["innerHTML"], Y2 = {
+}, W2 = ["innerHTML"], z2 = {
   key: 0,
   class: "mb-4"
-}, X2 = {
+}, K2 = {
   for: "password_again",
   class: "form-label text-primary"
-}, Z2 = {
+}, G2 = {
   key: 0,
   class: "text-danger"
-}, J2 = { class: "input-group" }, Q2 = ["type", "placeholder", "minlength"], tC = {
+}, Y2 = { class: "input-group" }, X2 = ["type", "placeholder", "minlength"], Z2 = {
   key: 0,
   class: "bi bi-eye"
-}, eC = {
+}, J2 = {
   key: 1,
   class: "bi bi-eye-slash"
-}, sC = ["innerHTML"], nC = { class: "mb-3 text-center" }, iC = ["data-sitekey"], rC = {
+}, Q2 = ["innerHTML"], tC = { class: "mb-3 text-center" }, eC = ["data-sitekey"], sC = {
   key: 2,
   class: "mb-4 text-center"
-}, oC = {
+}, nC = {
   key: 3,
   class: "d-flex mb-4"
-}, aC = { class: "row" }, lC = { class: "mb-3" }, cC = ["for", "innerHTML"], uC = { class: "input-group" }, hC = ["innerHTML"], dC = ["required", "onUpdate:modelValue", "multiple"], fC = ["value", "innerHTML"], pC = ["id", "name", "type", "onUpdate:modelValue", "placeholder", "required"], gC = ["innerHTML"], mC = ["innerHTML"], bC = {
+}, iC = { class: "row" }, rC = { class: "mb-3" }, oC = ["for", "innerHTML"], aC = { class: "input-group" }, lC = ["innerHTML"], cC = ["required", "onUpdate:modelValue", "multiple"], uC = ["value", "innerHTML"], hC = ["id", "name", "type", "onUpdate:modelValue", "placeholder", "required"], dC = ["innerHTML"], fC = ["innerHTML"], pC = {
   key: 0,
   class: "form-check"
-}, yC = ["id", "name", "onUpdate:modelValue", "required"], vC = ["for", "innerHTML"], _C = {
+}, gC = ["id", "name", "onUpdate:modelValue", "required"], mC = ["for", "innerHTML"], bC = {
   key: 4,
   class: "mt-4"
-}, EC = ["innerHTML"], wC = { class: "mt-4 d-flex justify-content-between" }, TC = {
+}, yC = ["innerHTML"], vC = { class: "mt-4 d-flex justify-content-between" }, _C = {
   key: 0,
   class: "bi bi-person-plus mx-1"
-}, AC = {
+}, EC = {
   key: 1,
   class: "bi bi-arrow-right-square mx-1"
-}, OC = {
+}, wC = {
   key: 5,
   class: "mt-3 text-center"
-}, NC = ["innerHTML"], kC = { class: "mt-2 text-end" }, SC = ["id"], CC = { class: "modal-dialog modal-xl" }, LC = { class: "modal-content h-100" };
-function IC(e, t, s, n, i, r) {
+}, TC = ["innerHTML"], AC = { class: "mt-2 text-end" }, OC = ["id"], NC = { class: "modal-dialog modal-xl" }, kC = { class: "modal-content h-100" };
+function SC(e, t, s, n, i, r) {
   const a = pe("VuAdminForm");
-  return e.auth && e.auth.visible ? (g(), b("div", R2, [
+  return e.auth && e.auth.visible ? (g(), b("div", I2, [
     ct(C(e.auth.inputs) + " ", 1),
     f("div", {
       class: "row d-flex justify-content-center align-items-center min-vh-100",
       onClick: t[15] || (t[15] = Rt((...o) => e.close && e.close(...o), ["stop"]))
     }, [
-      f("div", M2, [
+      f("div", $2, [
         f("div", {
           class: "card shadow p-4 position-relative bg-light",
           onClick: t[14] || (t[14] = Rt(() => {
@@ -15269,15 +15263,15 @@ function IC(e, t, s, n, i, r) {
           }, t[17] || (t[17] = [
             f("i", { class: "bi bi-x px-1 text-muted" }, null, -1)
           ])),
-          f("h1", D2, C(e.settings.title[e.auth.panel]), 1),
+          f("h1", x2, C(e.settings.title[e.auth.panel]), 1),
           f("form", {
             onSubmit: t[12] || (t[12] = Rt((o) => e.handleSubmit(), ["prevent"])),
             onClick: t[13] || (t[13] = Rt(() => {
             }, ["stop"]))
           }, [
-            e.auth.panel != "activation" ? (g(), b("div", q2, [
-              f("label", B2, C(e.settings.username.label), 1),
-              f("div", P2, [
+            e.auth.panel != "activation" ? (g(), b("div", R2, [
+              f("label", M2, C(e.settings.username.label), 1),
+              f("div", D2, [
                 e.settings.username.icon ? (g(), b("span", {
                   key: 0,
                   class: k(["input-group-text", { "rounded-bottom-0": e.settings.username.help }])
@@ -15294,7 +15288,7 @@ function IC(e, t, s, n, i, r) {
                   class: k(["form-control", { "rounded-bottom-0": e.settings.username.help }]),
                   placeholder: e.settings.username.placeholder,
                   required: ""
-                }, null, 10, V2), [
+                }, null, 10, q2), [
                   [ge, e.username]
                 ])
               ]),
@@ -15302,12 +15296,12 @@ function IC(e, t, s, n, i, r) {
                 key: 0,
                 class: "d-block border border-top-0 rounded-bottom bg-light p-2 text-muted",
                 innerHTML: e.settings.username.help
-              }, null, 8, j2)) : T("", !0)
+              }, null, 8, B2)) : T("", !0)
             ])) : T("", !0),
             e.auth.panel != "forgot" && e.auth.panel != "activation" ? (g(), b(J, { key: 1 }, [
-              f("div", U2, [
-                f("label", F2, C(e.settings.password.label), 1),
-                f("div", H2, [
+              f("div", P2, [
+                f("label", V2, C(e.settings.password.label), 1),
+                f("div", j2, [
                   e.settings.password.icon ? (g(), b("span", {
                     key: 0,
                     class: k(["input-group-text", { "rounded-bottom-0": e.auth.panel == "registration" && e.settings.password.help }])
@@ -15326,7 +15320,7 @@ function IC(e, t, s, n, i, r) {
                     pattern: e.settings.password.pattern,
                     minlength: e.auth.panel == "registration" ? e.settings.password.minlength : 1,
                     required: ""
-                  }, null, 10, W2), [
+                  }, null, 10, U2), [
                     [ge, e.password]
                   ]),
                   e.auth.panel == "registration" ? (g(), b("span", {
@@ -15344,21 +15338,21 @@ function IC(e, t, s, n, i, r) {
                     class: k(["cursor-pointer input-group-text", { "rounded-bottom-0": e.auth.panel == "registration" && e.settings.password.help }]),
                     onClick: t[3] || (t[3] = Rt((o) => e.toggleType("password"), ["stop"]))
                   }, [
-                    e.settings.password.type == "password" ? (g(), b("i", z2)) : (g(), b("i", K2))
+                    e.settings.password.type == "password" ? (g(), b("i", F2)) : (g(), b("i", H2))
                   ], 2)
                 ]),
                 e.auth.panel == "registration" && e.settings.password.help ? (g(), b("small", {
                   key: 0,
                   class: "d-block border border-top-0 rounded-bottom bg-light p-2 text-muted",
                   innerHTML: e.settings.password.help
-                }, null, 8, G2)) : T("", !0)
+                }, null, 8, W2)) : T("", !0)
               ]),
-              e.auth.panel === "registration" ? (g(), b("div", Y2, [
-                f("label", X2, [
+              e.auth.panel === "registration" ? (g(), b("div", z2, [
+                f("label", K2, [
                   ct(C(e.settings.password_again.label) + " ", 1),
-                  e.password_again.length > 0 && e.password_again != e.password ? (g(), b("small", Z2, " ( a két jelszó nem egyezik ) ")) : T("", !0)
+                  e.password_again.length > 0 && e.password_again != e.password ? (g(), b("small", G2, " ( a két jelszó nem egyezik ) ")) : T("", !0)
                 ]),
-                f("div", J2, [
+                f("div", Y2, [
                   e.settings.password.icon ? (g(), b("span", {
                     key: 0,
                     class: k(["input-group-text", { "rounded-bottom-0": e.settings.password_again.help }])
@@ -15376,7 +15370,7 @@ function IC(e, t, s, n, i, r) {
                     placeholder: e.settings.password_again.placeholder,
                     minlength: e.settings.password.minlength,
                     required: ""
-                  }, null, 10, Q2), [
+                  }, null, 10, X2), [
                     [ge, e.password_again]
                   ]),
                   f("span", {
@@ -15393,24 +15387,24 @@ function IC(e, t, s, n, i, r) {
                     class: k(["cursor-pointer input-group-text", { "rounded-bottom-0": e.auth.panel == "registration" && e.settings.password_again.help }]),
                     onClick: t[5] || (t[5] = Rt((o) => e.toggleType("password_again"), ["stop"]))
                   }, [
-                    e.settings.password_again.type == "password" ? (g(), b("i", tC)) : (g(), b("i", eC))
+                    e.settings.password_again.type == "password" ? (g(), b("i", Z2)) : (g(), b("i", J2))
                   ], 2)
                 ]),
                 e.auth.panel == "registration" && e.settings.password_again.help ? (g(), b("small", {
                   key: 0,
                   class: "d-block border border-top-0 rounded-bottom bg-light p-2 text-muted",
                   innerHTML: e.settings.password_again.help
-                }, null, 8, sC)) : T("", !0)
+                }, null, 8, Q2)) : T("", !0)
               ])) : T("", !0),
-              f("div", nC, [
+              f("div", tC, [
                 f("div", {
                   class: "g-recaptcha",
                   "data-sitekey": e.recaptchaSiteKey,
                   onClick: t[6] || (t[6] = Rt((...o) => e.onCaptchaClick && e.onCaptchaClick(...o), ["stop"]))
-                }, null, 8, iC)
+                }, null, 8, eC)
               ])
             ], 64)) : T("", !0),
-            e.auth.panel == "login" ? (g(), b("div", rC, [
+            e.auth.panel == "login" ? (g(), b("div", sC, [
               f("button", {
                 type: "button",
                 class: "btn btn-link p-0 text-decoration-none text-nowrap",
@@ -15423,27 +15417,27 @@ function IC(e, t, s, n, i, r) {
                 onClick: t[8] || (t[8] = Rt((...o) => e.toggleHelp && e.toggleHelp(...o), ["stop"]))
               }, " Segítségre van szükséged? ")) : T("", !0)
             ])) : T("", !0),
-            e.auth.panel == "forgot" ? (g(), b("div", oC, t[18] || (t[18] = [
+            e.auth.panel == "forgot" ? (g(), b("div", nC, t[18] || (t[18] = [
               f("small", { class: "text-muted" }, " A megadott e-mail címre ( amennyiben az szerepel az adatbázisunkban ) egy levelet küldünk, melyben az új jelszó igénylése linkre kattintva egy weboldalra jutsz. Ott tudod megadni az új jelszavadat. Az e-mailben szereplő link csak 1 óráig érvényes. ", -1)
             ]))) : T("", !0),
-            f("div", aC, [
+            f("div", iC, [
               (g(!0), b(J, null, et(e.settings.inputs, (o, l) => (g(), b(J, { key: l }, [
                 o.panels.indexOf(e.auth.panel) >= 0 && !o.hidden ? (g(), b("div", {
                   key: 0,
                   class: k([o.colclass ? o.colclass : "col-md-12"])
                 }, [
-                  f("div", lC, [
+                  f("div", rC, [
                     f("label", {
                       for: l,
                       class: k(["form-label text-primary", { required: o.required }]),
                       innerHTML: e.getValueOrFunction(o.label)
-                    }, null, 10, cC),
-                    f("div", uC, [
+                    }, null, 10, oC),
+                    f("div", aC, [
                       o.prefix ? (g(), b("span", {
                         key: 0,
                         class: k(["input-group-text", { "rounded-bottom-0": o.help }]),
                         innerHTML: e.getValueOrFunction(o.prefix)
-                      }, null, 10, hC)) : T("", !0),
+                      }, null, 10, lC)) : T("", !0),
                       o.type == "select" ? at((g(), b("select", {
                         key: 1,
                         class: "form-select",
@@ -15456,8 +15450,8 @@ function IC(e, t, s, n, i, r) {
                           key: u,
                           value: u.value,
                           innerHTML: e.getValueOrFunction(u.label)
-                        }, null, 8, fC))), 128))
-                      ], 8, dC)), [
+                        }, null, 8, uC))), 128))
+                      ], 8, cC)), [
                         [ke, e.inputs[l]]
                       ]) : at((g(), b("input", {
                         key: 2,
@@ -15468,26 +15462,26 @@ function IC(e, t, s, n, i, r) {
                         class: k(["form-control", { "rounded-bottom-0": o.help }]),
                         placeholder: o.placeholder,
                         required: o.required
-                      }, null, 10, pC)), [
+                      }, null, 10, hC)), [
                         [ge, e.inputs[l]]
                       ]),
                       o.suffix ? (g(), b("span", {
                         key: 3,
                         class: k(["input-group-text", { "rounded-bottom-0": o.help }]),
                         innerHTML: e.getValueOrFunction(o.suffix)
-                      }, null, 10, gC)) : T("", !0)
+                      }, null, 10, dC)) : T("", !0)
                     ]),
                     o.help ? (g(), b("small", {
                       key: 0,
                       class: "d-block border border-top-0 rounded-bottom bg-light p-2 text-muted",
                       innerHTML: e.getValueOrFunction(o.help)
-                    }, null, 8, mC)) : T("", !0)
+                    }, null, 8, fC)) : T("", !0)
                   ])
                 ], 2)) : T("", !0)
               ], 64))), 128))
             ]),
             (g(!0), b(J, null, et(e.settings.accepts, (o) => (g(), b("div", { key: o }, [
-              o.panels.indexOf(e.auth.panel) >= 0 ? (g(), b("div", bC, [
+              o.panels.indexOf(e.auth.panel) >= 0 ? (g(), b("div", pC, [
                 at(f("input", {
                   type: "checkbox",
                   class: "form-check-input",
@@ -15495,23 +15489,23 @@ function IC(e, t, s, n, i, r) {
                   name: "accept_" + o.name,
                   "onUpdate:modelValue": (l) => e.accepts[o.name] = l,
                   required: o.required
-                }, null, 8, yC), [
+                }, null, 8, gC), [
                   [yu, e.accepts[o.name]]
                 ]),
                 f("label", {
                   class: "form-check-label",
                   for: "accept_" + o.name,
                   innerHTML: e.getValueOrFunction(o.label)
-                }, null, 8, vC)
+                }, null, 8, mC)
               ])) : T("", !0)
             ]))), 128)),
-            e.auth.panel == "registration" && e.settings.registration ? (g(), b("div", _C, [
+            e.auth.panel == "registration" && e.settings.registration ? (g(), b("div", bC, [
               e.settings.registration.help ? (g(), b("div", {
                 key: 0,
                 innerHTML: e.getValueOrFunction(e.settings.registration.help)
-              }, null, 8, EC)) : T("", !0)
+              }, null, 8, yC)) : T("", !0)
             ])) : T("", !0),
-            f("div", wC, [
+            f("div", vC, [
               e.auth.panel != "login" && e.auth.panel != "activation" ? (g(), b("button", {
                 key: 0,
                 type: "button",
@@ -15535,16 +15529,16 @@ function IC(e, t, s, n, i, r) {
                 class: k(["btn w-100 text-nowrap", { "btn-primary": e.auth.panel != "registration", "btn-warning": e.auth.panel == "registration" }])
               }, [
                 ct(C(e.settings.submit[e.auth.panel]) + " ", 1),
-                e.auth.panel == "registration" ? (g(), b("i", TC)) : (g(), b("i", AC))
+                e.auth.panel == "registration" ? (g(), b("i", _C)) : (g(), b("i", EC))
               ], 2)
             ]),
-            e.responseMessage ? (g(), b("div", OC, [
+            e.responseMessage ? (g(), b("div", wC, [
               f("div", {
                 class: k({ "text-danger": !e.responseOk, "text-success": e.responseOk }),
                 innerHTML: e.responseMessage
-              }, null, 10, NC)
+              }, null, 10, TC)
             ])) : T("", !0),
-            f("div", kC, [
+            f("div", AC, [
               f("button", {
                 type: "button",
                 onClick: t[11] || (t[11] = Rt((...o) => e.close && e.close(...o), ["stop"])),
@@ -15563,8 +15557,8 @@ function IC(e, t, s, n, i, r) {
       id: e.modalId,
       tabindex: "-1"
     }, [
-      f("div", CC, [
-        f("div", LC, [
+      f("div", NC, [
+        f("div", kC, [
           e.settings.form && e.settings.form.visible && e.settings.form.groups ? (g(), ze(a, {
             key: 0,
             modelValue: e.item,
@@ -15580,12 +15574,12 @@ function IC(e, t, s, n, i, r) {
           }, null, 8, ["modelValue", "formid", "settings", "modalWindow", "auth", "saveItem", "deleteItem", "reloadTable", "fetchRelation"])) : T("", !0)
         ])
       ])
-    ], 8, SC)
+    ], 8, OC)
   ])) : T("", !0);
 }
-const $C = /* @__PURE__ */ oe(x2, [["render", IC]]);
+const CC = /* @__PURE__ */ oe(L2, [["render", SC]]);
 sl();
-const xC = {
+const LC = {
   name: "VuUserButton",
   props: {
     modelValue: Object,
@@ -15645,22 +15639,22 @@ const xC = {
   },
   mounted() {
   }
-}, RC = xC, MC = {
+}, IC = LC, $C = {
   key: 0,
   class: "vua-user-button d-inline-block"
-}, DC = {
+}, xC = {
   key: 0,
   class: "dropdown"
-}, qC = ["innerHTML"], BC = {
+}, RC = ["innerHTML"], MC = {
   class: "dropdown-menu dropdown-menu-end",
   "aria-labelledby": "userDropdown"
-}, PC = ["innerHTML"], VC = ["onClick"], jC = ["onClick", "innerHTML"], UC = {
+}, DC = ["innerHTML"], qC = ["onClick"], BC = ["onClick", "innerHTML"], PC = {
   key: 1,
   class: "d-inline-block"
-}, FC = ["innerHTML"];
-function HC(e, t, s, n, i, r) {
-  return !e.auth.user && e.panel != "login" || e.panel == "login" ? (g(), b("div", MC, [
-    e.auth.user ? (g(), b("div", DC, [
+}, VC = ["innerHTML"];
+function jC(e, t, s, n, i, r) {
+  return !e.auth.user && e.panel != "login" || e.panel == "login" ? (g(), b("div", $C, [
+    e.auth.user ? (g(), b("div", xC, [
       f("button", {
         class: k(["dropdown-toggle", [e.settings.class]]),
         type: "button",
@@ -15670,9 +15664,9 @@ function HC(e, t, s, n, i, r) {
       }, [
         f("span", {
           innerHTML: e.getValueOrFunction(e.settings.label)
-        }, null, 8, qC)
+        }, null, 8, RC)
       ], 2),
-      f("ul", BC, [
+      f("ul", MC, [
         (g(!0), b(J, null, et(e.settings.dropdowns, (a) => (g(), b(J, { key: a }, [
           a.action == "BUTTON_ROLES" ? (g(), b("li", {
             key: 0,
@@ -15681,21 +15675,21 @@ function HC(e, t, s, n, i, r) {
             f("span", {
               innerHTML: e.getValueOrFunction(a.label),
               class: "me-2"
-            }, null, 8, PC),
+            }, null, 8, DC),
             (g(!0), b(J, null, et(e.auth.user.roles, (o) => (g(), b("button", {
               key: o,
               onClick: (l) => e.setSelectedRole(o),
               class: k(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": o == e.auth.user.role }])
-            }, C(o), 11, VC))), 128))
+            }, C(o), 11, qC))), 128))
           ], 2)) : (g(), b("li", {
             key: 1,
             class: k([a.class]),
             onClick: (o) => e.dropdownAction(a),
             innerHTML: e.getValueOrFunction(a.label)
-          }, null, 10, jC))
+          }, null, 10, BC))
         ], 64))), 128))
       ])
-    ])) : (g(), b("div", UC, [
+    ])) : (g(), b("div", PC, [
       f("button", {
         class: k([e.settings.class]),
         type: "button",
@@ -15707,19 +15701,19 @@ function HC(e, t, s, n, i, r) {
         }, null, 2)) : T("", !0),
         f("span", {
           innerHTML: e.getValueOrFunction(e.settings.label)
-        }, null, 8, FC)
+        }, null, 8, VC)
       ], 2)
     ]))
   ])) : T("", !0);
 }
-const WC = /* @__PURE__ */ oe(RC, [["render", HC]]), QC = {
+const UC = /* @__PURE__ */ oe(IC, [["render", jC]]), XC = {
   install(e) {
-    e.component("VuAdmin", S2), e.component("VuAuth", $C), e.component("VuUserButton", WC);
+    e.component("VuAdmin", S2), e.component("VuAuth", CC), e.component("VuUserButton", UC);
   }
 };
 export {
   S2 as VuAdmin,
-  $C as VuAuth,
-  WC as VuUserButton,
-  QC as default
+  CC as VuAuth,
+  UC as VuUserButton,
+  XC as default
 };
