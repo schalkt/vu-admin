@@ -15398,6 +15398,7 @@ const IO = {
   },
   data() {
     return {
+      theme: "light",
       auth: void 0,
       username: "",
       password: "",
@@ -15569,7 +15570,7 @@ const IO = {
     }
   },
   created() {
-    window.VuSettings && window.VuSettings.auth && (this.settings = window.VuSettings.auth);
+    window.VuSettings && window.VuSettings.auth && (this.theme = window.VuSettings.theme ? window.VuSettings.theme : "light", this.settings = window.VuSettings.auth);
     let e = Math.round(Math.random() * 1e5);
     this.formId = "form_profil_" + e, this.modalId = "modal_profil_" + e;
   },
@@ -15583,15 +15584,12 @@ const IO = {
       header: void 0,
       settings: void 0,
       success: !1
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.109");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.110");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
   }
-}, $O = IO, DO = {
-  key: 0,
-  class: "vua-auth"
-}, RO = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, MO = { class: "text-center mt-2 mb-4" }, BO = {
+}, $O = IO, DO = ["data-bs-theme"], RO = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, MO = { class: "text-center mt-2 mb-4" }, BO = {
   key: 0,
   class: "mb-3"
 }, qO = {
@@ -15645,15 +15643,18 @@ const IO = {
 }, CN = ["innerHTML"], ON = { class: "mt-2 text-end" }, NN = ["id"], kN = { class: "modal-dialog modal-xl" }, SN = { class: "modal-content h-100" };
 function LN(e, t, s, n, i, r) {
   const a = qe("VuAdminForm");
-  return e.auth && e.auth.visible ? (m(), b("div", DO, [
-    At($(e.auth.inputs) + " ", 1),
+  return e.auth && e.auth.visible ? (m(), b("div", {
+    key: 0,
+    class: "vua-auth",
+    "data-bs-theme": [e.theme]
+  }, [
     f("div", {
       class: "row d-flex justify-content-center align-items-center min-vh-100",
       onClick: t[15] || (t[15] = re((...o) => e.close && e.close(...o), ["stop"]))
     }, [
       f("div", RO, [
         f("div", {
-          class: "card shadow p-4 position-relative bg-light",
+          class: "card shadow p-4 position-relative",
           onClick: t[14] || (t[14] = re(() => {
           }, ["stop"]))
         }, [
@@ -15695,7 +15696,7 @@ function LN(e, t, s, n, i, r) {
               ]),
               e.settings.username.help ? (m(), b("small", {
                 key: 0,
-                class: "d-block border border-top-0 rounded-bottom bg-light p-2 text-muted",
+                class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
                 innerHTML: e.settings.username.help
               }, null, 8, jO)) : T("", !0)
             ])) : T("", !0),
@@ -15744,7 +15745,7 @@ function LN(e, t, s, n, i, r) {
                 ]),
                 e.auth.panel == "registration" && e.settings.password.help ? (m(), b("small", {
                   key: 0,
-                  class: "d-block border border-top-0 rounded-bottom bg-light p-2 text-muted",
+                  class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
                   innerHTML: e.settings.password.help
                 }, null, 8, YO)) : T("", !0)
               ]),
@@ -15793,7 +15794,7 @@ function LN(e, t, s, n, i, r) {
                 ]),
                 e.auth.panel == "registration" && e.settings.password_again.help ? (m(), b("small", {
                   key: 0,
-                  class: "d-block border border-top-0 rounded-bottom bg-light p-2 text-muted",
+                  class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
                   innerHTML: e.settings.password_again.help
                 }, null, 8, nN)) : T("", !0)
               ])) : T("", !0),
@@ -15874,7 +15875,7 @@ function LN(e, t, s, n, i, r) {
                     ]),
                     o.help ? (m(), b("small", {
                       key: 0,
-                      class: "d-block border border-top-0 rounded-bottom bg-light p-2 text-muted",
+                      class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
                       innerHTML: e.getValueOrFunction(o.help)
                     }, null, 8, bN)) : T("", !0)
                   ])
@@ -15976,7 +15977,7 @@ function LN(e, t, s, n, i, r) {
         ])
       ])
     ], 8, NN)
-  ])) : T("", !0);
+  ], 8, DO)) : T("", !0);
 }
 const IN = /* @__PURE__ */ Se($O, [["render", LN]]);
 nl();
@@ -15988,6 +15989,7 @@ const $N = {
   },
   data() {
     return {
+      theme: "light",
       auth: {},
       settings: {}
     };
@@ -16036,14 +16038,11 @@ const $N = {
     }
   },
   created() {
-    window.VuSettings && window.VuSettings.button && window.VuSettings.button[this.panel] && (this.settings = window.VuSettings.button[this.panel]);
+    window.VuSettings && window.VuSettings.button && (this.theme = window.VuSettings.theme ? window.VuSettings.theme : "light", window.VuSettings.button[this.panel] && (this.settings = window.VuSettings.button[this.panel]));
   },
   mounted() {
   }
-}, DN = $N, RN = {
-  key: 0,
-  class: "vua-user-button d-inline-block"
-}, MN = {
+}, DN = $N, RN = ["data-bs-theme"], MN = {
   key: 0,
   class: "dropdown"
 }, BN = ["innerHTML"], qN = {
@@ -16054,7 +16053,11 @@ const $N = {
   class: "d-inline-block"
 }, HN = ["innerHTML"];
 function WN(e, t, s, n, i, r) {
-  return !e.auth.user && e.panel != "login" || e.panel == "login" ? (m(), b("div", RN, [
+  return !e.auth.user && e.panel != "login" || e.panel == "login" ? (m(), b("div", {
+    key: 0,
+    class: "vua-user-button d-inline-block",
+    "data-bs-theme": [e.theme]
+  }, [
     e.auth.user ? (m(), b("div", MN, [
       f("button", {
         class: L(["dropdown-toggle", [e.settings.class]]),
@@ -16105,7 +16108,7 @@ function WN(e, t, s, n, i, r) {
         }, null, 8, HN)
       ], 2)
     ]))
-  ])) : T("", !0);
+  ], 8, RN)) : T("", !0);
 }
 const zN = /* @__PURE__ */ Se(DN, [["render", WN]]), tk = {
   install(e) {

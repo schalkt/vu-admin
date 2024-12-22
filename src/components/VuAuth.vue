@@ -1,12 +1,10 @@
 <template>
 
-    <div v-if="auth && auth.visible" class="vua-auth">
-
-        {{ auth.inputs }}
+    <div v-if="auth && auth.visible" class="vua-auth" :data-bs-theme="[theme]">
 
         <div class="row d-flex justify-content-center align-items-center min-vh-100" @click.stop="close">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto">
-                <div class="card shadow p-4 position-relative bg-light" @click.stop="">
+                <div class="card shadow p-4 position-relative" @click.stop="">
 
                     <button type="button" class="btn position-absolute top-0 end-0 p-0 m-2" @click.stop="close">
                         <i class="bi bi-x px-1 text-muted"></i>
@@ -28,7 +26,7 @@
                                 <input id="email" name="email" :type="settings.username.type" v-model="username" class="form-control"
                                     :class="{ 'rounded-bottom-0': settings.username.help }" :placeholder="settings.username.placeholder" required />
                             </div>
-                            <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="settings.username.help" v-html="settings.username.help"></small>
+                            <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="settings.username.help" v-html="settings.username.help"></small>
                         </div>
 
                         <!-- Jelszó mező és Elfelejtett jelszó gomb -->
@@ -59,7 +57,7 @@
                                         <i v-else class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
-                                <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="auth.panel == 'registration' && settings.password.help"
+                                <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="auth.panel == 'registration' && settings.password.help"
                                     v-html="settings.password.help"></small>
                             </div>
 
@@ -89,7 +87,7 @@
                                         <i v-else class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
-                                <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted"
+                                <small class="d-block border border-top-0 rounded-bottom p-2 text-muted"
                                     v-if="auth.panel == 'registration' && settings.password_again.help" v-html="settings.password_again.help"></small>
                             </div>
 
@@ -139,7 +137,7 @@
                                                 v-html="getValueOrFunction(input.suffix)"></span>
 
                                         </div>
-                                        <small class="d-block border border-top-0 rounded-bottom bg-light p-2 text-muted" v-if="input.help" v-html="getValueOrFunction(input.help)">
+                                        <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="input.help" v-html="getValueOrFunction(input.help)">
                                         </small>
                                     </div>
                                 </div>
@@ -232,6 +230,7 @@ const VuAuth = {
     },
     data() {
         return {
+            theme: "light",
             auth: undefined,
             username: "",
             password: "",
@@ -584,6 +583,7 @@ const VuAuth = {
 
     created() {
         if (window.VuSettings && window.VuSettings.auth) {
+            this.theme = window.VuSettings.theme ? window.VuSettings.theme : "light";
             this.settings = window.VuSettings.auth;
         }
 
@@ -660,15 +660,11 @@ export { VuAuth };
 
     position: fixed;
     inset: 0px;
-    background-color: rgba(242, 242, 242, 0.95);
+    background-color: var(--bs-body-bg);    
     z-index: 99999;
 
     .cursor-pointer {
         cursor: pointer;
-    }
-
-    .container {
-        background-color: #f8f9fa;
     }
 
     .card {

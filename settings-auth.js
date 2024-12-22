@@ -1,7 +1,8 @@
 
-window.VuSettings = {
-    button: {
-        registration: {
+window.VuSettings = {  
+    theme: 'dark',  
+    button: {        
+        registration: {            
             label: 'Regisztráció',
             class: 'btn btn-warning me-2',
             icon: 'bi bi-person-plus me-2',
@@ -57,7 +58,7 @@ window.VuSettings = {
             ],
         }
     },
-    auth: {
+    auth: {        
         debug: true,
         title: {
             login: 'Bejelentkezés',
@@ -94,7 +95,7 @@ window.VuSettings = {
             _pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
             pattern: '^(?=.*[a-z]).+$',
             minlength: 4,
-            hash: 11
+            hash: 0
         },
         password_again: {
             label: 'Jelszó ismét',
@@ -104,7 +105,7 @@ window.VuSettings = {
             _help: 'Ide gépeld be újra a jelszavadat amit megadtál.'
         },
         registration: {
-            help: `<div class='bg-white text-muted p-2 rounded shadow-sm'>A regisztráció beküldése után egy <strong>visszaigazoló levél</strong> fog érkezni az e-mail címedre, melyben az aktiváló linkre kell <strong>kattintani</strong>, hogy a regisztráció érvényesítve legyen. A kattintás után megjelenik weboldalunk, ahol <strong>további adatok</strong> megadására van lehetőség.</div>`,
+            help: `<div class='text-muted p-2 rounded shadow-sm'>A regisztráció beküldése után egy <strong>visszaigazoló levél</strong> fog érkezni az e-mail címedre, melyben az aktiváló linkre kell <strong>kattintani</strong>, hogy a regisztráció érvényesítve legyen. A kattintás után megjelenik weboldalunk, ahol <strong>további adatok</strong> megadására van lehetőség.</div>`,
         },
         inputs: {
             'role': {
@@ -196,10 +197,10 @@ window.VuSettings = {
             login: (responseData, auth) => {
 
                 console.log(responseData, auth);
-                
+
                 auth.user = responseData;
                 auth.user.token = responseData.accessToken;
-                auth.user.roles = ['admin', 'guest'];            
+                auth.user.roles = ['admin', 'guest'];
                 auth.settings = {
                     entitiesVariable: 'VuEntities',
                     entities: {
@@ -212,10 +213,10 @@ window.VuSettings = {
             activation: (responseData, auth) => {
 
                 console.log(responseData, auth);
-            
+
                 auth.user = responseData;
                 auth.user.token = responseData.accessToken;
-                auth.user.roles = ['admin', 'guest'];            
+                auth.user.roles = ['admin', 'guest'];
                 auth.settings = {
                     entitiesVariable: 'VuEntities',
                     entities: {
