@@ -215,6 +215,7 @@
 
 import mitt from 'mitt';
 import VuAdminForm from "./VuAdminForm.vue";
+import { sha512 } from "js-sha512";
 import { Modal } from "bootstrap";
 import {
     translate,
@@ -446,25 +447,20 @@ const VuAuth = {
         async hashPassword(password) {
 
             this.settings.password.hash = this.settings.password.hash === undefined ? 0 : this.settings.password.hash;
-            let password_hashed = password;
 
-            for (let i = 0; i < this.settings.password.hash; i++) {
-                password_hashed = await this.generateHash(password_hashed, 'SHA-384');
-            }
-
-            return password_hashed;
+            return this.generateHash(password, this.settings.password.hash);
 
         },
 
-        async generateHash(input, type) {
-            
-            const encoder = new TextEncoder();
-            const data = encoder.encode(input);
-            const hash = await crypto.subtle.digest(type ? type : 'SHA-256', data);
+        async generateHash(input, iterations) {
 
-            return Array.from(new Uint8Array(hash))
-                .map(byte => byte.toString(16).padStart(2, '0'))
-                .join('');
+            let output = input;
+
+            for (let i = 0; i < iterations; i++) {
+                output = sha512(output);
+            }
+
+            return output;
 
         },
 
