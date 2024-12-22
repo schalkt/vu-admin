@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import { version } from './package.json'
+import crypto from 'crypto';
 
 export default defineConfig({
   define: {

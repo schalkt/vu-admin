@@ -32,12 +32,15 @@
       {{ auth }}
     </small>
 
-    <vu-admin :entity="'carts'" :auth="auth"></vu-admin>
+    <div v-cloak v-if="auth.success">
+      <vu-admin :entity="'carts'" :auth="auth"></vu-admin>
+    </div>
 
   </div>
 
-  <script src="./entity-demo.js"></script>
   <script src="./../dist/vu-admin.umd.js"></script>
+  <script src="./vu-settings.js"></script>
+
   <script>
 
     const app = Vue.createApp({
@@ -47,6 +50,7 @@
         }
       },
       mounted() {
+        
         this.auth.success = true;
         this.auth.user = {
           firstName: 'User',
@@ -54,6 +58,15 @@
           email: 'emilys@example.com',
           image: 'https://picsum.photos/id/137/200/200'
         };
+
+        this.auth.settings = {
+          entitiesVariable: 'VuEntities',
+          entities: {
+            carts: './vu-entity-demo.js',
+          }
+        };
+
+
       }
     });
     app.component('vu-admin', VuAdmin.VuAdmin);
