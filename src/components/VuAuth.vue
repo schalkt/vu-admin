@@ -87,8 +87,8 @@
                                         <i v-else class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
-                                <small class="d-block border border-top-0 rounded-bottom p-2 text-muted"
-                                    v-if="auth.panel == 'registration' && settings.password_again.help" v-html="settings.password_again.help"></small>
+                                <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="auth.panel == 'registration' && settings.password_again.help"
+                                    v-html="settings.password_again.help"></small>
                             </div>
 
                             <!-- reCAPTCHA -->
@@ -177,8 +177,8 @@
                             </button>
                         </div>
 
-                        <div class="mt-3 text-center" v-if="responseMessage">
-                            <div :class="{ 'text-danger': !responseOk, 'text-success': responseOk }" v-html="responseMessage"></div>
+                        <div class="mt-3 text-center" v-if="auth.response.message">
+                            <div :class="{ 'text-danger': !auth.response.ok, 'text-success': auth.response.ok }" v-html="auth.response.message"></div>
                         </div>
 
                         <div class="mt-2 text-end">
@@ -316,6 +316,18 @@ const VuAuth = {
 
         },
 
+        async getStatusAndJson(response) {
+
+            this.auth.response.code = response.status;
+
+            try {
+                this.auth.response.data = await response.json();
+            } catch (error) {
+                this.auth.response.data = null;
+            }
+
+        },
+
         async handleSubmit() {
 
             if (this.auth.panel == 'login') {
@@ -354,23 +366,19 @@ const VuAuth = {
                     password: await this.hashPassword(this.password),
                     accept: this.accepts,
                 }),
-            }
-            );
+            });
+
+            await this.getStatusAndJson(response);
 
             if (response.ok) {
 
-                const responseData = await response.json();
-
-                this.responseOk = true;
-                this.responseMessage = 'Sikeres bejelentkezés';
-                this.onSuccess('login', responseData);
+                this.onSuccess('login', 'Sikeres bejelentkezés');
                 this.close();
 
-
             } else {
-                this.responseOk = false;
-                this.auth.success = false;
-                this.responseMessage = 'Sikertelen bejelentkezés';
+
+                this.onError('login', 'Sikertelen bejelentkezés');
+
             }
 
         },
@@ -396,18 +404,13 @@ const VuAuth = {
                 }),
             });
 
+            await this.getStatusAndJson(response);
+
             if (response.ok) {
-
-                const responseData = await response.json();
-                this.responseOk = true;
-                this.responseMessage = 'Sikeres regisztráció';
-
-
+                this.onSuccess('registration', 'Sikeres regisztráció');
             } else {
-                this.responseOk = false;
-                this.responseMessage = 'Sikertelen regisztráció';
+                this.onError('registration', 'Sikertelen regisztráció');
             }
-
 
 
         },
@@ -420,17 +423,17 @@ const VuAuth = {
                 body: JSON.stringify(this.inputs),
             });
 
+            await this.getStatusAndJson(response);
+
             if (response.ok) {
 
-                const responseData = await response.json();
-                this.responseOk = true;
-                this.responseMessage = 'Sikeres aktiválás';
-                this.onSuccess('activation', responseData);
+                this.onSuccess('activation', 'Sikeres aktiválás');
                 this.close();
 
             } else {
-                this.responseOk = false;
-                this.responseMessage = 'Sikertelen aktiválás';
+
+                this.onError('activation', 'Sikertelen aktiválás');
+
             }
 
         },
@@ -467,8 +470,7 @@ const VuAuth = {
 
             this.password = "";
             this.password_again = "";
-            this.responseMessage = "";
-            this.responseOk = false;
+            this.auth.response = {};
 
         },
 
@@ -518,11 +520,15 @@ const VuAuth = {
             }
         },
 
-        onSuccess(panel, responseData) {
+        onSuccess(panel, defaultMessage) {
+
+            this.auth.success = true;
+            this.auth.response.ok = true;
+            this.auth.response.message = defaultMessage;
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
 
-                this.settings.onSuccess[panel](responseData, this.auth);
+                this.settings.onSuccess[panel](this.auth);
 
                 if (!this.auth.header) {
                     this.auth.header = {};
@@ -545,6 +551,27 @@ const VuAuth = {
                 localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
                 localStorage.setItem('vu-settings', JSON.stringify(this.auth.settings));
 
+            }
+
+            setTimeout(() => {
+                this.authUpdate();
+                this.$forceUpdate();
+            }, 0)
+
+        },
+
+        onError(panel, defaultMessage) {
+
+            this.auth.success = false;
+            this.auth.response.ok = false;
+            this.auth.response.message = defaultMessage;
+
+            if (this.settings.onError && this.settings.onError[panel]) {
+                this.settings.onError[panel](this.auth);
+            }
+
+            if (!this.auth.response.message) {
+                this.auth.response.message = defaultMessage;
             }
 
             setTimeout(() => {
@@ -616,6 +643,11 @@ const VuAuth = {
                 header: undefined,
                 settings: undefined,
                 success: false,
+                response: {
+                    ok: false,
+                    message: null,
+                    data: null,
+                },
             };
             this.authUpdate();
         }
@@ -660,7 +692,7 @@ export { VuAuth };
 
     position: fixed;
     inset: 0px;
-    background-color: var(--bs-body-bg);    
+    background-color: var(--bs-body-bg);
     z-index: 99999;
 
     .cursor-pointer {

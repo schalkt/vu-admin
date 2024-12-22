@@ -1,8 +1,8 @@
 
-window.VuSettings = {  
-    theme: 'dark',  
-    button: {        
-        registration: {            
+window.VuSettings = {
+    theme: 'dark',
+    button: {
+        registration: {
             label: 'Regisztráció',
             class: 'btn btn-warning me-2',
             icon: 'bi bi-person-plus me-2',
@@ -58,7 +58,7 @@ window.VuSettings = {
             ],
         }
     },
-    auth: {        
+    auth: {
         debug: true,
         title: {
             login: 'Bejelentkezés',
@@ -193,13 +193,33 @@ window.VuSettings = {
             name: 'newsletter',
 
         }],
+        onError: {
+            login: (auth) => {
+
+                console.log(auth.response);
+
+                if (auth.response) {
+                    auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
+                }
+
+            },
+            registration: (auth) => {
+
+                console.log(auth.response);
+
+                if (auth.response) {
+                    auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
+                }
+
+            },
+        },     
         onSuccess: {
-            login: (responseData, auth) => {
+            login: (auth) => {
 
-                console.log(responseData, auth);
+                console.log(auth);
 
-                auth.user = responseData;
-                auth.user.token = responseData.accessToken;
+                auth.user = auth.response.data;
+                auth.user.token = auth.response.data.accessToken;
                 auth.user.roles = ['admin', 'guest'];
                 auth.settings = {
                     entitiesVariable: 'VuEntities',
@@ -210,12 +230,12 @@ window.VuSettings = {
                     }
                 };
             },
-            activation: (responseData, auth) => {
+            activation: (auth) => {
 
-                console.log(responseData, auth);
+                console.log(auth);
 
-                auth.user = responseData;
-                auth.user.token = responseData.accessToken;
+                auth.user = auth.response.data;
+                auth.user.token = auth.response.data.accessToken;
                 auth.user.roles = ['admin', 'guest'];
                 auth.settings = {
                     entitiesVariable: 'VuEntities',
