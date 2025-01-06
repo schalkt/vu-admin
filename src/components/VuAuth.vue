@@ -521,8 +521,7 @@ const VuAuth = {
         },
 
         onSuccess(panel, defaultMessage) {
-
-            this.auth.success = true;
+            
             this.auth.response.ok = true;
             this.auth.response.message = defaultMessage;
 

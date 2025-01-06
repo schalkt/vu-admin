@@ -193,8 +193,8 @@ const VuAdmin = {
 
     async loadSettings() {
 
-      if (!this.auth || !this.auth.user) {
-        console.error(`Authenticated user not found`);
+      if (!this.auth || !this.auth.success || !this.auth.user) {
+        console.error(`Authentication required`);
         return;
       }
 

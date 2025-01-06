@@ -14931,8 +14931,8 @@ const TO = /* @__PURE__ */ ke(ex, [["render", AO]]), FO = {
   },
   methods: {
     async loadSettings() {
-      if (!this.auth || !this.auth.user) {
-        console.error("Authenticated user not found");
+      if (!this.auth || !this.auth.success || !this.auth.user) {
+        console.error("Authentication required");
         return;
       }
       if (!this.auth.settings || !this.auth.settings.entities || !this.auth.settings.entities[this.entity]) {
@@ -15549,7 +15549,7 @@ const IO = {
       e.key === "Escape" && this.close();
     },
     onSuccess(e, t) {
-      this.auth.success = !0, this.auth.response.ok = !0, this.auth.response.message = t, this.settings.onSuccess && this.settings.onSuccess[e] && (this.settings.onSuccess[e](this.auth), this.auth.header || (this.auth.header = {}), this.auth.user.role ? this.auth.header["X-Auth-Role"] = this.auth.user.role : this.auth.user.roles && (this.auth.user.role = this.auth.user.roles[0], this.auth.header["X-Auth-Role"] = this.auth.user.roles), this.auth.user.token && (this.auth.header["X-Auth-Token"] = this.auth.user.token), this.auth.success = !0, localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header)), localStorage.setItem("vu-settings", JSON.stringify(this.auth.settings))), setTimeout(() => {
+      this.auth.response.ok = !0, this.auth.response.message = t, this.settings.onSuccess && this.settings.onSuccess[e] && (this.settings.onSuccess[e](this.auth), this.auth.header || (this.auth.header = {}), this.auth.user.role ? this.auth.header["X-Auth-Role"] = this.auth.user.role : this.auth.user.roles && (this.auth.user.role = this.auth.user.roles[0], this.auth.header["X-Auth-Role"] = this.auth.user.roles), this.auth.user.token && (this.auth.header["X-Auth-Token"] = this.auth.user.token), this.auth.success = !0, localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header)), localStorage.setItem("vu-settings", JSON.stringify(this.auth.settings))), setTimeout(() => {
         this.authUpdate(), this.$forceUpdate();
       }, 0);
     },
@@ -15591,7 +15591,7 @@ const IO = {
         message: null,
         data: null
       }
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.116");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.117");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
