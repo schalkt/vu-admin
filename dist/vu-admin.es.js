@@ -14935,6 +14935,10 @@ const TO = /* @__PURE__ */ ke(ex, [["render", AO]]), FO = {
   },
   methods: {
     async loadSettings() {
+      if (!this.auth || !this.auth.user) {
+        console.error("Authenticated user not found");
+        return;
+      }
       if (!this.auth.settings || !this.auth.settings.entities || !this.auth.settings.entities[this.entity]) {
         console.error(`Entity config (${this.entity}) not found`);
         return;
@@ -15591,7 +15595,7 @@ const IO = {
         message: null,
         data: null
       }
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.113");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.114");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);

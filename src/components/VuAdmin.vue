@@ -193,6 +193,11 @@ const VuAdmin = {
 
     async loadSettings() {
 
+      if (!this.auth || !this.auth.user) {
+        console.error(`Authenticated user not found`);
+        return;
+      }
+
       if (!this.auth.settings || !this.auth.settings.entities || !this.auth.settings.entities[this.entity]) {
         console.error(`Entity config (${this.entity}) not found`);
         return;
@@ -217,10 +222,10 @@ const VuAdmin = {
     loadScript(path, callback, entitiesVariable) {
 
       if (window[entitiesVariable] && window[entitiesVariable][this.entity]) {
-        
+
         if (callback) {
           callback();
-        }        
+        }
 
         return;
 
