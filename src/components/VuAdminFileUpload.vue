@@ -1,7 +1,8 @@
 <template>
   <div class="">
     <div class="vsa-upload" :class="{ wait: wait }">
-      <div v-cloak v-if="editfile && editfile.presets" class="vsa-image-editor p-2 text-center text-light">
+
+      <div v-cloak v-if="editfile && editfile.presets" class="vsa-image-editor p-2 text-center">
         <div class="row">
           <div class="col-md-3" v-for="(type, index) in editfile.types" :key="index">
             <span class="badge bg-dark text-light fw-light mx-1 text-uppercase">{{ type.extension }}</span>
@@ -48,32 +49,33 @@
 
                     <div class="input-group border">
 
-                      <span class="d-block p-1 px-2 bg-secondary text-light opacity-50">
-                        <small>{{ index + 1 }}</small>
+                      <span class="d-block p-1 px-2">
+                        {{ index + 1 }}
                       </span>
 
-                      <span class="cursor-pointer p-1 border-end bg-white h-100" @click="arrayItemMoveDown(files, index)">
+                      <span class="cursor-pointer p-1 border-start border-end h-100" @click="arrayItemMoveDown(files, index)">
                         <i class="bi bi-arrow-up" :class="{ 'opacity-25': index < 1 }"></i>
                       </span>
-                      <span class="cursor-pointer p-1 border-start border-end bg-white h-100" @click="arrayItemMoveUp(files, index + 1)">
+                      <span class="cursor-pointer p-1 border-start border-end h-100" @click="arrayItemMoveUp(files, index + 1)">
                         <i class="bi bi-arrow-down" :class="{ 'opacity-25': index >= files.length - 1 }"></i>
                       </span>
 
-                      <span class="fs-5 ms-2" v-if="file.isDocument">
+                      <span class="fs-5 mx-2" v-if="file.isDocument">
                         <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
                       </span>
 
-                      <span class="fs-5 ms-2" v-else-if="file.isImage">
+                      <span class="fs-5 mx-2" v-else-if="file.isImage">
                         <i class="bi bi-file-image"></i>
                       </span>
 
-                      <span class="fs-5 ms-2" v-else-if="file.isVideo">
+                      <span class="fs-5 mx-2" v-else-if="file.isVideo">
                         <i class="bi bi-file-play"></i>
                       </span>
 
-                      <input required="text" class="form-control py-1 px-2 border-0 fw-light" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
+                      <input required="text" class="form-control py-1 px-2 border-top-0 border-bottom-0 border-start-1 fw-light" v-model="file.title" @input="slug(file)"
+                        @keydown.enter.prevent />
 
-                      <span v-if="!file.isDocument && file.types && file.types[params.thumbnail]" class="mx-1">
+                      <span v-if="!file.isDocument && file.types && file.types[params.thumbnail]" class="mx-0">
 
                         <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url">
                           <img height="32" width="auto" class="transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
@@ -84,7 +86,8 @@
                       </span>
 
                       <div class="dropdown rounded-bottom" v-if="params.tags">
-                        <button class="btn btn-sm bg-light text-dark w-100" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-sm border border-start-1 border-top-0 border-bottom-0 rounded-0 h-100 w-100" type="button" data-bs-auto-close="outside"
+                          data-bs-toggle="dropdown" aria-expanded="false">
                           <i class="bi bi-tag"></i>
                           {{ file.tags ? file.tags.length : 0 }}
                         </button>
@@ -118,7 +121,8 @@
                       </div>
 
                       <div class="dropdown">
-                        <button class="btn btn-sm bg-light text-dark _dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-sm _dropdown-toggle border border-start-1 border-top-0 border-bottom-0 rounded-0 h-100" type="button" data-bs-toggle="dropdown"
+                          aria-expanded="false">
                           <i class="bi bi-list"></i>
                         </button>
                         <ul class="dropdown-menu">
@@ -131,7 +135,8 @@
 
                       </div>
 
-                      <button class="btn text-danger px-2 py-1" @click="remove(index)" type="button">
+                      <button class="btn btn-sm btn-outline-danger border border-start-1 border-top-0 border-bottom-0 border-end-0 rounded-0 px-2" @click="remove(index)"
+                        type="button">
                         <i class="bi bi-x-circle"></i>
                       </button>
 
@@ -152,7 +157,7 @@
 
             <div v-if="file.loaded" class="w-100 h-100 d-flex align-items-center flex-column">
 
-              <div v-if="0" class="vsa-image-info position-absolute start-0 bottom-0 end-0 p-2 text-center text-light">
+              <div v-if="0" class="vsa-image-info position-absolute start-0 bottom-0 end-0 p-2 text-center">
 
                 <span v-if="file.resized" class="badge bg-warning text-dark m-1">resized</span>
 
@@ -211,38 +216,23 @@
                 <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
               </div>
 
-              <input required="text" class="form-control rounded-0 bg-white text-dark border-bottom-0 py-1 px-2 fw-light" v-model="file.title" @input="slug(file)"
-                @keydown.enter.prevent />
+              <input required="text" class="form-control rounded-0 border-bottom-0 py-1 px-2 fw-light" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
 
               <div class="w-100 mb-2 d-flex justify-content-around align-items-center">
 
-                <span class="p-1 px-2 bg-secondary text-light border border-end-0 h-100 opacity-50">
-                  <small>{{ index + 1 }}</small>
+                <span class="p-1 px-2 border border-end-0 h-100">
+                  {{ index + 1 }}
                 </span>
 
-                <span class="cursor-pointer p-1 bg-white border border-end-0 h-100" @click="arrayItemMoveDown(files, index)">
+                <span class="cursor-pointer p-1 border border-end-0 h-100" @click="arrayItemMoveDown(files, index)">
                   <i class="bi bi-arrow-up" :class="{ 'opacity-25': index < 1 }"></i>
                 </span>
-                <span class="cursor-pointer p-1 bg-white border border-end-0 h-100" @click="arrayItemMoveUp(files, index + 1)">
+                <span class="cursor-pointer p-1 border border-end-0 h-100" @click="arrayItemMoveUp(files, index + 1)">
                   <i class="bi bi-arrow-down" :class="{ 'opacity-25': index >= files.length - 1 }"></i>
                 </span>
 
-                <div class="dropdown border h-100 w-100">
-                  <button class="btn btn-sm bg-light text-dark _dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-list"></i>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li class="p-2">
-                      <small class="fw-light">
-                        <VuAdminFileUploadInfo :file="file"></VuAdminFileUploadInfo>
-                      </small>
-                    </li>
-                  </ul>
-
-                </div>
-
-                <div class="dropdown border h-100 w-100" v-if="params.tags">
-                  <button class="btn btn-sm bg-light text-dark w-100" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="dropdown border border-end-0 h-100 w-100" v-if="params.tags">
+                  <button class="btn btn-sm rounded-0 h-100 w-100" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-tag"></i>
                     {{ file.tags ? file.tags.length : 0 }}
                   </button>
@@ -275,7 +265,21 @@
                   </ul>
                 </div>
 
-                <button class="btn border rounded-0 border-start-0 text-danger px-2 py-1" @click="remove(index)" type="button">
+                <div class="dropdown border h-100 w-100">
+                  <button class="btn btn-sm rounded-0 h-100 _dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-list"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li class="p-2">
+                      <small class="fw-light">
+                        <VuAdminFileUploadInfo :file="file"></VuAdminFileUploadInfo>
+                      </small>
+                    </li>
+                  </ul>
+
+                </div>
+
+                <button class="btn btn-outline-danger border rounded-0 border-start-0 px-2 py-1" @click="remove(index)" type="button">
                   <i class="bi bi-x-circle"></i>
                 </button>
 
@@ -818,7 +822,7 @@ const FileUpload = {
     },
 
     download(index, params) {
-      
+
       let file = this.files[index].types[params.download ? params.download : 'default'];
       let link = document.createElement("a");
 
@@ -826,7 +830,7 @@ const FileUpload = {
 
       link.download = file.slug + "." + file.extension;
       link.click();
-      
+
     },
 
     remove(index) {
@@ -1074,4 +1078,11 @@ export default FileUpload;
 
   }
 }
+
+[data-bs-theme="dark"] {
+  .vsa-image-container {
+    color: var(--bs-body-color);
+  }
+}
+
 </style>

@@ -417,29 +417,29 @@ window.VuEntities.user = (preset) => {
 							label: 'Képek',
 							required: false,
 							params: {
-								limit: 1,
+								limit: 2,
 								text: 'Click here to upload',
 								accept: ["image/png", "image/jpeg", "image/webp"],
 								thumbnail: 'small',
 								download: 'large',
 								editor: false,
 								presets: {
-									large: {
+									default: {
 										width: 1920,
 										height: 1080,
-										convert: "image/webp",
+										extension: "webp",
 										quality: 0.85
 									},
 									small: {
 										width: 400,
 										height: 320,
-										convert: "image/webp",
+										extension: "webp",										
 										quality: 0.75
 									},
 									tiny: {
 										width: 160,
 										height: 100,
-										convert: "image/webp",
+										extension: "webp",
 										quality: 0.7
 									},
 								},

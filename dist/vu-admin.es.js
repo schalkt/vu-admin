@@ -11383,27 +11383,27 @@ const lA = /* @__PURE__ */ ke(Vw, [["render", aA]]), Ee = {
   }
 }, uA = cA, hA = { class: "" }, dA = {
   key: 0,
-  class: "vsa-image-editor p-2 text-center text-light"
+  class: "vsa-image-editor p-2 text-center"
 }, fA = { class: "row" }, pA = { class: "badge bg-dark text-light fw-light mx-1 text-uppercase" }, gA = { class: "badge bg-dark text-light fw-light mx-1" }, mA = { class: "badge bg-dark text-light fw-light mx-1" }, bA = ["src"], yA = { class: "row g-1" }, vA = { class: "col-md-6" }, _A = { class: "col-md-6" }, EA = { class: "col-md-6" }, wA = ["href"], AA = {
   key: 1,
   class: "row g-2 mb-1"
-}, TA = { key: 0 }, FA = { class: "table table-sm table-responsive table-borderless" }, xA = { class: "align-middle px-0" }, CA = { class: "input-group border" }, OA = { class: "d-block p-1 px-2 bg-secondary text-light opacity-50" }, NA = ["onClick"], SA = ["onClick"], kA = {
+}, TA = { key: 0 }, FA = { class: "table table-sm table-responsive table-borderless" }, xA = { class: "align-middle px-0" }, CA = { class: "input-group border" }, OA = { class: "d-block p-1 px-2" }, NA = ["onClick"], SA = ["onClick"], kA = {
   key: 0,
-  class: "fs-5 ms-2"
+  class: "fs-5 mx-2"
 }, LA = {
   key: 1,
-  class: "fs-5 ms-2"
+  class: "fs-5 mx-2"
 }, IA = {
   key: 2,
-  class: "fs-5 ms-2"
+  class: "fs-5 mx-2"
 }, $A = ["onUpdate:modelValue", "onInput"], DA = {
   key: 3,
-  class: "mx-1"
+  class: "mx-0"
 }, RA = ["href"], MA = ["src", "alt"], BA = ["src", "alt"], qA = {
   key: 4,
   class: "dropdown rounded-bottom"
 }, PA = {
-  class: "btn btn-sm bg-light text-dark w-100",
+  class: "btn btn-sm border border-start-1 border-top-0 border-bottom-0 rounded-0 h-100 w-100",
   type: "button",
   "data-bs-auto-close": "outside",
   "data-bs-toggle": "dropdown",
@@ -11423,22 +11423,22 @@ const lA = /* @__PURE__ */ ke(Vw, [["render", aA]]), Ee = {
 }, sT = ["href"], nT = ["src", "alt"], iT = ["src", "alt"], rT = {
   key: 2,
   class: "display-3 w-100 h-100 text-center mb-auto d-flex align-items-center justify-content-center"
-}, oT = ["onUpdate:modelValue", "onInput"], aT = { class: "w-100 mb-2 d-flex justify-content-around align-items-center" }, lT = { class: "p-1 px-2 bg-secondary text-light border border-end-0 h-100 opacity-50" }, cT = ["onClick"], uT = ["onClick"], hT = { class: "dropdown border h-100 w-100" }, dT = { class: "dropdown-menu" }, fT = { class: "p-2" }, pT = { class: "fw-light" }, gT = {
+}, oT = ["onUpdate:modelValue", "onInput"], aT = { class: "w-100 mb-2 d-flex justify-content-around align-items-center" }, lT = { class: "p-1 px-2 border border-end-0 h-100" }, cT = ["onClick"], uT = ["onClick"], hT = {
   key: 0,
-  class: "dropdown border h-100 w-100"
-}, mT = {
-  class: "btn btn-sm bg-light text-dark w-100",
+  class: "dropdown border border-end-0 h-100 w-100"
+}, dT = {
+  class: "btn btn-sm rounded-0 h-100 w-100",
   type: "button",
   "data-bs-auto-close": "outside",
   "data-bs-toggle": "dropdown",
   "aria-expanded": "false"
-}, bT = { class: "dropdown-menu" }, yT = ["onClick"], vT = {
+}, fT = { class: "dropdown-menu" }, pT = ["onClick"], gT = {
   key: 0,
   class: "bi bi-check-square"
-}, _T = {
+}, mT = {
   key: 1,
   class: "bi bi-square"
-}, ET = ["onClick"], wT = ["onClick"], AT = ["onClick"], TT = ["onClick"], FT = {
+}, bT = ["onClick"], yT = ["onClick"], vT = ["onClick"], _T = { class: "dropdown border h-100 w-100" }, ET = { class: "dropdown-menu" }, wT = { class: "p-2" }, AT = { class: "fw-light" }, TT = ["onClick"], FT = {
   key: 1,
   class: "w-100 h-100 vsa-image-loading d-flex align-items-center justify-content-center"
 }, xT = { class: "row g-1" }, CT = { class: "col-12 d-flex align-items-center justify-content-center" }, OT = ["for"], NT = { key: 0 }, ST = { key: 0 }, kT = { class: "" }, LT = { class: "" }, IT = {
@@ -11518,11 +11518,9 @@ function PT(e, t, s, n, i, r) {
               (m(!0), b(dt, null, bt(e.files, (o, l) => (m(), b("tr", { key: l }, [
                 f("td", xA, [
                   f("div", CA, [
-                    f("span", OA, [
-                      f("small", null, $(l + 1), 1)
-                    ]),
+                    f("span", OA, $(l + 1), 1),
                     f("span", {
-                      class: "cursor-pointer p-1 border-end bg-white h-100",
+                      class: "cursor-pointer p-1 border-start border-end h-100",
                       onClick: (c) => e.arrayItemMoveDown(e.files, l)
                     }, [
                       f("i", {
@@ -11530,7 +11528,7 @@ function PT(e, t, s, n, i, r) {
                       }, null, 2)
                     ], 8, NA),
                     f("span", {
-                      class: "cursor-pointer p-1 border-start border-end bg-white h-100",
+                      class: "cursor-pointer p-1 border-start border-end h-100",
                       onClick: (c) => e.arrayItemMoveUp(e.files, l + 1)
                     }, [
                       f("i", {
@@ -11548,7 +11546,7 @@ function PT(e, t, s, n, i, r) {
                     ]))) : T("", !0),
                     _t(f("input", {
                       required: "text",
-                      class: "form-control py-1 px-2 border-0 fw-light",
+                      class: "form-control py-1 px-2 border-top-0 border-bottom-0 border-start-1 fw-light",
                       "onUpdate:modelValue": (c) => o.title = c,
                       onInput: (c) => e.slug(o),
                       onKeydown: t[4] || (t[4] = di(re(() => {
@@ -11619,7 +11617,7 @@ function PT(e, t, s, n, i, r) {
                     ])) : T("", !0),
                     f("div", GA, [
                       t[13] || (t[13] = f("button", {
-                        class: "btn btn-sm bg-light text-dark _dropdown-toggle h-100",
+                        class: "btn btn-sm _dropdown-toggle border border-start-1 border-top-0 border-bottom-0 rounded-0 h-100",
                         type: "button",
                         "data-bs-toggle": "dropdown",
                         "aria-expanded": "false"
@@ -11635,7 +11633,7 @@ function PT(e, t, s, n, i, r) {
                       ])
                     ]),
                     f("button", {
-                      class: "btn text-danger px-2 py-1",
+                      class: "btn btn-sm btn-outline-danger border border-start-1 border-top-0 border-bottom-0 border-end-0 rounded-0 px-2",
                       onClick: (c) => e.remove(l),
                       type: "button"
                     }, t[14] || (t[14] = [
@@ -11678,7 +11676,7 @@ function PT(e, t, s, n, i, r) {
               ])) : T("", !0),
               _t(f("input", {
                 required: "text",
-                class: "form-control rounded-0 bg-white text-dark border-bottom-0 py-1 px-2 fw-light",
+                class: "form-control rounded-0 border-bottom-0 py-1 px-2 fw-light",
                 "onUpdate:modelValue": (c) => o.title = c,
                 onInput: (c) => e.slug(o),
                 onKeydown: t[5] || (t[5] = di(re(() => {
@@ -11687,11 +11685,9 @@ function PT(e, t, s, n, i, r) {
                 [Me, o.title]
               ]),
               f("div", aT, [
-                f("span", lT, [
-                  f("small", null, $(l + 1), 1)
-                ]),
+                f("span", lT, $(l + 1), 1),
                 f("span", {
-                  class: "cursor-pointer p-1 bg-white border border-end-0 h-100",
+                  class: "cursor-pointer p-1 border border-end-0 h-100",
                   onClick: (c) => e.arrayItemMoveDown(e.files, l)
                 }, [
                   f("i", {
@@ -11699,71 +11695,71 @@ function PT(e, t, s, n, i, r) {
                   }, null, 2)
                 ], 8, cT),
                 f("span", {
-                  class: "cursor-pointer p-1 bg-white border border-end-0 h-100",
+                  class: "cursor-pointer p-1 border border-end-0 h-100",
                   onClick: (c) => e.arrayItemMoveUp(e.files, l + 1)
                 }, [
                   f("i", {
                     class: L(["bi bi-arrow-down", { "opacity-25": l >= e.files.length - 1 }])
                   }, null, 2)
                 ], 8, uT),
-                f("div", hT, [
-                  t[18] || (t[18] = f("button", {
-                    class: "btn btn-sm bg-light text-dark _dropdown-toggle w-100",
-                    type: "button",
-                    "data-bs-toggle": "dropdown",
-                    "aria-expanded": "false"
-                  }, [
-                    f("i", { class: "bi bi-list" })
-                  ], -1)),
-                  f("ul", dT, [
-                    f("li", fT, [
-                      f("small", pT, [
-                        Er(a, { file: o }, null, 8, ["file"])
-                      ])
-                    ])
-                  ])
-                ]),
-                e.params.tags ? (m(), b("div", gT, [
-                  f("button", mT, [
-                    t[19] || (t[19] = f("i", { class: "bi bi-tag" }, null, -1)),
+                e.params.tags ? (m(), b("div", hT, [
+                  f("button", dT, [
+                    t[18] || (t[18] = f("i", { class: "bi bi-tag" }, null, -1)),
                     At(" " + $(o.tags ? o.tags.length : 0), 1)
                   ]),
-                  f("ul", bT, [
+                  f("ul", fT, [
                     f("li", null, [
                       (m(!0), b(dt, null, bt(e.params.tags, (c) => (m(), b("span", {
                         key: c,
                         class: "dropdown-item cursor-pointer",
                         onClick: (d) => e.dropdownSelectToggleOne(o.tags, c.value)
                       }, [
-                        o.tags && o.tags.indexOf(c.value) >= 0 ? (m(), b("i", vT)) : (m(), b("i", _T)),
+                        o.tags && o.tags.indexOf(c.value) >= 0 ? (m(), b("i", gT)) : (m(), b("i", mT)),
                         At(" " + $(e.translate(c.label ? c.label : c.value)), 1)
-                      ], 8, yT))), 128))
+                      ], 8, pT))), 128))
                     ]),
-                    t[20] || (t[20] = f("li", null, [
+                    t[19] || (t[19] = f("li", null, [
                       f("hr", { class: "dropdown-divider" })
                     ], -1)),
                     f("li", null, [
                       f("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (c) => e.dropdownSelectAll(o.tags, e.params.tags)
-                      }, $(e.translate("Select all")), 9, ET)
+                      }, $(e.translate("Select all")), 9, bT)
                     ]),
                     f("li", null, [
                       f("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (c) => e.dropdownSelectClear(o.tags)
-                      }, $(e.translate("Unselect all")), 9, wT)
+                      }, $(e.translate("Unselect all")), 9, yT)
                     ]),
                     f("li", null, [
                       f("span", {
                         class: "dropdown-item cursor-pointer",
                         onClick: (c) => e.dropdownSelectInvert(o.tags, e.params.tags)
-                      }, $(e.translate("Invert all")), 9, AT)
+                      }, $(e.translate("Invert all")), 9, vT)
                     ])
                   ])
                 ])) : T("", !0),
+                f("div", _T, [
+                  t[20] || (t[20] = f("button", {
+                    class: "btn btn-sm rounded-0 h-100 _dropdown-toggle w-100",
+                    type: "button",
+                    "data-bs-toggle": "dropdown",
+                    "aria-expanded": "false"
+                  }, [
+                    f("i", { class: "bi bi-list" })
+                  ], -1)),
+                  f("ul", ET, [
+                    f("li", wT, [
+                      f("small", AT, [
+                        Er(a, { file: o }, null, 8, ["file"])
+                      ])
+                    ])
+                  ])
+                ]),
                 f("button", {
-                  class: "btn border rounded-0 border-start-0 text-danger px-2 py-1",
+                  class: "btn btn-outline-danger border rounded-0 border-start-0 px-2 py-1",
                   onClick: (c) => e.remove(l),
                   type: "button"
                 }, t[21] || (t[21] = [
@@ -15595,7 +15591,7 @@ const IO = {
         message: null,
         data: null
       }
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.114");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.116");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
