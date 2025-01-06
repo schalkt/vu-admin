@@ -125,12 +125,15 @@ const VuUserButton = {
             this.auth.visible = false;
             this.auth.user = null;            
             this.auth.header = null;
-            this.auth.success = false;
-
-            localStorage.removeItem('vu-header');
-            localStorage.removeItem('vu-user');            
-
+            this.auth.success = false;                        
+            this.auth.settings = null;            
+                    
             this.updateAuth();
+
+            localStorage.removeItem('vu-user');
+            localStorage.removeItem('vu-header');
+            localStorage.removeItem('vu-settings');
+
 
         },
     },
