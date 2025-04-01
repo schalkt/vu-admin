@@ -310,10 +310,39 @@ const VuAuth = {
 
             if (this.auth.user) {
                 this.auth.success = true;
+                this.loadProfile();
             }
 
             this.$emit("update:modelValue", this.auth);
 
+        },
+
+        async loadProfile() {
+            if (!this.auth.user || !this.auth.header) {
+                this.logout();
+                return;
+            }
+
+            try {
+                const response = await fetch(this.settings.api.profile, {
+                    method: "GET",
+                    headers: this.auth.header
+                });
+
+                if (!response.ok) {
+                    this.logout();
+                    return;
+                }
+
+                const userData = await response.json();
+                this.auth.user = userData;
+                this.auth.success = true;
+                this.$emit("update:modelValue", this.auth);
+                localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
+
+            } catch (error) {
+                this.logout();
+            }
         },
 
         async getStatusAndJson(response) {
@@ -438,12 +467,34 @@ const VuAuth = {
 
         },
 
-        handleForgotPasswordSubmit() {
-            // Elfelejtett jelszó logika
-            console.log("Elfelejtett jelszó e-mail beküldve:", this.email);
-            alert("E-mail elküldve a megadott címre!");
+        async handleForgotPasswordSubmit() {
 
-            this.reset();
+            try {
+
+                const response = await fetch(this.settings.api.password, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: this.username,
+                    }),
+                });
+
+                await this.getStatusAndJson(response);
+
+                if (response.ok) {
+                    
+                    this.onPasswordReset('password', 'Jelszó visszaállítási e-mail elküldve');
+
+                } else {
+
+                    this.onError('password', 'Sikertelen jelszó visszaállítás');
+
+                }
+
+            } catch (error) {
+                this.onError('password', 'Sikertelen jelszó visszaállítás');
+            }            
+
         },
 
         async hashPassword(password) {
@@ -521,7 +572,7 @@ const VuAuth = {
         },
 
         onSuccess(panel, defaultMessage) {
-            
+
             this.auth.response.ok = true;
             this.auth.response.message = defaultMessage;
 
@@ -575,6 +626,26 @@ const VuAuth = {
 
             setTimeout(() => {
                 this.authUpdate();
+                this.$forceUpdate();
+            }, 0)
+
+        },
+
+        onPasswordReset(panel, defaultMessage) {
+                                    
+            this.auth.success = true;
+            this.auth.response.ok = true;
+            this.auth.response.message = defaultMessage;
+
+            if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
+                this.settings.onSuccess[panel](this.auth);
+            }
+
+            if (!this.auth.response.message) {
+                this.auth.response.message = defaultMessage;
+            }
+
+            setTimeout(() => {                
                 this.$forceUpdate();
             }, 0)
 
@@ -650,7 +721,6 @@ const VuAuth = {
             };
             this.authUpdate();
         }
-
 
         this.checkStorage();
         this.reset();

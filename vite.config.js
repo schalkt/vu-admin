@@ -14,17 +14,46 @@ export default defineConfig({
         target: 'https://dummyjson.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    }
-  },
-  plugins: [vue({
-    template: {
-      compilerOptions: {
-        // isCustomElement: tag => tag.startsWith('my-'),
-        whitespace: 'condense'
       }
     }
-  })],
+  },
+  plugins: [
+    {
+      name: 'custom-api',
+      configureServer(server) {
+        server.middlewares.use('/password/forgot', (req, res, next) => {
+          if (req.method === 'POST') {
+            
+            let body = '';
+
+            req.on('data', chunk => (body += chunk));
+            req.on('end', () => {
+                try {
+                    const jsonData = JSON.parse(body);
+                    const username = jsonData.username; // Itt kapod meg az emailt
+                    
+                    res.setHeader('Content-Type', 'application/json');
+                    res.end(JSON.stringify({ message: 'Vite POST sikeres', username }));
+                } catch (error) {
+                    res.statusCode = 400;
+                    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+                }
+            });
+            
+          } else {
+            next();
+          }
+        });
+      }
+    },
+    vue({
+      template: {
+        compilerOptions: {
+          // isCustomElement: tag => tag.startsWith('my-'),
+          whitespace: 'condense'
+        }
+      }
+    })],
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),

@@ -107,8 +107,6 @@ const VuUserButton = {
             this.auth.panel = this.panel ? this.panel : 'login';
             this.updateAuth();
 
-            console.log(this.auth);
-
         },
 
         setSelectedRole(role) {

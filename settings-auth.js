@@ -74,14 +74,15 @@ window.VuSettings = {
         },
         api: {
             login: '/api/auth/login',
+            profile: '/api/auth/me',
             register: '/api/auth/register',
-            password: '/api/auth/password',
+            password: '/password/forgot',
             activation: '/api/auth/activate',
         },
         username: {
             value: 'emilys',
             type: 'text',
-            label: 'Felhasználónév',
+            label: 'Felhasználónév / E-mail cím',
             icon: 'bi bi-envelope',
             placeholder: 'Add meg a felhasználóneved',
             help: 'A Freemail és Citromail szolgáltatók nem minden esetben fogadják be megfelelően az e-maileket, így a kézbesítés nem garantált.'
@@ -212,7 +213,14 @@ window.VuSettings = {
                 }
 
             },
-        },     
+            password: (auth) => {
+                console.log(auth.response);
+
+                if (auth.response) {
+                    auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
+                }
+            },
+        },
         onSuccess: {
             login: (auth) => {
 
@@ -245,7 +253,12 @@ window.VuSettings = {
                         user: '/entity-user.js',
                     }
                 };
-            }
+            },
+            password: (auth) => {
+              
+                console.log(auth.response);
+
+            },
         }
     }
 };

@@ -261,7 +261,7 @@ window.VuEntities.product = (preset) => {
 		{
 			name: 'stock',
 			title: 'Stock',
-			width: '8%',
+			width: '18%',
 			filter: {
 				type: 'number',
 				operators: true,
@@ -275,8 +275,12 @@ window.VuEntities.product = (preset) => {
 					let style = params.item['stock'] < 10 ? 'bg-danger text-light' : (params.item['stock'] < 20 ? 'bg-warning text-dark' : 'bg-success text-light');
 					return style + ' text-end fw-bold'
 				},
-				prefix: '<i class="bi bi-box-seam"></i>',
-				autosave: true
+				prefix: '?',
+				prefixcheck: {
+					name: 'hasStock',
+				},
+				suffix: '<i class="bi bi-box-seam"></i>',
+                autosave: true
 			}
 		},
 		{

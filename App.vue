@@ -22,7 +22,7 @@
 
     <vu-auth v-model="auth" :settings="'auth'"></vu-auth>
 
-    {{ auth }}
+    <pre class="my-5 bg-dark text-white p-3">{{ auth }}</pre>    
 
   </div>
 
@@ -45,7 +45,7 @@ export default {
   components: {
     VuAdmin,
     VuAuth,
-    VuUserButton
+    VuUserButton,    
   }
 };
 </script>

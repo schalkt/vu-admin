@@ -402,6 +402,11 @@
                   })
                     "></span>
 
+                  <span v-if="column.input.prefixcheck" class="input-group-text">
+                    <input class="form-check p-0 m-0" type="checkbox" :name="column.input.prefixcheck.name" v-model="item[column.input.prefixcheck.name]"
+                      @change="onRowInputChange(item[column.input.prefixcheck.name], column, item, index)" />
+                  </span>
+
                   <input v-if="
                     ['text', 'number', 'date', 'datetime-local'].indexOf(
                       column.input.type
@@ -429,6 +434,12 @@
                     item: item,
                   })
                     "></span>
+
+                <span v-if="column.input.suffixcheck" class="input-group-text">
+                    <input class="form-check p-0 m-0" type="checkbox" :name="column.input.suffixcheck.name" v-model="item[column.input.suffixcheck.name]"
+                      @change="onRowInputChange(item[column.input.suffixcheck.name], column, item, index)" />
+                  </span>
+
                 </div>
 
                 <span v-if="column.buttons">
