@@ -15445,7 +15445,27 @@ const CO = {
       this.auth.inputs && (this.inputs = Object.assign(this.inputs, this.auth.inputs));
     },
     checkStorage() {
-      this.auth.user = {}, this.auth.user = JSON.parse(localStorage.getItem("vu-user")), this.auth.header = JSON.parse(localStorage.getItem("vu-header")), this.auth.settings = JSON.parse(localStorage.getItem("vu-settings")), this.auth.user && (this.auth.success = !0), this.$emit("update:modelValue", this.auth);
+      this.auth.user = {}, this.auth.user = JSON.parse(localStorage.getItem("vu-user")), this.auth.header = JSON.parse(localStorage.getItem("vu-header")), this.auth.settings = JSON.parse(localStorage.getItem("vu-settings")), this.auth.user && (this.auth.success = !0, this.loadProfile()), this.$emit("update:modelValue", this.auth);
+    },
+    async loadProfile() {
+      if (!this.auth.user || !this.auth.header) {
+        this.logout();
+        return;
+      }
+      try {
+        const e = await fetch(this.settings.api.profile, {
+          method: "GET",
+          headers: this.auth.header
+        });
+        if (!e.ok) {
+          this.logout();
+          return;
+        }
+        const t = await e.json();
+        this.auth.user = t, this.auth.success = !0, this.$emit("update:modelValue", this.auth), localStorage.setItem("vu-user", JSON.stringify(this.auth.user));
+      } catch {
+        this.logout();
+      }
     },
     async getStatusAndJson(e) {
       this.auth.response.code = e.status;
@@ -15510,8 +15530,19 @@ const CO = {
       });
       await this.getStatusAndJson(e), e.ok ? (this.onSuccess("activation", "Sikeres aktiválás"), this.close()) : this.onError("activation", "Sikertelen aktiválás");
     },
-    handleForgotPasswordSubmit() {
-      console.log("Elfelejtett jelszó e-mail beküldve:", this.email), alert("E-mail elküldve a megadott címre!"), this.reset();
+    async handleForgotPasswordSubmit() {
+      try {
+        const e = await fetch(this.settings.api.password, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: this.username
+          })
+        });
+        await this.getStatusAndJson(e), e.ok ? this.onPasswordReset("password", "Jelszó visszaállítási e-mail elküldve") : this.onError("password", "Sikertelen jelszó visszaállítás");
+      } catch {
+        this.onError("password", "Sikertelen jelszó visszaállítás");
+      }
     },
     async hashPassword(e) {
       return this.settings.password.hash = this.settings.password.hash === void 0 ? 0 : this.settings.password.hash, this.generateHash(e, this.settings.password.hash);
@@ -15560,6 +15591,11 @@ const CO = {
     onError(e, t) {
       this.auth.success = !1, this.auth.response.ok = !1, this.auth.response.message = t, this.settings.onError && this.settings.onError[e] && this.settings.onError[e](this.auth), this.auth.response.message || (this.auth.response.message = t), setTimeout(() => {
         this.authUpdate(), this.$forceUpdate();
+      }, 0);
+    },
+    onPasswordReset(e, t) {
+      this.auth.success = !0, this.auth.response.ok = !0, this.auth.response.message = t, this.settings.onSuccess && this.settings.onSuccess[e] && this.settings.onSuccess[e](this.auth), this.auth.response.message || (this.auth.response.message = t), setTimeout(() => {
+        this.$forceUpdate();
       }, 0);
     },
     logout() {
@@ -16039,7 +16075,7 @@ const CN = {
       this.$emit("update:modelValue", this.auth);
     },
     togglePanel() {
-      this.auth.visible = !this.auth.visible, this.auth.panel = this.panel ? this.panel : "login", this.updateAuth(), console.log(this.auth);
+      this.auth.visible = !this.auth.visible, this.auth.panel = this.panel ? this.panel : "login", this.updateAuth();
     },
     setSelectedRole(e) {
       this.auth.user.role = e, this.auth.header["X-Auth-Role"] = this.auth.user.role, localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header));
