@@ -15631,7 +15631,7 @@ const CO = {
         message: null,
         data: null
       }
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.119");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.120");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
