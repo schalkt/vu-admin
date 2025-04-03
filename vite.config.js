@@ -21,6 +21,8 @@ export default defineConfig({
     {
       name: 'custom-api',
       configureServer(server) {
+        const delay = 5000; // 5 másodperc késleltetés
+
         server.middlewares.use('/password/forgot', (req, res, next) => {
           if (req.method === 'POST') {
 
@@ -31,29 +33,32 @@ export default defineConfig({
 
               res.setHeader('Content-Type', 'application/json');
 
-              try {
+              setTimeout(async () => {
+                try {
+                  const jsonData = JSON.parse(body);
+                  const username = jsonData.username;
 
-                const jsonData = JSON.parse(body);
-                const username = jsonData.username;
-
-                if (!username) {
+                  if (!username) {
+                    res.statusCode = 400;
+                    res.end(JSON.stringify({ email: { sent: false }, message: 'Username is required' }));
+                    return;
+                  }
+                  
+                  res.end(JSON.stringify({ email: { sent: true }, message: 'E-mail sent' }));
+                } catch (error) {
+                  console.log(error);
                   res.statusCode = 400;
-                  res.end(JSON.stringify({ email: { sent: false }, message: 'Username is required' }));
-                  return;
+                  res.end(JSON.stringify({ email: { sent: false }, message: 'Error' }));
                 }
-                
-                res.end(JSON.stringify({ email: { sent: true }, message: 'E-mail sent' }));
-              } catch (error) {
-                console.log(error);
-                res.statusCode = 400;
-                res.end(JSON.stringify({ email: { sent: false }, message: 'Error' }));
-              }
+              }, delay);
+
             });
 
           } else {
             next();
           }
         });
+
         server.middlewares.use('/password/update', (req, res, next) => {
           if (req.method === 'POST') {
 
@@ -64,24 +69,26 @@ export default defineConfig({
 
               res.setHeader('Content-Type', 'application/json');
 
-              try {
+              setTimeout(async () => {
+                try {
+                  const jsonData = JSON.parse(body);
+                  const password = jsonData.password;
+                  const token = jsonData.token;
 
-                const jsonData = JSON.parse(body);
-                const password = jsonData.password;
-                const token = jsonData.token;
-
-                if (password || !token) {
+                  if (password || !token) {
+                    res.statusCode = 400;
+                    res.end(JSON.stringify({ password: { updated: false }, message: 'Password and token are required' }));
+                    return;
+                  }
+                  
+                  res.end(JSON.stringify({ password: { updated: true }, message: 'Password updated' }));
+                } catch (error) {
+                  console.log(error);
                   res.statusCode = 400;
-                  res.end(JSON.stringify({ password: { updated: false }, message: 'Password and token are required' }));
-                  return;
+                  res.end(JSON.stringify({ password: { updated: false }, message: 'Error' }));
                 }
-                
-                res.end(JSON.stringify({ password: { updated: true }, message: 'Password updated' }));
-              } catch (error) {
-                console.log(error);
-                res.statusCode = 400;
-                res.end(JSON.stringify({ password: { updated: false }, message: 'Error' }));
-              }
+              }, delay);
+
             });
 
           } else {

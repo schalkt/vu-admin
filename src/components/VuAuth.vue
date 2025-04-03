@@ -6,9 +6,12 @@
             <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto">
                 <div class="card shadow p-4 position-relative" @click.stop="">
 
-                    <button type="button" class="btn position-absolute top-0 end-0 p-0 m-2" @click.stop="close">
-                        <i class="bi bi-x px-1 text-muted"></i>
-                    </button>
+                    <div class="position-absolute top-0 end-0 p-0 m-2">
+                        <i v-if="loading" class="spinner-border spinner-border-sm text-primary"></i>
+                        <button type="button" class="btn p-2" @click.stop="close">
+                            <i class="bi bi-x px-1 text-muted"></i>
+                        </button>
+                    </div>
 
                     <h1 class="text-center mt-2 mb-4">
                         {{ settings.title[auth.panel] }}
@@ -23,7 +26,7 @@
                                     <i :class="[settings.username.icon]"></i>
                                 </span>
                                 <input id="email" name="email" :type="settings.username.type" v-model="username" class="form-control"
-                                    :class="{ 'rounded-bottom-0': settings.username.help }" :placeholder="settings.username.placeholder" required />
+                                    :class="{ 'rounded-bottom-0': settings.username.help }" :placeholder="settings.username.placeholder" required :disabled="loading" />
                             </div>
                             <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="settings.username.help" v-html="settings.username.help"></small>
                         </div>
@@ -41,7 +44,8 @@
                                     </span>
                                     <input id="password" name="password" :type="settings.password.type" v-model="password" class="form-control"
                                         :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }" :placeholder="settings.password.placeholder"
-                                        :pattern="settings.password.pattern" :minlength="auth.panel == 'registration' ? settings.password.minlength : 1" required />
+                                        :pattern="settings.password.pattern" :minlength="auth.panel == 'registration' ? settings.password.minlength : 1" required
+                                        :disabled="loading" />
                                     <span v-if="auth.panel == 'registration' || auth.panel == 'password'" class="input-group-text"
                                         :class="{ 'rounded-bottom-0': (auth.panel == 'registration' || auth.panel == 'password') && settings.password.help }">
                                         <small class="" :class="{
@@ -71,7 +75,7 @@
                                     </span>
                                     <input id="password_again" name="password_again" :type="settings.password_again.type" v-model="password_again" class="form-control"
                                         :class="{ 'rounded-bottom-0': settings.password_again.help }" :placeholder="settings.password_again.placeholder"
-                                        :minlength="settings.password.minlength" required />
+                                        :minlength="settings.password.minlength" required :disabled="loading" />
                                     <span class="input-group-text" :class="{ 'rounded-bottom-0': settings.password_again.help }">
                                         <small class="" :class="{
                                             'text-success': password_again.length >= settings.password.minlength,
@@ -138,7 +142,7 @@
 
                             <div v-if="accept.panels.indexOf(auth.panel) >= 0" class="form-check">
                                 <input type="checkbox" class="form-check-input" :id="'accept_' + accept.name" :name="'accept_' + accept.name" v-model="accepts[accept.name]"
-                                    :required="accept.required" />
+                                    :required="accept.required" :disabled="loading" />
                                 <label v-if="accept.label" class="form-check-label" :for="'accept_' + accept.name" v-html="getValueOrFunction(accept.label)">
                                 </label>
                             </div>
@@ -156,14 +160,15 @@
 
                         <div class="mt-4 d-flex justify-content-between">
                             <button v-if="auth.panel != 'login' && auth.panel != 'activation'" type="button" @click.stop="toggleClear"
-                                class="btn btn-secondary w-100 me-2 text-nowrap">
+                                class="btn btn-secondary w-100 me-2 text-nowrap" :disabled="loading">
                                 <i class="bi bi-arrow-left-square mx-1"></i> {{ settings.submit.login }}
                             </button>
-                            <button v-if="auth.panel == 'login'" type="button" class="btn btn-warning w-100 me-2 text-nowrap" @click.stop="toggleNewRegistration">
+                            <button v-if="auth.panel == 'login'" type="button" class="btn btn-warning w-100 me-2 text-nowrap" @click.stop="toggleNewRegistration"
+                                :disabled="loading">
                                 <i class="bi bi-person-plus mx-1"></i> {{ settings.submit.registration }}
                             </button>
                             <button type="submit" class="btn w-100 text-nowrap"
-                                :class="{ 'btn-primary': auth.panel != 'registration', 'btn-warning': auth.panel == 'registration' }">
+                                :class="{ 'btn-primary': auth.panel != 'registration', 'btn-warning': auth.panel == 'registration' }" :disabled="loading">
                                 {{ settings.submit[auth.panel] }}
                                 <i v-if="auth.panel == 'registration'" class="bi bi-person-plus mx-1"></i>
                                 <i v-else class="bi bi-arrow-right-square mx-1"></i>
@@ -172,7 +177,7 @@
 
 
                         <div class="mt-2 text-end">
-                            <button type="button" @click.stop="close" class="btn btn-light border w-100 me-1">
+                            <button type="button" @click.stop="close" class="btn btn-light border w-100 me-1" :disabled="loading">
                                 {{ settings.submit.cancel }} <i class="bi bi-x-square mx-1"></i>
                             </button>
                         </div>
@@ -234,6 +239,7 @@ const VuAuth = {
                 required: "D",
                 selected: null
             },
+            loading: false,
             modalId: null,
             modalElement: null,
             modalWindow: null,
@@ -350,29 +356,28 @@ const VuAuth = {
 
         async handleSubmit() {
 
-            if (this.auth.panel == 'login') {
-                this.handleLogin();
-                return;
-            }
+            this.loading = true;
 
-            if (this.auth.panel == 'forgot') {
-                this.handleForgotPasswordSubmit();
-                return;
-            }
+            switch (this.auth.panel) {
 
-            if (this.auth.panel == 'registration') {
-                this.handleNewRegistrationSubmit();
-                return;
-            }
-
-            if (this.auth.panel == 'activation') {
-                this.handleActivationSubmit();
-                return;
-            }
-
-            if (this.auth.panel == 'password') {
-                this.handlePasswordSubmit();
-                return;
+                case 'login':
+                    this.handleLogin();
+                    break;
+                case 'forgot':
+                    this.handleForgotPasswordSubmit();
+                    break;
+                case 'registration':
+                    this.handleNewRegistrationSubmit();
+                    break;
+                case 'activation':
+                    this.handleActivationSubmit();
+                    break;
+                case 'password':
+                    this.handlePasswordSubmit();
+                    break;
+                default:
+                    this.loading = false;
+                    return;
             }
 
         },
@@ -382,6 +387,7 @@ const VuAuth = {
             this.auth.response = {};
 
             if (!this.username || !this.password) {
+                this.loading = false;
                 return;
             }
 
@@ -393,6 +399,8 @@ const VuAuth = {
                     password: await this.hashPassword(this.password),
                     accept: this.accepts,
                 }),
+            }).finally(() => {
+                this.loading = false;
             });
 
             await this.getStatusAndJson(response);
@@ -415,12 +423,14 @@ const VuAuth = {
             this.auth.response = {};
 
             if (!this.username || !this.password || !this.password_again) {
+                this.loading = false;
                 return;
             }
 
             if (this.password != this.password_again) {
+                this.loading = false;
                 return;
-            }            
+            }
 
             const response = await fetch(this.settings.api.register, {
                 method: "POST",
@@ -431,6 +441,8 @@ const VuAuth = {
                     accept: this.accepts,
                     input: this.inputs,
                 }),
+            }).finally(() => {
+                this.loading = false;
             });
 
             await this.getStatusAndJson(response);
@@ -452,6 +464,8 @@ const VuAuth = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(this.inputs),
+            }).finally(() => {
+                this.loading = false;
             });
 
             await this.getStatusAndJson(response);
@@ -481,6 +495,8 @@ const VuAuth = {
                     body: JSON.stringify({
                         username: this.username,
                     }),
+                }).finally(() => {
+                    this.loading = false;
                 });
 
                 await this.getStatusAndJson(response);
@@ -504,10 +520,12 @@ const VuAuth = {
                 this.auth.response = {};
 
                 if (!this.password || !this.password_again) {
+                    this.loading = false;
                     return;
                 }
 
                 if (this.password != this.password_again) {
+                    this.loading = false;
                     return;
                 }
 
@@ -521,6 +539,8 @@ const VuAuth = {
                         password: await this.hashPassword(this.password),
                         ...this.inputs
                     }),
+                }).finally(() => {
+                    this.loading = false;
                 });
 
                 await this.getStatusAndJson(response);
@@ -661,7 +681,6 @@ const VuAuth = {
 
         onPasswordReset(panel) {
 
-            this.auth.success = true;
             this.auth.response.ok = true;
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
@@ -675,7 +694,7 @@ const VuAuth = {
         },
 
         onPasswordUpdate(panel) {
-            this.auth.success = true;
+
             this.auth.response.ok = true;
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
