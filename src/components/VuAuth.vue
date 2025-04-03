@@ -118,14 +118,14 @@
                                                 v-html="getValueOrFunction(input.prefix)">
                                             </span>
 
-                                            <select v-if="input.type == 'select'" class="form-select" :required="input.required" v-model="inputs[key]" :multiple="input.multiple">
+                                            <select v-if="input.type == 'select'" class="form-select" :disabled="loading" :required="input.required" v-model="inputs[key]" :multiple="input.multiple">
                                                 <option></option>
                                                 <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">
                                                 </option>
                                             </select>
 
                                             <input v-else :id="key" :name="key" :type="input.type" v-model="inputs[key]" class="form-control"
-                                                :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" />
+                                                :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" :disabled="loading" />
 
                                             <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }"
                                                 v-html="getValueOrFunction(input.suffix)"></span>

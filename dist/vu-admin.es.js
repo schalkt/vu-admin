@@ -15684,7 +15684,7 @@ const CO = {
         message: null,
         data: null
       }
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.122");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.123");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
@@ -15726,7 +15726,7 @@ const CO = {
 }, nN = ["innerHTML"], iN = {
   key: 3,
   class: "d-flex mb-4"
-}, rN = ["innerHTML"], oN = { class: "row" }, aN = { class: "mb-3" }, lN = ["for", "innerHTML"], cN = { class: "input-group" }, uN = ["innerHTML"], hN = ["required", "onUpdate:modelValue", "multiple"], dN = ["value", "innerHTML"], fN = ["id", "name", "type", "onUpdate:modelValue", "placeholder", "required"], pN = ["innerHTML"], gN = ["innerHTML"], mN = {
+}, rN = ["innerHTML"], oN = { class: "row" }, aN = { class: "mb-3" }, lN = ["for", "innerHTML"], cN = { class: "input-group" }, uN = ["innerHTML"], hN = ["disabled", "required", "onUpdate:modelValue", "multiple"], dN = ["value", "innerHTML"], fN = ["id", "name", "type", "onUpdate:modelValue", "placeholder", "required", "disabled"], pN = ["innerHTML"], gN = ["innerHTML"], mN = {
   key: 0,
   class: "form-check"
 }, bN = ["id", "name", "onUpdate:modelValue", "required", "disabled"], yN = ["for", "innerHTML"], vN = {
@@ -15953,6 +15953,7 @@ function $N(e, t, s, n, i, r) {
                       o.type == "select" ? _t((m(), b("select", {
                         key: 1,
                         class: "form-select",
+                        disabled: e.loading,
                         required: o.required,
                         "onUpdate:modelValue": (c) => e.inputs[l] = c,
                         multiple: o.multiple
@@ -15973,7 +15974,8 @@ function $N(e, t, s, n, i, r) {
                         "onUpdate:modelValue": (c) => e.inputs[l] = c,
                         class: k(["form-control", { "rounded-bottom-0": o.help }]),
                         placeholder: o.placeholder,
-                        required: o.required
+                        required: o.required,
+                        disabled: e.loading
                       }, null, 10, fN)), [
                         [Pe, e.inputs[l]]
                       ]),

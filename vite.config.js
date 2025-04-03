@@ -21,7 +21,8 @@ export default defineConfig({
     {
       name: 'custom-api',
       configureServer(server) {
-        const delay = 5000; // 5 másodperc késleltetés
+        
+        const delay = 2000; // késleltetés
 
         server.middlewares.use('/password/forgot', (req, res, next) => {
           if (req.method === 'POST') {
