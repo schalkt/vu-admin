@@ -564,6 +564,7 @@ const VuAuth = {
         },
 
         async handleForgotPasswordSubmit() {
+            
             this.auth.response = {};
 
             try {
@@ -577,7 +578,7 @@ const VuAuth = {
 
                 await this.getStatusAndJson(response);
 
-                if (response.ok && this.auth.response.data.email.sent) {
+                if (response.ok) {
                     this.onPasswordReset('forgot');
                 } else {
                     this.onError('forgot');
@@ -609,7 +610,7 @@ const VuAuth = {
 
                 await this.getStatusAndJson(response);
 
-                if (response.ok && this.auth.response.data.password.updated) {
+                if (response.ok) {
                     this.onPasswordUpdate('password');
                 } else {
                     this.onError('password');

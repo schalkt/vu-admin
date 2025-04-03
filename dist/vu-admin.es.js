@@ -15589,7 +15589,7 @@ const CO = {
             username: this.username
           })
         });
-        await this.getStatusAndJson(e), e.ok && this.auth.response.data.email.sent ? this.onPasswordReset("forgot") : this.onError("forgot");
+        await this.getStatusAndJson(e), e.ok ? this.onPasswordReset("forgot") : this.onError("forgot");
       } catch {
         this.onError("forgot");
       }
@@ -15608,7 +15608,7 @@ const CO = {
               ...this.inputs
             })
           });
-          await this.getStatusAndJson(e), e.ok && this.auth.response.data.password.updated ? this.onPasswordUpdate("password") : this.onError("password");
+          await this.getStatusAndJson(e), e.ok ? this.onPasswordUpdate("password") : this.onError("password");
         } catch {
           this.onError("password");
         }
@@ -15658,7 +15658,7 @@ const CO = {
         message: null,
         data: null
       }
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.124");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.125");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
