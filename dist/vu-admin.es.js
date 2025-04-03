@@ -14990,7 +14990,7 @@ function TO(e, t, s, n, i, r) {
     ], 8, AO)) : T("", !0)
   ])) : T("", !0);
 }
-const GN = /* @__PURE__ */ ke(EO, [["render", TO]]);
+const tS = /* @__PURE__ */ ke(EO, [["render", TO]]);
 var aa = { exports: {} };
 /*
  * [js-sha512]{@link https://github.com/emn178/js-sha512}
@@ -15417,6 +15417,7 @@ const CO = {
         required: "D",
         selected: null
       },
+      loading: !1,
       modalId: null,
       modalElement: null,
       modalWindow: null
@@ -15476,30 +15477,32 @@ const CO = {
       }
     },
     async handleSubmit() {
-      if (this.auth.panel == "login") {
-        this.handleLogin();
-        return;
-      }
-      if (this.auth.panel == "forgot") {
-        this.handleForgotPasswordSubmit();
-        return;
-      }
-      if (this.auth.panel == "registration") {
-        this.handleNewRegistrationSubmit();
-        return;
-      }
-      if (this.auth.panel == "activation") {
-        this.handleActivationSubmit();
-        return;
-      }
-      if (this.auth.panel == "password") {
-        this.handlePasswordSubmit();
-        return;
+      switch (this.loading = !0, this.auth.panel) {
+        case "login":
+          this.handleLogin();
+          break;
+        case "forgot":
+          this.handleForgotPasswordSubmit();
+          break;
+        case "registration":
+          this.handleNewRegistrationSubmit();
+          break;
+        case "activation":
+          this.handleActivationSubmit();
+          break;
+        case "password":
+          this.handlePasswordSubmit();
+          break;
+        default:
+          this.loading = !1;
+          return;
       }
     },
     async handleLogin() {
-      if (this.auth.response = {}, !this.username || !this.password)
+      if (this.auth.response = {}, !this.username || !this.password) {
+        this.loading = !1;
         return;
+      }
       const e = await fetch(this.settings.api.login, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -15508,12 +15511,20 @@ const CO = {
           password: await this.hashPassword(this.password),
           accept: this.accepts
         })
+      }).finally(() => {
+        this.loading = !1;
       });
       await this.getStatusAndJson(e), e.ok ? (this.onSuccess("login"), this.close()) : this.onError("login");
     },
     async handleNewRegistrationSubmit() {
-      if (this.auth.response = {}, !this.username || !this.password || !this.password_again || this.password != this.password_again)
+      if (this.auth.response = {}, !this.username || !this.password || !this.password_again) {
+        this.loading = !1;
         return;
+      }
+      if (this.password != this.password_again) {
+        this.loading = !1;
+        return;
+      }
       const e = await fetch(this.settings.api.register, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -15523,6 +15534,8 @@ const CO = {
           accept: this.accepts,
           input: this.inputs
         })
+      }).finally(() => {
+        this.loading = !1;
       });
       await this.getStatusAndJson(e), e.ok ? this.onSuccess("registration") : this.onError("registration");
     },
@@ -15532,6 +15545,8 @@ const CO = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(this.inputs)
+      }).finally(() => {
+        this.loading = !1;
       });
       await this.getStatusAndJson(e), e.ok ? (this.onSuccess("activation"), this.close()) : this.onError("activation");
     },
@@ -15544,6 +15559,8 @@ const CO = {
           body: JSON.stringify({
             username: this.username
           })
+        }).finally(() => {
+          this.loading = !1;
         });
         await this.getStatusAndJson(e), e.ok && this.auth.response.data.email.sent ? this.onPasswordReset("forgot") : this.onError("forgot");
       } catch {
@@ -15552,8 +15569,14 @@ const CO = {
     },
     async handlePasswordSubmit() {
       try {
-        if (this.auth.response = {}, !this.password || !this.password_again || this.password != this.password_again)
+        if (this.auth.response = {}, !this.password || !this.password_again) {
+          this.loading = !1;
           return;
+        }
+        if (this.password != this.password_again) {
+          this.loading = !1;
+          return;
+        }
         const e = await fetch(this.settings.api.password, {
           method: "POST",
           headers: {
@@ -15564,6 +15587,8 @@ const CO = {
             password: await this.hashPassword(this.password),
             ...this.inputs
           })
+        }).finally(() => {
+          this.loading = !1;
         });
         await this.getStatusAndJson(e), e.ok && this.auth.response.data.password.updated ? this.onPasswordUpdate("password") : this.onError("password");
       } catch {
@@ -15617,12 +15642,12 @@ const CO = {
       }, 0);
     },
     onPasswordReset(e) {
-      this.auth.success = !0, this.auth.response.ok = !0, this.settings.onSuccess && this.settings.onSuccess[e] && this.settings.onSuccess[e](this.auth), setTimeout(() => {
+      this.auth.response.ok = !0, this.settings.onSuccess && this.settings.onSuccess[e] && this.settings.onSuccess[e](this.auth), setTimeout(() => {
         this.$forceUpdate();
       }, 0);
     },
     onPasswordUpdate(e) {
-      this.auth.success = !0, this.auth.response.ok = !0, this.settings.onSuccess && this.settings.onSuccess[e] && this.settings.onSuccess[e](this.auth), setTimeout(() => {
+      this.auth.response.ok = !0, this.settings.onSuccess && this.settings.onSuccess[e] && this.settings.onSuccess[e](this.auth), setTimeout(() => {
         this.$forceUpdate();
       }, 0);
     },
@@ -15659,62 +15684,65 @@ const CO = {
         message: null,
         data: null
       }
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.121");
+    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.122");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
   }
-}, OO = CO, NO = ["data-bs-theme"], SO = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, kO = { class: "text-center mt-2 mb-4" }, LO = {
+}, OO = CO, NO = ["data-bs-theme"], SO = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, kO = { class: "position-absolute top-0 end-0 p-0 m-2" }, LO = {
+  key: 0,
+  class: "spinner-border spinner-border-sm text-primary"
+}, IO = { class: "text-center mt-2 mb-4" }, $O = {
   key: 0,
   class: "mb-3"
-}, IO = {
+}, DO = {
   for: "email",
   class: "form-label text-primary"
-}, $O = { class: "input-group" }, DO = ["type", "placeholder"], RO = ["innerHTML"], MO = { class: "mb-3" }, BO = {
+}, RO = { class: "input-group" }, MO = ["type", "placeholder", "disabled"], BO = ["innerHTML"], qO = { class: "mb-3" }, PO = {
   key: 0,
   for: "password",
   class: "form-label text-primary"
-}, qO = { class: "input-group" }, PO = ["type", "placeholder", "pattern", "minlength"], VO = {
+}, VO = { class: "input-group" }, jO = ["type", "placeholder", "pattern", "minlength", "disabled"], UO = {
   key: 0,
   class: "bi bi-eye"
-}, jO = {
+}, HO = {
   key: 1,
   class: "bi bi-eye-slash"
-}, UO = ["innerHTML"], HO = {
+}, WO = ["innerHTML"], KO = {
   key: 0,
   class: "mb-4"
-}, WO = {
+}, zO = {
   for: "password_again",
   class: "form-label text-primary"
-}, KO = ["innerHTML"], zO = { class: "input-group" }, GO = ["type", "placeholder", "minlength"], YO = {
+}, GO = ["innerHTML"], YO = { class: "input-group" }, XO = ["type", "placeholder", "minlength", "disabled"], ZO = {
   key: 0,
   class: "bi bi-eye"
-}, XO = {
+}, JO = {
   key: 1,
   class: "bi bi-eye-slash"
-}, ZO = ["innerHTML"], JO = { class: "mb-3 text-center" }, QO = ["data-sitekey"], tN = {
+}, QO = ["innerHTML"], tN = { class: "mb-3 text-center" }, eN = ["data-sitekey"], sN = {
   key: 2,
   class: "mb-4 text-center"
-}, eN = ["innerHTML"], sN = {
+}, nN = ["innerHTML"], iN = {
   key: 3,
   class: "d-flex mb-4"
-}, nN = ["innerHTML"], iN = { class: "row" }, rN = { class: "mb-3" }, oN = ["for", "innerHTML"], aN = { class: "input-group" }, lN = ["innerHTML"], cN = ["required", "onUpdate:modelValue", "multiple"], uN = ["value", "innerHTML"], hN = ["id", "name", "type", "onUpdate:modelValue", "placeholder", "required"], dN = ["innerHTML"], fN = ["innerHTML"], pN = {
+}, rN = ["innerHTML"], oN = { class: "row" }, aN = { class: "mb-3" }, lN = ["for", "innerHTML"], cN = { class: "input-group" }, uN = ["innerHTML"], hN = ["required", "onUpdate:modelValue", "multiple"], dN = ["value", "innerHTML"], fN = ["id", "name", "type", "onUpdate:modelValue", "placeholder", "required"], pN = ["innerHTML"], gN = ["innerHTML"], mN = {
   key: 0,
   class: "form-check"
-}, gN = ["id", "name", "onUpdate:modelValue", "required"], mN = ["for", "innerHTML"], bN = {
+}, bN = ["id", "name", "onUpdate:modelValue", "required", "disabled"], yN = ["for", "innerHTML"], vN = {
   key: 4,
   class: "mt-4"
-}, yN = ["innerHTML"], vN = {
+}, _N = ["innerHTML"], EN = {
   key: 5,
   class: "mt-3 text-center"
-}, _N = ["innerHTML"], EN = { class: "mt-4 d-flex justify-content-between" }, wN = {
+}, wN = ["innerHTML"], AN = { class: "mt-4 d-flex justify-content-between" }, TN = ["disabled"], FN = ["disabled"], xN = ["disabled"], CN = {
   key: 0,
   class: "bi bi-person-plus mx-1"
-}, AN = {
+}, ON = {
   key: 1,
   class: "bi bi-arrow-right-square mx-1"
-}, TN = { class: "mt-2 text-end" }, FN = ["id"], xN = { class: "modal-dialog modal-xl" }, CN = { class: "modal-content h-100" };
-function ON(e, t, s, n, i, r) {
+}, NN = { class: "mt-2 text-end" }, SN = ["disabled"], kN = ["id"], LN = { class: "modal-dialog modal-xl" }, IN = { class: "modal-content h-100" };
+function $N(e, t, s, n, i, r) {
   const a = qe("VuAdminForm");
   return e.auth && e.auth.visible ? (m(), b("div", {
     key: 0,
@@ -15731,22 +15759,25 @@ function ON(e, t, s, n, i, r) {
           onClick: t[13] || (t[13] = ce(() => {
           }, ["stop"]))
         }, [
-          f("button", {
-            type: "button",
-            class: "btn position-absolute top-0 end-0 p-0 m-2",
-            onClick: t[0] || (t[0] = ce((...o) => e.close && e.close(...o), ["stop"]))
-          }, t[16] || (t[16] = [
-            f("i", { class: "bi bi-x px-1 text-muted" }, null, -1)
-          ])),
-          f("h1", kO, $(e.settings.title[e.auth.panel]), 1),
+          f("div", kO, [
+            e.loading ? (m(), b("i", LO)) : T("", !0),
+            f("button", {
+              type: "button",
+              class: "btn p-2",
+              onClick: t[0] || (t[0] = ce((...o) => e.close && e.close(...o), ["stop"]))
+            }, t[16] || (t[16] = [
+              f("i", { class: "bi bi-x px-1 text-muted" }, null, -1)
+            ]))
+          ]),
+          f("h1", IO, $(e.settings.title[e.auth.panel]), 1),
           f("form", {
             onSubmit: t[11] || (t[11] = ce((o) => e.handleSubmit(), ["prevent"])),
             onClick: t[12] || (t[12] = ce(() => {
             }, ["stop"]))
           }, [
-            e.auth.panel != "activation" && e.auth.panel != "password" ? (m(), b("div", LO, [
-              f("label", IO, $(e.settings.username.label), 1),
-              f("div", $O, [
+            e.auth.panel != "activation" && e.auth.panel != "password" ? (m(), b("div", $O, [
+              f("label", DO, $(e.settings.username.label), 1),
+              f("div", RO, [
                 e.settings.username.icon ? (m(), b("span", {
                   key: 0,
                   class: k(["input-group-text", { "rounded-bottom-0": e.settings.username.help }])
@@ -15762,8 +15793,9 @@ function ON(e, t, s, n, i, r) {
                   "onUpdate:modelValue": t[1] || (t[1] = (o) => e.username = o),
                   class: k(["form-control", { "rounded-bottom-0": e.settings.username.help }]),
                   placeholder: e.settings.username.placeholder,
-                  required: ""
-                }, null, 10, DO), [
+                  required: "",
+                  disabled: e.loading
+                }, null, 10, MO), [
                   [Pe, e.username]
                 ])
               ]),
@@ -15771,12 +15803,12 @@ function ON(e, t, s, n, i, r) {
                 key: 0,
                 class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
                 innerHTML: e.settings.username.help
-              }, null, 8, RO)) : T("", !0)
+              }, null, 8, BO)) : T("", !0)
             ])) : T("", !0),
             e.auth.panel != "forgot" && e.auth.panel != "activation" ? (m(), b(dt, { key: 1 }, [
-              f("div", MO, [
-                e.settings.password.label ? (m(), b("label", BO, $(e.settings.password.label), 1)) : T("", !0),
-                f("div", qO, [
+              f("div", qO, [
+                e.settings.password.label ? (m(), b("label", PO, $(e.settings.password.label), 1)) : T("", !0),
+                f("div", VO, [
                   e.settings.password.icon ? (m(), b("span", {
                     key: 0,
                     class: k(["input-group-text", { "rounded-bottom-0": (e.auth.panel == "registration" || e.auth.panel == "password") && e.settings.password.help }])
@@ -15794,8 +15826,9 @@ function ON(e, t, s, n, i, r) {
                     placeholder: e.settings.password.placeholder,
                     pattern: e.settings.password.pattern,
                     minlength: e.auth.panel == "registration" ? e.settings.password.minlength : 1,
-                    required: ""
-                  }, null, 10, PO), [
+                    required: "",
+                    disabled: e.loading
+                  }, null, 10, jO), [
                     [Pe, e.password]
                   ]),
                   e.auth.panel == "registration" || e.auth.panel == "password" ? (m(), b("span", {
@@ -15813,25 +15846,25 @@ function ON(e, t, s, n, i, r) {
                     class: k(["cursor-pointer input-group-text", { "rounded-bottom-0": (e.auth.panel == "registration" || e.auth.panel == "password") && e.settings.password.help }]),
                     onClick: t[3] || (t[3] = ce((o) => e.toggleType("password"), ["stop"]))
                   }, [
-                    e.settings.password.type == "password" ? (m(), b("i", VO)) : (m(), b("i", jO))
+                    e.settings.password.type == "password" ? (m(), b("i", UO)) : (m(), b("i", HO))
                   ], 2)
                 ]),
                 (e.auth.panel == "registration" || e.auth.panel == "password") && e.settings.password.help ? (m(), b("small", {
                   key: 1,
                   class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
                   innerHTML: e.settings.password.help
-                }, null, 8, UO)) : T("", !0)
+                }, null, 8, WO)) : T("", !0)
               ]),
-              e.auth.panel === "registration" || e.auth.panel === "password" ? (m(), b("div", HO, [
-                f("label", WO, [
+              e.auth.panel === "registration" || e.auth.panel === "password" ? (m(), b("div", KO, [
+                f("label", zO, [
                   At($(e.settings.password_again.label) + " ", 1),
                   e.password_again.length > 0 && e.password_again != e.password ? (m(), b("small", {
                     key: 0,
                     class: "text-danger",
                     innerHTML: e.settings.password_again.nomatch
-                  }, null, 8, KO)) : T("", !0)
+                  }, null, 8, GO)) : T("", !0)
                 ]),
-                f("div", zO, [
+                f("div", YO, [
                   e.settings.password.icon ? (m(), b("span", {
                     key: 0,
                     class: k(["input-group-text", { "rounded-bottom-0": e.settings.password_again.help }])
@@ -15848,8 +15881,9 @@ function ON(e, t, s, n, i, r) {
                     class: k(["form-control", { "rounded-bottom-0": e.settings.password_again.help }]),
                     placeholder: e.settings.password_again.placeholder,
                     minlength: e.settings.password.minlength,
-                    required: ""
-                  }, null, 10, GO), [
+                    required: "",
+                    disabled: e.loading
+                  }, null, 10, XO), [
                     [Pe, e.password_again]
                   ]),
                   f("span", {
@@ -15866,56 +15900,56 @@ function ON(e, t, s, n, i, r) {
                     class: k(["cursor-pointer input-group-text", { "rounded-bottom-0": (e.auth.panel == "registration" || e.auth.panel == "password") && e.settings.password_again.help }]),
                     onClick: t[5] || (t[5] = ce((o) => e.toggleType("password_again"), ["stop"]))
                   }, [
-                    e.settings.password_again.type == "password" ? (m(), b("i", YO)) : (m(), b("i", XO))
+                    e.settings.password_again.type == "password" ? (m(), b("i", ZO)) : (m(), b("i", JO))
                   ], 2)
                 ]),
                 (e.auth.panel == "registration" || e.auth.panel == "password") && e.settings.password_again.help ? (m(), b("small", {
                   key: 0,
                   class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
                   innerHTML: e.settings.password_again.help
-                }, null, 8, ZO)) : T("", !0)
+                }, null, 8, QO)) : T("", !0)
               ])) : T("", !0),
-              f("div", JO, [
+              f("div", tN, [
                 f("div", {
                   class: "g-recaptcha",
                   "data-sitekey": e.recaptchaSiteKey,
                   onClick: t[6] || (t[6] = ce((...o) => e.onCaptchaClick && e.onCaptchaClick(...o), ["stop"]))
-                }, null, 8, QO)
+                }, null, 8, eN)
               ])
             ], 64)) : T("", !0),
-            e.auth.panel == "login" && e.settings.password.forgot ? (m(), b("div", tN, [
+            e.auth.panel == "login" && e.settings.password.forgot ? (m(), b("div", sN, [
               f("button", {
                 type: "button",
                 class: "btn btn-link p-0 text-decoration-none text-nowrap",
                 onClick: t[7] || (t[7] = ce((...o) => e.toggleForgotPassword && e.toggleForgotPassword(...o), ["stop"])),
                 innerHTML: e.settings.password.forgot
-              }, null, 8, eN)
+              }, null, 8, nN)
             ])) : T("", !0),
-            e.auth.panel == "forgot" && e.settings.help && e.settings.help.forgot ? (m(), b("div", sN, [
+            e.auth.panel == "forgot" && e.settings.help && e.settings.help.forgot ? (m(), b("div", iN, [
               f("small", {
                 class: "text-muted",
                 innerHTML: e.settings.help.forgot
-              }, null, 8, nN)
+              }, null, 8, rN)
             ])) : T("", !0),
-            f("div", iN, [
+            f("div", oN, [
               (m(!0), b(dt, null, bt(e.settings.inputs, (o, l) => (m(), b(dt, { key: l }, [
                 o.panels.indexOf(e.auth.panel) >= 0 && !o.hidden ? (m(), b("div", {
                   key: 0,
                   class: k([o.colclass ? o.colclass : "col-md-12"])
                 }, [
-                  f("div", rN, [
+                  f("div", aN, [
                     o.label ? (m(), b("label", {
                       key: 0,
                       for: l,
                       class: k(["form-label text-primary", { required: o.required }]),
                       innerHTML: e.getValueOrFunction(o.label)
-                    }, null, 10, oN)) : T("", !0),
-                    f("div", aN, [
+                    }, null, 10, lN)) : T("", !0),
+                    f("div", cN, [
                       o.prefix ? (m(), b("span", {
                         key: 0,
                         class: k(["input-group-text", { "rounded-bottom-0": o.help }]),
                         innerHTML: e.getValueOrFunction(o.prefix)
-                      }, null, 10, lN)) : T("", !0),
+                      }, null, 10, uN)) : T("", !0),
                       o.type == "select" ? _t((m(), b("select", {
                         key: 1,
                         class: "form-select",
@@ -15928,8 +15962,8 @@ function ON(e, t, s, n, i, r) {
                           key: c,
                           value: c.value,
                           innerHTML: e.getValueOrFunction(c.label)
-                        }, null, 8, uN))), 128))
-                      ], 8, cN)), [
+                        }, null, 8, dN))), 128))
+                      ], 8, hN)), [
                         [Xe, e.inputs[l]]
                       ]) : _t((m(), b("input", {
                         key: 2,
@@ -15940,34 +15974,35 @@ function ON(e, t, s, n, i, r) {
                         class: k(["form-control", { "rounded-bottom-0": o.help }]),
                         placeholder: o.placeholder,
                         required: o.required
-                      }, null, 10, hN)), [
+                      }, null, 10, fN)), [
                         [Pe, e.inputs[l]]
                       ]),
                       o.suffix ? (m(), b("span", {
                         key: 3,
                         class: k(["input-group-text", { "rounded-bottom-0": o.help }]),
                         innerHTML: e.getValueOrFunction(o.suffix)
-                      }, null, 10, dN)) : T("", !0)
+                      }, null, 10, pN)) : T("", !0)
                     ]),
                     o.help ? (m(), b("small", {
                       key: 1,
                       class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
                       innerHTML: e.getValueOrFunction(o.help)
-                    }, null, 8, fN)) : T("", !0)
+                    }, null, 8, gN)) : T("", !0)
                   ])
                 ], 2)) : T("", !0)
               ], 64))), 128))
             ]),
             (m(!0), b(dt, null, bt(e.settings.accepts, (o) => (m(), b("div", { key: o }, [
-              o.panels.indexOf(e.auth.panel) >= 0 ? (m(), b("div", pN, [
+              o.panels.indexOf(e.auth.panel) >= 0 ? (m(), b("div", mN, [
                 _t(f("input", {
                   type: "checkbox",
                   class: "form-check-input",
                   id: "accept_" + o.name,
                   name: "accept_" + o.name,
                   "onUpdate:modelValue": (l) => e.accepts[o.name] = l,
-                  required: o.required
-                }, null, 8, gN), [
+                  required: o.required,
+                  disabled: e.loading
+                }, null, 8, bN), [
                   [_r, e.accepts[o.name]]
                 ]),
                 o.label ? (m(), b("label", {
@@ -15975,56 +16010,60 @@ function ON(e, t, s, n, i, r) {
                   class: "form-check-label",
                   for: "accept_" + o.name,
                   innerHTML: e.getValueOrFunction(o.label)
-                }, null, 8, mN)) : T("", !0)
+                }, null, 8, yN)) : T("", !0)
               ])) : T("", !0)
             ]))), 128)),
-            e.auth.panel == "registration" && e.settings.help && e.settings.help.registration ? (m(), b("div", bN, [
+            e.auth.panel == "registration" && e.settings.help && e.settings.help.registration ? (m(), b("div", vN, [
               f("div", {
                 innerHTML: e.getValueOrFunction(e.settings.help.registration)
-              }, null, 8, yN)
+              }, null, 8, _N)
             ])) : T("", !0),
-            e.auth.response.message ? (m(), b("div", vN, [
+            e.auth.response.message ? (m(), b("div", EN, [
               f("div", {
                 class: k({ "text-danger": !e.auth.response.ok, "text-success": e.auth.response.ok }),
                 innerHTML: e.auth.response.message
-              }, null, 10, _N)
+              }, null, 10, wN)
             ])) : T("", !0),
-            f("div", EN, [
+            f("div", AN, [
               e.auth.panel != "login" && e.auth.panel != "activation" ? (m(), b("button", {
                 key: 0,
                 type: "button",
                 onClick: t[8] || (t[8] = ce((...o) => e.toggleClear && e.toggleClear(...o), ["stop"])),
-                class: "btn btn-secondary w-100 me-2 text-nowrap"
+                class: "btn btn-secondary w-100 me-2 text-nowrap",
+                disabled: e.loading
               }, [
                 t[18] || (t[18] = f("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1)),
                 At(" " + $(e.settings.submit.login), 1)
-              ])) : T("", !0),
+              ], 8, TN)) : T("", !0),
               e.auth.panel == "login" ? (m(), b("button", {
                 key: 1,
                 type: "button",
                 class: "btn btn-warning w-100 me-2 text-nowrap",
-                onClick: t[9] || (t[9] = ce((...o) => e.toggleNewRegistration && e.toggleNewRegistration(...o), ["stop"]))
+                onClick: t[9] || (t[9] = ce((...o) => e.toggleNewRegistration && e.toggleNewRegistration(...o), ["stop"])),
+                disabled: e.loading
               }, [
                 t[19] || (t[19] = f("i", { class: "bi bi-person-plus mx-1" }, null, -1)),
                 At(" " + $(e.settings.submit.registration), 1)
-              ])) : T("", !0),
+              ], 8, FN)) : T("", !0),
               f("button", {
                 type: "submit",
-                class: k(["btn w-100 text-nowrap", { "btn-primary": e.auth.panel != "registration", "btn-warning": e.auth.panel == "registration" }])
+                class: k(["btn w-100 text-nowrap", { "btn-primary": e.auth.panel != "registration", "btn-warning": e.auth.panel == "registration" }]),
+                disabled: e.loading
               }, [
                 At($(e.settings.submit[e.auth.panel]) + " ", 1),
-                e.auth.panel == "registration" ? (m(), b("i", wN)) : (m(), b("i", AN))
-              ], 2)
+                e.auth.panel == "registration" ? (m(), b("i", CN)) : (m(), b("i", ON))
+              ], 10, xN)
             ]),
-            f("div", TN, [
+            f("div", NN, [
               f("button", {
                 type: "button",
                 onClick: t[10] || (t[10] = ce((...o) => e.close && e.close(...o), ["stop"])),
-                class: "btn btn-light border w-100 me-1"
+                class: "btn btn-light border w-100 me-1",
+                disabled: e.loading
               }, [
                 At($(e.settings.submit.cancel) + " ", 1),
                 t[20] || (t[20] = f("i", { class: "bi bi-x-square mx-1" }, null, -1))
-              ])
+              ], 8, SN)
             ])
           ], 32)
         ])
@@ -16035,8 +16074,8 @@ function ON(e, t, s, n, i, r) {
       id: e.modalId,
       tabindex: "-1"
     }, [
-      f("div", xN, [
-        f("div", CN, [
+      f("div", LN, [
+        f("div", IN, [
           e.settings.form && e.settings.form.visible && e.settings.form.groups ? (m(), gs(a, {
             key: 0,
             modelValue: e.item,
@@ -16052,12 +16091,12 @@ function ON(e, t, s, n, i, r) {
           }, null, 8, ["modelValue", "formid", "settings", "modalWindow", "auth", "saveItem", "deleteItem", "reloadTable", "fetchRelation"])) : T("", !0)
         ])
       ])
-    ], 8, FN)
+    ], 8, kN)
   ], 8, NO)) : T("", !0);
 }
-const YN = /* @__PURE__ */ ke(OO, [["render", ON]]);
+const eS = /* @__PURE__ */ ke(OO, [["render", $N]]);
 sl();
-const NN = {
+const DN = {
   name: "VuUserButton",
   props: {
     modelValue: Object,
@@ -16118,23 +16157,23 @@ const NN = {
   },
   mounted() {
   }
-}, SN = NN, kN = ["data-bs-theme"], LN = {
+}, RN = DN, MN = ["data-bs-theme"], BN = {
   key: 0,
   class: "dropdown"
-}, IN = ["innerHTML"], $N = {
+}, qN = ["innerHTML"], PN = {
   class: "dropdown-menu dropdown-menu-end",
   "aria-labelledby": "userDropdown"
-}, DN = ["innerHTML"], RN = ["onClick"], MN = ["onClick", "innerHTML"], BN = {
+}, VN = ["innerHTML"], jN = ["onClick"], UN = ["onClick", "innerHTML"], HN = {
   key: 1,
   class: "d-inline-block"
-}, qN = ["innerHTML"];
-function PN(e, t, s, n, i, r) {
+}, WN = ["innerHTML"];
+function KN(e, t, s, n, i, r) {
   return !e.auth.user && e.panel != "login" || e.panel == "login" ? (m(), b("div", {
     key: 0,
     class: "vua-user-button d-inline-block",
     "data-bs-theme": [e.theme]
   }, [
-    e.auth.user ? (m(), b("div", LN, [
+    e.auth.user ? (m(), b("div", BN, [
       f("button", {
         class: k(["dropdown-toggle", [e.settings.class]]),
         type: "button",
@@ -16144,9 +16183,9 @@ function PN(e, t, s, n, i, r) {
       }, [
         f("span", {
           innerHTML: e.getValueOrFunction(e.settings.label)
-        }, null, 8, IN)
+        }, null, 8, qN)
       ], 2),
-      f("ul", $N, [
+      f("ul", PN, [
         (m(!0), b(dt, null, bt(e.settings.dropdowns, (a) => (m(), b(dt, { key: a }, [
           a.action == "BUTTON_ROLES" ? (m(), b("li", {
             key: 0,
@@ -16155,21 +16194,21 @@ function PN(e, t, s, n, i, r) {
             f("span", {
               innerHTML: e.getValueOrFunction(a.label),
               class: "me-2"
-            }, null, 8, DN),
+            }, null, 8, VN),
             (m(!0), b(dt, null, bt(e.auth.user.roles, (o) => (m(), b("button", {
               key: o,
               onClick: (l) => e.setSelectedRole(o),
               class: k(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": o == e.auth.user.role }])
-            }, $(o), 11, RN))), 128))
+            }, $(o), 11, jN))), 128))
           ], 2)) : (m(), b("li", {
             key: 1,
             class: k([a.class]),
             onClick: (o) => e.dropdownAction(a),
             innerHTML: e.getValueOrFunction(a.label)
-          }, null, 10, MN))
+          }, null, 10, UN))
         ], 64))), 128))
       ])
-    ])) : (m(), b("div", BN, [
+    ])) : (m(), b("div", HN, [
       f("button", {
         class: k([e.settings.class]),
         type: "button",
@@ -16181,14 +16220,14 @@ function PN(e, t, s, n, i, r) {
         }, null, 2)) : T("", !0),
         f("span", {
           innerHTML: e.getValueOrFunction(e.settings.label)
-        }, null, 8, qN)
+        }, null, 8, WN)
       ], 2)
     ]))
-  ], 8, kN)) : T("", !0);
+  ], 8, MN)) : T("", !0);
 }
-const XN = /* @__PURE__ */ ke(SN, [["render", PN]]);
+const sS = /* @__PURE__ */ ke(RN, [["render", KN]]);
 export {
-  GN as VuAdmin,
-  YN as VuAuth,
-  XN as VuUserButton
+  tS as VuAdmin,
+  eS as VuAuth,
+  sS as VuUserButton
 };
