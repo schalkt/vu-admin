@@ -15446,36 +15446,30 @@ const CO = {
       this.auth.inputs && (this.inputs = Object.assign(this.inputs, this.auth.inputs));
     },
     checkStorage() {
-      this.auth.user = JSON.parse(localStorage.getItem("vu-user")), this.auth.header = JSON.parse(localStorage.getItem("vu-header")), this.auth.settings = JSON.parse(localStorage.getItem("vu-settings")), this.auth.user && (this.auth.success = !0, this.loadProfile()), this.$emit("update:modelValue", this.auth);
+      let e = localStorage.getItem("vu-user"), t = localStorage.getItem("vu-header"), s = localStorage.getItem("vu-settings");
+      typeof e == "string" && e && e[0] === "{" && (this.auth.user = JSON.parse(e)), typeof t == "string" && t && t[0] === "{" && (this.auth.header = JSON.parse(t)), typeof s == "string" && s && s[0] === "{" && (this.auth.settings = JSON.parse(s)), !this.auth.user || !this.auth.header ? this.logout() : (this.auth.success = !0, this.authUpdate());
     },
     async loadProfile() {
-      if (!this.auth.user || !this.auth.header) {
-        this.logout();
-        return;
-      }
       try {
-        const e = await fetch(this.settings.api.profile, {
+        if (!(await fetch(this.settings.api.profile, {
           method: "GET",
           headers: this.auth.header
-        });
-        if (!e.ok) {
-          this.logout();
+        })).ok) {
+          this.onError("profile");
           return;
         }
-        const t = await e.json();
-        this.auth.user = t, this.auth.success = !0, this.$emit("update:modelValue", this.auth), localStorage.setItem("vu-user", JSON.stringify(this.auth.user));
       } catch {
-        this.logout();
+        this.onError("profile");
       }
     },
     logout() {
-      this.auth.success = !1, this.auth.header = null, this.auth.settings = null, this.auth.user = null, this.$emit("update:modelValue", this.auth), localStorage.removeItem("vu-user"), localStorage.removeItem("vu-header"), localStorage.removeItem("vu-settings");
+      this.auth.success = !1, this.auth.header = null, this.auth.settings = null, this.auth.user = null, this.authUpdate(), localStorage.removeItem("vu-user"), localStorage.removeItem("vu-header"), localStorage.removeItem("vu-settings");
     },
     reset() {
       this.password = "", this.password_again = "", this.auth.response = {};
     },
     close() {
-      this.auth.visible = !1, this.$emit("update:modelValue", this.auth), this.reset();
+      this.auth.visible = !1, this.authUpdate(), this.reset();
     },
     toggleClear() {
       this.auth.panel = "login", this.reset();
@@ -15498,7 +15492,7 @@ const CO = {
       }
     },
     onSuccess(e) {
-      this.auth.response.ok = !0, this.settings.onSuccess && this.settings.onSuccess[e] && (this.settings.onSuccess[e](this.auth), this.auth.header || (this.auth.header = {}), this.auth.user.role ? this.auth.header["X-Auth-Role"] = this.auth.user.role : this.auth.user.roles && (this.auth.user.role = this.auth.user.roles[0], this.auth.header["X-Auth-Role"] = this.auth.user.roles), this.auth.user.token && (this.auth.header["X-Auth-Token"] = this.auth.user.token), this.auth.success = !0, localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header)), localStorage.setItem("vu-settings", JSON.stringify(this.auth.settings))), setTimeout(() => {
+      this.auth.response.ok = !0, this.settings.onSuccess && this.settings.onSuccess[e] && (this.settings.onSuccess[e](this.auth), this.auth.header || (this.auth.header = {}), this.auth.user.role ? this.auth.header["X-Auth-Role"] = this.auth.user.role : this.auth.user.roles && (this.auth.user.role = this.auth.user.roles[0], this.auth.header["X-Auth-Role"] = this.auth.user.role), this.auth.user.token && (this.auth.header["X-Auth-Token"] = this.auth.user.token), this.auth.success = !0, localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), localStorage.setItem("vu-header", JSON.stringify(this.auth.header)), localStorage.setItem("vu-settings", JSON.stringify(this.auth.settings))), setTimeout(() => {
         this.authUpdate(), this.$forceUpdate();
       }, 0);
     },
@@ -15658,7 +15652,7 @@ const CO = {
         message: null,
         data: null
       }
-    }, this.authUpdate()), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.125");
+    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.126");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);

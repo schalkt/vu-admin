@@ -118,7 +118,8 @@
                                                 v-html="getValueOrFunction(input.prefix)">
                                             </span>
 
-                                            <select v-if="input.type == 'select'" class="form-select" :disabled="loading" :required="input.required" v-model="inputs[key]" :multiple="input.multiple">
+                                            <select v-if="input.type == 'select'" class="form-select" :disabled="loading" :required="input.required" v-model="inputs[key]"
+                                                :multiple="input.multiple">
                                                 <option></option>
                                                 <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">
                                                 </option>
@@ -298,42 +299,52 @@ const VuAuth = {
         },
 
         checkStorage() {
-            this.auth.user = JSON.parse(localStorage.getItem('vu-user'));
-            this.auth.header = JSON.parse(localStorage.getItem('vu-header'));
-            this.auth.settings = JSON.parse(localStorage.getItem('vu-settings'));
 
-            if (this.auth.user) {
-                this.auth.success = true;
-                this.loadProfile();
+            let user = localStorage.getItem('vu-user');
+            let header = localStorage.getItem('vu-header');
+            let settings = localStorage.getItem('vu-settings');
+
+            if (typeof user === 'string' && user && user[0] === '{') {
+                this.auth.user = JSON.parse(user);
             }
 
-            this.$emit("update:modelValue", this.auth);
+            if (typeof header === 'string' && header && header[0] === '{') {
+                this.auth.header = JSON.parse(header);
+            }
+
+            if (typeof settings === 'string' && settings && settings[0] === '{') {
+                this.auth.settings = JSON.parse(settings);
+            }
+
+            if (!this.auth.user || !this.auth.header) {                
+                this.logout();
+            } else {
+                this.auth.success = true;
+                this.authUpdate();     
+            }
+
         },
 
         async loadProfile() {
-            if (!this.auth.user || !this.auth.header) {
-                this.logout();
-                return;
-            }
 
             try {
+
                 const response = await fetch(this.settings.api.profile, {
                     method: "GET",
                     headers: this.auth.header
                 });
 
-                if (!response.ok) {
-                    this.logout();
+                //await this.getStatusAndJson(response);
+
+                if (response.ok) {                    
+                    //this.onSuccess('profile');
+                } else {
+                    this.onError('profile');
                     return;
                 }
 
-                const userData = await response.json();
-                this.auth.user = userData;
-                this.auth.success = true;
-                this.$emit("update:modelValue", this.auth);
-                localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
             } catch (error) {
-                this.logout();
+                this.onError('profile');
             }
         },
 
@@ -342,7 +353,7 @@ const VuAuth = {
             this.auth.header = null;
             this.auth.settings = null;
             this.auth.user = null;
-            this.$emit("update:modelValue", this.auth);
+            this.authUpdate();
 
             localStorage.removeItem('vu-user');
             localStorage.removeItem('vu-header');
@@ -357,7 +368,7 @@ const VuAuth = {
 
         close() {
             this.auth.visible = false;
-            this.$emit("update:modelValue", this.auth);
+            this.authUpdate();
             this.reset();
         },
 
@@ -393,6 +404,7 @@ const VuAuth = {
         },
 
         onSuccess(panel) {
+
             this.auth.response.ok = true;
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
@@ -406,7 +418,7 @@ const VuAuth = {
                     this.auth.header['X-Auth-Role'] = this.auth.user.role;
                 } else if (this.auth.user.roles) {
                     this.auth.user.role = this.auth.user.roles[0];
-                    this.auth.header['X-Auth-Role'] = this.auth.user.roles;
+                    this.auth.header['X-Auth-Role'] = this.auth.user.role;
                 }
 
                 if (this.auth.user.token) {
@@ -564,7 +576,7 @@ const VuAuth = {
         },
 
         async handleForgotPasswordSubmit() {
-            
+
             this.auth.response = {};
 
             try {
@@ -698,10 +710,11 @@ const VuAuth = {
                     message: null,
                     data: null,
                 },
-            };
-            this.authUpdate();
+            };            
         }
-
+        
+        console.log(this.auth);
+           
         this.checkStorage();
         this.reset();
         this.updateInputs();

@@ -101,7 +101,7 @@ window.VuSettings = {
             pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
             pattern: '^(?=.*[a-z]).+$',
             minlength: 4,
-            hash: 1
+            hash: 0
         },
         password_again: {
             label: 'Jelszó ismét',
@@ -240,6 +240,23 @@ window.VuSettings = {
             },
         },
         onSuccess: {
+
+            // profile: (auth) => {
+                
+            //     auth.user = auth.response.data;
+            //     auth.user.token = auth.response.data.accessToken;
+            //     auth.user.roles = ['admin', 'guest'];
+            //     auth.settings = {
+            //         entitiesVariable: 'VuEntities',
+            //         entities: {
+            //             post: '/entity-post.js',
+            //             product: '/entity-product.js',
+            //             user: '/entity-user.js',
+            //         }
+            //     };
+                                
+            // },
+            
             login: (auth) => {
 
                 console.log(auth);
