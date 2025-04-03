@@ -16,8 +16,7 @@
 
                     <form @submit.prevent="handleSubmit()" @click.stop="">
 
-                        <!-- E-mail mező -->
-                        <div class="mb-3" v-if="auth.panel != 'activation'">
+                        <div class="mb-3" v-if="auth.panel != 'activation' && auth.panel != 'password'">
                             <label for="email" class="form-label text-primary">{{ settings.username.label }}</label>
                             <div class="input-group">
                                 <span v-if="settings.username.icon" class="input-group-text" :class="{ 'rounded-bottom-0': settings.username.help }">
@@ -29,43 +28,41 @@
                             <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="settings.username.help" v-html="settings.username.help"></small>
                         </div>
 
-                        <!-- Jelszó mező és Elfelejtett jelszó gomb -->
                         <template v-if="auth.panel != 'forgot' && auth.panel != 'activation'">
 
                             <div class="mb-3">
-                                <label for="password" class="form-label text-primary">
+                                <label v-if="settings.password.label" for="password" class="form-label text-primary">
                                     {{ settings.password.label }}
                                 </label>
                                 <div class="input-group">
                                     <span v-if="settings.password.icon" class="input-group-text"
-                                        :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }">
+                                        :class="{ 'rounded-bottom-0': (auth.panel == 'registration' || auth.panel == 'password') && settings.password.help }">
                                         <i :class="[settings.password.icon]"></i>
                                     </span>
                                     <input id="password" name="password" :type="settings.password.type" v-model="password" class="form-control"
                                         :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }" :placeholder="settings.password.placeholder"
                                         :pattern="settings.password.pattern" :minlength="auth.panel == 'registration' ? settings.password.minlength : 1" required />
-                                    <span v-if="auth.panel == 'registration'" class="input-group-text"
-                                        :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }">
+                                    <span v-if="auth.panel == 'registration' || auth.panel == 'password'" class="input-group-text"
+                                        :class="{ 'rounded-bottom-0': (auth.panel == 'registration' || auth.panel == 'password') && settings.password.help }">
                                         <small class="" :class="{
                                             'text-success': password.length >= settings.password.minlength,
                                             'text-danger': password.length < settings.password.minlength,
                                         }">{{ password.length }}</small>
                                     </span>
                                     <span class="cursor-pointer input-group-text" @click.stop="toggleType('password')"
-                                        :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }">
+                                        :class="{ 'rounded-bottom-0': (auth.panel == 'registration' || auth.panel == 'password') && settings.password.help }">
                                         <i v-if="settings.password.type == 'password'" class="bi bi-eye"></i>
                                         <i v-else class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
-                                <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="auth.panel == 'registration' && settings.password.help"
-                                    v-html="settings.password.help"></small>
+                                <small class="d-block border border-top-0 rounded-bottom p-2 text-muted"
+                                    v-if="(auth.panel == 'registration' || auth.panel == 'password') && settings.password.help" v-html="settings.password.help"></small>
                             </div>
 
-                            <div class="mb-4" v-if="auth.panel === 'registration'">
+                            <div class="mb-4" v-if="auth.panel === 'registration' || auth.panel === 'password'">
                                 <label for="password_again" class="form-label text-primary">
                                     {{ settings.password_again.label }}
-                                    <small v-if="password_again.length > 0 && password_again != password" class="text-danger">
-                                        ( a két jelszó nem egyezik )
+                                    <small v-if="password_again.length > 0 && password_again != password" class="text-danger" v-html="settings.password_again.nomatch">
                                     </small>
                                 </label>
                                 <div class="input-group">
@@ -82,13 +79,13 @@
                                         }">{{ password_again.length }}</small>
                                     </span>
                                     <span class="cursor-pointer input-group-text" @click.stop="toggleType('password_again')"
-                                        :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password_again.help }">
+                                        :class="{ 'rounded-bottom-0': (auth.panel == 'registration' || auth.panel == 'password') && settings.password_again.help }">
                                         <i v-if="settings.password_again.type == 'password'" class="bi bi-eye"></i>
                                         <i v-else class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
-                                <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="auth.panel == 'registration' && settings.password_again.help"
-                                    v-html="settings.password_again.help"></small>
+                                <small class="d-block border border-top-0 rounded-bottom p-2 text-muted"
+                                    v-if="(auth.panel == 'registration' || auth.panel == 'password') && settings.password_again.help" v-html="settings.password_again.help"></small>
                             </div>
 
                             <!-- reCAPTCHA -->
@@ -97,28 +94,21 @@
                             </div>
                         </template>
 
-                        <div class="mb-4 text-center" v-if="auth.panel == 'login'">
-                            <button type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleForgotPassword">
-                                Elfelejtetted a jelszavad?
-                            </button>
-                            <button v-if="settings.help" type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleHelp">
-                                Segítségre van szükséged?
+                        <div class="mb-4 text-center" v-if="auth.panel == 'login' && settings.password.forgot">
+                            <button type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleForgotPassword" v-html="settings.password.forgot">
                             </button>
                         </div>
 
-                        <div class="d-flex mb-4" v-if="auth.panel == 'forgot'">
-                            <small class="text-muted">
-                                A megadott e-mail címre ( amennyiben az szerepel az adatbázisunkban ) egy levelet küldünk,
-                                melyben az új jelszó igénylése linkre kattintva egy weboldalra jutsz.
-                                Ott tudod megadni az új jelszavadat. Az e-mailben szereplő link csak 1 óráig érvényes.
-                            </small>
+                        <div class="d-flex mb-4" v-if="auth.panel == 'forgot' && settings.help && settings.help.forgot">
+                            <small class="text-muted" v-html="settings.help.forgot"></small>
                         </div>
 
                         <div class="row">
                             <template v-for="(input, key) in settings.inputs" :key="key">
                                 <div v-if="input.panels.indexOf(auth.panel) >= 0 && !input.hidden" :class="[input.colclass ? input.colclass : 'col-md-12']">
                                     <div class="mb-3">
-                                        <label :for="key" class="form-label text-primary" :class="{ 'required': input.required }" v-html="getValueOrFunction(input.label)"></label>
+                                        <label v-if="input.label" :for="key" class="form-label text-primary" :class="{ 'required': input.required }"
+                                            v-html="getValueOrFunction(input.label)"></label>
                                         <div class="input-group">
                                             <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }"
                                                 v-html="getValueOrFunction(input.prefix)">
@@ -149,25 +139,28 @@
                             <div v-if="accept.panels.indexOf(auth.panel) >= 0" class="form-check">
                                 <input type="checkbox" class="form-check-input" :id="'accept_' + accept.name" :name="'accept_' + accept.name" v-model="accepts[accept.name]"
                                     :required="accept.required" />
-                                <label class="form-check-label" :for="'accept_' + accept.name" v-html="getValueOrFunction(accept.label)">
+                                <label v-if="accept.label" class="form-check-label" :for="'accept_' + accept.name" v-html="getValueOrFunction(accept.label)">
                                 </label>
                             </div>
 
                         </div>
 
 
-                        <div v-if="auth.panel == 'registration' && settings.registration" class="mt-4">
-                            <div v-if="settings.registration.help" v-html="getValueOrFunction(settings.registration.help)"></div>
+                        <div v-if="auth.panel == 'registration' && settings.help && settings.help.registration" class="mt-4">
+                            <div v-html="getValueOrFunction(settings.help.registration)"></div>
                         </div>
 
+                        <div class="mt-3 text-center" v-if="auth.response.message">
+                            <div :class="{ 'text-danger': !auth.response.ok, 'text-success': auth.response.ok }" v-html="auth.response.message"></div>
+                        </div>
 
                         <div class="mt-4 d-flex justify-content-between">
                             <button v-if="auth.panel != 'login' && auth.panel != 'activation'" type="button" @click.stop="toggleClear"
                                 class="btn btn-secondary w-100 me-2 text-nowrap">
-                                <i class="bi bi-arrow-left-square mx-1"></i> Bejelentkezés
+                                <i class="bi bi-arrow-left-square mx-1"></i> {{ settings.submit.login }}
                             </button>
                             <button v-if="auth.panel == 'login'" type="button" class="btn btn-warning w-100 me-2 text-nowrap" @click.stop="toggleNewRegistration">
-                                <i class="bi bi-person-plus mx-1"></i> Regisztráció
+                                <i class="bi bi-person-plus mx-1"></i> {{ settings.submit.registration }}
                             </button>
                             <button type="submit" class="btn w-100 text-nowrap"
                                 :class="{ 'btn-primary': auth.panel != 'registration', 'btn-warning': auth.panel == 'registration' }">
@@ -177,13 +170,10 @@
                             </button>
                         </div>
 
-                        <div class="mt-3 text-center" v-if="auth.response.message">
-                            <div :class="{ 'text-danger': !auth.response.ok, 'text-success': auth.response.ok }" v-html="auth.response.message"></div>
-                        </div>
 
                         <div class="mt-2 text-end">
                             <button type="button" @click.stop="close" class="btn btn-light border w-100 me-1">
-                                Mégsem <i class="bi bi-x-square mx-1"></i>
+                                {{ settings.submit.cancel }} <i class="bi bi-x-square mx-1"></i>
                             </button>
                         </div>
 
@@ -353,6 +343,7 @@ const VuAuth = {
                 this.auth.response.data = await response.json();
             } catch (error) {
                 this.auth.response.data = null;
+                console.log(error);
             }
 
         },
@@ -379,9 +370,16 @@ const VuAuth = {
                 return;
             }
 
+            if (this.auth.panel == 'password') {
+                this.handlePasswordSubmit();
+                return;
+            }
+
         },
 
         async handleLogin() {
+
+            this.auth.response = {};
 
             if (!this.username || !this.password) {
                 return;
@@ -401,12 +399,12 @@ const VuAuth = {
 
             if (response.ok) {
 
-                this.onSuccess('login', 'Sikeres bejelentkezés');
+                this.onSuccess('login');
                 this.close();
 
             } else {
 
-                this.onError('login', 'Sikertelen bejelentkezés');
+                this.onError('login');
 
             }
 
@@ -414,13 +412,15 @@ const VuAuth = {
 
         async handleNewRegistrationSubmit() {
 
+            this.auth.response = {};
+
             if (!this.username || !this.password || !this.password_again) {
                 return;
             }
 
             if (this.password != this.password_again) {
                 return;
-            }
+            }            
 
             const response = await fetch(this.settings.api.register, {
                 method: "POST",
@@ -436,15 +436,17 @@ const VuAuth = {
             await this.getStatusAndJson(response);
 
             if (response.ok) {
-                this.onSuccess('registration', 'Sikeres regisztráció');
+                this.onSuccess('registration');
             } else {
-                this.onError('registration', 'Sikertelen regisztráció');
+                this.onError('registration');
             }
 
 
         },
 
         async handleActivationSubmit() {
+
+            this.auth.response = {};
 
             const response = await fetch(this.settings.api.activation, {
                 method: "POST",
@@ -456,12 +458,12 @@ const VuAuth = {
 
             if (response.ok) {
 
-                this.onSuccess('activation', 'Sikeres aktiválás');
+                this.onSuccess('activation');
                 this.close();
 
             } else {
 
-                this.onError('activation', 'Sikertelen aktiválás');
+                this.onError('activation');
 
             }
 
@@ -471,7 +473,9 @@ const VuAuth = {
 
             try {
 
-                const response = await fetch(this.settings.api.password, {
+                this.auth.response = {};
+
+                const response = await fetch(this.settings.api.forgot, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -481,20 +485,55 @@ const VuAuth = {
 
                 await this.getStatusAndJson(response);
 
-                if (response.ok) {
-                    
-                    this.onPasswordReset('password', 'Jelszó visszaállítási e-mail elküldve');
-
+                if (response.ok && this.auth.response.data.email.sent) {
+                    this.onPasswordReset('forgot');
                 } else {
-
-                    this.onError('password', 'Sikertelen jelszó visszaállítás');
-
+                    this.onError('forgot');
                 }
 
             } catch (error) {
-                this.onError('password', 'Sikertelen jelszó visszaállítás');
-            }            
+                this.onError('forgot');
+            }
 
+        },
+
+        async handlePasswordSubmit() {
+
+            try {
+
+                this.auth.response = {};
+
+                if (!this.password || !this.password_again) {
+                    return;
+                }
+
+                if (this.password != this.password_again) {
+                    return;
+                }
+
+                const response = await fetch(this.settings.api.password, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...this.auth.header
+                    },
+                    body: JSON.stringify({
+                        password: await this.hashPassword(this.password),
+                        ...this.inputs
+                    }),
+                });
+
+                await this.getStatusAndJson(response);
+
+                if (response.ok && this.auth.response.data.password.updated) {
+                    this.onPasswordUpdate('password');
+                } else {
+                    this.onError('password');
+                }
+
+            } catch (error) {
+                this.onError('password');
+            }
         },
 
         async hashPassword(password) {
@@ -546,11 +585,6 @@ const VuAuth = {
             this.reset();
         },
 
-        toggleHelp() {
-            this.auth.panel = this.auth.panel !== 'help' ? 'help' : 'login';
-            this.reset();
-        },
-
         toggleType(field) {
             this.settings[field].type = this.settings[field].type != 'password' ? 'password' : 'text';
             this.$forceUpdate();
@@ -571,10 +605,9 @@ const VuAuth = {
             }
         },
 
-        onSuccess(panel, defaultMessage) {
+        onSuccess(panel) {
 
             this.auth.response.ok = true;
-            this.auth.response.message = defaultMessage;
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
 
@@ -610,18 +643,13 @@ const VuAuth = {
 
         },
 
-        onError(panel, defaultMessage) {
+        onError(panel) {
 
             this.auth.success = false;
             this.auth.response.ok = false;
-            this.auth.response.message = defaultMessage;
 
             if (this.settings.onError && this.settings.onError[panel]) {
                 this.settings.onError[panel](this.auth);
-            }
-
-            if (!this.auth.response.message) {
-                this.auth.response.message = defaultMessage;
             }
 
             setTimeout(() => {
@@ -631,25 +659,34 @@ const VuAuth = {
 
         },
 
-        onPasswordReset(panel, defaultMessage) {
-                                    
+        onPasswordReset(panel) {
+
             this.auth.success = true;
             this.auth.response.ok = true;
-            this.auth.response.message = defaultMessage;
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
                 this.settings.onSuccess[panel](this.auth);
             }
 
-            if (!this.auth.response.message) {
-                this.auth.response.message = defaultMessage;
-            }
-
-            setTimeout(() => {                
+            setTimeout(() => {
                 this.$forceUpdate();
             }, 0)
 
         },
+
+        onPasswordUpdate(panel) {
+            this.auth.success = true;
+            this.auth.response.ok = true;
+
+            if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
+                this.settings.onSuccess[panel](this.auth);
+            }
+
+            setTimeout(() => {
+                this.$forceUpdate();
+            }, 0)
+        },
+
 
         logout() {
             this.auth.success = false;

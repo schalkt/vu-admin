@@ -23,23 +23,67 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use('/password/forgot', (req, res, next) => {
           if (req.method === 'POST') {
-            
+
             let body = '';
 
             req.on('data', chunk => (body += chunk));
             req.on('end', () => {
-                try {
-                    const jsonData = JSON.parse(body);
-                    const username = jsonData.username; // Itt kapod meg az emailt
-                    
-                    res.setHeader('Content-Type', 'application/json');
-                    res.end(JSON.stringify({ message: 'Vite POST sikeres', username }));
-                } catch (error) {
-                    res.statusCode = 400;
-                    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+
+              res.setHeader('Content-Type', 'application/json');
+
+              try {
+
+                const jsonData = JSON.parse(body);
+                const username = jsonData.username;
+
+                if (!username) {
+                  res.statusCode = 400;
+                  res.end(JSON.stringify({ email: { sent: false }, message: 'Username is required' }));
+                  return;
                 }
+                
+                res.end(JSON.stringify({ email: { sent: true }, message: 'E-mail sent' }));
+              } catch (error) {
+                console.log(error);
+                res.statusCode = 400;
+                res.end(JSON.stringify({ email: { sent: false }, message: 'Error' }));
+              }
             });
-            
+
+          } else {
+            next();
+          }
+        });
+        server.middlewares.use('/password/update', (req, res, next) => {
+          if (req.method === 'POST') {
+
+            let body = '';
+
+            req.on('data', chunk => (body += chunk));
+            req.on('end', () => {
+
+              res.setHeader('Content-Type', 'application/json');
+
+              try {
+
+                const jsonData = JSON.parse(body);
+                const password = jsonData.password;
+                const token = jsonData.token;
+
+                if (password || !token) {
+                  res.statusCode = 400;
+                  res.end(JSON.stringify({ password: { updated: false }, message: 'Password and token are required' }));
+                  return;
+                }
+                
+                res.end(JSON.stringify({ password: { updated: true }, message: 'Password updated' }));
+              } catch (error) {
+                console.log(error);
+                res.statusCode = 400;
+                res.end(JSON.stringify({ password: { updated: false }, message: 'Error' }));
+              }
+            });
+
           } else {
             next();
           }

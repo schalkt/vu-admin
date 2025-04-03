@@ -65,18 +65,22 @@ window.VuSettings = {
             registration: 'Regisztráció',
             forgot: 'Elfelejtett jelszó',
             activation: 'Aktiválás',
+            password: 'Új jelszó beállítása',
         },
         submit: {
             login: 'Bejelentkezés',
             registration: 'Regisztráció',
+            cancel: 'Mégsem',
             forgot: 'Elfelejtett jelszó',
+            password: 'Jelszó mentése',
             activation: 'Aktiválás',
         },
         api: {
             login: '/api/auth/login',
             profile: '/api/auth/me',
             register: '/api/auth/register',
-            password: '/password/forgot',
+            forgot: '/password/forgot',
+            password: '/password/update',
             activation: '/api/auth/activate',
         },
         username: {
@@ -93,20 +97,23 @@ window.VuSettings = {
             placeholder: 'Add meg a jelszavad',
             type: 'password',
             help: 'Legyen benne legalább 1 kisbetű, 1 nagybetű és 1 szám. Minimum 4 karakter.',
-            _pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
+            forgot: 'Elfelejtett a jelszavad?',
+            pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
             pattern: '^(?=.*[a-z]).+$',
             minlength: 4,
-            hash: 0
+            hash: 1
         },
         password_again: {
             label: 'Jelszó ismét',
             icon: 'bi bi-key-fill',
             type: 'password',
             placeholder: 'Ismételd meg a jelszavad',
-            _help: 'Ide gépeld be újra a jelszavadat amit megadtál.'
+            help: 'Ide gépeld be újra a jelszavadat amit megadtál.',
+            nomatch: 'A két jelszó nem egyezik!'
         },
-        registration: {
-            help: `<div class='text-muted p-2 rounded shadow-sm'>A regisztráció beküldése után egy <strong>visszaigazoló levél</strong> fog érkezni az e-mail címedre, melyben az aktiváló linkre kell <strong>kattintani</strong>, hogy a regisztráció érvényesítve legyen. A kattintás után megjelenik weboldalunk, ahol <strong>további adatok</strong> megadására van lehetőség.</div>`,
+        help: {
+            forgot: 'Ha a megadott e-mail cím létezik az adatbázisunkban, küldünk egy e-mailt egy linkkel. Az e-mailben található linkre kattintva átirányítunk egy weboldalra, ahol beállíthatod az új jelszavadat. Az e-mailben található link csak 1 óráig érvényes.',
+            registration: `<div class='text-muted p-2 rounded shadow-sm'>A regisztráció beküldése után egy <strong>visszaigazoló levél</strong> fog érkezni az e-mail címedre, melyben az aktiváló linkre kell <strong>kattintani</strong>, hogy a regisztráció érvényesítve legyen. A kattintás után megjelenik weboldalunk, ahol <strong>további adatok</strong> megadására van lehetőség.</div>`
         },
         inputs: {
             'role': {
@@ -213,11 +220,22 @@ window.VuSettings = {
                 }
 
             },
-            password: (auth) => {
+            forgot: (auth) => {
+
                 console.log(auth.response);
 
                 if (auth.response) {
                     auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
+                }
+            },
+            password: (auth) => {
+
+                console.log(auth.response);
+
+                if (auth.response) {
+
+                    auth.response.message = 'A jelszó frissítése sikertelen!';
+                    //auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
                 }
             },
         },
@@ -254,11 +272,30 @@ window.VuSettings = {
                     }
                 };
             },
-            password: (auth) => {
-              
+            forgot: (auth) => {
+
                 console.log(auth.response);
 
+                if (auth.response) {
+                    auth.response.message = auth.response.data.message ? auth.response.data.message : 'Sikeres jelszó visszaállítás';
+                }
+
             },
+            password: (auth) => {
+
+
+                console.log(auth.response);
+
+                if (auth.response) {
+                    auth.response.message = auth.response.data.message ? auth.response.data.message : 'Sikeres jelszó visszaállítás';
+                }
+
+            },
+        }
+    },
+    translate: {
+        hu: {
+
         }
     }
 };
