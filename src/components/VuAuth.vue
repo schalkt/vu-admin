@@ -298,8 +298,6 @@ const VuAuth = {
         },
 
         checkStorage() {
-
-            this.auth.user = {};
             this.auth.user = JSON.parse(localStorage.getItem('vu-user'));
             this.auth.header = JSON.parse(localStorage.getItem('vu-header'));
             this.auth.settings = JSON.parse(localStorage.getItem('vu-settings'));
@@ -310,7 +308,6 @@ const VuAuth = {
             }
 
             this.$emit("update:modelValue", this.auth);
-
         },
 
         async loadProfile() {
@@ -335,253 +332,27 @@ const VuAuth = {
                 this.auth.success = true;
                 this.$emit("update:modelValue", this.auth);
                 localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
-
             } catch (error) {
                 this.logout();
             }
         },
 
-        async getStatusAndJson(response) {
-
-            this.auth.response.code = response.status;
-
-            try {
-                this.auth.response.data = await response.json();
-            } catch (error) {
-                this.auth.response.data = null;
-                console.log(error);
-            }
-
-        },
-
-        async handleSubmit() {
-
-            this.loading = true;
-
-            switch (this.auth.panel) {
-
-                case 'login':
-                    this.handleLogin();
-                    break;
-                case 'forgot':
-                    this.handleForgotPasswordSubmit();
-                    break;
-                case 'registration':
-                    this.handleNewRegistrationSubmit();
-                    break;
-                case 'activation':
-                    this.handleActivationSubmit();
-                    break;
-                case 'password':
-                    this.handlePasswordSubmit();
-                    break;
-                default:
-                    this.loading = false;
-                    return;
-            }
-
-        },
-
-        async handleLogin() {
-
-            this.auth.response = {};
-
-            if (!this.username || !this.password) {
-                this.loading = false;
-                return;
-            }
-
-            const response = await fetch(this.settings.api.login, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    username: this.username,
-                    password: await this.hashPassword(this.password),
-                    accept: this.accepts,
-                }),
-            }).finally(() => {
-                this.loading = false;
-            });
-
-            await this.getStatusAndJson(response);
-
-            if (response.ok) {
-
-                this.onSuccess('login');
-                this.close();
-
-            } else {
-
-                this.onError('login');
-
-            }
-
-        },
-
-        async handleNewRegistrationSubmit() {
-
-            this.auth.response = {};
-
-            if (!this.username || !this.password || !this.password_again) {
-                this.loading = false;
-                return;
-            }
-
-            if (this.password != this.password_again) {
-                this.loading = false;
-                return;
-            }
-
-            const response = await fetch(this.settings.api.register, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    username: this.username,
-                    password: await this.hashPassword(this.password),
-                    accept: this.accepts,
-                    input: this.inputs,
-                }),
-            }).finally(() => {
-                this.loading = false;
-            });
-
-            await this.getStatusAndJson(response);
-
-            if (response.ok) {
-                this.onSuccess('registration');
-            } else {
-                this.onError('registration');
-            }
-
-
-        },
-
-        async handleActivationSubmit() {
-
-            this.auth.response = {};
-
-            const response = await fetch(this.settings.api.activation, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(this.inputs),
-            }).finally(() => {
-                this.loading = false;
-            });
-
-            await this.getStatusAndJson(response);
-
-            if (response.ok) {
-
-                this.onSuccess('activation');
-                this.close();
-
-            } else {
-
-                this.onError('activation');
-
-            }
-
-        },
-
-        async handleForgotPasswordSubmit() {
-
-            try {
-
-                this.auth.response = {};
-
-                const response = await fetch(this.settings.api.forgot, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        username: this.username,
-                    }),
-                }).finally(() => {
-                    this.loading = false;
-                });
-
-                await this.getStatusAndJson(response);
-
-                if (response.ok && this.auth.response.data.email.sent) {
-                    this.onPasswordReset('forgot');
-                } else {
-                    this.onError('forgot');
-                }
-
-            } catch (error) {
-                this.onError('forgot');
-            }
-
-        },
-
-        async handlePasswordSubmit() {
-
-            try {
-
-                this.auth.response = {};
-
-                if (!this.password || !this.password_again) {
-                    this.loading = false;
-                    return;
-                }
-
-                if (this.password != this.password_again) {
-                    this.loading = false;
-                    return;
-                }
-
-                const response = await fetch(this.settings.api.password, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        ...this.auth.header
-                    },
-                    body: JSON.stringify({
-                        password: await this.hashPassword(this.password),
-                        ...this.inputs
-                    }),
-                }).finally(() => {
-                    this.loading = false;
-                });
-
-                await this.getStatusAndJson(response);
-
-                if (response.ok && this.auth.response.data.password.updated) {
-                    this.onPasswordUpdate('password');
-                } else {
-                    this.onError('password');
-                }
-
-            } catch (error) {
-                this.onError('password');
-            }
-        },
-
-        async hashPassword(password) {
-
-            this.settings.password.hash = this.settings.password.hash === undefined ? 0 : this.settings.password.hash;
-
-            return this.generateHash(password, this.settings.password.hash);
-
-        },
-
-        async generateHash(input, iterations) {
-
-            let output = input;
-
-            for (let i = 0; i < iterations; i++) {
-                output = sha512(output);
-            }
-
-            return output;
-
+        logout() {
+            this.auth.success = false;
+            this.auth.header = null;
+            this.auth.settings = null;
+            this.auth.user = null;
+            this.$emit("update:modelValue", this.auth);
+
+            localStorage.removeItem('vu-user');
+            localStorage.removeItem('vu-header');
+            localStorage.removeItem('vu-settings');
         },
 
         reset() {
-
             this.password = "";
             this.password_again = "";
             this.auth.response = {};
-
         },
 
         close() {
@@ -606,31 +377,25 @@ const VuAuth = {
         },
 
         toggleType(field) {
-            this.settings[field].type = this.settings[field].type != 'password' ? 'password' : 'text';
+            this.settings[field].type = this.settings[field].type !== 'password' ? 'password' : 'text';
             this.$forceUpdate();
         },
 
-        onCaptchaClick() {
-            // reCAPTCHA validálás
-            console.log("reCAPTCHA clicked");
-        },
+        async getStatusAndJson(response) {
+            this.auth.response.code = response.status;
 
-        authUpdate() {
-            this.$emit("update:modelValue", this.auth);
-        },
-
-        handleEscapeKey(event) {
-            if (event.key === "Escape") {
-                this.close();
+            try {
+                this.auth.response.data = await response.json();
+            } catch (error) {
+                this.auth.response.data = null;
+                console.error('Error parsing response:', error);
             }
         },
 
         onSuccess(panel) {
-
             this.auth.response.ok = true;
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
-
                 this.settings.onSuccess[panel](this.auth);
 
                 if (!this.auth.header) {
@@ -653,18 +418,15 @@ const VuAuth = {
                 localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
                 localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
                 localStorage.setItem('vu-settings', JSON.stringify(this.auth.settings));
-
             }
 
             setTimeout(() => {
                 this.authUpdate();
                 this.$forceUpdate();
-            }, 0)
-
+            }, 0);
         },
 
         onError(panel) {
-
             this.auth.success = false;
             this.auth.response.ok = false;
 
@@ -675,12 +437,10 @@ const VuAuth = {
             setTimeout(() => {
                 this.authUpdate();
                 this.$forceUpdate();
-            }, 0)
-
+            }, 0);
         },
 
         onPasswordReset(panel) {
-
             this.auth.response.ok = true;
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
@@ -689,12 +449,10 @@ const VuAuth = {
 
             setTimeout(() => {
                 this.$forceUpdate();
-            }, 0)
-
+            }, 0);
         },
 
         onPasswordUpdate(panel) {
-
             this.auth.response.ok = true;
 
             if (this.settings.onSuccess && this.settings.onSuccess[panel]) {
@@ -703,25 +461,185 @@ const VuAuth = {
 
             setTimeout(() => {
                 this.$forceUpdate();
-            }, 0)
+            }, 0);
         },
 
+        async handleSubmit() {
+            this.loading = true;
 
-        logout() {
-            this.auth.success = false;
-            this.auth.header = null;
-            this.auth.settings = null;
-            this.auth.user = null;
+            try {
+                switch (this.auth.panel) {
+                    case 'login':
+                        await this.handleLogin();
+                        break;
+                    case 'forgot':
+                        await this.handleForgotPasswordSubmit();
+                        break;
+                    case 'registration':
+                        await this.handleNewRegistrationSubmit();
+                        break;
+                    case 'activation':
+                        await this.handleActivationSubmit();
+                        break;
+                    case 'password':
+                        await this.handlePasswordSubmit();
+                        break;
+                }
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async handleLogin() {
+            this.auth.response = {};
+
+            if (!this.username || !this.password) {
+                return;
+            }
+
+            const response = await fetch(this.settings.api.login, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: this.username,
+                    password: await this.hashPassword(this.password),
+                    accept: this.accepts,
+                }),
+            });
+
+            await this.getStatusAndJson(response);
+
+            if (response.ok) {
+                this.onSuccess('login');
+                this.close();
+            } else {
+                this.onError('login');
+            }
+        },
+
+        async handleNewRegistrationSubmit() {
+            this.auth.response = {};
+
+            if (!this.username || !this.password || !this.password_again || this.password !== this.password_again) {
+                return;
+            }
+
+            const response = await fetch(this.settings.api.register, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: this.username,
+                    password: await this.hashPassword(this.password),
+                    accept: this.accepts,
+                    input: this.inputs,
+                }),
+            });
+
+            await this.getStatusAndJson(response);
+
+            if (response.ok) {
+                this.onSuccess('registration');
+            } else {
+                this.onError('registration');
+            }
+        },
+
+        async handleActivationSubmit() {
+            this.auth.response = {};
+
+            const response = await fetch(this.settings.api.activation, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(this.inputs),
+            });
+
+            await this.getStatusAndJson(response);
+
+            if (response.ok) {
+                this.onSuccess('activation');
+                this.close();
+            } else {
+                this.onError('activation');
+            }
+        },
+
+        async handleForgotPasswordSubmit() {
+            this.auth.response = {};
+
+            try {
+                const response = await fetch(this.settings.api.forgot, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: this.username,
+                    }),
+                });
+
+                await this.getStatusAndJson(response);
+
+                if (response.ok && this.auth.response.data.email.sent) {
+                    this.onPasswordReset('forgot');
+                } else {
+                    this.onError('forgot');
+                }
+            } catch (error) {
+                this.onError('forgot');
+            }
+        },
+
+        async handlePasswordSubmit() {
+            this.auth.response = {};
+
+            if (!this.password || !this.password_again || this.password !== this.password_again) {
+                return;
+            }
+
+            try {
+                const response = await fetch(this.settings.api.password, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...this.auth.header
+                    },
+                    body: JSON.stringify({
+                        password: await this.hashPassword(this.password),
+                        ...this.inputs
+                    }),
+                });
+
+                await this.getStatusAndJson(response);
+
+                if (response.ok && this.auth.response.data.password.updated) {
+                    this.onPasswordUpdate('password');
+                } else {
+                    this.onError('password');
+                }
+            } catch (error) {
+                this.onError('password');
+            }
+        },
+
+        async hashPassword(password) {
+            this.settings.password.hash = this.settings.password.hash === undefined ? 0 : this.settings.password.hash;
+            return this.generateHash(password, this.settings.password.hash);
+        },
+
+        async generateHash(input, iterations) {
+            let output = input;
+            for (let i = 0; i < iterations; i++) {
+                output = sha512(output);
+            }
+            return output;
+        },
+
+        authUpdate() {
             this.$emit("update:modelValue", this.auth);
-
-            localStorage.removeItem('vu-user');
-            localStorage.removeItem('vu-header');
-            localStorage.removeItem('vu-settings');
-
         },
 
-        showProfilModal() {
-            this.modalWindow.show();
+        handleEscapeKey(event) {
+            if (event.key === "Escape") {
+                this.close();
+            }
         },
 
         getValueOrFunction(object, params) {
@@ -730,6 +648,11 @@ const VuAuth = {
 
         translate(key, vars, language) {
             return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
+        },
+
+        onCaptchaClick() {
+            // reCAPTCHA validálás
+            console.log("reCAPTCHA clicked");
         },
 
     },

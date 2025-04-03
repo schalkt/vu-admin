@@ -118,7 +118,7 @@ window.VuSettings = {
         inputs: {
             'role': {
                 label: 'Szerepkör',
-                hidden: false,
+                hidden: true,
                 prefix: `<i class='bi bi-person-badge'></i>`,
                 type: 'select',
                 placeholder: null,

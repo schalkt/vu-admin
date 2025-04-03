@@ -75,29 +75,7 @@ const VuUserButton = {
         // },
     },
     methods: {
-
-        getValueOrFunction(object, params) {
-            return getValueOrFunction(object, params, this.settings, this);
-        },
-
-        dropdownAction(dropdown, $event) {
-
-            if ($event) {
-                $event.stopPropagation();
-            }
-
-            let params = {
-                dropdown: dropdown,
-                settings: this.settings,
-            }
-
-            if (dropdown.action) {
-                dropdown.action(params, this);
-                return;
-            }
-
-        },
-
+        // Auth state management
         updateAuth() {
             this.$emit("update:modelValue", this.auth);
         },
@@ -106,7 +84,6 @@ const VuUserButton = {
             this.auth.visible = !this.auth.visible;
             this.auth.panel = this.panel ? this.panel : 'login';
             this.updateAuth();
-
         },
 
         setSelectedRole(role) {
@@ -115,11 +92,9 @@ const VuUserButton = {
 
             localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
             localStorage.setItem('vu-header', JSON.stringify(this.auth.header));
-
         },
 
         logout() {
-
             this.auth.visible = false;
             this.auth.user = null;            
             this.auth.header = null;
@@ -131,8 +106,25 @@ const VuUserButton = {
             localStorage.removeItem('vu-user');
             localStorage.removeItem('vu-header');
             localStorage.removeItem('vu-settings');
+        },
 
+        // Dropdown handling
+        dropdownAction(dropdown, $event) {
+            if ($event) {
+                $event.stopPropagation();
+            }
 
+            if (dropdown.action) {
+                dropdown.action({
+                    dropdown: dropdown,
+                    settings: this.settings,
+                }, this);
+            }
+        },
+
+        // Utility methods
+        getValueOrFunction(object, params) {
+            return getValueOrFunction(object, params, this.settings, this);
         },
     },
     created() {
