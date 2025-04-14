@@ -1,4 +1,23 @@
 
+
+handleError = function (response) {
+
+	response.message = 'Error ' + response.code;
+
+	if (response.data) {
+
+		if (response.data.message) {
+			response.message += ' - ' + response.data.message;
+		}
+
+		if (response.data.errors) {
+			response.message += ' - ' + Object.values(response.data.errors).join(' ');
+		}
+
+	}
+
+}
+
 window.VuSettings = {
     theme: 'dark',
     button: {

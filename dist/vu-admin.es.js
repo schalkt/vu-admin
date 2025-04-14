@@ -947,8 +947,8 @@ const Pu = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   write: Fu
 }, Symbol.toStringTag, { value: "Module" }));
 /*!
-  * Bootstrap v5.3.3 (https://getbootstrap.com/)
-  * Copyright 2011-2024 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap v5.3.5 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 const Os = /* @__PURE__ */ new Map(), Lo = {
@@ -1022,7 +1022,7 @@ const Os = /* @__PURE__ */ new Map(), Lo = {
       t.fn[s] = e.jQueryInterface, t.fn[s].Constructor = e, t.fn[s].noConflict = () => (t.fn[s] = n, e.jQueryInterface);
     }
   });
-}, pe = (e, t = [], s = e) => typeof e == "function" ? e(...t) : s, Wu = (e, t, s = !0) => {
+}, pe = (e, t = [], s = e) => typeof e == "function" ? e.call(...t) : s, Wu = (e, t, s = !0) => {
   if (!s) {
     pe(e);
     return;
@@ -1195,7 +1195,7 @@ const ys = {
     const t = {}, s = Object.keys(e.dataset).filter((n) => n.startsWith("bs") && !n.startsWith("bsConfig"));
     for (const n of s) {
       let i = n.replace(/^bs/, "");
-      i = i.charAt(0).toLowerCase() + i.slice(1, i.length), t[i] = ql(e.dataset[n]);
+      i = i.charAt(0).toLowerCase() + i.slice(1), t[i] = ql(e.dataset[n]);
     }
     return t;
   },
@@ -1237,7 +1237,7 @@ class Ni {
     }
   }
 }
-const Of = "5.3.3";
+const Of = "5.3.5";
 class Ue extends Ni {
   constructor(t, s) {
     super(), t = Is(t), t && (this._element = t, this._config = this._getConfig(s), Lo.set(this._element, this.constructor.DATA_KEY, this));
@@ -1843,7 +1843,7 @@ class Qe extends Ue {
   }
   _createPopper() {
     if (typeof Pu > "u")
-      throw new TypeError("Bootstrap's dropdowns require Popper (https://popper.js.org)");
+      throw new TypeError("Bootstrap's dropdowns require Popper (https://popper.js.org/docs/v2/)");
     let t = this._element;
     this._config.reference === "parent" ? t = this._parent : bs(this._config.reference) ? t = Is(this._config.reference) : typeof this._config.reference == "object" && (t = this._config.reference);
     const s = this._getPopperConfig();
@@ -1894,7 +1894,7 @@ class Qe extends Ue {
       enabled: !1
     }]), {
       ...t,
-      ...pe(this._config.popperConfig, [t])
+      ...pe(this._config.popperConfig, [void 0, t])
     };
   }
   _selectMenuItem({
@@ -2540,7 +2540,7 @@ class fm extends Ni {
     return this._config.sanitize ? lm(t, this._config.allowList, this._config.sanitizeFn) : t;
   }
   _resolvePossibleFunction(t) {
-    return pe(t, [this]);
+    return pe(t, [void 0, this]);
   }
   _putElementInTemplate(t, s) {
     if (this._config.html) {
@@ -2596,7 +2596,7 @@ const pm = "tooltip", gm = /* @__PURE__ */ new Set(["sanitize", "allowList", "sa
 let Rr = class ph extends Ue {
   constructor(t, s) {
     if (typeof Pu > "u")
-      throw new TypeError("Bootstrap's tooltips require Popper (https://popper.js.org)");
+      throw new TypeError("Bootstrap's tooltips require Popper (https://popper.js.org/docs/v2/)");
     super(t, s), this._isEnabled = !0, this._timeout = 0, this._isHovered = null, this._activeTrigger = {}, this._popper = null, this._templateFactory = null, this._newContent = null, this.tip = null, this._setListeners(), this._config.selector || this._fixTitle();
   }
   // Getters
@@ -2621,7 +2621,7 @@ let Rr = class ph extends Ue {
   }
   toggle() {
     if (this._isEnabled) {
-      if (this._activeTrigger.click = !this._activeTrigger.click, this._isShown()) {
+      if (this._isShown()) {
         this._leave();
         return;
       }
@@ -2724,7 +2724,7 @@ let Rr = class ph extends Ue {
     return typeof t == "string" ? t.split(",").map((s) => Number.parseInt(s, 10)) : typeof t == "function" ? (s) => t(s, this._element) : t;
   }
   _resolvePossibleFunction(t) {
-    return pe(t, [this._element]);
+    return pe(t, [this._element, this._element]);
   }
   _getPopperConfig(t) {
     const s = {
@@ -2760,7 +2760,7 @@ let Rr = class ph extends Ue {
     };
     return {
       ...s,
-      ...pe(this._config.popperConfig, [s])
+      ...pe(this._config.popperConfig, [void 0, s])
     };
   }
   _setListeners() {
@@ -15652,7 +15652,7 @@ const CO = {
         message: null,
         data: null
       }
-    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.126");
+    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.127");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
