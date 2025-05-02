@@ -1,6 +1,4 @@
-
-
-handleError = function (response) {
+var handleError = function (response) {
 
 	response.message = 'Error ' + response.code;
 
