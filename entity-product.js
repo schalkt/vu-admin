@@ -900,7 +900,7 @@ window.VuEntities.product = (preset) => {
 							ui: 'card',
 							limit: 10,
 							colclass: 'col-6',
-							text: 'Click here to upload',
+							text: 'Click or drop here to upload',
 							accept: ["png", "jpg", "jpeg", "webp"],
 							thumbnail: 'small',
 							// download: 'default',
@@ -946,7 +946,7 @@ window.VuEntities.product = (preset) => {
 							ui: 'list',
 							limit: 15,
 							colclass: 'col-6',
-							text: 'Click here to upload',
+							text: 'Click or drop here to upload',
 							accept: [
 								"txt",
 								"pdf",

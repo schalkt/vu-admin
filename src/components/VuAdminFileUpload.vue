@@ -300,7 +300,15 @@
       <div class="row g-1">
         <div class="col-12 d-flex align-items-center justify-content-center">
 
-          <label :for="uploadId" :class="{ 'disabled bg-secondary': files && params.limit <= files.length }" class="btn btn-light border border-dark cursor-pointer w-100">
+          <label :for="uploadId" 
+                 :class="[
+                   { 'disabled bg-secondary': files && params.limit <= files.length },
+                   'btn btn-light border border-dark cursor-pointer w-100 vsa-drop-zone',
+                   { 'vsa-drop-zone-active': isDragging }
+                 ]"
+                 @dragover.prevent 
+                 @dragenter.prevent 
+                 @drop.prevent="handleDrop">
 
             <span v-if="files && params.limit > files.length">
               <i class="bi bi-upload me-2"></i> {{ params.text }}
@@ -423,6 +431,7 @@ const FileUpload = {
       bytes: 0,
       wait: false,
       uploadEvent: null,
+      isDragging: false,
     };
   },
   components: {
@@ -982,6 +991,13 @@ const FileUpload = {
 
     },
 
+    handleDrop(event) {
+      event.preventDefault();
+      this.isDragging = false;
+      const files = event.dataTransfer.files;
+      this.handleFileChange({ target: { files } });
+    },
+
   },
 };
 
@@ -1075,7 +1091,7 @@ export default FileUpload;
         }
       }
     }
-
+   
   }
 }
 

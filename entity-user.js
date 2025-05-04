@@ -418,7 +418,7 @@ window.VuEntities.user = (preset) => {
 							required: false,
 							params: {
 								limit: 2,
-								text: 'Click here to upload',
+								text: 'Click or drop here to upload',
 								accept: ["image/png", "image/jpeg", "image/webp"],
 								thumbnail: 'small',
 								download: 'large',
