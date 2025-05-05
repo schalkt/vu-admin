@@ -27,10 +27,14 @@ const HtmlEditor = {
   },
   methods: {
     initQuillEditor() {
-      // var Block = Quill.import("blots/block");
-      // Block.tagName = "DIV";
-      // Quill.register(Block, true);
+      
+      const Block = Quill.import('blots/block');
+      class DivBlock extends Block {}
+      DivBlock.tagName = 'div'; // vagy 'span'
+      // DivBlock.blotName = 'paragraph'; // ezzel felülírod az alap p-t
+      Quill.register(DivBlock, true);
 
+      
       this.quill = new Quill(this.$refs.editor, {
         theme: "snow",
         modules: {

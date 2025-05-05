@@ -247,6 +247,86 @@ window.VuEntities.post = (preset) => {
 	};
 
 	let form = {
+		control: {
+			class: 'text-end',
+			buttons: [
+				{
+					title: 'More actions',
+					class: 'btn btn-sm btn-outline-dark m-1',
+					icon: 'bi bi-list',
+					dropdowns: [
+						{
+							action: 'FORM_COPY',
+							title: 'Copy',
+							class: 'dropdown-item cursor-pointer p-1',
+							icon: 'bi bi-copy',
+						},
+						{
+							action: 'FORM_NEW',
+							title: 'New product',
+							class: 'dropdown-item cursor-pointer p-1',
+							icon: 'bi bi-plus-circle',
+						},
+						{
+							title: 'Export data',
+							class: 'dropdown-item cursor-pointer p-1',
+							icon: 'bi bi-filetype-csv',
+							action: (item, params) => {
+								console.log(item);
+								console.log(params);
+
+								if (confirm('Are you sure?')) {
+									console.log(items);
+									alert('Hello :)');
+								}
+
+							},
+							params: {
+								export: true,
+								type: 'default',
+							},
+						},
+						{
+							action: 'FORM_DELETE',
+							title: 'Delete',
+							class: 'dropdown-item cursor-pointer p-1 text-danger',
+							icon: 'bi bi-trash',
+							disabled: (params) => {
+								return params.item[params.form.settings.pkey] ? false : true;
+							}
+						},
+					]
+				},
+				{
+					action: 'FORM_RELOAD',
+					title: 'Reload',
+					class: 'btn btn-sm btn-outline-dark m-1',
+					icon: 'bi bi-arrow-clockwise',
+					disabled: (params) => {
+						return params.item[params.form.settings.pkey] ? false : true;
+					}
+				},
+				{
+					action: 'FORM_CLOSE',
+					title: 'Close',
+					class: 'btn btn-sm btn-secondary m-1',
+					icon: 'bi bi-x',
+				},
+				{
+					action: 'FORM_SAVE',
+					title: 'Save',
+					class: 'btn btn-sm btn-primary m-1',
+					icon: 'bi bi-save',
+				},
+				{
+					action: 'FORM_SAVE_AND_CLOSE',
+					title: 'Save and close',
+					class: 'btn btn-sm btn-success m-1',
+					icon: 'bi bi-save',
+				},
+
+			],
+		},
 		groups: [
 			{
 				fields: [

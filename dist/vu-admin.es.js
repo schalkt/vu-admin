@@ -10934,7 +10934,10 @@ const ke = (e, t) => {
   },
   methods: {
     initQuillEditor() {
-      this.quill = new D(this.$refs.editor, {
+      const e = D.import("blots/block");
+      class t extends e {
+      }
+      t.tagName = "div", D.register(t, !0), this.quill = new D(this.$refs.editor, {
         theme: "snow",
         modules: {
           //syntax: true,              // Include syntax module
@@ -15667,7 +15670,7 @@ const CO = {
         message: null,
         data: null
       }
-    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.130");
+    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.131");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
