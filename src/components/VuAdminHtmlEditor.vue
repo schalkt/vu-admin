@@ -77,16 +77,25 @@ export default HtmlEditor;
 <style lang="scss">
 .vu-admin {
   [data-bs-theme="light"] {
+    .ql-editor-container {
+      color: var(--bs-dark) !important;
+    }
     .ql-container .ql-snow {
       color: var(--bs-dark) !important;
     }
     .ql-editor {
-      color: var(--bs-light) !important;
+      color: var(--bs-dark) !important;
     }
   }
 
   [data-bs-theme="dark"] {
     .ql-editor-container {
+      color: var(--bs-light) !important;
+    }
+    .ql-container .ql-snow {
+      color: var(--bs-light) !important;
+    }
+    .ql-editor {
       color: var(--bs-light) !important;
     }
   }
