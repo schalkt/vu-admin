@@ -947,7 +947,7 @@ const Pu = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   write: Fu
 }, Symbol.toStringTag, { value: "Module" }));
 /*!
-  * Bootstrap v5.3.5 (https://getbootstrap.com/)
+  * Bootstrap v5.3.6 (https://getbootstrap.com/)
   * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
@@ -1237,7 +1237,7 @@ class Ni {
     }
   }
 }
-const Of = "5.3.5";
+const Of = "5.3.6";
 class Ue extends Ni {
   constructor(t, s) {
     super(), t = Is(t), t && (this._element = t, this._config = this._getConfig(s), Lo.set(this._element, this.constructor.DATA_KEY, this));
@@ -1248,6 +1248,7 @@ class Ue extends Ni {
     for (const t of Object.getOwnPropertyNames(this))
       this[t] = null;
   }
+  // Private
   _queueCallback(t, s, n = !0) {
     Wu(t, s, n);
   }
@@ -1718,10 +1719,10 @@ class vi extends Ue {
     };
     this._element.style[s] = "", this._queueCallback(n, this._element, !0);
   }
+  // Private
   _isShown(t = this._element) {
     return t.classList.contains(Bo);
   }
-  // Private
   _configAfterMerge(t) {
     return t.toggle = !!t.toggle, t.parent = Is(t.parent), t;
   }
@@ -1833,7 +1834,7 @@ class Qe extends Ue {
       if ("ontouchstart" in document.documentElement)
         for (const n of [].concat(...document.body.children))
           V.off(n, "mouseover", wr);
-      this._popper && this._popper.destroy(), this._menu.classList.remove(_n), this._element.classList.remove(_n), this._element.setAttribute("aria-expanded", "false"), ys.removeDataAttribute(this._menu, "popper"), V.trigger(this._element, Wp, t);
+      this._popper && this._popper.destroy(), this._menu.classList.remove(_n), this._element.classList.remove(_n), this._element.setAttribute("aria-expanded", "false"), ys.removeDataAttribute(this._menu, "popper"), V.trigger(this._element, Wp, t), this._element.focus();
     }
   }
   _getConfig(t) {
@@ -15670,7 +15671,7 @@ const CO = {
         message: null,
         data: null
       }
-    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.131");
+    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.132");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
