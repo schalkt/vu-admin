@@ -3298,14 +3298,33 @@ async function An(e) {
 }
 function Tn(e, t) {
   let s = [];
-  if (t && t.errors)
-    for (let n of t.errors)
-      s.push({
-        message: n.message,
-        timeout: 3500,
-        priority: "danger"
-      });
-  else e.status >= 400 && e.status <= 511 && s.push({
+  if (t && t.errors) {
+    if (Array.isArray(t.errors))
+      for (let n of t.errors)
+        s.push({
+          message: n.message || n,
+          timeout: 3500,
+          priority: "danger"
+        });
+    else if (typeof t.errors == "object") {
+      if (Array.isArray(t.errors.exception))
+        for (let n of t.errors.exception)
+          s.push({
+            message: n.message || n,
+            timeout: 3500,
+            priority: "danger"
+          });
+      else
+        for (let n in t.errors)
+          if (Array.isArray(t.errors[n]))
+            for (let i of t.errors[n])
+              s.push({
+                message: i.message || i,
+                timeout: 3500,
+                priority: "danger"
+              });
+    }
+  } else e.status >= 400 && e.status <= 511 && s.push({
     message: e.status + (e.statusText ? " " + e.statusText : ""),
     timeout: 3500,
     priority: "danger"
@@ -15665,7 +15684,7 @@ const vO = {
         message: null,
         data: null
       }
-    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.133");
+    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.134");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
