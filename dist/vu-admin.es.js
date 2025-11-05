@@ -12636,6 +12636,41 @@ const P2 = /* @__PURE__ */ Se(s2, [["render", q2]]), V2 = {
     addFormMessage(e, t, s, n) {
       this.addMessage("form", e, t, s, n);
     },
+    handleFormErrors(e) {
+      if (console.log(e), e == null)
+        return;
+      const t = 14500, s = "danger";
+      if (typeof e == "string") {
+        this.addFormMessage(e, t, s);
+        return;
+      }
+      if (Array.isArray(e)) {
+        for (let n of e)
+          n && typeof n == "object" && n.message ? this.addFormMessage(
+            n.message,
+            n.timeout || t,
+            n.priority || s
+          ) : typeof n == "string" ? this.addFormMessage(n, t, s) : n && typeof n == "object" && this.addFormMessage(
+            JSON.stringify(n),
+            t,
+            s
+          );
+        return;
+      }
+      if (typeof e == "object" && e.message) {
+        this.addFormMessage(
+          e.message,
+          e.timeout || t,
+          e.priority || s
+        );
+        return;
+      }
+      this.addFormMessage(
+        String(e),
+        t,
+        s
+      );
+    },
     addMessage(e, t, s, n, i) {
       clearTimeout(this.messageTimeout);
       const r = Date.now() + Math.random().toString(36).substring(2, 9);
@@ -12703,7 +12738,7 @@ const P2 = /* @__PURE__ */ Se(s2, [["render", q2]]), V2 = {
           2500
         ), this.item = fr(s), this.itemOriginal = Object.assign({}, s)), e === !0 && this.modalWindow.hide(), this.reloadTable();
       }, (t) => {
-        console.log(t), this.addFormMessage(t.message, 14500, "danger");
+        this.handleFormErrors(t);
       });
     },
     async deleteItem(e, t) {
@@ -15684,7 +15719,7 @@ const vO = {
         message: null,
         data: null
       }
-    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.134");
+    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.135");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);

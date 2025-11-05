@@ -219,6 +219,66 @@ const VuAdminForm = {
 
     },
 
+    handleFormErrors(errors) {
+      
+      if (errors === undefined || errors === null) {
+        return;
+      }
+
+      const defaultTimeout = 14500;
+      const defaultLevel = 'danger';
+
+      // Ha string, akkor közvetlenül megjelenítjük
+      if (typeof errors === 'string') {
+        this.addFormMessage(errors, defaultTimeout, defaultLevel);
+        return;
+      }
+
+      // Ha array, akkor minden elemet megjelenítünk
+      if (Array.isArray(errors)) {
+        for (let error of errors) {
+          // Ha az error egy objektum message mezővel
+          if (error && typeof error === 'object' && error.message) {
+            this.addFormMessage(
+              error.message, 
+              error.timeout || defaultTimeout, 
+              error.priority || defaultLevel
+            );
+          } 
+          // Ha az error egy string
+          else if (typeof error === 'string') {
+            this.addFormMessage(error, defaultTimeout, defaultLevel);
+          }
+          // Ha az error egy objektum, de nincs message mező, próbáljuk az error objektumot stringgé alakítani
+          else if (error && typeof error === 'object') {
+            this.addFormMessage(
+              JSON.stringify(error), 
+              defaultTimeout, 
+              defaultLevel
+            );
+          }
+        }
+        return;
+      }
+
+      // Ha objektum, akkor próbáljuk kinyerni a message mezőt
+      if (typeof errors === 'object' && errors.message) {
+        this.addFormMessage(
+          errors.message, 
+          errors.timeout || defaultTimeout, 
+          errors.priority || defaultLevel
+        );
+        return;
+      }
+
+      // Végül, ha semmi más nem működik, próbáljuk stringgé alakítani
+      this.addFormMessage(
+        String(errors), 
+        defaultTimeout, 
+        defaultLevel
+      );
+    },
+
 
     addMessage(type, msg, timeout, priority, details) {
 
@@ -415,10 +475,7 @@ const VuAdminForm = {
         this.reloadTable();
 
       }, (err) => {
-
-        console.log(err);
-        this.addFormMessage(err.message, 14500, 'danger')
-
+        this.handleFormErrors(err);
       });
     },
 
