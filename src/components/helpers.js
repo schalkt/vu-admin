@@ -47,12 +47,42 @@ export function getResponseErrors(response, data) {
 
     if (data && data.errors) {
 
-        for (let error of data.errors) {
-            errors.push({
-                message: error.message,
-                timeout: 3500,
-                priority: 'danger',
-            });
+        // Ha data.errors egy array, akkor közvetlenül használjuk
+        if (Array.isArray(data.errors)) {
+            for (let error of data.errors) {
+                errors.push({
+                    message: error.message || error,
+                    timeout: 3500,
+                    priority: 'danger',
+                });
+            }
+        } 
+        // Ha data.errors egy objektum, akkor keressük benne az array-t
+        else if (typeof data.errors === 'object') {
+            // Először próbáljuk az 'exception' mezőt
+            if (Array.isArray(data.errors.exception)) {
+                for (let error of data.errors.exception) {
+                    errors.push({
+                        message: error.message || error,
+                        timeout: 3500,
+                        priority: 'danger',
+                    });
+                }
+            }
+            // Ha nincs exception, akkor keressük az összes array mezőt
+            else {
+                for (let key in data.errors) {
+                    if (Array.isArray(data.errors[key])) {
+                        for (let error of data.errors[key]) {
+                            errors.push({
+                                message: error.message || error,
+                                timeout: 3500,
+                                priority: 'danger',
+                            });
+                        }
+                    }
+                }
+            }
         }
 
     } else if (response.status >= 400 && response.status <= 511) {
