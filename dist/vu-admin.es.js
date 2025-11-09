@@ -943,11 +943,6 @@ const Fu = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   viewport: wa,
   write: uu
 }, Symbol.toStringTag, { value: "Module" }));
-/*!
-  * Bootstrap v5.3.8 (https://getbootstrap.com/)
-  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
-  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
-  */
 const As = /* @__PURE__ */ new Map(), wo = {
   set(e, t, s) {
     As.has(e) || As.set(e, /* @__PURE__ */ new Map());
@@ -12637,7 +12632,7 @@ const P2 = /* @__PURE__ */ Se(s2, [["render", q2]]), V2 = {
       this.addMessage("form", e, t, s, n);
     },
     handleFormErrors(e) {
-      if (console.log(e), e == null)
+      if (e == null)
         return;
       const t = 14500, s = "danger";
       if (typeof e == "string") {
@@ -15059,14 +15054,6 @@ function mO(e, t, s, n, i, r) {
 }
 const WN = /* @__PURE__ */ Se(fO, [["render", mO]]);
 var Jo = { exports: {} };
-/*
- * [js-sha512]{@link https://github.com/emn178/js-sha512}
- *
- * @version 0.9.0
- * @author Chen, Yi-Cyuan [emn178@gmail.com]
- * @copyright Chen, Yi-Cyuan 2014-2024
- * @license MIT
- */
 var tu;
 function bO() {
   return tu || (tu = 1, (function(e) {
@@ -15719,7 +15706,7 @@ const vO = {
         message: null,
         data: null
       }
-    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.135");
+    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.2.136");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
