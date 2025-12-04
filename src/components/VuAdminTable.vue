@@ -823,6 +823,30 @@ export default {
       eventBus.on(`EDIT-${this.settings.entity}`, (data) => {
         this.editItem(data.payload.item);
       });
+
+      // Hallgassunk FILTER eventekre, ha van filterListen konfiguráció
+      if (this.settings.table && this.settings.table.filterListen) {
+        const filterListen = this.settings.table.filterListen;
+        const eventName = `FILTER-${this.settings.entity}`;
+        
+        // Csak egyszer regisztráljuk az event listener-t
+        if (!this._filterListenerRegistered) {
+          eventBus.on(eventName, (data) => {
+            if (data.from === filterListen.entity && data.payload) {
+              const { field, value } = data.payload;
+              
+              // Keressük meg a megfelelő oszlopot
+              const column = this.settings.table.columns.find(col => col.name === field);
+              if (column && column.filter) {
+                column.filter.value = value;
+                column.filter.operator = column.filter.default_operator || '=';
+                this.reloadTable();
+              }
+            }
+          });
+          this._filterListenerRegistered = true;
+        }
+      }
     },
 
     tableWait(block) {
@@ -1096,6 +1120,18 @@ export default {
 
       if (params.$event) {
         params.$event.stopPropagation();
+      }
+
+      // Ha van filterLink konfiguráció, küldjünk eventet
+      if (button.filterLink && params.item) {
+        const filterValue = params.item[button.filterLink.value || this.settings.pkey];
+        if (filterValue !== undefined && filterValue !== null) {
+          this.sendEvent('FILTER', button.filterLink.entity, {
+            field: button.filterLink.field,
+            value: filterValue
+          });
+        }
+        return;
       }
 
       let action = button.action ? button.action
@@ -1383,12 +1419,12 @@ export default {
       if (settings.events && settings.events.beforeItemsLoad) {
         // settings.debug && console.log('@beforeItemsLoad', urlParams);
         settings.events.beforeItemsLoad(urlParams, settings);
-      }
+      }      
 
       const response = await fetch(
         prepareFetchUrl("GET", settings.table.api, null, urlParams),
         prepareFetchOptions("GET", settings.table.api, null, auth)
-      );
+      );      
 
       const json = await getResponseJson(response);
       const errors = getResponseErrors(response, json.data);

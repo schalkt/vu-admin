@@ -68,7 +68,13 @@ window.VuEntities.user = (preset) => {
 					title: 'Név <span class="text-muted ms-1 fw-light">( felhasználónév )</span>',
 					template: (firstName, item) => {
 						return item.firstName + ' ' + item.lastName + '<span class="text-muted ms-2 fw-light">( ' + item.username + ' )</span>';
-					}
+					},
+					filterLink: {
+						entity: 'todos',
+						field: 'userId',
+						value: 'id'
+					},
+					class: 'cursor-pointer'
 				},
 				{
 					name: 'birthDate',
@@ -340,6 +346,21 @@ window.VuEntities.user = (preset) => {
 						// {
 						// 	action: 'TABLE_ROW_DETAIL',
 						// },
+						{
+							action: (item, params, self) => {
+								// Küldjünk FILTER eventet a todos entity-nek, ugyanazt, mint a filterLink
+								const filterValue = item[self.settings.pkey];
+								if (filterValue !== undefined && filterValue !== null) {
+									self.sendEvent('FILTER', 'todos', {
+										field: 'userId',
+										value: filterValue
+									});
+								}
+							},
+							title: 'Todos',
+							class: 'btn btn-sm btn-outline-info',
+							icon: 'bi bi-list-check'
+						},
 						{
 							action: 'TABLE_ROW_EDIT',
 						},

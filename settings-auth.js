@@ -287,6 +287,7 @@ window.VuSettings = {
                         post: '/entity-post.js',
                         product: '/entity-product.js',
                         user: '/entity-user.js',
+                        todos: '/entity-todos.js',
                     }
                 };
             },
@@ -303,6 +304,7 @@ window.VuSettings = {
                         post: '/entity-post.js',
                         product: '/entity-product.js',
                         user: '/entity-user.js',
+                        todos: '/entity-todos.js',
                     }
                 };
             },

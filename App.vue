@@ -17,6 +17,9 @@
       <div class="col-md-12">
         <vu-admin :entity="'user'" :auth="auth"></vu-admin>
       </div>
+      <div class="col-md-12">
+        <vu-admin :entity="'todos'" :auth="auth"></vu-admin>
+      </div>
     
     </div>
 
