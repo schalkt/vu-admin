@@ -11073,7 +11073,7 @@ const Se = (e, t) => {
       this.closeHtmlModal();
     },
     openIframeModal() {
-      this.iframeHtml = '<iframe src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Feurokert%2Fvideos%2F1404421690667938%2F&show_text=false&width=267&t=0" width="267" height="476" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>', this.showIframeModal = !0, this.$nextTick(() => {
+      this.iframeHtml = "", this.showIframeModal = !0, this.$nextTick(() => {
         this.$refs.iframeTextarea && (this.$refs.iframeTextarea.focus(), this.$refs.iframeTextarea.select());
       });
     },
@@ -15955,7 +15955,7 @@ const FO = {
         message: null,
         data: null
       }
-    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.3.1");
+    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.3.2");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
