@@ -383,7 +383,9 @@ import {
   arrayItemMoveUp,
   arrayItemMoveDown,
   roundFileSize,
-  extensionByFilename
+  extensionByFilename,
+  secureRandomInt,
+  secureRandomFloat
 } from "./helpers";
 
 import VuAdminFileUploadInfo from "./VuAdminFileUploadInfo.vue";
@@ -438,7 +440,7 @@ const FileUpload = {
     VuAdminFileUploadInfo
   },
   created() {
-    let uid = Math.round(Math.random() * 100000);
+    let uid = secureRandomInt(100000);
     this.uploadId = "image_upload_" + uid;
     this.params = this.field.params;
   },
@@ -524,7 +526,7 @@ const FileUpload = {
         }
       };
       file.title = file.name.split(".").slice(0, -1).join(".");
-      file.uid = Math.round(Math.random() * 9999999).toString(32) + Date.now().toString(32);
+      file.uid = secureRandomInt(9999999).toString(32) + Date.now().toString(32);
       file.slug = slugify(file.title);
       file.timestamp = Math.round(Date.now() / 1000);
       file.original = {
@@ -571,7 +573,7 @@ const FileUpload = {
       reader.onload = (e) => {
         video.src = e.target.result;
         video.addEventListener("loadeddata", () => {
-          video.currentTime = video.duration * Math.random();
+          video.currentTime = video.duration * secureRandomFloat();
           file.video = video;
         });
 
@@ -590,7 +592,7 @@ const FileUpload = {
         return;
       }
 
-      file.video.currentTime = file.video.duration * Math.random();
+      file.video.currentTime = file.video.duration * secureRandomFloat();
     },
 
     async handleFileChange(event) {

@@ -100,6 +100,58 @@ export function getResponseErrors(response, data) {
 
 
 
+// Kriptográfiailag erősebb véletlen-generátor Math.random nélkül
+let _fallbackSeed = Date.now() ^ (((typeof performance !== "undefined" && performance.now) ? performance.now() : 0) << 16);
+
+function _fallbackRandomFloat() {
+    // Egyszerű xorshift32
+    _fallbackSeed ^= (_fallbackSeed << 13);
+    _fallbackSeed ^= (_fallbackSeed >>> 17);
+    _fallbackSeed ^= (_fallbackSeed << 5);
+    return (_fallbackSeed >>> 0) / 0xFFFFFFFF;
+}
+
+export function secureRandomBytes(length = 16) {
+    const size = Math.max(0, length);
+    const bytes = new Uint8Array(size);
+
+    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+        crypto.getRandomValues(bytes);
+        return bytes;
+    }
+
+    // Fallback: xorshift alapú töltés
+    for (let i = 0; i < size; i++) {
+        bytes[i] = Math.floor(_fallbackRandomFloat() * 256);
+    }
+
+    return bytes;
+}
+
+export function secureRandomFloat() {
+    const bytes = secureRandomBytes(4);
+    const value = ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]) >>> 0;
+    return value / 0xFFFFFFFF; // 0 <= x < 1
+}
+
+export function secureRandomInt(max) {
+    if (!max || max <= 0) {
+        return 0;
+    }
+    return Math.floor(secureRandomFloat() * max);
+}
+
+export function secureRandomString(length = 12, charset = "abcdefghijklmnopqrstuvwxyz0123456789") {
+    const bytes = secureRandomBytes(length);
+    let result = "";
+    const charsLen = charset.length;
+    for (let i = 0; i < bytes.length; i++) {
+        result += charset[bytes[i] % charsLen];
+    }
+    return result;
+}
+
+
 export function prepareFetchOptions(method, api, options, auth) {
 
     if (!api.options) {

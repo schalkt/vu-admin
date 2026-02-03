@@ -625,7 +625,9 @@ import {
   arraySelectAll,
   arraySelectInvert,
   arraySelectClear,
-  executeFunctions
+  executeFunctions,
+  secureRandomInt,
+  secureRandomString
 } from "./helpers";
 import VuAdminForm from "./VuAdminForm.vue";
 import VuAdminTablePagination from "./VuAdminTablePagination.vue";
@@ -713,7 +715,7 @@ export default {
   },
   created() {
 
-    let uid = Math.round(Math.random() * 100000);
+    let uid = secureRandomInt(100000);
 
     this.formId = "form_" + this.settings.entity + "_" + uid;
     this.modalId = "modal_" + this.settings.entity + "_" + uid;
@@ -2248,7 +2250,7 @@ export default {
 
       clearTimeout(this.messageTimeout);
 
-      const uid = Date.now() + Math.random().toString(36).substring(2, 9);
+      const uid = `${Date.now().toString(36)}-${secureRandomString(8)}`;
 
       this.message[type] = {
         uid: uid,

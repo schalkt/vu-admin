@@ -140,6 +140,7 @@ import {
   flattenObject,
   getValueOrFunction,
   unflattenObject,
+  secureRandomString,
 
 } from "./helpers";
 import VuAdminFormGroup from "./VuAdminFormGroup.vue";
@@ -284,7 +285,7 @@ const VuAdminForm = {
 
       clearTimeout(this.messageTimeout);
 
-      const uid = Date.now() + Math.random().toString(36).substring(2, 9);
+      const uid = `${Date.now().toString(36)}-${secureRandomString(8)}`;
 
       this.message[type] = {
         uid: uid,

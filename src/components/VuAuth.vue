@@ -214,6 +214,7 @@ import { Modal } from "bootstrap";
 import {
     translate,
     getValueOrFunction,
+    secureRandomInt,
 } from "./helpers";
 
 
@@ -676,7 +677,7 @@ const VuAuth = {
             this.settings = window.VuSettings.auth;
         }
 
-        let uid = Math.round(Math.random() * 100000);
+        let uid = secureRandomInt(100000);
 
         this.formId = "form_profil_" + uid;
         this.modalId = "modal_profil_" + uid;
