@@ -14981,7 +14981,7 @@ function vO(e, t, s, n, i, r) {
                         rows: "3",
                         "onUpdate:modelValue": (h) => l[d.name] = h,
                         onChange: (h) => r.onRowInputChange(l[d.name], d, l, c)
-                      }, `
+                      }, `\r
                     `, 40, ZC)), [
                         [ge, l[d.name]]
                       ]) : T("", !0),

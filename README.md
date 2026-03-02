@@ -8,4 +8,6 @@ Do not use it in a production environment yet
 
 ## TODO
 
-- 
+- store settings to localstorage
+- export to csv buttons to
+
