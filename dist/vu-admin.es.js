@@ -15978,7 +15978,7 @@ const OO = {
         message: null,
         data: null
       }
-    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.3.4");
+    }), console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.3.5");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handleEscapeKey);
