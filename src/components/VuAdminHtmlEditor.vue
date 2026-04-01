@@ -50,8 +50,8 @@
 
 <script>
 import Quill from "quill";
-import "./../../node_modules/quill/dist/quill.core.css";
-import "./../../node_modules/quill/dist/quill.snow.css";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
 
 const HtmlEditor = {
   props: ["modelValue"],

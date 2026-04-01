@@ -120,9 +120,10 @@ export default defineConfig({
           crypto: 'crypto',
         },
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name == 'style.css')
+          const name = assetInfo.name ?? assetInfo.names?.[0];
+          if (name === 'style.css')
             return 'vu-admin.css';
-          return assetInfo.name;
+          return name ?? '[name].[ext]';
         },
       }
     }

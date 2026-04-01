@@ -2117,12 +2117,9 @@ export default {
 
     async exportTable(urlParams) {
       try {
-        fetchItems
-
         urlParams.limit = this.config.pagination.total ? this.config.pagination.total : 0;
 
         let filter = this.getFiltersForFetch();
-        // let relations = this.getTableRelationsForFetch();
         let order = this.getOrdersForFetch();
 
         if (this.selected.length > 0) {
@@ -2136,9 +2133,7 @@ export default {
         urlParams.filter = filter;
         urlParams.order = order;
 
-        // let items = await this.fetchItems(this.settings, urlParams, null, () => {
-
-        // });
+        let items = await this.fetchItems(this.settings, urlParams, this.config, this.auth);
 
         if (this.settings.events && this.settings.events.beforeItemsExport) {
           this.settings.events.beforeItemsExport(items);
