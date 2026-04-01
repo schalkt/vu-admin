@@ -3065,7 +3065,7 @@ function vc(e) {
 //#endregion
 //#region src/components/helpers.js
 function yc(e, t) {
-	for (let n in t) t[n] instanceof Object && n in e && Object.assign(t[n], yc(e[n], t[n]));
+	for (let n in t) n === "__proto__" || n === "constructor" || n === "prototype" || t[n] instanceof Object && n in e && Object.assign(t[n], yc(e[n], t[n]));
 	return Object.assign(e || {}, t);
 }
 function bc(e, t, n, r) {
@@ -3169,7 +3169,10 @@ function Pc(e) {
 	return t;
 }
 function Fc(e, t, n, r) {
-	let i = (e, t) => !e || !t ? e : e.replace(/{\s*(.*?)\s*}/g, (e, n) => t[n] ? t[n] : "");
+	let i = (e, t) => !e || !t ? e : e.replace(/{([^}]*)}/g, (e, n) => {
+		let r = n.trim();
+		return t[r] ? t[r] : "";
+	});
 	return !t || (r ||= document.documentElement.lang, !r || !t[r]) || !t[r][e] ? i(e, n) : i(t[r][e]);
 }
 function Ic(e, t, n = ";") {
@@ -11815,7 +11818,7 @@ var vC = {
 				t.form.default && (i.data = Object.assign({}, t.form.default, i.data)), t.events && t.events.afterItemLoad && t.events.afterItemLoad(i.data, r);
 				let a;
 				a = t.form.api.input.item ? typeof t.form.api.input.item == "string" ? i.data[t.form.api.input.item] : t.form.api.input.item(i.data, r) : i.data;
-				for (let e of t.form.groups) for (let r of e.fields) r.type === "dropdown" && !a[r.name] && (a[r.name] = []), r.relation && t.relations[r.relation.config] && (r.relation = yc(t.relations[r.relation.config], r.relation), console.log(r.relation, n), await this.fetchRelation(r, [a], n));
+				for (let e of t.form.groups) for (let r of e.fields) r.type === "dropdown" && r.name !== "__proto__" && r.name !== "constructor" && r.name !== "prototype" && !a[r.name] && (a[r.name] = []), r.relation && t.relations[r.relation.config] && (r.relation = yc(t.relations[r.relation.config], r.relation), console.log(r.relation, n), await this.fetchRelation(r, [a], n));
 				this.item = Nc(a), this.itemOriginal = Object.assign({}, a), this.loaded = !0, this.formNoWait();
 			} catch (e) {
 				console.error(e), this.formNoWait();
@@ -14190,7 +14193,7 @@ var YE = {
 				message: null,
 				data: null
 			}
-		}, console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.3.6");
+		}, console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.3.7");
 	},
 	beforeUnmount() {
 		window.removeEventListener("keydown", this.handleEscapeKey);

@@ -2,6 +2,7 @@
 export function deepMerge(target, source) {
 
     for (const key in source) {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
         if (source[key] instanceof Object && key in target) {
             Object.assign(source[key], deepMerge(target[key], source[key]));
         }
@@ -295,8 +296,9 @@ export function translate(key, translates, vars, language) {
 
         if (!value || !vars) return value;
 
-        return value.replace(/{\s*(.*?)\s*}/g, (match, p1) => {
-            return vars[p1] ? vars[p1] : '';
+        return value.replace(/{([^}]*)}/g, (match, p1) => {
+            const key = p1.trim();
+            return vars[key] ? vars[key] : '';
         });
     }
 

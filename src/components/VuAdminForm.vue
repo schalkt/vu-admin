@@ -388,7 +388,7 @@ const VuAdminForm = {
           for (let field of group.fields) {
             
             // preset dropdowns multiple
-            if (field.type === "dropdown" && !item[field.name]) {
+            if (field.type === "dropdown" && field.name !== '__proto__' && field.name !== 'constructor' && field.name !== 'prototype' && !item[field.name]) {
               item[field.name] = [];
             }
             
