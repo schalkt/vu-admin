@@ -14193,7 +14193,7 @@ var YE = {
 				message: null,
 				data: null
 			}
-		}, console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.3.8");
+		}, console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.3.9");
 	},
 	beforeUnmount() {
 		window.removeEventListener("keydown", this.handleEscapeKey);
