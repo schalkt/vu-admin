@@ -10,7 +10,7 @@
 
 - **Data table** — sortable columns (multi-column), server-side pagination, per-column filters, column visibility toggle, expandable row details, inline editing, bulk actions, CSV export
 - **Form** — modal-based editor with field types: `text`, `number`, `email`, `textarea`, `date`, `datetime-local`, `checkbox`, `select`, `dropdown` (multi-select), `list` (dynamic arrays), `html` (Quill editor), `image`/`upload` (drag-and-drop with presets), `template` (custom HTML)
-- **Authentication** — login, registration, forgot password, activation flow, `/me` session restore, localStorage persistence
+- **Authentication** — login, registration, forgot password, activation flow, `/me` session restore, localStorage persistence, **two-factor authentication (email OTP)**, role-based entity access
 - **Relations** — automatic join of related entities, displayed inline in table and form
 - **Events** — lifecycle hooks: `beforeItemSave`, `afterItemSave`, `beforeItemDelete`, `afterItemDelete`, `afterItemsLoad`, `beforeItemsLoad`, etc.
 - **i18n** — built-in Hungarian translations, fully overridable per entity
@@ -439,42 +439,77 @@ form: {
 
 ```js
 window.VuSettings.auth = {
-  title:  { login: 'Sign in', registration: 'Register', … },
-  submit: { login: 'Sign in', registration: 'Register', cancel: 'Cancel', … },
+  title:  { login: 'Sign in', registration: 'Register', twofa: 'Two-factor auth', … },
+  submit: { login: 'Sign in', registration: 'Register', cancel: 'Cancel', twofa: 'Verify', resend: 'Resend', … },
   api: {
-    login:      '/api/auth/login',
-    register:   '/api/auth/register',
-    profile:    '/api/auth/me',
-    activation: '/api/auth/activate',
-    forgot:     '/api/password/forgot',
-    password:   '/api/password/update',
+    login:       '/api/auth/login',
+    register:    '/api/auth/register',
+    profile:     '/api/auth/me',
+    activation:  '/api/auth/activate',
+    forgot:      '/api/password/forgot',
+    password:    '/api/password/update',
+    twofa:       '/api/auth/twofa',       // 2FA code verification
+    twofaResend: '/api/auth/twofa-resend',// resend email OTP
+  },
+  captcha: {
+    url: '/api/auth/captcha',
+    panels: ['login', 'registration', 'forgot'],
+    error: 'Please select 1 icon to continue.',
+  },
+  twofa: {
+    panels: ['login'],           // panels where 202 response triggers 2FA flow
+    label: 'Verification code',
+    placeholder: '6-digit code',
+    info: 'Enter the 6-digit code sent to your e-mail. Valid for 5 minutes.',
+    error: 'Invalid code, please try again.',
   },
   username: { type: 'text', label: 'Username or e-mail', icon: 'bi bi-envelope' },
   password: { type: 'password', label: 'Password', minlength: 4 },
   inputs: {
     // extra fields shown on specific panels
-    role: { type: 'select', panels: ['registration'], options: [ … ] },
+    twofa: { type: 'select', panels: ['registration'], options: [
+      { value: '', label: 'No 2FA' },
+      { value: 'email', label: 'E-mail code' },
+    ]},
   },
   accepts: [
     { name: 'tos',  label: () => 'I accept the <a href="/tos">Terms</a>', panels: ['registration'], required: true },
   ],
   onSuccess: {
-    login:      (auth) => { auth.user = auth.response.data; auth.user.token = …; auth.settings = { entities: { … } }; },
-    profile:    (auth) => { Object.assign(auth.user, auth.response.data); },
-    registration:(auth) => { auth.response.message = 'Check your e-mail to activate.'; },
-    activation: (auth) => { auth.user = auth.response.data; /* same as login */ },
-    forgot:     (auth) => { auth.response.message = 'Reset link sent.'; },
-    password:   (auth) => { auth.response.message = 'Password updated.'; },
+    login: (auth) => {
+      auth.user = auth.response.data;
+      auth.user.token = auth.response.data.accessToken;
+      // Only expose entities if the user has a role assigned
+      if (auth.user.role) {
+        auth.settings = { entitiesVariable: 'VuEntities', entities: { … } };
+      }
+    },
+    profile: (auth) => {
+      Object.assign(auth.user, auth.response.data);
+      // Populate entities on page-reload if role is now available
+      if (auth.user.role && !auth.settings) {
+        auth.settings = { entitiesVariable: 'VuEntities', entities: { … } };
+      }
+    },
+    registration: (auth) => { auth.response.message = 'Check your e-mail to activate.'; },
+    activation:   (auth) => { auth.user = auth.response.data; /* same as login */ },
+    forgot:       (auth) => { auth.response.message = 'Reset link sent.'; },
+    password:     (auth) => { auth.response.message = 'Password updated.'; },
   },
   onError: {
     login: (auth) => { auth.response.message = `Error ${auth.response.code}: ${auth.response.data?.message}`; },
+    twofa: (auth) => { auth.response.message = auth.response.data?.message || `Error ${auth.response.code}`; },
   },
 };
 ```
 
+### Role-based entity access
+
+Entities (the admin data views) are only loaded when the logged-in user has a `role` assigned. Users without a role can sign in but see an empty admin shell with a warning in the user dropdown. An admin can assign a role via the user form; on the next page load `/me` will return the new role and entities will load automatically.
+
 ### Session restore on page load
 
-If `api.profile` is set, VuAuth will call it on every mount using the stored token header. On success the response is merged into `auth.user` and localStorage is refreshed. On failure (401, network error) the user is logged out automatically.
+If `api.profile` is set, VuAuth calls it on every mount using the stored token header. On success the response is merged into `auth.user` and localStorage is refreshed. If the user now has a role but `auth.settings` was not previously set (e.g. role was assigned after first login), `onSuccess.profile` can populate `auth.settings` at this point. On failure (401, network error) the user is logged out automatically.
 
 ---
 
@@ -502,10 +537,13 @@ npm run mock:reset  # write empty arrays to all db/ files
 
 | Method | Path | Description |
 |---|---|---|
-| `POST` | `/api/auth/login` | Match `username`/`email` + return token |
-| `POST` | `/api/auth/register` | Create user, 409 if email exists |
-| `GET`  | `/api/auth/me` | Return first user (token-agnostic in mock) |
-| `POST` | `/api/auth/activate` | Return first user with token |
+| `GET`  | `/api/auth/captcha` | Issue captcha challenge (8 icons + signed token) |
+| `POST` | `/api/auth/login` | Verify credentials; returns `200` with token or `202` if 2FA required |
+| `POST` | `/api/auth/register` | Create user (no default role); 409 if email exists |
+| `GET`  | `/api/auth/me` | Return current user by stored token |
+| `POST` | `/api/auth/activate` | Activate account, return token |
+| `POST` | `/api/auth/twofa` | Submit 2FA code; returns token on success |
+| `POST` | `/api/auth/twofa-resend` | Re-generate and re-send email OTP (5-min TTL) |
 | `GET`  | `/api/{entity}` | List with `limit`, `skip`, `filter`, `order` |
 | `GET`  | `/api/{entity}/{id}` | Single item |
 | `POST` | `/api/{entity}` | Create (auto-increment id) |
@@ -547,6 +585,65 @@ Empty `IN` list is treated as no filter (returns all).
 
 ---
 
+## Two-factor authentication (2FA)
+
+VU Admin supports **email OTP** as a second factor — no authenticator app or external service required.
+
+### How it works
+
+1. User submits login (username + password + captcha).
+2. If the user record has `twofa: 'email'` the server returns **HTTP 202** with a `twofaSession` token instead of the access token. A 6-digit code is generated server-side (logged to console in mock).
+3. The auth modal switches to the `twofa` panel where the user enters the code.
+4. The browser posts the code + session token to `/api/auth/twofa`. On success the server returns the normal user + access token response.
+5. A **Resend** button calls `/api/auth/twofa-resend` to generate a fresh code (resets the 5-minute TTL).
+
+### Enabling 2FA on a user (mock DB)
+
+Add `"twofa": "email"` to the user record in `mock/db/users.json`:
+
+```json
+{
+  "id": 1,
+  "username": "emilys",
+  "twofa": "email",
+  …
+}
+```
+
+Users can also opt in during registration via the `twofa` select field (shown on the registration panel).
+
+### Config
+
+```js
+window.VuSettings.auth.twofa = {
+  panels:      ['login'],               // panels where 202 triggers the 2FA flow
+  label:       'Verification code',
+  placeholder: '6-digit code',
+  info:        'Enter the code sent to your e-mail. Valid for 5 minutes.',
+  error:       'Invalid code, please try again.',
+};
+
+window.VuSettings.auth.api.twofa       = '/api/auth/twofa';
+window.VuSettings.auth.api.twofaResend = '/api/auth/twofa-resend';
+```
+
+### Backend — Node.js reference
+
+```js
+// POST /api/auth/twofa
+const entry = twoFaStore.get(body.twofaSession);
+if (!entry || Date.now() > entry.expires)
+  return res.status(401).json({ message: 'Session expired' });
+if (entry.code !== String(body.code).trim())
+  return res.status(422).json({ message: 'Invalid code' });
+twoFaStore.delete(body.twofaSession);
+// … return user + accessToken
+```
+
+The in-memory store (`twoFaStore`) maps session tokens to `{ userId, code, expires }`. Replace with Redis or a DB table in production.
+
+---
+
 ## Captcha (self-hosted, no external service)
 
 VU Admin includes a built-in **click-captcha** and **honeypot** — no Google reCAPTCHA or third-party service needed.
@@ -554,19 +651,20 @@ VU Admin includes a built-in **click-captcha** and **honeypot** — no Google re
 ### How it works
 
 1. The browser calls `GET /api/auth/captcha` and receives 8 shuffled Bootstrap Icons + a question + a **signed token**.
-2. The user clicks the **2 correct icons** highlighted in the question.
-3. On form submit the browser sends `captchaAnswer` (array of 2 icon ids) and `captchaToken` (the signed token from step 1).
-4. The backend sorts the submitted ids, recomputes the HMAC, and compares — no session or database required.
+2. The user clicks the **1 correct icon** highlighted in the question.
+3. On form submit the browser sends `captchaAnswer` (array with 1 icon id) and `captchaToken` (the signed token from step 1).
+4. The backend recomputes the HMAC for the submitted id and compares — no session or database required.
 5. A hidden **honeypot** field is silently sent alongside; bots that fill it in are rejected server-side.
 
-The token is signed with the **sorted** ids so order of clicking does not matter. Time-limited to **5-minute windows** (two consecutive windows are accepted to avoid edge-case failures at window boundaries).
+Time-limited to **5-minute windows** (two consecutive windows accepted to avoid boundary failures).
 
 ### Frontend config (`vu-admin-settings.js`)
 
 ```js
 window.VuSettings.auth.captcha = {
-  url: '/api/auth/captcha',           // endpoint that issues challenges
-  panels: ['login', 'registration', 'forgot'],  // panels where captcha is shown
+  url:    '/api/auth/captcha',                    // endpoint that issues challenges
+  panels: ['login', 'registration', 'forgot'],    // panels where captcha is shown
+  error:  'Please select 1 icon to continue.',    // validation message
 };
 ```
 
@@ -580,16 +678,18 @@ import crypto from 'crypto';
 const CAPTCHA_SECRET = process.env.CAPTCHA_SECRET; // keep secret, never expose to client
 const BUCKET = 300; // 5-minute window in seconds
 
-function signCaptcha(answer, bucket) {
-  return crypto.createHmac('sha256', CAPTCHA_SECRET)
-    .update(answer + ':' + bucket)
-    .digest('hex');
+function signCaptcha(answers, bucket) {
+  // answers is an array — sort so click order doesn't matter
+  const key = [...answers].sort().join(',') + ':' + bucket;
+  return crypto.createHmac('sha256', CAPTCHA_SECRET).update(key).digest('hex');
 }
 
-function verifyCaptcha(answer, token) {
-  if (!answer || !token) return false;
+function verifyCaptcha(answers, token) {
+  if (!answers || !token) return false;
+  const list = Array.isArray(answers) ? answers : [answers];
+  if (list.length !== 1) return false;          // expect exactly 1 icon selected
   const b = Math.floor(Date.now() / 1000 / BUCKET);
-  return signCaptcha(answer, b) === token || signCaptcha(answer, b - 1) === token;
+  return signCaptcha(list, b) === token || signCaptcha(list, b - 1) === token;
 }
 
 // In your login / register handler:
@@ -606,21 +706,23 @@ if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) {
 $secret = getenv('CAPTCHA_SECRET'); // same secret as the Node.js side
 $bucket = (int) floor(time() / 300); // 5-minute window
 
-function sign_captcha(string $answer, int $bucket, string $secret): string {
-    return hash_hmac('sha256', $answer . ':' . $bucket, $secret);
+function sign_captcha(array $answers, int $bucket, string $secret): string {
+    sort($answers); // sort so click order doesn't matter
+    return hash_hmac('sha256', implode(',', $answers) . ':' . $bucket, $secret);
 }
 
-function verify_captcha(string $answer, string $token, int $bucket, string $secret): bool {
-    // Accept current and previous window to handle edge cases
-    $ok1 = hash_equals(sign_captcha($answer, $bucket,     $secret), $token);
-    $ok2 = hash_equals(sign_captcha($answer, $bucket - 1, $secret), $token);
+function verify_captcha(array $answers, string $token, int $bucket, string $secret): bool {
+    if (count($answers) !== 1) return false; // expect exactly 1 icon selected
+    $ok1 = hash_equals(sign_captcha($answers, $bucket,     $secret), $token);
+    $ok2 = hash_equals(sign_captcha($answers, $bucket - 1, $secret), $token);
     return $ok1 || $ok2;
 }
 
-// In your login / register endpoint:
-$answer = $_POST['captchaAnswer'] ?? '';
-$token  = $_POST['captchaToken']  ?? '';
-$honeypot = $_POST['honeypot']    ?? '';
+// In your login / register endpoint (JSON body):
+$body     = json_decode(file_get_contents('php://input'), true);
+$answers  = (array) ($body['captchaAnswer'] ?? []);
+$token    = $body['captchaToken'] ?? '';
+$honeypot = $body['honeypot']     ?? '';
 
 if ($honeypot !== '') {
     http_response_code(401);
@@ -628,9 +730,9 @@ if ($honeypot !== '') {
     exit;
 }
 
-if (!verify_captcha($answer, $token, $bucket, $secret)) {
+if (!verify_captcha($answers, $token, $bucket, $secret)) {
     http_response_code(422);
-    echo json_encode(['message' => 'Érvénytelen captcha megoldás']);
+    echo json_encode(['message' => 'Invalid captcha']);
     exit;
 }
 ```
