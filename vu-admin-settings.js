@@ -45,7 +45,7 @@ window.VuSettings = {
                     action: 'BUTTON_ROLES',
                     class: 'dropdown-item',
                     label: (params, settings, self) => {
-                        return 'Szerepkörök'
+                        return 'Szerepkör váltás'
                     },
                 },
                 {
@@ -258,21 +258,15 @@ window.VuSettings = {
         },
         onSuccess: {
 
-            // profile: (auth) => {
-                
-            //     auth.user = auth.response.data;
-            //     auth.user.token = auth.response.data.accessToken;
-            //     auth.user.roles = ['admin', 'guest'];
-            //     auth.settings = {
-            //         entitiesVariable: 'VuEntities',
-            //         entities: {
-            //             post: '/entity-post.js',
-            //             product: '/entity-product.js',
-            //             user: '/entity-user.js',
-            //         }
-            //     };
-                                
-            // },
+            profile: (auth) => {
+
+                const data = auth.response.data;
+                Object.assign(auth.user, data);
+                if (data.accessToken) {
+                    auth.user.token = data.accessToken;
+                }
+
+            },
             
             registration: (auth) => {
 
@@ -295,10 +289,10 @@ window.VuSettings = {
                 auth.settings = {
                     entitiesVariable: 'VuEntities',
                     entities: {
-                        post: '/entity-post.js',
-                        product: '/entity-product.js',
-                        user: '/entity-user.js',
-                        todos: '/entity-todos.js',
+                        post: '/vu-entity-post.js',
+                        product: '/vu-entity-product.js',
+                        user: '/vu-entity-user.js',
+                        todos: '/vu-entity-todos.js',
                     }
                 };
             },
@@ -312,10 +306,10 @@ window.VuSettings = {
                 auth.settings = {
                     entitiesVariable: 'VuEntities',
                     entities: {
-                        post: '/entity-post.js',
-                        product: '/entity-product.js',
-                        user: '/entity-user.js',
-                        todos: '/entity-todos.js',
+                        post: '/vu-entity-post.js',
+                        product: '/vu-entity-product.js',
+                        user: '/vu-entity-user.js',
+                        todos: '/vu-entity-todos.js',
                     }
                 };
             },

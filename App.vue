@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
 
-    <header class="sticky-top text-end p-2 border shadow">
+    <header class="sticky-top text-end p-2 border shadow bg-light">
       <vu-user-button v-model="auth" :panel="'registration'"></vu-user-button>
       <vu-user-button v-model="auth" :panel="'login'"></vu-user-button>
     </header>

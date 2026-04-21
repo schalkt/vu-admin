@@ -141,14 +141,16 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
     if (items === null) return next(); // nincs db fájl → proxy-ra esik
 
     const qs = new URLSearchParams(queryPart || '');
-    const limit = Math.min(parseInt(qs.get('limit') || '30'), 500);
+    const rawLimit = parseInt(qs.get('limit') || '30');
+    const limit = rawLimit === 0 ? Infinity : Math.min(rawLimit, 500);
     const skip = parseInt(qs.get('skip') || '0');
 
     // GET /api/todos/user/1 — userId szerinti szűrés
     if (req.method === 'GET' && parts[1] === 'user' && parts[2]) {
       const userId = parseInt(parts[2]);
       const filtered = items.filter(i => i.userId === userId);
-      return send(res, { [entity]: filtered.slice(skip, skip + limit), total: filtered.length, skip, limit }, 200, delay);
+      const page = limit === Infinity ? filtered.slice(skip) : filtered.slice(skip, skip + limit);
+      return send(res, { [entity]: page, total: filtered.length, skip, limit: rawLimit }, 200, delay);
     }
 
     const rawId = parts[1];
@@ -161,7 +163,42 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
           ? send(res, item, 200, delay)
           : send(res, { message: 'Not found' }, 404, delay);
       }
-      return send(res, { [entity]: items.slice(skip, skip + limit), total: items.length, skip, limit }, 200, delay);
+
+      // filter paraméter feldolgozása
+      // formátum: {"id":{"type":"array","value":"1,2,3","operator":"IN"}}
+      let filtered = items;
+      const filterParam = qs.get('filter');
+      if (filterParam) {
+        try {
+          const filters = JSON.parse(filterParam);
+          for (const [field, rule] of Object.entries(filters)) {
+            const op = (rule.operator || '=').toUpperCase();
+            const val = rule.value;
+            filtered = filtered.filter(item => {
+              const itemVal = item[field];
+              if (op === 'IN' || op === 'NIN') {
+                const rawIds = Array.isArray(val) ? val : String(val).split(',').map(v => v.trim()).filter(v => v !== '');
+                if (rawIds.length === 0) return true;
+                const ids = rawIds.map(v => { const n = Number(v); return isNaN(n) ? v : n; });
+                const match = Array.isArray(itemVal)
+                  ? itemVal.some(v => ids.includes(v))
+                  : ids.includes(itemVal);
+                return op === 'IN' ? match : !match;
+              }
+              if (op === '=')  return itemVal == val;
+              if (op === '>')  return itemVal >  val;
+              if (op === '<')  return itemVal <  val;
+              if (op === '>=') return itemVal >= val;
+              if (op === '<=') return itemVal <= val;
+              if (op === '%')  return String(itemVal).toLowerCase().includes(String(val).toLowerCase());
+              return true;
+            });
+          }
+        } catch { /* érvénytelen filter → figyelmen kívül */ }
+      }
+
+      const page = limit === Infinity ? filtered.slice(skip) : filtered.slice(skip, skip + limit);
+      return send(res, { [entity]: page, total: filtered.length, skip, limit: rawLimit }, 200, delay);
     }
 
     if (req.method === 'POST') {

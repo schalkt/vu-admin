@@ -114,7 +114,7 @@
                   </li>
                 </ul>
               </div>
-              <span v-if="item[field.name].length">
+              <span v-if="item[field.name].length" :class="[field.list && field.list.wrapperClass ? field.list.wrapperClass : 'd-block mt-1']">
                 <span class="cursor-pointer" :class="[field.list ? field.list.class : '']" v-for="el in item[field.name]" :key="el" @click="dropdownSelectToggleOne(field, item[field.name], el)">
                   {{ translate(el) }} <i class="bi bi-x"></i>
                 </span>

@@ -56,15 +56,9 @@ window.VuEntities.post = (preset) => {
 					}
 				}
 			},
-			template: (value, item, index, column) => {
-
-				return;
-
-				console.log(item.user, column);
-
-				let button = ' <button class="btn btn-sm btn-outline-dark" type="button" @click="tableAction(button, item, index, $event)">Edit</button>';
-
-				return item.user.firstName + ' ' + item.user.lastName + button;
+			template: (value, item) => {
+				if (!item.user) return '<span class="text-muted">#' + value + '</span>';
+				return item.user.firstName + ' ' + item.user.lastName;
 			},
 			buttons: [
 				{
@@ -74,11 +68,9 @@ window.VuEntities.post = (preset) => {
 							params: params
 						});
 					},
-					class: 'btn btn-sm btn-outline-secondary w-100',
-					icon: 'bi bi-person-fill me-1',
-					template: (value, item, index, column) => {
-						return item.user.firstName + ' ' + item.user.lastName
-					}
+					class: 'btn btn-sm btn-outline-secondary ms-2',
+					icon: 'bi bi-person-fill',
+					disabled: (params) => !params.item.user,
 				},
 			],
 

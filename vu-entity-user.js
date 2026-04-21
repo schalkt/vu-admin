@@ -7,6 +7,16 @@ window.VuEntities.user = (preset) => {
 		pkey: 'id',
 		theme: 'dark',
 		debug: true,
+		events: {
+			afterItemSave: (data, urlParams, auth) => {
+				if (auth && auth.user && data && data.id === auth.user.id) {
+					auth.user.firstName = data.firstName;
+					auth.user.lastName = data.lastName;
+					auth.user.image = data.image;
+					localStorage.setItem('vu-user', JSON.stringify(auth.user));
+				}
+			},
+		},
 		api: {
 			url: '/api/users',
 			options: {
@@ -465,99 +475,150 @@ window.VuEntities.user = (preset) => {
 			},
 			groups: [
 				{
+					title: 'Személyes adatok',
+					class: 'border rounded p-4 col-md-5',
 					fields: [
 						{
-							type: 'select',
-							name: 'status',
-							label: 'Státusz',
-							options: [
-								{
-									value: 0,
-									label: 'Új'
-								},
-								{
-									value: 1,
-									label: 'Aktív'
-								},
-								{
-									value: 9,
-									label: 'Törölt'
-								}
-							]
-						},
-						{
-							type: 'select',
-							name: 'language',
-							label: 'Nyelv',
-							required: true,
-							options: [
-								{
-									value: 'hu',
-									label: 'Magyar'
-								},
-								{
-									value: 'en',
-									label: 'Angol'
-								}
-							]
+							type: 'template',
+							name: 'image',
+							label: null,
+							class: 'col-md-12 text-center mb-2',
+							template: ({ field, item }) => {
+								const src = item[field.name] || '/mock/avatar/??';
+								const name = (item.firstName || '') + ' ' + (item.lastName || '');
+								return '<img src="' + src + '" height="64" width="64" class="rounded-circle border shadow mb-1"><br><small class="text-muted">' + name.trim() + '</small>';
+							},
 						},
 						{
 							type: 'text',
-							name: 'title',
-							label: 'Cím',
+							name: 'firstName',
+							label: 'Keresztnév',
 							required: true,
+							class: 'col-md-6',
 						},
 						{
 							type: 'text',
-							name: 'slug',
-							label: 'Url cím'
+							name: 'lastName',
+							label: 'Vezetéknév',
+							required: true,
+							class: 'col-md-6',
 						},
 						{
-							type: 'upload',
-							name: 'images',
-							label: 'Képek',
-							required: false,
-							params: {
-								limit: 2,
-								text: 'Click or drop here to upload',
-								accept: ["image/png", "image/jpeg", "image/webp"],
-								thumbnail: 'small',
-								download: 'large',
-								editor: false,
-								presets: {
-									default: {
-										width: 1920,
-										height: 1080,
-										extension: "webp",
-										quality: 0.85
-									},
-									small: {
-										width: 400,
-										height: 320,
-										extension: "webp",										
-										quality: 0.75
-									},
-									tiny: {
-										width: 160,
-										height: 100,
-										extension: "webp",
-										quality: 0.7
-									},
-								},
-							}
+							type: 'text',
+							name: 'username',
+							label: 'Felhasználónév',
+							required: true,
 						},
 						{
-							type: 'html',
-							name: 'lead',
-							label: 'Bevezető'
+							type: 'email',
+							name: 'email',
+							label: 'E-mail cím',
+							required: true,
 						},
 						{
-							type: 'html',
-							name: 'body',
-							label: 'Tartalom'
+							type: 'date',
+							name: 'birthDate',
+							label: 'Születési dátum',
+						},
+						{
+							type: 'select',
+							name: 'gender',
+							label: 'Nem',
+							class: 'col-md-6',
+							options: [
+								{ value: 'male',   label: 'Férfi' },
+								{ value: 'female', label: 'Nő' },
+							],
+						},
+						{
+							type: 'select',
+							name: 'role',
+							label: 'Elsődleges szerepkör',
+							class: 'col-md-6',
+							options: [
+								{ value: 'admin',     label: 'Admin' },
+								{ value: 'moderator', label: 'Moderátor' },
+								{ value: 'editor',    label: 'Szerkesztő' },
+								{ value: 'guest',     label: 'Vendég' },
+							],
+						},
+						{
+							type: 'dropdown',
+							name: 'roles',
+							label: 'Szerepkörök',
+							dropdown: {
+								label: 'Szerepkör hozzáadása',
+								class: 'btn btn-sm btn-outline-secondary',
+							},
+							list: {
+								class: 'badge bg-secondary me-1 cursor-pointer',
+							},
+							options: [
+								{ value: 'admin',     label: 'Admin' },
+								{ value: 'moderator', label: 'Moderátor' },
+								{ value: 'editor',    label: 'Szerkesztő' },
+								{ value: 'guest',     label: 'Vendég' },
+							],
 						},
 					]
-				}
+				},
+				{
+					title: 'Fizikai adatok',
+					class: 'border rounded p-4 col-md-3',
+					fields: [
+						{
+							type: 'number',
+							name: 'age',
+							label: 'Kor (év)',
+							readonly: true,
+						},
+						{
+							type: 'number',
+							name: 'height',
+							label: 'Magasság (cm)',
+							min: 50,
+							max: 250,
+						},
+						{
+							type: 'number',
+							name: 'weight',
+							label: 'Súly (kg)',
+							min: 20,
+							max: 300,
+						},
+						{
+							type: 'template',
+							name: 'hair',
+							label: 'Haj',
+							template: ({ field, item }) => {
+								const hair = item[field.name];
+								if (!hair) return '<span class="text-muted">–</span>';
+								const color = (hair.color || '').toLowerCase();
+								const cssColor = color.replace('blonde', '#FBE7A1');
+								return '<i class="bi bi-circle-fill me-2" style="color:' + cssColor + '"></i>' +
+									'<span class="text-secondary">' + (hair.color || '') + ' · ' + (hair.type || '') + '</span>';
+							},
+						},
+					]
+				},
+				{
+					title: 'Lakcím',
+					class: 'border rounded p-4 col-md-4',
+					fields: [
+						{
+							type: 'template',
+							name: 'address',
+							label: null,
+							template: ({ field, item }) => {
+								const a = item[field.name];
+								if (!a) return '<span class="text-muted">–</span>';
+								return '<div class="mb-1"><strong>' + (a.address || '') + '</strong></div>' +
+									'<div class="text-secondary">' + (a.postalCode || '') + ' ' + (a.city || '') + '</div>' +
+									'<div class="text-muted">' + (a.country || '') + '</div>';
+							},
+						},
+					]
+				},
 			]
 		}
 

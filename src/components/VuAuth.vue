@@ -317,11 +317,13 @@ const VuAuth = {
                 this.auth.settings = JSON.parse(settings);
             }
 
-            if (!this.auth.user || !this.auth.header) {                
+            if (!this.auth.user || !this.auth.header) {
                 this.logout();
+            } else if (this.settings.api && this.settings.api.profile) {
+                this.loadProfile();
             } else {
                 this.auth.success = true;
-                this.authUpdate();     
+                this.authUpdate();
             }
 
         },
@@ -335,17 +337,23 @@ const VuAuth = {
                     headers: this.auth.header
                 });
 
-                //await this.getStatusAndJson(response);
+                await this.getStatusAndJson(response);
 
-                if (response.ok) {                    
-                    //this.onSuccess('profile');
+                if (response.ok) {
+                    if (this.settings.onSuccess && this.settings.onSuccess.profile) {
+                        this.settings.onSuccess.profile(this.auth);
+                    } else {
+                        Object.assign(this.auth.user, this.auth.response.data);
+                    }
+                    this.auth.success = true;
+                    localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
+                    this.authUpdate();
                 } else {
-                    this.onError('profile');
-                    return;
+                    this.logout();
                 }
 
             } catch (error) {
-                this.onError('profile');
+                this.logout();
             }
         },
 

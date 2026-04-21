@@ -2,105 +2,105 @@
   {
     "id": 1, "username": "emilys", "email": "emily.johnson@example.com", "password": "emilyspass",
     "firstName": "Emily", "lastName": "Johnson", "birthDate": "1996-05-30",
-    "image": "/mock/avatar/EJ", "age": 28, "gender": "female", "role": "admin",
+    "image": "/mock/avatar/EJ", "age": 28, "gender": "female", "role": "admin", "roles": ["admin", "editor"],
     "height": 193, "weight": 63, "hair": { "color": "Brown", "type": "Curly" },
     "address": { "address": "626 Main Street", "city": "Phoenix", "country": "United States", "postalCode": "29112" }
   },
   {
     "id": 2, "username": "michaelw", "email": "michael.williams@example.com", "password": "michaelwpass",
     "firstName": "Michael", "lastName": "Williams", "birthDate": "1990-05-30",
-    "image": "/mock/avatar/MW", "age": 35, "gender": "male", "role": "moderator",
+    "image": "/mock/avatar/MW", "age": 35, "gender": "male", "role": "moderator", "roles": ["moderator", "editor"],
     "height": 186, "weight": 76, "hair": { "color": "Blue", "type": "Straight" },
     "address": { "address": "385 Fifth Avenue", "city": "New York", "country": "United States", "postalCode": "10001" }
   },
   {
     "id": 3, "username": "sophiab", "email": "sophia.brown@example.com", "password": "sophiabpass",
     "firstName": "Sophia", "lastName": "Brown", "birthDate": "1992-08-14",
-    "image": "/mock/avatar/SB", "age": 32, "gender": "female", "role": "editor",
+    "image": "/mock/avatar/SB", "age": 32, "gender": "female", "role": "editor", "roles": ["editor"],
     "height": 168, "weight": 55, "hair": { "color": "Blonde", "type": "Wavy" },
     "address": { "address": "12 Oak Avenue", "city": "Los Angeles", "country": "United States", "postalCode": "90001" }
   },
   {
     "id": 4, "username": "jamesd", "email": "james.davis@example.com", "password": "jamesdpass",
     "firstName": "James", "lastName": "Davis", "birthDate": "1985-03-22",
-    "image": "/mock/avatar/JD", "age": 40, "gender": "male", "role": "guest",
+    "image": "/mock/avatar/JD", "age": 40, "gender": "male", "role": "guest", "roles": ["guest"],
     "height": 178, "weight": 82, "hair": { "color": "Gray", "type": "Short" },
     "address": { "address": "77 Pine Road", "city": "Chicago", "country": "United States", "postalCode": "60601" }
   },
   {
     "id": 5, "username": "oliviam", "email": "olivia.martinez@example.com", "password": "oliviampass",
     "firstName": "Olivia", "lastName": "Martinez", "birthDate": "1998-11-05",
-    "image": "/mock/avatar/OM", "age": 26, "gender": "female", "role": "guest",
+    "image": "/mock/avatar/OM", "age": 26, "gender": "female", "role": "guest", "roles": ["guest"],
     "height": 162, "weight": 52, "hair": { "color": "Black", "type": "Straight" },
     "address": { "address": "203 Maple Street", "city": "Houston", "country": "United States", "postalCode": "77001" }
   },
   {
     "id": 6, "username": "williamg", "email": "william.garcia@example.com", "password": "williamgpass",
     "firstName": "William", "lastName": "Garcia", "birthDate": "1988-07-19",
-    "image": "/mock/avatar/WG", "age": 37, "gender": "male", "role": "editor",
+    "image": "/mock/avatar/WG", "age": 37, "gender": "male", "role": "editor", "roles": ["editor", "guest"],
     "height": 182, "weight": 79, "hair": { "color": "Brown", "type": "Wavy" },
     "address": { "address": "54 Elm Street", "city": "Philadelphia", "country": "United States", "postalCode": "19101" }
   },
   {
     "id": 7, "username": "avaw", "email": "ava.wilson@example.com", "password": "avawpass",
     "firstName": "Ava", "lastName": "Wilson", "birthDate": "2000-02-28",
-    "image": "/mock/avatar/AW", "age": 24, "gender": "female", "role": "guest",
+    "image": "/mock/avatar/AW", "age": 24, "gender": "female", "role": "guest", "roles": ["guest"],
     "height": 170, "weight": 58, "hair": { "color": "Red", "type": "Curly" },
     "address": { "address": "9 Cedar Lane", "city": "San Antonio", "country": "United States", "postalCode": "78201" }
   },
   {
     "id": 8, "username": "noahm", "email": "noah.moore@example.com", "password": "noahmpass",
     "firstName": "Noah", "lastName": "Moore", "birthDate": "1993-06-11",
-    "image": "/mock/avatar/NM", "age": 31, "gender": "male", "role": "moderator",
+    "image": "/mock/avatar/NM", "age": 31, "gender": "male", "role": "moderator", "roles": ["moderator"],
     "height": 175, "weight": 71, "hair": { "color": "Blonde", "type": "Short" },
     "address": { "address": "321 Birch Blvd", "city": "San Diego", "country": "United States", "postalCode": "92101" }
   },
   {
     "id": 9, "username": "isabelat", "email": "isabela.taylor@example.com", "password": "isabelatpass",
     "firstName": "Isabela", "lastName": "Taylor", "birthDate": "1995-09-03",
-    "image": "/mock/avatar/IT", "age": 29, "gender": "female", "role": "guest",
+    "image": "/mock/avatar/IT", "age": 29, "gender": "female", "role": "guest", "roles": ["guest"],
     "height": 165, "weight": 57, "hair": { "color": "Purple", "type": "Long" },
     "address": { "address": "88 Willow Way", "city": "Dallas", "country": "United States", "postalCode": "75201" }
   },
   {
     "id": 10, "username": "liama", "email": "liam.anderson@example.com", "password": "liamapass",
     "firstName": "Liam", "lastName": "Anderson", "birthDate": "1987-12-25",
-    "image": "/mock/avatar/LA", "age": 37, "gender": "male", "role": "guest",
+    "image": "/mock/avatar/LA", "age": 37, "gender": "male", "role": "guest", "roles": ["guest"],
     "height": 180, "weight": 85, "hair": { "color": "Brown", "type": "Straight" },
     "address": { "address": "15 Spruce Court", "city": "San Jose", "country": "United States", "postalCode": "95101" }
   },
   {
     "id": 11, "username": "miar", "email": "mia.rodriguez@example.com", "password": "miarpass",
     "firstName": "Mia", "lastName": "Rodriguez", "birthDate": "2001-04-17",
-    "image": "/mock/avatar/MR", "age": 23, "gender": "female", "role": "guest",
+    "image": "/mock/avatar/MR", "age": 23, "gender": "female", "role": "guest", "roles": ["guest"],
     "height": 158, "weight": 50, "hair": { "color": "Black", "type": "Wavy" },
     "address": { "address": "47 Aspen Drive", "city": "Austin", "country": "United States", "postalCode": "73301" }
   },
   {
     "id": 12, "username": "elijah", "email": "elijah.lewis@example.com", "password": "elijahpass",
     "firstName": "Elijah", "lastName": "Lewis", "birthDate": "1991-10-08",
-    "image": "/mock/avatar/EL", "age": 33, "gender": "male", "role": "editor",
+    "image": "/mock/avatar/EL", "age": 33, "gender": "male", "role": "editor", "roles": ["editor", "moderator"],
     "height": 183, "weight": 78, "hair": { "color": "White", "type": "Short" },
     "address": { "address": "300 Magnolia Pl", "city": "Jacksonville", "country": "United States", "postalCode": "32201" }
   },
   {
     "id": 13, "username": "charlotteh", "email": "charlotte.hall@example.com", "password": "charlottehpass",
     "firstName": "Charlotte", "lastName": "Hall", "birthDate": "1997-01-30",
-    "image": "/mock/avatar/CH", "age": 27, "gender": "female", "role": "guest",
+    "image": "/mock/avatar/CH", "age": 27, "gender": "female", "role": "guest", "roles": ["guest"],
     "height": 172, "weight": 61, "hair": { "color": "Blonde", "type": "Straight" },
     "address": { "address": "62 Poplar Street", "city": "Fort Worth", "country": "United States", "postalCode": "76101" }
   },
   {
     "id": 14, "username": "benjaminj", "email": "benjamin.jones@example.com", "password": "benjaminjpass",
     "firstName": "Benjamin", "lastName": "Jones", "birthDate": "1984-05-15",
-    "image": "/mock/avatar/BJ", "age": 41, "gender": "male", "role": "admin",
+    "image": "/mock/avatar/BJ", "age": 41, "gender": "male", "role": "admin", "roles": ["admin", "moderator", "editor"],
     "height": 188, "weight": 90, "hair": { "color": "Gray", "type": "Short" },
     "address": { "address": "19 Sycamore Ave", "city": "Columbus", "country": "United States", "postalCode": "43004" }
   },
   {
     "id": 15, "username": "ameliaw", "email": "amelia.white@example.com", "password": "ameliawpass",
     "firstName": "Amelia", "lastName": "White", "birthDate": "1999-08-22",
-    "image": "/mock/avatar/AW", "age": 25, "gender": "female", "role": "guest",
+    "image": "/mock/avatar/AW", "age": 25, "gender": "female", "role": "guest", "roles": ["guest"],
     "height": 167, "weight": 54, "hair": { "color": "Brown", "type": "Curly" },
     "address": { "address": "5 Walnut Lane", "city": "Charlotte", "country": "United States", "postalCode": "28201" }
   }

@@ -1907,7 +1907,7 @@ export default {
 
 
         if (this.settings.events && this.settings.events.afterItemSave) {
-          this.settings.events.afterItemSave(json.data, urlParams);
+          this.settings.events.afterItemSave(json.data, urlParams, this.auth);
         }
 
         if (onSuccess) {

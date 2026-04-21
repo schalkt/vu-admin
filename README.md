@@ -1,13 +1,558 @@
-# Vu-Admin
+# VU Admin
 
-VueJS and Bootstrap based table, form and menu elements
+**Vue 3 + Bootstrap 5 admin component library** — data table, form, authentication and file upload in a single, config-driven package.
 
-## Under heavy development
+> ⚠️ Under active development — API may change between minor versions.
 
-Do not use it in a production environment yet
+---
 
-## TODO
+## Features
 
-- store settings to localstorage
-- export to csv buttons to
+- **Data table** — sortable columns (multi-column), server-side pagination, per-column filters, column visibility toggle, expandable row details, inline editing, bulk actions, CSV export
+- **Form** — modal-based editor with field types: `text`, `number`, `email`, `textarea`, `date`, `datetime-local`, `checkbox`, `select`, `dropdown` (multi-select), `list` (dynamic arrays), `html` (Quill editor), `image`/`upload` (drag-and-drop with presets), `template` (custom HTML)
+- **Authentication** — login, registration, forgot password, activation flow, `/me` session restore, localStorage persistence
+- **Relations** — automatic join of related entities, displayed inline in table and form
+- **Events** — lifecycle hooks: `beforeItemSave`, `afterItemSave`, `beforeItemDelete`, `afterItemDelete`, `afterItemsLoad`, `beforeItemsLoad`, etc.
+- **i18n** — built-in Hungarian translations, fully overridable per entity
+- **Themes** — Bootstrap `light` / `dark` per entity
+- **Mock server** — zero-backend dev environment with seed data, full CRUD, auth, SVG avatars
 
+---
+
+## Tech stack
+
+| Dependency | Version |
+|---|---|
+| Vue | 3.x |
+| Bootstrap | 5.3.x |
+| Bootstrap Icons | 1.11.x |
+| Vite | 8.x |
+| Quill | 2.x |
+
+---
+
+## Getting started
+
+```bash
+git clone https://github.com/schalkt/vu-admin.git
+cd vu-admin
+npm install
+```
+
+### Seed mock data and start dev server
+
+```bash
+npm run mock:seed   # populate mock/db/ from mock/seed/
+npm run dev         # starts Vite at http://localhost:5173
+```
+
+### Other scripts
+
+```bash
+npm run mock:reset  # clear all mock/db/ records (empty arrays)
+npm run build       # production build → dist/
+npm run serve       # preview production build
+```
+
+---
+
+## Project structure
+
+```
+vu-admin/
+├── src/
+│   ├── components/
+│   │   ├── VuAdmin.vue             # entity host (loads config, mounts table)
+│   │   ├── VuAdminTable.vue        # table + pagination + filters + actions
+│   │   ├── VuAdminForm.vue         # modal form
+│   │   ├── VuAdminFormGroup.vue    # field renderer
+│   │   ├── VuAdminFormSelect.vue   # select field
+│   │   ├── VuAdminFormList.vue     # dynamic list field
+│   │   ├── VuAdminFileUpload.vue   # image / document upload
+│   │   ├── VuAdminHtmlEditor.vue   # Quill rich-text editor
+│   │   ├── VuAuth.vue              # auth modal (login / register / …)
+│   │   └── VuUserButton.vue        # nav button with role switcher
+│   └── index.js
+├── mock/
+│   ├── middleware.js               # Vite dev middleware (CRUD + auth + SVG)
+│   ├── seed/                       # source JSON fixtures
+│   └── db/                         # live writable JSON (gitignored)
+├── scripts/
+│   └── mock-init.js                # seed / reset helper
+├── vu-admin-settings.js            # global auth + button config
+├── vu-entity-product.js            # example entity config
+├── vu-entity-user.js
+├── vu-entity-post.js
+├── vu-entity-todos.js
+└── index.html
+```
+
+---
+
+## Usage
+
+### 1. Global settings — `vu-admin-settings.js`
+
+```js
+window.VuSettings = {
+  theme: 'dark',             // default Bootstrap theme
+  auth: {
+    api: {
+      login:      '/api/auth/login',
+      register:   '/api/auth/register',
+      profile:    '/api/auth/me',     // called on every page load to restore session
+      activation: '/api/auth/activate',
+      forgot:     '/api/password/forgot',
+      password:   '/api/password/update',
+    },
+    onSuccess: {
+      login: (auth) => {
+        auth.user  = auth.response.data;
+        auth.user.token = auth.response.data.accessToken;
+        auth.user.roles = ['admin'];
+        auth.settings = {
+          entitiesVariable: 'VuEntities',
+          entities: {
+            product: '/vu-entity-product.js',
+            user:    '/vu-entity-user.js',
+          }
+        };
+      },
+      profile: (auth) => {
+        // called on page load after /me responds OK
+        // merge fresh data into auth.user; settings stay from localStorage
+        Object.assign(auth.user, auth.response.data);
+      },
+    },
+  },
+};
+```
+
+The `profile` callback is optional. If omitted, the `/me` response is merged into `auth.user` automatically.
+
+### 2. Mount components — `index.html`
+
+```html
+<main id="app"></main>
+<script type="module" src="./vu-admin-settings.js"></script>
+<script type="module" src="./index.js"></script>
+```
+
+### 3. Entity config — e.g. `vu-entity-product.js`
+
+Each entity is a plain JS file that exports a factory function via `window.VuEntities`:
+
+```js
+window.VuEntities = window.VuEntities || {};
+
+window.VuEntities.product = (preset) => ({
+
+  pkey: 'id',           // primary key field
+  language: 'en',       // translation key
+  debug: false,
+
+  api: {
+    url: '/api/products',
+    input: {
+      items: 'products',  // response.data.products
+      total: 'total',     // response.data.total
+    },
+    output: {
+      fields: undefined,  // restrict saved fields; undefined = send all
+    },
+  },
+
+  events: {
+    beforeItemSave:  (item, urlParams, raw) => { delete item.id; },
+    afterItemSave:   (data, urlParams, auth) => { /* … */ },
+    afterItemsLoad:  (data, response) => { /* … */ },
+    beforeItemDelete:(item) => { /* … */ },
+  },
+
+  relations: {
+    // key is referenced by column.relation.config and form field.relation.config
+    owner: {
+      entity: 'user',
+      local:  'userId',
+      foreign:'id',
+      api: {
+        url: '/api/users',
+        input: { items: 'users' },
+      },
+    },
+  },
+
+  table: { /* see Table config */ },
+  form:  { /* see Form config  */ },
+
+});
+```
+
+---
+
+## Table config
+
+```js
+table: {
+  title: 'Products',
+  class: 'table-hover table-sm',
+  pagination: {
+    limit: 20,
+    size: 5,                        // page buttons visible
+    limits: [10, 20, 50, 100],      // null = hide limit selector
+  },
+  order: {                          // default sort
+    title: { dir: 'ASC', idx: 0, fixed: false },
+  },
+  control: {                        // toolbar above the table
+    buttons: [
+      { action: 'TABLE_COLUMNS' },
+      { action: 'TABLE_RELOAD' },
+      { action: 'FORM_CREATE' },
+      { action: 'TABLE_EXPORT' },
+    ],
+  },
+  columns: [ /* see Column config */ ],
+  details: {                        // expandable row content
+    fields: [ /* same as form fields */ ],
+    raw: (item) => '<div>…</div>',
+  },
+  exports: {
+    default: {
+      type: 'csv',
+      fields: [ { name: 'id' }, { name: 'title' } ],
+    },
+  },
+}
+```
+
+### Column config
+
+```js
+{
+  name: 'price',            // maps to item.price (dot-notation for nested: 'meta.updatedAt')
+  title: 'Price',
+  width: '10%',
+  class: 'text-end',
+  hidden: false,
+  sortable: true,
+
+  // display transformation (in-memory, does not affect saved value)
+  template: (value, item) => `<strong>${value}</strong>`,
+
+  // value conversions applied on load (in) and before save (out)
+  convert: {
+    in:  (value, item, column) => new Date(value).toLocaleDateString(),
+    out: (value, item, column) => value,
+  },
+
+  // progress bar rendering
+  progressbar: {
+    class: 'bg-success',
+    max: 100,
+    value: true,       // show numeric value inside bar
+  },
+
+  // filter row
+  filter: {
+    type: 'text' | 'number' | 'select' | 'date' | 'datetime-local',
+    operators: [ { label: '>', value: '>' }, … ],  // or true for built-in set
+    default_operator: '>',
+    default_value: 4,
+    fixed: false,       // always active, user cannot clear
+    multiple: false,    // select: allow multi-select
+    dropdown: false,    // select: render as dropdown
+    options: [ { value: 'beauty', label: 'Beauty' } ],
+    onchange: (filter) => someTransform(filter.value),
+    buttonx: true,      // show clear (×) button
+  },
+
+  // inline table editing
+  input: {
+    type: 'number' | 'text' | 'textarea' | 'select',
+    autosave: true,
+    min: 0, max: 1000,
+    onchange: (value, column, item) => {},
+  },
+
+  // relation: replace raw id with data from a related entity
+  relation: {
+    config: 'owner',    // key in settings.relations
+  },
+
+  // row action buttons
+  buttons: [
+    { action: 'TABLE_ROW_EDIT' },
+    { action: 'TABLE_ROW_DELETE' },
+    { action: 'TABLE_ROW_DETAIL' },
+    { action: 'TABLE_ROW_SAVE' },
+    {
+      action: (item, params, self) => { /* custom */ },
+      title: 'View', class: 'btn btn-sm btn-primary', icon: 'bi bi-eye',
+      disabled: (params) => !params.item.active,
+      hidden: true,
+    },
+  ],
+}
+```
+
+#### Built-in table actions
+
+| Action | Description |
+|---|---|
+| `TABLE_RELOAD` | Refetch current page |
+| `TABLE_COLUMNS` | Show/hide column picker |
+| `TABLE_RESET_FILTERS` | Clear all active filters |
+| `TABLE_RESET_ORDERS` | Clear all active sorts |
+| `TABLE_EXPORT` | Download CSV |
+| `TABLE_CLOSE_DETAILS` | Collapse all expanded rows |
+| `TABLE_ROW_EDIT` | Open form modal |
+| `TABLE_ROW_DELETE` | Delete with confirmation |
+| `TABLE_ROW_DETAIL` | Expand inline details |
+| `TABLE_ROW_SAVE` | Save inline changes |
+| `TABLE_BULK_DELETE` | Delete selected rows |
+| `TABLE_BULK_SAVE` | Save bulk-edited fields |
+| `FORM_CREATE` | Open empty form |
+
+---
+
+## Form config
+
+```js
+form: {
+  title: (item) => item.title || 'New',
+  class: 'm-2',
+  default: { status: 'active' },   // values pre-filled on FORM_CREATE
+
+  control: {
+    buttons: [
+      { action: 'FORM_SAVE' },
+      { action: 'FORM_SAVE_AND_CLOSE' },
+      { action: 'FORM_CLOSE' },
+      { action: 'FORM_RELOAD' },
+      { action: 'FORM_DELETE' },
+      { action: 'FORM_COPY' },
+      { action: 'FORM_NEW' },
+      {
+        title: 'More', icon: 'bi bi-list',
+        class: 'btn btn-sm btn-outline-dark',
+        dropdowns: [ { action: 'FORM_DELETE', title: 'Delete', … } ],
+      },
+    ],
+  },
+
+  api: {                            // overrides entity-level api for form requests
+    url: '/api/products',
+    output: {
+      flatten: true,                // send { 'meta.updatedAt': '…' } instead of nested
+      fields: ['title', 'price'],   // whitelist; undefined = send all
+    },
+  },
+
+  groups: [
+    {
+      title: 'Main info',
+      class: 'col-md-6 border rounded p-4',
+      fields: [ /* see Field types */ ],
+    },
+  ],
+}
+```
+
+### Field types
+
+```js
+// Text / email / number / date / datetime-local / textarea
+{ type: 'text',     name: 'title',    label: 'Title',   required: true }
+{ type: 'number',   name: 'price',    label: 'Price',   min: 0, max: 9999, step: 0.01 }
+{ type: 'email',    name: 'email',    label: 'E-mail' }
+{ type: 'date',     name: 'birthDate',label: 'Birth date' }
+{ type: 'textarea', name: 'bio',      label: 'Bio',     rows: 4 }
+
+// Checkbox
+{ type: 'checkbox', name: 'active',   label: null, checkbox: 'Active', true: 1, false: 0 }
+
+// Select (single or relation-driven)
+{
+  type: 'select', name: 'category', label: 'Category',
+  options: [ { value: 'beauty', label: 'Beauty' } ],
+  // or relation-driven:
+  relation: { config: 'owner' },
+  options: (item, field, self) => field.relation.items.map(u => ({ value: u.id, label: u.name })),
+}
+
+// Dropdown (multi-select stored as array)
+{
+  type: 'dropdown', name: 'roles', label: 'Roles',
+  dropdown: { label: 'Add role', class: 'btn btn-sm btn-outline-secondary' },
+  list:     { class: 'badge bg-secondary me-1 cursor-pointer' },
+  options: [ { value: 'admin', label: 'Admin' }, … ],
+}
+
+// List (repeating rows of sub-fields)
+{
+  type: 'list', name: 'links', label: 'Links', sortable: true,
+  elements: {
+    href: { type: 'text',   class: 'col-md-8', prefix: 'URL' },
+    name: { type: 'text',   class: 'col-md-4', prefix: 'Label' },
+  },
+}
+
+// HTML editor (Quill)
+{ type: 'html',   name: 'body',   label: 'Content' }
+
+// File / image upload
+{
+  type: 'upload', name: 'images', label: 'Images',
+  params: {
+    ui: 'card',         // or 'list'
+    limit: 10,
+    accept: ['png', 'jpg', 'webp'],
+    presets: {
+      default: { width: 1920, height: 1080, extension: 'webp', quality: 0.9 },
+      small:   { width: 400,  height: 320,  extension: 'webp', quality: 0.75, crop: 'contain' },
+    },
+  },
+}
+
+// Custom HTML template
+{
+  type: 'template', name: 'address', label: null,
+  template: ({ field, item }) => `<div>${item.address?.city}</div>`,
+}
+
+// All fields support:
+{
+  prefix: '<i class="bi bi-search"></i>',    // or function
+  suffix: (params, settings) => `<a href="…">Link</a>`,
+  description: (params, settings) => `<small>Hint text</small>`,
+  class: 'col-md-6',
+  inputclass: (params) => params.item.active ? 'bg-success' : '',
+  readonly: true,
+  disabled: true,
+}
+```
+
+---
+
+## Auth config
+
+```js
+window.VuSettings.auth = {
+  title:  { login: 'Sign in', registration: 'Register', … },
+  submit: { login: 'Sign in', registration: 'Register', cancel: 'Cancel', … },
+  api: {
+    login:      '/api/auth/login',
+    register:   '/api/auth/register',
+    profile:    '/api/auth/me',
+    activation: '/api/auth/activate',
+    forgot:     '/api/password/forgot',
+    password:   '/api/password/update',
+  },
+  username: { type: 'text', label: 'Username or e-mail', icon: 'bi bi-envelope' },
+  password: { type: 'password', label: 'Password', minlength: 4 },
+  inputs: {
+    // extra fields shown on specific panels
+    role: { type: 'select', panels: ['registration'], options: [ … ] },
+  },
+  accepts: [
+    { name: 'tos',  label: () => 'I accept the <a href="/tos">Terms</a>', panels: ['registration'], required: true },
+  ],
+  onSuccess: {
+    login:      (auth) => { auth.user = auth.response.data; auth.user.token = …; auth.settings = { entities: { … } }; },
+    profile:    (auth) => { Object.assign(auth.user, auth.response.data); },
+    registration:(auth) => { auth.response.message = 'Check your e-mail to activate.'; },
+    activation: (auth) => { auth.user = auth.response.data; /* same as login */ },
+    forgot:     (auth) => { auth.response.message = 'Reset link sent.'; },
+    password:   (auth) => { auth.response.message = 'Password updated.'; },
+  },
+  onError: {
+    login: (auth) => { auth.response.message = `Error ${auth.response.code}: ${auth.response.data?.message}`; },
+  },
+};
+```
+
+### Session restore on page load
+
+If `api.profile` is set, VuAuth will call it on every mount using the stored token header. On success the response is merged into `auth.user` and localStorage is refreshed. On failure (401, network error) the user is logged out automatically.
+
+---
+
+## Mock server
+
+The dev server includes a fully functional mock backend — no real API needed.
+
+```
+mock/
+├── middleware.js   # Vite plugin middleware
+├── seed/           # read-only fixture files (committed)
+│   ├── users.json
+│   ├── products.json
+│   ├── posts.json
+│   └── todos.json
+└── db/             # live writable JSON (gitignored)
+```
+
+```bash
+npm run mock:seed   # copy seed/ → db/  (safe to re-run)
+npm run mock:reset  # write empty arrays to all db/ files
+```
+
+### Available endpoints (mock)
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/auth/login` | Match `username`/`email` + return token |
+| `POST` | `/api/auth/register` | Create user, 409 if email exists |
+| `GET`  | `/api/auth/me` | Return first user (token-agnostic in mock) |
+| `POST` | `/api/auth/activate` | Return first user with token |
+| `GET`  | `/api/{entity}` | List with `limit`, `skip`, `filter`, `order` |
+| `GET`  | `/api/{entity}/{id}` | Single item |
+| `POST` | `/api/{entity}` | Create (auto-increment id) |
+| `PUT/PATCH` | `/api/{entity}/{id}` | Update (merge) |
+| `DELETE` | `/api/{entity}/{id}` | Remove |
+| `GET`  | `/mock/avatar/{initials}` | Colored SVG avatar circle |
+| `GET`  | `/mock/thumb/{label}` | Colored SVG thumbnail |
+
+### Filter query format
+
+The table sends filters as a JSON-encoded `filter` parameter:
+
+```
+GET /api/products?filter={"rating":{"value":4,"operator":">"}}
+                 &filter={"category":{"value":"beauty,fragrances","operator":"IN"}}
+```
+
+Supported operators: `=`, `>`, `>=`, `<`, `<=`, `%` (contains), `IN`, `NIN`.  
+`IN`/`NIN` accept a comma-separated string or an array. Array-valued fields (e.g. tags) are matched with `.some()`.  
+Empty `IN` list is treated as no filter (returns all).
+
+---
+
+## Entity events reference
+
+| Event | Arguments | Description |
+|---|---|---|
+| `afterSettingsInit` | `(settings)` | Called once after entity config is merged |
+| `beforeItemsLoad` | `(urlParams, settings)` | Modify request params before fetch |
+| `afterItemsLoad` | `(data, response)` | Transform loaded items |
+| `afterItemLoad` | `(data, response)` | Transform single loaded item |
+| `beforeItemSave` | `(item, urlParams, rawInput)` | Modify item before PUT/POST |
+| `afterItemSave` | `(data, urlParams, auth)` | React to successful save (auth allows updating `auth.user`) |
+| `beforeItemDelete` | `(item)` | Hook before DELETE |
+| `afterItemDelete` | `(data, response)` | Hook after DELETE |
+| `beforeBulkSave` | `(bulkItem)` | Hook before bulk PUT |
+| `afterBulkSave` | `(data, response)` | Hook after bulk PUT |
+| `beforeItemsExport` | `(items)` | Modify items before CSV generation |
+
+---
+
+## License
+
+MIT
+
+---
+
+## Contributing
+
+Issues and pull requests are welcome. Please open an issue first to discuss major changes.
