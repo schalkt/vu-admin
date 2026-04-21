@@ -13960,18 +13960,17 @@ var wE = {
 			password_again: "",
 			accepts: {},
 			inputs: {},
-			recaptchaSiteKey: null,
-			responseMessage: null,
+			honeypot: "",
+			twofaCode: "",
+			twofaSession: "",
+			twofaMethod: "",
+			captchaError: !1,
 			captcha: {
-				items: [
-					"A",
-					"B",
-					"C",
-					"D",
-					"E"
-				],
-				required: "D",
-				selected: null
+				loading: !1,
+				items: [],
+				question: "",
+				token: "",
+				answers: []
 			},
 			loading: !1,
 			modalId: null,
@@ -13980,8 +13979,17 @@ var wE = {
 		};
 	},
 	components: { VuAdminForm: bC },
-	watch: { modelValue(e, t) {
-		e != t && (this.auth = e, this.updateInputs(), this.$forceUpdate());
+	watch: {
+		modelValue(e, t) {
+			e != t && (this.auth = e, this.updateInputs(), this.$forceUpdate());
+		},
+		"auth.panel"() {
+			this.captchaRequired && this.fetchCaptcha();
+		}
+	},
+	computed: { captchaRequired() {
+		let e = this.auth && this.auth.panel;
+		return !this.settings || !this.settings.captcha || !this.settings.captcha.panels ? !1 : this.settings.captcha.panels.includes(e);
 	} },
 	methods: {
 		detectQuery() {
@@ -14007,7 +14015,7 @@ var wE = {
 					method: "GET",
 					headers: this.auth.header
 				});
-				await this.getStatusAndJson(e), e.ok ? (this.settings.onSuccess && this.settings.onSuccess.profile ? this.settings.onSuccess.profile(this.auth) : Object.assign(this.auth.user, this.auth.response.data), this.auth.success = !0, localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), this.authUpdate()) : this.logout();
+				await this.getStatusAndJson(e), e.ok ? (this.settings.onSuccess && this.settings.onSuccess.profile ? this.settings.onSuccess.profile(this.auth) : Object.assign(this.auth.user, this.auth.response.data), this.auth.success = !0, localStorage.setItem("vu-user", JSON.stringify(this.auth.user)), this.auth.settings && localStorage.setItem("vu-settings", JSON.stringify(this.auth.settings)), this.authUpdate()) : this.logout();
 			} catch {
 				this.logout();
 			}
@@ -14016,7 +14024,7 @@ var wE = {
 			this.auth.success = !1, this.auth.header = null, this.auth.settings = null, this.auth.user = null, this.authUpdate(), localStorage.removeItem("vu-user"), localStorage.removeItem("vu-header"), localStorage.removeItem("vu-settings");
 		},
 		reset() {
-			this.password = "", this.password_again = "", this.auth.response = {};
+			this.password = "", this.password_again = "", this.twofaCode = "", this.twofaSession = "", this.twofaMethod = "", this.auth.response = {};
 		},
 		close() {
 			this.auth.visible = !1, this.authUpdate(), this.reset();
@@ -14062,9 +14070,17 @@ var wE = {
 			}, 0);
 		},
 		async handleSubmit() {
-			this.loading = !0;
+			if (console.log("[auth] handleSubmit called, panel:", this.auth.panel), console.log("[auth] honeypot:", JSON.stringify(this.honeypot)), console.log("[auth] captchaRequired:", this.captchaRequired), console.log("[auth] captcha.answers:", this.captcha.answers), console.log("[auth] captcha.token:", this.captcha.token), this.auth.panel !== "twofa" && this.honeypot) {
+				console.log("[auth] blocked by honeypot");
+				return;
+			}
+			if (this.captchaRequired && this.captcha.answers.length !== 1) {
+				console.log("[auth] captcha incomplete, answers count:", this.captcha.answers.length), this.captchaError = !0;
+				return;
+			}
+			this.captchaError = !1, this.loading = !0;
 			try {
-				switch (this.auth.panel) {
+				switch (console.log("[auth] calling handler for panel:", this.auth.panel), this.auth.panel) {
 					case "login":
 						await this.handleLogin();
 						break;
@@ -14074,6 +14090,9 @@ var wE = {
 					case "registration":
 						await this.handleNewRegistrationSubmit();
 						break;
+					case "twofa":
+						await this.handleTwofaSubmit();
+						break;
 					case "activation":
 						await this.handleActivationSubmit();
 						break;
@@ -14081,8 +14100,10 @@ var wE = {
 						await this.handlePasswordSubmit();
 						break;
 				}
+			} catch (e) {
+				console.error("[auth] submit error", e);
 			} finally {
-				this.loading = !1;
+				this.loading = !1, this.captchaRequired && this.auth.panel !== "twofa" && this.fetchCaptcha();
 			}
 		},
 		async handleLogin() {
@@ -14093,13 +14114,23 @@ var wE = {
 				body: JSON.stringify({
 					username: this.username,
 					password: await this.hashPassword(this.password),
-					accept: this.accepts
+					accept: this.accepts,
+					honeypot: this.honeypot,
+					captchaToken: this.captcha.token,
+					captchaAnswer: this.captcha.answers
 				})
 			});
-			await this.getStatusAndJson(e), e.ok ? (this.onSuccess("login"), this.close()) : this.onError("login");
+			if (await this.getStatusAndJson(e), e.status === 202 && this.isTwofaPanel("login")) {
+				this.twofaSession = this.auth.response.data.twofaSession, this.twofaMethod = this.auth.response.data.twofa, this.auth.panel = "twofa";
+				return;
+			}
+			e.ok ? (this.onSuccess("login"), this.close()) : this.onError("login");
 		},
 		async handleNewRegistrationSubmit() {
-			if (this.auth.response = {}, !this.username || !this.password || !this.password_again || this.password !== this.password_again) return;
+			if (this.auth.response = {}, console.log("[auth] registration: username:", this.username, "password len:", this.password.length, "password_again len:", this.password_again.length, "match:", this.password === this.password_again), !this.username || !this.password || !this.password_again || this.password !== this.password_again) {
+				console.log("[auth] registration: validation failed — returning early");
+				return;
+			}
 			let e = await fetch(this.settings.api.register, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -14107,10 +14138,13 @@ var wE = {
 					username: this.username,
 					password: await this.hashPassword(this.password),
 					accept: this.accepts,
-					input: this.inputs
+					input: this.inputs,
+					honeypot: this.honeypot,
+					captchaToken: this.captcha.token,
+					captchaAnswer: this.captcha.answers
 				})
 			});
-			await this.getStatusAndJson(e), e.ok ? this.onSuccess("registration") : this.onError("registration");
+			await this.getStatusAndJson(e), console.log("[auth] registration response status:", e.status, "ok:", e.ok, "data:", this.auth.response.data), e.ok ? this.onSuccess("registration") : this.onError("registration");
 		},
 		async handleActivationSubmit() {
 			this.auth.response = {};
@@ -14127,7 +14161,12 @@ var wE = {
 				let e = await fetch(this.settings.api.forgot, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ username: this.username })
+					body: JSON.stringify({
+						username: this.username,
+						honeypot: this.honeypot,
+						captchaToken: this.captcha.token,
+						captchaAnswer: this.captcha.answer
+					})
 				});
 				await this.getStatusAndJson(e), e.ok ? this.onPasswordReset("forgot") : this.onError("forgot");
 			} catch {
@@ -14152,6 +14191,30 @@ var wE = {
 				this.onError("password");
 			}
 		},
+		async handleTwofaSubmit() {
+			this.auth.response = {};
+			let e = await fetch(this.settings.api.twofa, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					twofaSession: this.twofaSession,
+					code: this.twofaCode
+				})
+			});
+			await this.getStatusAndJson(e), e.ok ? (this.onSuccess("login"), this.close()) : this.onError("twofa");
+		},
+		async resendTwofa() {
+			if (this.settings.api.twofaResend) try {
+				let e = await fetch(this.settings.api.twofaResend, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ twofaSession: this.twofaSession })
+				});
+				await this.getStatusAndJson(e), e.ok && (this.auth.response.ok = !0, this.auth.response.message = this.auth.response.data?.message || "", this.$forceUpdate());
+			} catch (e) {
+				console.error("[auth] resend twofa error", e);
+			}
+		},
 		async hashPassword(e) {
 			return this.settings.password.hash = this.settings.password.hash === void 0 ? 0 : this.settings.password.hash, this.generateHash(e, this.settings.password.hash);
 		},
@@ -14172,8 +14235,25 @@ var wE = {
 		translate(e, t, n) {
 			return Pc(e, this.settings.translate, t, n || this.settings.language);
 		},
-		onCaptchaClick() {
-			console.log("reCAPTCHA clicked");
+		isTwofaPanel(e) {
+			return !this.settings.twofa || !this.settings.twofa.panels ? !0 : this.settings.twofa.panels.includes(e);
+		},
+		async fetchCaptcha() {
+			if (!(!this.settings.captcha || !this.settings.captcha.url)) {
+				this.captcha.loading = !0, this.captcha.answers = [], this.captchaError = !1;
+				try {
+					let e = await (await fetch(this.settings.captcha.url)).json();
+					this.captcha.items = e.items, this.captcha.question = e.question, this.captcha.token = e.token;
+				} catch (e) {
+					console.error("[captcha] load failed", e);
+				} finally {
+					this.captcha.loading = !1;
+				}
+			}
+		},
+		toggleCaptchaAnswer(e) {
+			let t = this.captcha.answers.indexOf(e);
+			t >= 0 ? this.captcha.answers.splice(t, 1) : this.captcha.answers = [e];
 		}
 	},
 	created() {
@@ -14196,7 +14276,7 @@ var wE = {
 				message: null,
 				data: null
 			}
-		}, console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.settings.debug && console.log("vu-auth mounted ", "1.4.0");
+		}, console.log(this.auth), this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.captchaRequired && this.fetchCaptcha(), this.settings.debug && console.log("vu-auth mounted ", "1.4.0");
 	},
 	beforeUnmount() {
 		window.removeEventListener("keydown", this.handleEscapeKey);
@@ -14247,18 +14327,30 @@ var wE = {
 }, JE = {
 	key: 1,
 	class: "bi bi-eye-slash"
-}, YE = ["innerHTML"], XE = { class: "mb-3 text-center" }, ZE = ["data-sitekey"], QE = {
+}, YE = ["innerHTML"], XE = {
 	key: 2,
-	class: "mb-4 text-center"
-}, $E = ["innerHTML"], eD = {
+	class: "mb-3"
+}, ZE = {
+	key: 0,
+	class: "text-center py-2"
+}, QE = { key: 1 }, $E = ["innerHTML"], eD = { class: "d-flex justify-content-center gap-2 flex-wrap" }, tD = ["onClick"], nD = {
 	key: 3,
+	class: "text-danger text-center small mt-2 mb-3 fw-semibold"
+}, rD = {
+	key: 4,
+	class: "mb-3"
+}, iD = ["innerHTML"], aD = { class: "form-label text-primary" }, oD = { class: "input-group" }, sD = ["placeholder", "disabled"], cD = { class: "text-end mt-2" }, lD = ["disabled"], uD = {
+	key: 5,
+	class: "mb-4 text-center"
+}, dD = ["innerHTML"], fD = {
+	key: 6,
 	class: "d-flex mb-4"
-}, tD = ["innerHTML"], nD = { class: "row" }, rD = { class: "mb-3" }, iD = ["for", "innerHTML"], aD = { class: "input-group" }, oD = ["innerHTML"], sD = [
+}, pD = ["innerHTML"], mD = { class: "row" }, hD = { class: "mb-3" }, gD = ["for", "innerHTML"], _D = { class: "input-group" }, vD = ["innerHTML"], yD = [
 	"disabled",
 	"required",
 	"onUpdate:modelValue",
 	"multiple"
-], cD = ["value", "innerHTML"], lD = [
+], bD = ["value", "innerHTML"], xD = [
 	"id",
 	"name",
 	"type",
@@ -14266,52 +14358,52 @@ var wE = {
 	"placeholder",
 	"required",
 	"disabled"
-], uD = ["innerHTML"], dD = ["innerHTML"], fD = {
+], SD = ["innerHTML"], CD = ["innerHTML"], wD = {
 	key: 0,
 	class: "form-check"
-}, pD = [
+}, TD = [
 	"id",
 	"name",
 	"onUpdate:modelValue",
 	"required",
 	"disabled"
-], mD = ["for", "innerHTML"], hD = {
-	key: 4,
+], ED = ["for", "innerHTML"], DD = {
+	key: 7,
 	class: "mt-4"
-}, gD = ["innerHTML"], _D = {
-	key: 5,
+}, OD = ["innerHTML"], kD = {
+	key: 8,
 	class: "mt-3 text-center"
-}, vD = ["innerHTML"], yD = { class: "mt-4 d-flex justify-content-between" }, bD = ["disabled"], xD = ["disabled"], SD = ["disabled"], CD = {
+}, AD = ["innerHTML"], jD = { class: "mt-4 d-flex justify-content-between" }, MD = ["disabled"], ND = ["disabled"], PD = ["disabled"], FD = {
 	key: 0,
 	class: "bi bi-person-plus mx-1"
-}, wD = {
+}, ID = {
 	key: 1,
 	class: "bi bi-arrow-right-square mx-1"
-}, TD = { class: "mt-2 text-end" }, ED = ["disabled"], DD = ["id"], OD = { class: "modal-dialog modal-xl" }, kD = { class: "modal-content h-100" };
-function AD(o, c, g, _, y, x) {
-	let S = d("VuAdminForm");
+}, LD = { class: "mt-2 text-end" }, RD = ["disabled"], zD = ["id"], BD = { class: "modal-dialog modal-xl" }, VD = { class: "modal-content h-100" };
+function HD(o, c, _, y, x, S) {
+	let C = d("VuAdminForm");
 	return o.auth && o.auth.visible ? (l(), r("div", {
 		key: 0,
 		class: "vua-auth",
 		"data-bs-theme": [o.theme]
 	}, [i("div", {
 		class: "row d-flex justify-content-center align-items-center min-vh-100",
-		onClick: c[14] ||= b((...e) => o.close && o.close(...e), ["stop"])
+		onClick: c[16] ||= b((...e) => o.close && o.close(...e), ["stop"])
 	}, [i("div", EE, [i("div", {
 		class: "card shadow p-4 position-relative",
-		onClick: c[13] ||= b(() => {}, ["stop"])
+		onClick: c[15] ||= b(() => {}, ["stop"])
 	}, [
 		i("div", DE, [o.loading ? (l(), r("i", OE)) : n("", !0), i("button", {
 			type: "button",
 			class: "btn p-2",
 			onClick: c[0] ||= b((...e) => o.close && o.close(...e), ["stop"])
-		}, [...c[16] ||= [i("i", { class: "bi bi-x px-1 text-muted" }, null, -1)]])]),
+		}, [...c[18] ||= [i("i", { class: "bi bi-x px-1 text-muted" }, null, -1)]])]),
 		i("h1", kE, f(o.settings.title[o.auth.panel]), 1),
 		i("form", {
-			onSubmit: c[11] ||= b((e) => o.handleSubmit(), ["prevent"]),
-			onClick: c[12] ||= b(() => {}, ["stop"])
+			onSubmit: c[13] ||= b((e) => o.handleSubmit(), ["prevent"]),
+			onClick: c[14] ||= b(() => {}, ["stop"])
 		}, [
-			o.auth.panel != "activation" && o.auth.panel != "password" ? (l(), r("div", AE, [
+			o.auth.panel != "activation" && o.auth.panel != "password" && o.auth.panel != "twofa" ? (l(), r("div", AE, [
 				i("label", jE, f(o.settings.username.label), 1),
 				i("div", ME, [o.settings.username.icon ? (l(), r("span", {
 					key: 0,
@@ -14332,113 +14424,163 @@ function AD(o, c, g, _, y, x) {
 					innerHTML: o.settings.username.help
 				}, null, 8, PE)) : n("", !0)
 			])) : n("", !0),
-			o.auth.panel != "forgot" && o.auth.panel != "activation" ? (l(), r(e, { key: 1 }, [
-				i("div", FE, [
-					o.settings.password.label ? (l(), r("label", IE, f(o.settings.password.label), 1)) : n("", !0),
-					i("div", LE, [
-						o.settings.password.icon ? (l(), r("span", {
-							key: 0,
-							class: s(["input-group-text", { "rounded-bottom-0": (o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password.help }])
-						}, [i("i", { class: s([o.settings.password.icon]) }, null, 2)], 2)) : n("", !0),
-						v(i("input", {
-							id: "password",
-							name: "password",
-							type: o.settings.password.type,
-							"onUpdate:modelValue": c[2] ||= (e) => o.password = e,
-							class: s(["form-control", { "rounded-bottom-0": o.auth.panel == "registration" && o.settings.password.help }]),
-							placeholder: o.settings.password.placeholder,
-							pattern: o.settings.password.pattern,
-							minlength: o.auth.panel == "registration" ? o.settings.password.minlength : 1,
-							required: "",
-							disabled: o.loading
-						}, null, 10, RE), [[m, o.password]]),
-						o.auth.panel == "registration" || o.auth.panel == "password" ? (l(), r("span", {
-							key: 1,
-							class: s(["input-group-text", { "rounded-bottom-0": (o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password.help }])
-						}, [i("small", { class: s(["", {
-							"text-success": o.password.length >= o.settings.password.minlength,
-							"text-danger": o.password.length < o.settings.password.minlength
-						}]) }, f(o.password.length), 3)], 2)) : n("", !0),
-						i("span", {
-							class: s(["cursor-pointer input-group-text", { "rounded-bottom-0": (o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password.help }]),
-							onClick: c[3] ||= b((e) => o.toggleType("password"), ["stop"])
-						}, [o.settings.password.type == "password" ? (l(), r("i", zE)) : (l(), r("i", BE))], 2)
-					]),
-					(o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password.help ? (l(), r("small", {
+			o.auth.panel != "forgot" && o.auth.panel != "activation" && o.auth.panel != "twofa" ? (l(), r(e, { key: 1 }, [i("div", FE, [
+				o.settings.password.label ? (l(), r("label", IE, f(o.settings.password.label), 1)) : n("", !0),
+				i("div", LE, [
+					o.settings.password.icon ? (l(), r("span", {
+						key: 0,
+						class: s(["input-group-text", { "rounded-bottom-0": (o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password.help }])
+					}, [i("i", { class: s([o.settings.password.icon]) }, null, 2)], 2)) : n("", !0),
+					v(i("input", {
+						id: "password",
+						name: "password",
+						type: o.settings.password.type,
+						"onUpdate:modelValue": c[2] ||= (e) => o.password = e,
+						class: s(["form-control", { "rounded-bottom-0": o.auth.panel == "registration" && o.settings.password.help }]),
+						placeholder: o.settings.password.placeholder,
+						pattern: o.settings.password.pattern,
+						minlength: o.auth.panel == "registration" ? o.settings.password.minlength : 1,
+						required: "",
+						disabled: o.loading
+					}, null, 10, RE), [[m, o.password]]),
+					o.auth.panel == "registration" || o.auth.panel == "password" ? (l(), r("span", {
 						key: 1,
-						class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
-						innerHTML: o.settings.password.help
-					}, null, 8, VE)) : n("", !0)
+						class: s(["input-group-text", { "rounded-bottom-0": (o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password.help }])
+					}, [i("small", { class: s(["", {
+						"text-success": o.password.length >= o.settings.password.minlength,
+						"text-danger": o.password.length < o.settings.password.minlength
+					}]) }, f(o.password.length), 3)], 2)) : n("", !0),
+					i("span", {
+						class: s(["cursor-pointer input-group-text", { "rounded-bottom-0": (o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password.help }]),
+						onClick: c[3] ||= b((e) => o.toggleType("password"), ["stop"])
+					}, [o.settings.password.type == "password" ? (l(), r("i", zE)) : (l(), r("i", BE))], 2)
 				]),
-				o.auth.panel === "registration" || o.auth.panel === "password" ? (l(), r("div", HE, [
-					i("label", UE, [a(f(o.settings.password_again.label) + " ", 1), o.password_again.length > 0 && o.password_again != o.password ? (l(), r("small", {
+				(o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password.help ? (l(), r("small", {
+					key: 1,
+					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
+					innerHTML: o.settings.password.help
+				}, null, 8, VE)) : n("", !0)
+			]), o.auth.panel === "registration" || o.auth.panel === "password" ? (l(), r("div", HE, [
+				i("label", UE, [a(f(o.settings.password_again.label) + " ", 1), o.password_again.length > 0 && o.password_again != o.password ? (l(), r("small", {
+					key: 0,
+					class: "text-danger",
+					innerHTML: o.settings.password_again.nomatch
+				}, null, 8, WE)) : n("", !0)]),
+				i("div", GE, [
+					o.settings.password.icon ? (l(), r("span", {
 						key: 0,
-						class: "text-danger",
-						innerHTML: o.settings.password_again.nomatch
-					}, null, 8, WE)) : n("", !0)]),
-					i("div", GE, [
-						o.settings.password.icon ? (l(), r("span", {
-							key: 0,
-							class: s(["input-group-text", { "rounded-bottom-0": o.settings.password_again.help }])
-						}, [i("i", { class: s([o.settings.password_again.icon]) }, null, 2)], 2)) : n("", !0),
-						v(i("input", {
-							id: "password_again",
-							name: "password_again",
-							type: o.settings.password_again.type,
-							"onUpdate:modelValue": c[4] ||= (e) => o.password_again = e,
-							class: s(["form-control", { "rounded-bottom-0": o.settings.password_again.help }]),
-							placeholder: o.settings.password_again.placeholder,
-							minlength: o.settings.password.minlength,
-							required: "",
-							disabled: o.loading
-						}, null, 10, KE), [[m, o.password_again]]),
-						i("span", { class: s(["input-group-text", { "rounded-bottom-0": o.settings.password_again.help }]) }, [i("small", { class: s(["", {
-							"text-success": o.password_again.length >= o.settings.password.minlength,
-							"text-danger": o.password_again.length < o.settings.password.minlength
-						}]) }, f(o.password_again.length), 3)], 2),
-						i("span", {
-							class: s(["cursor-pointer input-group-text", { "rounded-bottom-0": (o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password_again.help }]),
-							onClick: c[5] ||= b((e) => o.toggleType("password_again"), ["stop"])
-						}, [o.settings.password_again.type == "password" ? (l(), r("i", qE)) : (l(), r("i", JE))], 2)
-					]),
-					(o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password_again.help ? (l(), r("small", {
-						key: 0,
-						class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
-						innerHTML: o.settings.password_again.help
-					}, null, 8, YE)) : n("", !0)
-				])) : n("", !0),
-				i("div", XE, [i("div", {
-					class: "g-recaptcha",
-					"data-sitekey": o.recaptchaSiteKey,
-					onClick: c[6] ||= b((...e) => o.onCaptchaClick && o.onCaptchaClick(...e), ["stop"])
-				}, null, 8, ZE)])
-			], 64)) : n("", !0),
-			o.auth.panel == "login" && o.settings.password.forgot ? (l(), r("div", QE, [i("button", {
+						class: s(["input-group-text", { "rounded-bottom-0": o.settings.password_again.help }])
+					}, [i("i", { class: s([o.settings.password_again.icon]) }, null, 2)], 2)) : n("", !0),
+					v(i("input", {
+						id: "password_again",
+						name: "password_again",
+						type: o.settings.password_again.type,
+						"onUpdate:modelValue": c[4] ||= (e) => o.password_again = e,
+						class: s(["form-control", { "rounded-bottom-0": o.settings.password_again.help }]),
+						placeholder: o.settings.password_again.placeholder,
+						minlength: o.settings.password.minlength,
+						required: "",
+						disabled: o.loading
+					}, null, 10, KE), [[m, o.password_again]]),
+					i("span", { class: s(["input-group-text", { "rounded-bottom-0": o.settings.password_again.help }]) }, [i("small", { class: s(["", {
+						"text-success": o.password_again.length >= o.settings.password.minlength,
+						"text-danger": o.password_again.length < o.settings.password.minlength
+					}]) }, f(o.password_again.length), 3)], 2),
+					i("span", {
+						class: s(["cursor-pointer input-group-text", { "rounded-bottom-0": (o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password_again.help }]),
+						onClick: c[5] ||= b((e) => o.toggleType("password_again"), ["stop"])
+					}, [o.settings.password_again.type == "password" ? (l(), r("i", qE)) : (l(), r("i", JE))], 2)
+				]),
+				(o.auth.panel == "registration" || o.auth.panel == "password") && o.settings.password_again.help ? (l(), r("small", {
+					key: 0,
+					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
+					innerHTML: o.settings.password_again.help
+				}, null, 8, YE)) : n("", !0)
+			])) : n("", !0)], 64)) : n("", !0),
+			o.captchaRequired ? (l(), r("div", XE, [o.captcha.loading ? (l(), r("div", ZE, [...c[19] ||= [i("span", { class: "spinner-border spinner-border-sm text-secondary" }, null, -1)]])) : o.captcha.items.length ? (l(), r("div", QE, [i("div", {
+				class: "text-center small mb-2",
+				innerHTML: o.captcha.question
+			}, null, 8, $E), i("div", eD, [(l(!0), r(e, null, u(o.captcha.items, (e) => (l(), r("button", {
+				key: e.id,
+				type: "button",
+				class: s(["btn btn-outline-secondary px-2 py-1", { "btn-primary border-primary": o.captcha.answers.includes(e.id) }]),
+				onClick: b((t) => {
+					o.toggleCaptchaAnswer(e.id), o.captchaError = !1;
+				}, ["stop"])
+			}, [i("i", {
+				class: s(["bi", e.icon]),
+				style: {
+					"font-size": "1.2rem",
+					display: "block"
+				}
+			}, null, 2)], 10, tD))), 128))])])) : n("", !0)])) : n("", !0),
+			o.captchaError ? (l(), r("p", nD, f(o.settings.captcha.error), 1)) : n("", !0),
+			o.auth.panel === "twofa" && o.settings.twofa ? (l(), r("div", rD, [
+				i("p", {
+					class: "text-center small text-muted mb-3",
+					innerHTML: o.settings.twofa.info
+				}, null, 8, iD),
+				i("label", aD, f(o.settings.twofa.label), 1),
+				i("div", oD, [c[20] ||= i("span", { class: "input-group-text" }, [i("i", { class: "bi bi-shield-lock" })], -1), v(i("input", {
+					type: "text",
+					inputmode: "numeric",
+					pattern: "[0-9]{6}",
+					maxlength: "6",
+					"onUpdate:modelValue": c[6] ||= (e) => o.twofaCode = e,
+					class: "form-control text-center fw-bold fs-5",
+					placeholder: o.settings.twofa.placeholder,
+					required: "",
+					disabled: o.loading,
+					autocomplete: "one-time-code"
+				}, null, 8, sD), [[g, o.twofaCode]])]),
+				i("div", cD, [i("button", {
+					type: "button",
+					class: "btn btn-link btn-sm p-0 text-decoration-none",
+					onClick: c[7] ||= b((...e) => o.resendTwofa && o.resendTwofa(...e), ["stop"]),
+					disabled: o.loading
+				}, [c[21] ||= i("i", { class: "bi bi-arrow-repeat me-1" }, null, -1), a(f(o.settings.submit.resend), 1)], 8, lD)])
+			])) : n("", !0),
+			v(i("input", {
+				type: "text",
+				name: "vu_b4t",
+				tabindex: "-1",
+				autocomplete: "new-password",
+				"aria-hidden": "true",
+				"onUpdate:modelValue": c[8] ||= (e) => o.honeypot = e,
+				style: {
+					position: "absolute",
+					left: "-9999px",
+					width: "1px",
+					height: "1px",
+					opacity: "0"
+				}
+			}, null, 512), [[g, o.honeypot]]),
+			o.auth.panel == "login" && o.settings.password.forgot ? (l(), r("div", uD, [i("button", {
 				type: "button",
 				class: "btn btn-link p-0 text-decoration-none text-nowrap",
-				onClick: c[7] ||= b((...e) => o.toggleForgotPassword && o.toggleForgotPassword(...e), ["stop"]),
+				onClick: c[9] ||= b((...e) => o.toggleForgotPassword && o.toggleForgotPassword(...e), ["stop"]),
 				innerHTML: o.settings.password.forgot
-			}, null, 8, $E)])) : n("", !0),
-			o.auth.panel == "forgot" && o.settings.help && o.settings.help.forgot ? (l(), r("div", eD, [i("small", {
+			}, null, 8, dD)])) : n("", !0),
+			o.auth.panel == "forgot" && o.settings.help && o.settings.help.forgot ? (l(), r("div", fD, [i("small", {
 				class: "text-muted",
 				innerHTML: o.settings.help.forgot
-			}, null, 8, tD)])) : n("", !0),
-			i("div", nD, [(l(!0), r(e, null, u(o.settings.inputs, (t, a) => (l(), r(e, { key: a }, [t.panels.indexOf(o.auth.panel) >= 0 && !t.hidden ? (l(), r("div", {
+			}, null, 8, pD)])) : n("", !0),
+			i("div", mD, [(l(!0), r(e, null, u(o.settings.inputs, (t, a) => (l(), r(e, { key: a }, [t.panels.indexOf(o.auth.panel) >= 0 && !t.hidden ? (l(), r("div", {
 				key: 0,
 				class: s([t.colclass ? t.colclass : "col-md-12"])
-			}, [i("div", rD, [
+			}, [i("div", hD, [
 				t.label ? (l(), r("label", {
 					key: 0,
 					for: a,
 					class: s(["form-label text-primary", { required: t.required }]),
 					innerHTML: o.getValueOrFunction(t.label)
-				}, null, 10, iD)) : n("", !0),
-				i("div", aD, [
+				}, null, 10, gD)) : n("", !0),
+				i("div", _D, [
 					t.prefix ? (l(), r("span", {
 						key: 0,
 						class: s(["input-group-text", { "rounded-bottom-0": t.help }]),
 						innerHTML: o.getValueOrFunction(t.prefix)
-					}, null, 10, oD)) : n("", !0),
+					}, null, 10, vD)) : n("", !0),
 					t.type == "select" ? v((l(), r("select", {
 						key: 1,
 						class: "form-select",
@@ -14446,11 +14588,11 @@ function AD(o, c, g, _, y, x) {
 						required: t.required,
 						"onUpdate:modelValue": (e) => o.inputs[a] = e,
 						multiple: t.multiple
-					}, [c[17] ||= i("option", null, null, -1), (l(!0), r(e, null, u(t.options, (e) => (l(), r("option", {
+					}, [c[22] ||= i("option", null, null, -1), (l(!0), r(e, null, u(t.options, (e) => (l(), r("option", {
 						key: e,
 						value: e.value,
 						innerHTML: o.getValueOrFunction(e.label)
-					}, null, 8, cD))), 128))], 8, sD)), [[h, o.inputs[a]]]) : v((l(), r("input", {
+					}, null, 8, bD))), 128))], 8, yD)), [[h, o.inputs[a]]]) : v((l(), r("input", {
 						key: 2,
 						id: a,
 						name: a,
@@ -14460,20 +14602,20 @@ function AD(o, c, g, _, y, x) {
 						placeholder: t.placeholder,
 						required: t.required,
 						disabled: o.loading
-					}, null, 10, lD)), [[m, o.inputs[a]]]),
+					}, null, 10, xD)), [[m, o.inputs[a]]]),
 					t.suffix ? (l(), r("span", {
 						key: 3,
 						class: s(["input-group-text", { "rounded-bottom-0": t.help }]),
 						innerHTML: o.getValueOrFunction(t.suffix)
-					}, null, 10, uD)) : n("", !0)
+					}, null, 10, SD)) : n("", !0)
 				]),
 				t.help ? (l(), r("small", {
 					key: 1,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: o.getValueOrFunction(t.help)
-				}, null, 8, dD)) : n("", !0)
+				}, null, 8, CD)) : n("", !0)
 			])], 2)) : n("", !0)], 64))), 128))]),
-			(l(!0), r(e, null, u(o.settings.accepts, (e) => (l(), r("div", { key: e }, [e.panels.indexOf(o.auth.panel) >= 0 ? (l(), r("div", fD, [v(i("input", {
+			(l(!0), r(e, null, u(o.settings.accepts, (e) => (l(), r("div", { key: e }, [e.panels.indexOf(o.auth.panel) >= 0 ? (l(), r("div", wD, [v(i("input", {
 				type: "checkbox",
 				class: "form-check-input",
 				id: "accept_" + e.name,
@@ -14481,35 +14623,35 @@ function AD(o, c, g, _, y, x) {
 				"onUpdate:modelValue": (t) => o.accepts[e.name] = t,
 				required: e.required,
 				disabled: o.loading
-			}, null, 8, pD), [[p, o.accepts[e.name]]]), e.label ? (l(), r("label", {
+			}, null, 8, TD), [[p, o.accepts[e.name]]]), e.label ? (l(), r("label", {
 				key: 0,
 				class: "form-check-label",
 				for: "accept_" + e.name,
 				innerHTML: o.getValueOrFunction(e.label)
-			}, null, 8, mD)) : n("", !0)])) : n("", !0)]))), 128)),
-			o.auth.panel == "registration" && o.settings.help && o.settings.help.registration ? (l(), r("div", hD, [i("div", { innerHTML: o.getValueOrFunction(o.settings.help.registration) }, null, 8, gD)])) : n("", !0),
-			o.auth.response.message ? (l(), r("div", _D, [i("div", {
+			}, null, 8, ED)) : n("", !0)])) : n("", !0)]))), 128)),
+			o.auth.panel == "registration" && o.settings.help && o.settings.help.registration ? (l(), r("div", DD, [i("div", { innerHTML: o.getValueOrFunction(o.settings.help.registration) }, null, 8, OD)])) : n("", !0),
+			o.auth.response.message ? (l(), r("div", kD, [i("div", {
 				class: s({
 					"text-danger": !o.auth.response.ok,
 					"text-success": o.auth.response.ok
 				}),
 				innerHTML: o.auth.response.message
-			}, null, 10, vD)])) : n("", !0),
-			i("div", yD, [
+			}, null, 10, AD)])) : n("", !0),
+			i("div", jD, [
 				o.auth.panel != "login" && o.auth.panel != "activation" ? (l(), r("button", {
 					key: 0,
 					type: "button",
-					onClick: c[8] ||= b((...e) => o.toggleClear && o.toggleClear(...e), ["stop"]),
+					onClick: c[10] ||= b((...e) => o.toggleClear && o.toggleClear(...e), ["stop"]),
 					class: "btn btn-secondary w-100 me-2 text-nowrap",
 					disabled: o.loading
-				}, [c[18] ||= i("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), a(" " + f(o.settings.submit.login), 1)], 8, bD)) : n("", !0),
+				}, [c[23] ||= i("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), a(" " + f(o.settings.submit.login), 1)], 8, MD)) : n("", !0),
 				o.auth.panel == "login" ? (l(), r("button", {
 					key: 1,
 					type: "button",
 					class: "btn btn-warning w-100 me-2 text-nowrap",
-					onClick: c[9] ||= b((...e) => o.toggleNewRegistration && o.toggleNewRegistration(...e), ["stop"]),
+					onClick: c[11] ||= b((...e) => o.toggleNewRegistration && o.toggleNewRegistration(...e), ["stop"]),
 					disabled: o.loading
-				}, [c[19] ||= i("i", { class: "bi bi-person-plus mx-1" }, null, -1), a(" " + f(o.settings.submit.registration), 1)], 8, xD)) : n("", !0),
+				}, [c[24] ||= i("i", { class: "bi bi-person-plus mx-1" }, null, -1), a(" " + f(o.settings.submit.registration), 1)], 8, ND)) : n("", !0),
 				i("button", {
 					type: "submit",
 					class: s(["btn w-100 text-nowrap", {
@@ -14517,23 +14659,23 @@ function AD(o, c, g, _, y, x) {
 						"btn-warning": o.auth.panel == "registration"
 					}]),
 					disabled: o.loading
-				}, [a(f(o.settings.submit[o.auth.panel]) + " ", 1), o.auth.panel == "registration" ? (l(), r("i", CD)) : (l(), r("i", wD))], 10, SD)
+				}, [a(f(o.settings.submit[o.auth.panel]) + " ", 1), o.auth.panel == "registration" ? (l(), r("i", FD)) : (l(), r("i", ID))], 10, PD)
 			]),
-			i("div", TD, [i("button", {
+			i("div", LD, [i("button", {
 				type: "button",
-				onClick: c[10] ||= b((...e) => o.close && o.close(...e), ["stop"]),
+				onClick: c[12] ||= b((...e) => o.close && o.close(...e), ["stop"]),
 				class: "btn btn-light border w-100 me-1",
 				disabled: o.loading
-			}, [a(f(o.settings.submit.cancel) + " ", 1), c[20] ||= i("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, ED)])
+			}, [a(f(o.settings.submit.cancel) + " ", 1), c[25] ||= i("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, RD)])
 		], 32)
 	])])]), i("div", {
 		class: "modal shadow",
 		id: o.modalId,
 		tabindex: "-1"
-	}, [i("div", OD, [i("div", kD, [o.settings.form && o.settings.form.visible && o.settings.form.groups ? (l(), t(S, {
+	}, [i("div", BD, [i("div", VD, [o.settings.form && o.settings.form.visible && o.settings.form.groups ? (l(), t(C, {
 		key: 0,
 		modelValue: o.item,
-		"onUpdate:modelValue": c[15] ||= (e) => o.item = e,
+		"onUpdate:modelValue": c[17] ||= (e) => o.item = e,
 		formid: o.formId,
 		settings: o.settings,
 		modalWindow: o.modalWindow,
@@ -14552,13 +14694,13 @@ function AD(o, c, g, _, y, x) {
 		"deleteItem",
 		"reloadTable",
 		"fetchRelation"
-	])) : n("", !0)])])], 8, DD)], 8, TE)) : n("", !0);
+	])) : n("", !0)])])], 8, zD)], 8, TE)) : n("", !0);
 }
-var jD = /* @__PURE__ */ Cy(wE, [["render", AD]]);
+var UD = /* @__PURE__ */ Cy(wE, [["render", HD]]);
 //#endregion
 //#region src/components/VuUserButton.vue
 _c();
-var MD = {
+var WD = {
 	name: "VuUserButton",
 	props: {
 		modelValue: Object,
@@ -14602,51 +14744,51 @@ var MD = {
 		window.VuSettings && window.VuSettings.button && (this.theme = window.VuSettings.theme ? window.VuSettings.theme : "light", window.VuSettings.button[this.panel] && (this.settings = window.VuSettings.button[this.panel]));
 	},
 	mounted() {}
-}, ND = ["data-bs-theme"], PD = {
+}, GD = ["data-bs-theme"], KD = {
 	key: 0,
 	class: "dropdown"
-}, FD = ["innerHTML"], ID = {
+}, qD = ["innerHTML"], JD = {
 	class: "dropdown-menu dropdown-menu-end",
 	"aria-labelledby": "userDropdown"
-}, LD = ["innerHTML"], RD = ["onClick"], zD = ["onClick", "innerHTML"], BD = {
+}, YD = ["innerHTML"], XD = ["onClick"], ZD = ["onClick", "innerHTML"], QD = {
 	key: 1,
 	class: "d-inline-block"
-}, VD = ["innerHTML"];
-function HD(t, a, o, c, d, p) {
+}, $D = ["innerHTML"];
+function eO(t, a, o, c, d, p) {
 	return !t.auth.user && t.panel != "login" || t.panel == "login" ? (l(), r("div", {
 		key: 0,
 		class: "vua-user-button d-inline-block",
 		"data-bs-theme": [t.theme]
-	}, [t.auth.user ? (l(), r("div", PD, [i("button", {
+	}, [t.auth.user ? (l(), r("div", KD, [i("button", {
 		class: s(["dropdown-toggle", [t.settings.class]]),
 		type: "button",
 		id: "userDropdown",
 		"data-bs-toggle": "dropdown",
 		"aria-expanded": "false"
-	}, [i("span", { innerHTML: t.getValueOrFunction(t.settings.label) }, null, 8, FD)], 2), i("ul", ID, [(l(!0), r(e, null, u(t.settings.dropdowns, (n) => (l(), r(e, { key: n }, [n.action == "BUTTON_ROLES" ? (l(), r("li", {
+	}, [i("span", { innerHTML: t.getValueOrFunction(t.settings.label) }, null, 8, qD)], 2), i("ul", JD, [(l(!0), r(e, null, u(t.settings.dropdowns, (n) => (l(), r(e, { key: n }, [n.action == "BUTTON_ROLES" ? (l(), r("li", {
 		key: 0,
 		class: s([[n.class], "d-flex items-align-center"])
 	}, [i("span", {
 		innerHTML: t.getValueOrFunction(n.label),
 		class: "me-2"
-	}, null, 8, LD), (l(!0), r(e, null, u(t.auth.user.roles, (e) => (l(), r("button", {
+	}, null, 8, YD), (l(!0), r(e, null, u(t.auth.user.roles, (e) => (l(), r("button", {
 		key: e,
 		onClick: (n) => t.setSelectedRole(e),
 		class: s(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e == t.auth.user.role }])
-	}, f(e), 11, RD))), 128))], 2)) : (l(), r("li", {
+	}, f(e), 11, XD))), 128))], 2)) : (l(), r("li", {
 		key: 1,
 		class: s([n.class]),
 		onClick: (e) => t.dropdownAction(n),
 		innerHTML: t.getValueOrFunction(n.label)
-	}, null, 10, zD))], 64))), 128))])])) : (l(), r("div", BD, [i("button", {
+	}, null, 10, ZD))], 64))), 128))])])) : (l(), r("div", QD, [i("button", {
 		class: s([t.settings.class]),
 		type: "button",
 		onClick: a[0] ||= (...e) => t.togglePanel && t.togglePanel(...e)
 	}, [t.settings.icon ? (l(), r("i", {
 		key: 0,
 		class: s([t.settings.icon])
-	}, null, 2)) : n("", !0), i("span", { innerHTML: t.getValueOrFunction(t.settings.label) }, null, 8, VD)], 2)]))], 8, ND)) : n("", !0);
+	}, null, 2)) : n("", !0), i("span", { innerHTML: t.getValueOrFunction(t.settings.label) }, null, 8, $D)], 2)]))], 8, GD)) : n("", !0);
 }
-var UD = /* @__PURE__ */ Cy(MD, [["render", HD]]);
+var tO = /* @__PURE__ */ Cy(WD, [["render", eO]]);
 //#endregion
-export { SE as VuAdmin, jD as VuAuth, UD as VuUserButton };
+export { SE as VuAdmin, UD as VuAuth, tO as VuUserButton };
