@@ -49,8 +49,7 @@ window.VuEntities.product = (preset) => {
 
 			console.log('# afterItemLoad', data, response);
 		},
-		beforeItemSave: function (item, urlParams, unfiltered) {
-			// because of https://dummyjson.com/ error: "Product with id '1' not found"
+		beforeItemSave: function (item, urlParams, unfiltered) {			
 			console.log('# beforeItemSave', item, unfiltered);
 			delete item.id;
 		},

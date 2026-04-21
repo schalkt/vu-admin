@@ -22,15 +22,11 @@
 
   <div class="container-fluid" id="app">
 
-    <header class="sticky-top p-2 border shadow">
+    <header class="sticky-top p-2 border shadow d-flex justify-content-end align-items-center gap-2">
       <vu-user-button v-model="auth" :panel="'login'"></vu-user-button>
       <vu-user-button v-model="auth" :panel="'registration'"></vu-user-button>
       <vu-auth v-model="auth" :settings="'auth'"></vu-auth>
     </header>
-
-    <small class="text-muted">
-      {{ auth }}
-    </small>
 
     <div v-cloak v-if="auth.success">
       <vu-admin :entity="'carts'" :auth="auth"></vu-admin>

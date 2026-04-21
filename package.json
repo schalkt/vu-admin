@@ -11,7 +11,9 @@
     "build": "vite build",
     "serve": "vite preview",
     "release": "npm --no-git-tag-version version patch && npm run prod",
-    "init": "npm prune && npm install && npm update && npm audit fix"
+    "init": "npm prune && npm install && npm update && npm audit fix",
+    "mock:seed": "node scripts/mock-init.js --seed",
+    "mock:reset": "node scripts/mock-init.js --reset"
   },
   "keywords": [
     "vue",
@@ -23,13 +25,13 @@
   "license": "MIT",
   "devDependencies": {
     "@popperjs/core": "^2.11.8",
-    "@vitejs/plugin-vue": "^6.0.5",
+    "@vitejs/plugin-vue": "^6.0.6",
     "bootstrap": "^5.3.8",
     "mitt": "^3.0.1",
     "js-sha512": "^0.9.0",
-    "quill": "2.0.2",
+    "quill": "2.0.3",
     "sass": "^1.99.0",
-    "vite": "^8.0.5",
+    "vite": "^8.0.9",
     "vue": "^3.5.32"
   },
   "peerDependencies": {

@@ -2,110 +2,81 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import { version } from './package.json'
-import crypto from 'crypto';
+import { createMockMiddleware } from './mock/middleware.js';
+
+const useMock = process.env.VITE_MOCK !== 'false';
 
 export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(version),
   },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://dummyjson.com',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      }
-    }
-  },
+  server: {},
   plugins: [
     {
       name: 'custom-api',
       configureServer(server) {
-        
-        const delay = 2000; // késleltetés
+
+        const delay = 500;
+
+        if (useMock) {
+          createMockMiddleware(server, { delay });
+        }
 
         server.middlewares.use('/password/forgot', (req, res, next) => {
-          if (req.method === 'POST') {
+          if (req.method !== 'POST') return next();
 
-            let body = '';
-
-            req.on('data', chunk => (body += chunk));
-            req.on('end', () => {
-
-              res.setHeader('Content-Type', 'application/json');
-
-              setTimeout(async () => {
-                try {
-                  const jsonData = JSON.parse(body);
-                  const username = jsonData.username;
-
-                  if (!username) {
-                    res.statusCode = 400;
-                    res.end(JSON.stringify({ email: { sent: false }, message: 'Username is required' }));
-                    return;
-                  }
-                  
-                  res.end(JSON.stringify({ email: { sent: true }, message: 'E-mail sent' }));
-                } catch (error) {
-                  console.log(error);
+          let body = '';
+          req.on('data', chunk => (body += chunk));
+          req.on('end', () => {
+            res.setHeader('Content-Type', 'application/json');
+            setTimeout(() => {
+              try {
+                const { username } = JSON.parse(body);
+                if (!username) {
                   res.statusCode = 400;
-                  res.end(JSON.stringify({ email: { sent: false }, message: 'Error' }));
+                  return res.end(JSON.stringify({ email: { sent: false }, message: 'Username is required' }));
                 }
-              }, delay);
-
-            });
-
-          } else {
-            next();
-          }
+                res.end(JSON.stringify({ email: { sent: true }, message: 'E-mail sent' }));
+              } catch {
+                res.statusCode = 400;
+                res.end(JSON.stringify({ email: { sent: false }, message: 'Error' }));
+              }
+            }, delay);
+          });
         });
 
         server.middlewares.use('/password/update', (req, res, next) => {
-          if (req.method === 'POST') {
+          if (req.method !== 'POST') return next();
 
-            let body = '';
-
-            req.on('data', chunk => (body += chunk));
-            req.on('end', () => {
-
-              res.setHeader('Content-Type', 'application/json');
-
-              setTimeout(async () => {
-                try {
-                  const jsonData = JSON.parse(body);
-                  const password = jsonData.password;
-                  const token = jsonData.token;
-
-                  if (password || !token) {
-                    res.statusCode = 400;
-                    res.end(JSON.stringify({ password: { updated: false }, message: 'Password and token are required' }));
-                    return;
-                  }
-                  
-                  res.end(JSON.stringify({ password: { updated: true }, message: 'Password updated' }));
-                } catch (error) {
-                  console.log(error);
+          let body = '';
+          req.on('data', chunk => (body += chunk));
+          req.on('end', () => {
+            res.setHeader('Content-Type', 'application/json');
+            setTimeout(() => {
+              try {
+                const { password, token } = JSON.parse(body);
+                if (!password || !token) {
                   res.statusCode = 400;
-                  res.end(JSON.stringify({ password: { updated: false }, message: 'Error' }));
+                  return res.end(JSON.stringify({ password: { updated: false }, message: 'Password and token are required' }));
                 }
-              }, delay);
-
-            });
-
-          } else {
-            next();
-          }
+                res.end(JSON.stringify({ password: { updated: true }, message: 'Password updated' }));
+              } catch {
+                res.statusCode = 400;
+                res.end(JSON.stringify({ password: { updated: false }, message: 'Error' }));
+              }
+            }, delay);
+          });
         });
       }
     },
     vue({
       template: {
         compilerOptions: {
-          // isCustomElement: tag => tag.startsWith('my-'),
           whitespace: 'condense'
         }
       }
-    })],
+    })
+  ],
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
@@ -113,16 +84,14 @@ export default defineConfig({
       fileName: (format) => `vu-admin.${format}.js`
     },
     rollupOptions: {
-      external: ['vue', 'crypto'],
+      external: ['vue'],
       output: {
         globals: {
           vue: 'Vue',
-          crypto: 'crypto',
         },
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name ?? assetInfo.names?.[0];
-          if (name === 'style.css')
-            return 'vu-admin.css';
+          if (name === 'style.css') return 'vu-admin.css';
           return name ?? '[name].[ext]';
         },
       }

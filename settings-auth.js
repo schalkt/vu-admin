@@ -274,6 +274,17 @@ window.VuSettings = {
                                 
             // },
             
+            registration: (auth) => {
+
+                console.log(auth.response);
+
+                if (auth.response) {
+                    auth.response.message = auth.response.data?.message
+                        ? auth.response.data.message
+                        : 'Sikeres regisztráció! Az aktiváló e-mail el lett küldve.';
+                }
+
+            },
             login: (auth) => {
 
                 console.log(auth);

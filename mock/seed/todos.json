@@ -1,0 +1,22 @@
+[
+  { "id": 1,  "todo": "Do Groceries",              "completed": false, "userId": 1 },
+  { "id": 2,  "todo": "Clean the House",           "completed": true,  "userId": 1 },
+  { "id": 3,  "todo": "Walk the Dog",              "completed": false, "userId": 2 },
+  { "id": 4,  "todo": "Fix the Bugs",              "completed": false, "userId": 2 },
+  { "id": 5,  "todo": "Read a Book",               "completed": true,  "userId": 3 },
+  { "id": 6,  "todo": "Go to the Gym",             "completed": false, "userId": 3 },
+  { "id": 7,  "todo": "Call the Dentist",          "completed": true,  "userId": 4 },
+  { "id": 8,  "todo": "Pay the Bills",             "completed": false, "userId": 4 },
+  { "id": 9,  "todo": "Write Unit Tests",          "completed": false, "userId": 5 },
+  { "id": 10, "todo": "Review Pull Requests",      "completed": true,  "userId": 5 },
+  { "id": 11, "todo": "Update Dependencies",       "completed": false, "userId": 6 },
+  { "id": 12, "todo": "Deploy to Staging",         "completed": true,  "userId": 6 },
+  { "id": 13, "todo": "Write Documentation",       "completed": false, "userId": 7 },
+  { "id": 14, "todo": "Schedule Team Meeting",     "completed": false, "userId": 7 },
+  { "id": 15, "todo": "Backup the Database",       "completed": true,  "userId": 8 },
+  { "id": 16, "todo": "Rotate API Keys",           "completed": false, "userId": 8 },
+  { "id": 17, "todo": "Fix Login Page Bug",        "completed": false, "userId": 1 },
+  { "id": 18, "todo": "Optimize SQL Queries",      "completed": true,  "userId": 2 },
+  { "id": 19, "todo": "Design New Dashboard",      "completed": false, "userId": 3 },
+  { "id": 20, "todo": "Set Up CI/CD Pipeline",     "completed": false, "userId": 4 }
+]

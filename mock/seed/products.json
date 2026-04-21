@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1, "title": "Essence Mascara Lash Princess", "description": "Volumizing and lengthening mascara.",
+    "category": "beauty", "price": 9.99, "discountPercentage": 7.17, "rating": 4.94, "stock": 5,
+    "brand": "Essence", "sku": "RCH45Q1A", "tags": ["beauty", "mascara"],
+    "thumbnail": "/mock/thumb/Mascara",
+    "meta": { "barcode": "9164035109868", "updatedAt": "2024-05-23T08:56:21.618Z" }
+  },
+  {
+    "id": 2, "title": "Eyeshadow Palette with Mirror", "description": "Versatile eyeshadow palette for any occasion.",
+    "category": "beauty", "price": 19.99, "discountPercentage": 5.50, "rating": 3.28, "stock": 44,
+    "brand": "Glamour Beauty", "sku": "MVCFH27F", "tags": ["beauty", "eyeshadow"],
+    "thumbnail": "/mock/thumb/Eyeshadow",
+    "meta": { "barcode": "2817839095220", "updatedAt": "2024-05-23T08:56:21.618Z" }
+  },
+  {
+    "id": 3, "title": "Powder Canister", "description": "Translucent finishing powder for a matte look.",
+    "category": "beauty", "price": 14.99, "discountPercentage": 18.14, "rating": 3.82, "stock": 59,
+    "brand": "Faces Paris", "sku": "BEA175D5", "tags": ["beauty", "face powder"],
+    "thumbnail": "/mock/thumb/Powder",
+    "meta": { "barcode": "0516267971022", "updatedAt": "2024-05-23T08:56:21.618Z" }
+  },
+  {
+    "id": 4, "title": "Red Lipstick", "description": "Classic bold red lipstick, long-lasting formula.",
+    "category": "beauty", "price": 12.99, "discountPercentage": 19.03, "rating": 2.51, "stock": 68,
+    "brand": "Chic Cosmetics", "sku": "PT2GK7AC", "tags": ["beauty", "lipstick"],
+    "thumbnail": "/mock/thumb/Lipstick",
+    "meta": { "barcode": "3803988244716", "updatedAt": "2024-06-01T10:12:00.000Z" }
+  },
+  {
+    "id": 5, "title": "Red Nail Polish", "description": "Vibrant red nail polish with glossy finish.",
+    "category": "beauty", "price": 8.99, "discountPercentage": 3.97, "rating": 3.91, "stock": 71,
+    "brand": "Nail Couture", "sku": "UNPK1OFG", "tags": ["beauty", "nail polish"],
+    "thumbnail": "/mock/thumb/NailPolish",
+    "meta": { "barcode": "7365581174718", "updatedAt": "2024-06-03T14:30:00.000Z" }
+  },
+  {
+    "id": 6, "title": "Calvin Klein CK One", "description": "Unisex fragrance, fresh and clean scent.",
+    "category": "fragrances", "price": 49.99, "discountPercentage": 0.34, "rating": 4.85, "stock": 17,
+    "brand": "Calvin Klein", "sku": "0YIW3SXQ", "tags": ["fragrances", "perfumes"],
+    "thumbnail": "/mock/thumb/CKOne",
+    "meta": { "barcode": "0392779015490", "updatedAt": "2024-05-30T09:00:00.000Z" }
+  },
+  {
+    "id": 7, "title": "Chanel Coco Noir Eau De", "description": "Elegant floral fragrance with oriental notes.",
+    "category": "fragrances", "price": 129.99, "discountPercentage": 18.64, "rating": 2.76, "stock": 41,
+    "brand": "Chanel", "sku": "5CQ0TZPL", "tags": ["fragrances", "perfumes"],
+    "thumbnail": "/mock/thumb/CocoNoir",
+    "meta": { "barcode": "5086295694057", "updatedAt": "2024-04-18T07:45:00.000Z" }
+  },
+  {
+    "id": 8, "title": "Dior J'adore", "description": "Luxurious floral feminine fragrance.",
+    "category": "fragrances", "price": 89.99, "discountPercentage": 17.44, "rating": 3.31, "stock": 91,
+    "brand": "Dior", "sku": "GH6Z2NKC", "tags": ["fragrances", "perfumes"],
+    "thumbnail": "/mock/thumb/Jadore",
+    "meta": { "barcode": "0903095769498", "updatedAt": "2024-05-11T11:20:00.000Z" }
+  },
+  {
+    "id": 9, "title": "Dolce Shine Eau de", "description": "Bright fruity-floral perfume.",
+    "category": "fragrances", "price": 69.99, "discountPercentage": 11.47, "rating": 2.68, "stock": 3,
+    "brand": "Dolce & Gabbana", "sku": "1C5QLMQF", "tags": ["fragrances", "perfumes"],
+    "thumbnail": "/mock/thumb/DolceShine",
+    "meta": { "barcode": "0342583516065", "updatedAt": "2024-06-05T08:00:00.000Z" }
+  },
+  {
+    "id": 10, "title": "Gucci Bloom Eau de", "description": "Rich floral scent inspired by a blooming garden.",
+    "category": "fragrances", "price": 79.99, "discountPercentage": 8.20, "rating": 2.69, "stock": 93,
+    "brand": "Gucci", "sku": "PHDO3HGX", "tags": ["fragrances", "perfumes"],
+    "thumbnail": "/mock/thumb/GucciBloom",
+    "meta": { "barcode": "2763156935889", "updatedAt": "2024-03-29T16:10:00.000Z" }
+  },
+  {
+    "id": 11, "title": "Annibale Colombo Bed", "description": "Luxurious king-size bed with solid wood frame.",
+    "category": "furniture", "price": 1899.99, "discountPercentage": 0.00, "rating": 4.14, "stock": 47,
+    "brand": "Annibale Colombo", "sku": "OOSMRHML", "tags": ["furniture", "bedroom"],
+    "thumbnail": "/mock/thumb/Bed",
+    "meta": { "barcode": "7113807059215", "updatedAt": "2024-02-14T12:00:00.000Z" }
+  },
+  {
+    "id": 12, "title": "Annibale Colombo Sofa", "description": "Premium Italian leather sofa, 3-seater.",
+    "category": "furniture", "price": 2499.99, "discountPercentage": 7.88, "rating": 3.08, "stock": 16,
+    "brand": "Annibale Colombo", "sku": "LY7MI0EU", "tags": ["furniture", "living room"],
+    "thumbnail": "/mock/thumb/Sofa",
+    "meta": { "barcode": "0726316320921", "updatedAt": "2024-04-07T09:30:00.000Z" }
+  },
+  {
+    "id": 13, "title": "Bedside Table African Cherry", "description": "Handcrafted bedside table in African cherry wood.",
+    "category": "furniture", "price": 299.99, "discountPercentage": 9.58, "rating": 4.36, "stock": 32,
+    "brand": "Furniture Co", "sku": "NVF2Q28P", "tags": ["furniture", "bedroom"],
+    "thumbnail": "/mock/thumb/BedsideTable",
+    "meta": { "barcode": "9873492137380", "updatedAt": "2024-05-19T15:45:00.000Z" }
+  },
+  {
+    "id": 14, "title": "Knoll Saarinen Executive Chair", "description": "Classic mid-century executive office chair.",
+    "category": "furniture", "price": 499.99, "discountPercentage": 15.23, "rating": 4.05, "stock": 12,
+    "brand": "Knoll", "sku": "X7UB0MVF", "tags": ["furniture", "office"],
+    "thumbnail": "/mock/thumb/Chair",
+    "meta": { "barcode": "2745813740952", "updatedAt": "2024-06-10T13:00:00.000Z" }
+  },
+  {
+    "id": 15, "title": "Wooden Bathroom Sink With Mirror", "description": "Natural wood vanity sink with frameless mirror.",
+    "category": "furniture", "price": 799.99, "discountPercentage": 11.14, "rating": 3.26, "stock": 95,
+    "brand": "Bath Luxe", "sku": "X4MYL2GH", "tags": ["furniture", "bathroom"],
+    "thumbnail": "/mock/thumb/BathroomSink",
+    "meta": { "barcode": "8638790619761", "updatedAt": "2024-01-22T10:00:00.000Z" }
+  }
+]
