@@ -1,9 +1,55 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbDir = path.join(__dirname, 'db');
+
+// --- Captcha ---
+const CAPTCHA_SECRET = process.env.CAPTCHA_SECRET || 'vu-admin-dev-secret-change-in-prod';
+const CAPTCHA_BUCKET = 300; // seconds per time window (5 min)
+const CAPTCHA_ICONS = [
+  { id: 'house',     icon: 'bi-house-fill',      label: 'ház' },
+  { id: 'star',      icon: 'bi-star-fill',        label: 'csillag' },
+  { id: 'heart',     icon: 'bi-heart-fill',       label: 'szív' },
+  { id: 'bell',      icon: 'bi-bell-fill',         label: 'csengő' },
+  { id: 'camera',    icon: 'bi-camera-fill',       label: 'kamera' },
+  { id: 'cloud',     icon: 'bi-cloud-fill',        label: 'felhő' },
+  { id: 'sun',       icon: 'bi-sun-fill',          label: 'nap' },
+  { id: 'moon',      icon: 'bi-moon-stars-fill',   label: 'hold' },
+  { id: 'tree',      icon: 'bi-tree-fill',         label: 'fa' },
+  { id: 'lightning', icon: 'bi-lightning-fill',    label: 'villám' },
+  { id: 'flower',    icon: 'bi-flower1',           label: 'virág' },
+  { id: 'car',       icon: 'bi-car-front-fill',    label: 'autó' },
+];
+
+function captchaBucket() {
+  return Math.floor(Date.now() / 1000 / CAPTCHA_BUCKET);
+}
+
+function signCaptcha(answers, bucket) {
+  const key = [...answers].sort().join(',') + ':' + bucket;
+  return crypto.createHmac('sha256', CAPTCHA_SECRET).update(key).digest('hex');
+}
+
+function verifyCaptcha(answers, token) {
+  if (!answers || !token) return false;
+  const list = Array.isArray(answers) ? answers : String(answers).split(',').map(s => s.trim());
+  if (list.length !== 1) return false;
+  const b = captchaBucket();
+  return signCaptcha(list, b) === token || signCaptcha(list, b - 1) === token;
+}
+
+// --- 2FA session store (in-memory, TTL 5 min) ---
+const twoFaStore = new Map();
+
+function twoFaCreate(userId) {
+  const session = crypto.randomBytes(32).toString('hex');
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  twoFaStore.set(session, { userId, code, expires: Date.now() + 5 * 60 * 1000 });
+  return { session, code };
+}
 
 const PALETTE = ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f','#edc948','#b07aa1','#ff9da7','#9c755f','#6b6ecf'];
 
@@ -79,35 +125,62 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
     res.end(thumbSvg(label));
   });
 
+  // --- Captcha: GET /api/auth/captcha ---
+  server.middlewares.use('/api/auth/captcha', (req, res, next) => {
+    if (req.method !== 'GET') return next();
+    const pool = [...CAPTCHA_ICONS].sort(() => Math.random() - 0.5).slice(0, 8);
+    const picked = [...pool].sort(() => Math.random() - 0.5).slice(0, 1);
+    const items = [...pool].sort(() => Math.random() - 0.5);
+    const token = signCaptcha(picked.map(p => p.id), captchaBucket());
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-store');
+    res.end(JSON.stringify({
+      items,
+      question: `Kattints a(z) <strong>${picked[0].label}</strong> ikonra!`,
+      token,
+    }));
+  });
+
   // --- Auth endpoints: /api/auth/* ---
   server.middlewares.use('/api/auth', async (req, res, next) => {
     const action = (req.url || '/').split('?')[0].replace(/^\//, '').split('/')[0];
 
     if (action === 'login' && req.method === 'POST') {
       const body = await readBody(req);
+      if (body.honeypot) return send(res, { message: 'Hibás felhasználónév vagy jelszó' }, 401, delay);
+      if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) return send(res, { message: 'Érvénytelen captcha megoldás' }, 422, delay);
       const users = readDb('users') || [];
       const user = users.find(u => u.username === body.username || u.email === body.username);
       if (!user) return send(res, { message: 'Hibás felhasználónév vagy jelszó' }, 401, delay);
+      if (user.twofa) {
+        const { session, code } = twoFaCreate(user.id);
+        console.log(`[mock 2FA] OTP for ${user.email}: ${code}`);
+        return send(res, { twofa: user.twofa, twofaSession: session }, 202, delay);
+      }
       const { password: _, ...safeUser } = user;
       return send(res, { ...safeUser, accessToken: 'mock-token-' + user.id }, 200, delay);
     }
 
     if (action === 'register' && req.method === 'POST') {
       const body = await readBody(req);
+      if (body.honeypot) return send(res, { message: 'Regisztráció sikertelen' }, 400, delay);
+      if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) return send(res, { message: 'Érvénytelen captcha megoldás' }, 422, delay);
       const users = readDb('users') || [];
       const exists = users.find(u => u.email === body.username || u.username === body.username);
       if (exists) return send(res, { message: 'Ez az e-mail cím már foglalt' }, 409, delay);
+      const inputData = body.input || {};
+      if (!inputData.twofa) delete inputData.twofa;
       const newUser = {
         id: nextId(users),
         username: body.username,
         email: body.username,
-        role: 'guest',
         image: '/mock/avatar/' + (body.username || 'NU').slice(0, 2).toUpperCase(),
-        ...(body.input || {}),
+        ...inputData,
       };
       users.push(newUser);
       writeDb('users', users);
-      return send(res, { ...newUser, message: 'Sikeres regisztráció! Az aktiváló e-mail el lett küldve.' }, 200, delay);
+      const { password: _, ...safeUser } = newUser;
+      return send(res, { ...safeUser, message: 'Sikeres regisztráció! Az aktiváló e-mail el lett küldve.' }, 200, delay);
     }
 
     if (action === 'me' && req.method === 'GET') {
@@ -124,6 +197,29 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
         accessToken: 'mock-token-' + (safeUser.id || 1),
         message: 'Sikeres aktiválás!',
       }, 200, delay);
+    }
+
+    if (action === 'twofa' && req.method === 'POST') {
+      const body = await readBody(req);
+      const entry = twoFaStore.get(body.twofaSession);
+      if (!entry || Date.now() > entry.expires) return send(res, { message: 'A munkamenet lejárt, kérjük jelentkezz be újra' }, 401, delay);
+      if (entry.code !== String(body.code).trim()) return send(res, { message: 'Érvénytelen kód' }, 422, delay);
+      twoFaStore.delete(body.twofaSession);
+      const users = readDb('users') || [];
+      const user = users.find(u => u.id === entry.userId);
+      if (!user) return send(res, { message: 'Felhasználó nem található' }, 404, delay);
+      const { password: _, ...safeUser } = user;
+      return send(res, { ...safeUser, accessToken: 'mock-token-' + user.id }, 200, delay);
+    }
+
+    if (action === 'twofa-resend' && req.method === 'POST') {
+      const body = await readBody(req);
+      const entry = twoFaStore.get(body.twofaSession);
+      if (!entry || Date.now() > entry.expires) return send(res, { message: 'Nem lehet újraküldeni' }, 400, delay);
+      entry.code = String(Math.floor(100000 + Math.random() * 900000));
+      entry.expires = Date.now() + 5 * 60 * 1000;
+      console.log(`[mock 2FA] Resent OTP for userId ${entry.userId}: ${entry.code}`);
+      return send(res, { message: 'Kód elküldve' }, 200, delay);
     }
 
     next();

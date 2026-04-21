@@ -547,6 +547,118 @@ Empty `IN` list is treated as no filter (returns all).
 
 ---
 
+## Captcha (self-hosted, no external service)
+
+VU Admin includes a built-in **click-captcha** and **honeypot** — no Google reCAPTCHA or third-party service needed.
+
+### How it works
+
+1. The browser calls `GET /api/auth/captcha` and receives 8 shuffled Bootstrap Icons + a question + a **signed token**.
+2. The user clicks the **2 correct icons** highlighted in the question.
+3. On form submit the browser sends `captchaAnswer` (array of 2 icon ids) and `captchaToken` (the signed token from step 1).
+4. The backend sorts the submitted ids, recomputes the HMAC, and compares — no session or database required.
+5. A hidden **honeypot** field is silently sent alongside; bots that fill it in are rejected server-side.
+
+The token is signed with the **sorted** ids so order of clicking does not matter. Time-limited to **5-minute windows** (two consecutive windows are accepted to avoid edge-case failures at window boundaries).
+
+### Frontend config (`vu-admin-settings.js`)
+
+```js
+window.VuSettings.auth.captcha = {
+  url: '/api/auth/captcha',           // endpoint that issues challenges
+  panels: ['login', 'registration', 'forgot'],  // panels where captcha is shown
+};
+```
+
+Set `captcha: false` (or omit the key) to disable completely.
+
+### Backend — Node.js / mock reference implementation
+
+```js
+import crypto from 'crypto';
+
+const CAPTCHA_SECRET = process.env.CAPTCHA_SECRET; // keep secret, never expose to client
+const BUCKET = 300; // 5-minute window in seconds
+
+function signCaptcha(answer, bucket) {
+  return crypto.createHmac('sha256', CAPTCHA_SECRET)
+    .update(answer + ':' + bucket)
+    .digest('hex');
+}
+
+function verifyCaptcha(answer, token) {
+  if (!answer || !token) return false;
+  const b = Math.floor(Date.now() / 1000 / BUCKET);
+  return signCaptcha(answer, b) === token || signCaptcha(answer, b - 1) === token;
+}
+
+// In your login / register handler:
+if (body.honeypot) return res.status(401).json({ message: 'Error' });
+if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) {
+  return res.status(422).json({ message: 'Invalid captcha' });
+}
+```
+
+### Backend — PHP
+
+```php
+<?php
+$secret = getenv('CAPTCHA_SECRET'); // same secret as the Node.js side
+$bucket = (int) floor(time() / 300); // 5-minute window
+
+function sign_captcha(string $answer, int $bucket, string $secret): string {
+    return hash_hmac('sha256', $answer . ':' . $bucket, $secret);
+}
+
+function verify_captcha(string $answer, string $token, int $bucket, string $secret): bool {
+    // Accept current and previous window to handle edge cases
+    $ok1 = hash_equals(sign_captcha($answer, $bucket,     $secret), $token);
+    $ok2 = hash_equals(sign_captcha($answer, $bucket - 1, $secret), $token);
+    return $ok1 || $ok2;
+}
+
+// In your login / register endpoint:
+$answer = $_POST['captchaAnswer'] ?? '';
+$token  = $_POST['captchaToken']  ?? '';
+$honeypot = $_POST['honeypot']    ?? '';
+
+if ($honeypot !== '') {
+    http_response_code(401);
+    echo json_encode(['message' => 'Error']);
+    exit;
+}
+
+if (!verify_captcha($answer, $token, $bucket, $secret)) {
+    http_response_code(422);
+    echo json_encode(['message' => 'Érvénytelen captcha megoldás']);
+    exit;
+}
+```
+
+> **Important:** `hash_equals()` is used instead of `===` to prevent timing attacks.
+
+### Security notes
+
+- `CAPTCHA_SECRET` must be a long random string stored only on the server (env variable). Never send it to the client.
+- The token proves the challenge was issued by your server; even if an attacker reads the JS source, they cannot forge a valid token without the secret.
+- The honeypot catches primitive bots that fill every visible field.
+- For high-security endpoints consider adding rate limiting alongside the captcha.
+
+### Generating a secret
+
+```bash
+# Linux / macOS
+openssl rand -hex 32
+
+# Node.js
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# PHP
+php -r "echo bin2hex(random_bytes(32));"
+```
+
+---
+
 ## License
 
 MIT

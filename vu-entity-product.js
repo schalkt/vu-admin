@@ -630,7 +630,7 @@ window.VuEntities.product = (preset) => {
 							class: 'dropdown-item cursor-pointer p-1 text-danger',
 							icon: 'bi bi-trash',
 							disabled: (params) => {
-								return params.item[params.form.settings.pkey] ? false : true;
+								return params?.item?.[params?.form?.settings?.pkey] ? false : true;
 							}
 						},
 					]
@@ -641,7 +641,7 @@ window.VuEntities.product = (preset) => {
 					class: 'btn btn-sm btn-outline-dark m-1',
 					icon: 'bi bi-arrow-clockwise',
 					disabled: (params) => {
-						return params.item[params.form.settings.pkey] ? false : true;
+						return params?.item?.[params?.form?.settings?.pkey] ? false : true;
 					}
 				},
 				{

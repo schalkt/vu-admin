@@ -19,7 +19,7 @@
 
                     <form @submit.prevent="handleSubmit()" @click.stop="">
 
-                        <div class="mb-3" v-if="auth.panel != 'activation' && auth.panel != 'password'">
+                        <div class="mb-3" v-if="auth.panel != 'activation' && auth.panel != 'password' && auth.panel != 'twofa'">
                             <label for="email" class="form-label text-primary">{{ settings.username.label }}</label>
                             <div class="input-group">
                                 <span v-if="settings.username.icon" class="input-group-text" :class="{ 'rounded-bottom-0': settings.username.help }">
@@ -31,7 +31,7 @@
                             <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="settings.username.help" v-html="settings.username.help"></small>
                         </div>
 
-                        <template v-if="auth.panel != 'forgot' && auth.panel != 'activation'">
+                        <template v-if="auth.panel != 'forgot' && auth.panel != 'activation' && auth.panel != 'twofa'">
 
                             <div class="mb-3">
                                 <label v-if="settings.password.label" for="password" class="form-label text-primary">
@@ -92,11 +92,51 @@
                                     v-if="(auth.panel == 'registration' || auth.panel == 'password') && settings.password_again.help" v-html="settings.password_again.help"></small>
                             </div>
 
-                            <!-- reCAPTCHA -->
-                            <div class="mb-3 text-center">
-                                <div class="g-recaptcha" :data-sitekey="recaptchaSiteKey" @click.stop="onCaptchaClick"></div>
-                            </div>
                         </template>
+
+                        <!-- Click-captcha — outside the forgot/activation exclusion so it shows on all configured panels -->
+                        <div v-if="captchaRequired" class="mb-3">
+                            <div v-if="captcha.loading" class="text-center py-2">
+                                <span class="spinner-border spinner-border-sm text-secondary"></span>
+                            </div>
+                            <div v-else-if="captcha.items.length">
+                                <div class="text-center small mb-2" v-html="captcha.question"></div>
+                                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                    <button v-for="item in captcha.items" :key="item.id" type="button"
+                                        class="btn btn-outline-secondary px-2 py-1"
+                                        :class="{ 'btn-primary border-primary': captcha.answers.includes(item.id) }"
+                                        @click.stop="toggleCaptchaAnswer(item.id); captchaError = false">
+                                        <i :class="['bi', item.icon]" style="font-size:1.2rem;display:block"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <p v-if="captchaError" class="text-danger text-center small mt-2 mb-3 fw-semibold">
+                            {{ settings.captcha.error }}
+                        </p>
+
+                        <!-- 2FA code input -->
+                        <div v-if="auth.panel === 'twofa' && settings.twofa" class="mb-3">
+                            <p class="text-center small text-muted mb-3" v-html="settings.twofa.info"></p>
+                            <label class="form-label text-primary">{{ settings.twofa.label }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                                <input type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+                                    v-model="twofaCode" class="form-control text-center fw-bold fs-5"
+                                    :placeholder="settings.twofa.placeholder" required :disabled="loading"
+                                    autocomplete="one-time-code" />
+                            </div>
+                            <div class="text-end mt-2">
+                                <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none"
+                                    @click.stop="resendTwofa" :disabled="loading">
+                                    <i class="bi bi-arrow-repeat me-1"></i>{{ settings.submit.resend }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Honeypot (bots fill this in, humans don't see it) -->
+                        <input type="text" name="vu_b4t" tabindex="-1" autocomplete="new-password" aria-hidden="true"
+                            v-model="honeypot" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
 
                         <div class="mb-4 text-center" v-if="auth.panel == 'login' && settings.password.forgot">
                             <button type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleForgotPassword" v-html="settings.password.forgot">
@@ -234,12 +274,17 @@ const VuAuth = {
             password_again: "",
             accepts: {},
             inputs: {},
-            recaptchaSiteKey: null, // Itt add meg a reCAPTCHA kulcsot
-            responseMessage: null,
+            honeypot: '',
+            twofaCode: '',
+            twofaSession: '',
+            twofaMethod: '',
+            captchaError: false,
             captcha: {
-                items: ["A", "B", "C", "D", "E"],
-                required: "D",
-                selected: null
+                loading: false,
+                items: [],
+                question: '',
+                token: '',
+                answers: [],
             },
             loading: false,
             modalId: null,
@@ -257,6 +302,19 @@ const VuAuth = {
                 this.updateInputs();
                 this.$forceUpdate();
             }
+        },
+        'auth.panel'() {
+            if (this.captchaRequired) {
+                this.fetchCaptcha();
+            }
+        },
+    },
+
+    computed: {
+        captchaRequired() {
+            const panel = this.auth && this.auth.panel;
+            if (!this.settings || !this.settings.captcha || !this.settings.captcha.panels) return false;
+            return this.settings.captcha.panels.includes(panel);
         },
     },
 
@@ -347,6 +405,9 @@ const VuAuth = {
                     }
                     this.auth.success = true;
                     localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
+                    if (this.auth.settings) {
+                        localStorage.setItem('vu-settings', JSON.stringify(this.auth.settings));
+                    }
                     this.authUpdate();
                 } else {
                     this.logout();
@@ -372,6 +433,9 @@ const VuAuth = {
         reset() {
             this.password = "";
             this.password_again = "";
+            this.twofaCode = "";
+            this.twofaSession = "";
+            this.twofaMethod = "";
             this.auth.response = {};
         },
 
@@ -486,9 +550,32 @@ const VuAuth = {
         },
 
         async handleSubmit() {
+            console.log('[auth] handleSubmit called, panel:', this.auth.panel);
+            console.log('[auth] honeypot:', JSON.stringify(this.honeypot));
+            console.log('[auth] captchaRequired:', this.captchaRequired);
+            console.log('[auth] captcha.answers:', this.captcha.answers);
+            console.log('[auth] captcha.token:', this.captcha.token);
+
+            // Honeypot check — skip for twofa (no honeypot field on that panel)
+            if (this.auth.panel !== 'twofa' && this.honeypot) {
+                console.log('[auth] blocked by honeypot');
+                return;
+            }
+
+            // Captcha check — need exactly 2 selected
+            if (this.captchaRequired) {
+                if (this.captcha.answers.length !== 1) {
+                    console.log('[auth] captcha incomplete, answers count:', this.captcha.answers.length);
+                    this.captchaError = true;
+                    return;
+                }
+            }
+
+            this.captchaError = false;
             this.loading = true;
 
             try {
+                console.log('[auth] calling handler for panel:', this.auth.panel);
                 switch (this.auth.panel) {
                     case 'login':
                         await this.handleLogin();
@@ -499,6 +586,9 @@ const VuAuth = {
                     case 'registration':
                         await this.handleNewRegistrationSubmit();
                         break;
+                    case 'twofa':
+                        await this.handleTwofaSubmit();
+                        break;
                     case 'activation':
                         await this.handleActivationSubmit();
                         break;
@@ -506,8 +596,11 @@ const VuAuth = {
                         await this.handlePasswordSubmit();
                         break;
                 }
+            } catch (e) {
+                console.error('[auth] submit error', e);
             } finally {
                 this.loading = false;
+                if (this.captchaRequired && this.auth.panel !== 'twofa') this.fetchCaptcha();
             }
         },
 
@@ -525,10 +618,20 @@ const VuAuth = {
                     username: this.username,
                     password: await this.hashPassword(this.password),
                     accept: this.accepts,
+                    honeypot: this.honeypot,
+                    captchaToken: this.captcha.token,
+                    captchaAnswer: this.captcha.answers,
                 }),
             });
 
             await this.getStatusAndJson(response);
+
+            if (response.status === 202 && this.isTwofaPanel('login')) {
+                this.twofaSession = this.auth.response.data.twofaSession;
+                this.twofaMethod = this.auth.response.data.twofa;
+                this.auth.panel = 'twofa';
+                return;
+            }
 
             if (response.ok) {
                 this.onSuccess('login');
@@ -540,8 +643,10 @@ const VuAuth = {
 
         async handleNewRegistrationSubmit() {
             this.auth.response = {};
+            console.log('[auth] registration: username:', this.username, 'password len:', this.password.length, 'password_again len:', this.password_again.length, 'match:', this.password === this.password_again);
 
             if (!this.username || !this.password || !this.password_again || this.password !== this.password_again) {
+                console.log('[auth] registration: validation failed — returning early');
                 return;
             }
 
@@ -553,10 +658,14 @@ const VuAuth = {
                     password: await this.hashPassword(this.password),
                     accept: this.accepts,
                     input: this.inputs,
+                    honeypot: this.honeypot,
+                    captchaToken: this.captcha.token,
+                    captchaAnswer: this.captcha.answers,
                 }),
             });
 
             await this.getStatusAndJson(response);
+            console.log('[auth] registration response status:', response.status, 'ok:', response.ok, 'data:', this.auth.response.data);
 
             if (response.ok) {
                 this.onSuccess('registration');
@@ -594,6 +703,9 @@ const VuAuth = {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         username: this.username,
+                        honeypot: this.honeypot,
+                        captchaToken: this.captcha.token,
+                        captchaAnswer: this.captcha.answer,
                     }),
                 });
 
@@ -641,6 +753,45 @@ const VuAuth = {
             }
         },
 
+        async handleTwofaSubmit() {
+            this.auth.response = {};
+
+            const response = await fetch(this.settings.api.twofa, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ twofaSession: this.twofaSession, code: this.twofaCode }),
+            });
+
+            await this.getStatusAndJson(response);
+
+            if (response.ok) {
+                this.onSuccess('login');
+                this.close();
+            } else {
+                this.onError('twofa');
+            }
+        },
+
+        async resendTwofa() {
+            if (!this.settings.api.twofaResend) return;
+
+            try {
+                const response = await fetch(this.settings.api.twofaResend, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ twofaSession: this.twofaSession }),
+                });
+                await this.getStatusAndJson(response);
+                if (response.ok) {
+                    this.auth.response.ok = true;
+                    this.auth.response.message = this.auth.response.data?.message || '';
+                    this.$forceUpdate();
+                }
+            } catch (e) {
+                console.error('[auth] resend twofa error', e);
+            }
+        },
+
         async hashPassword(password) {
             this.settings.password.hash = this.settings.password.hash === undefined ? 0 : this.settings.password.hash;
             return this.generateHash(password, this.settings.password.hash);
@@ -672,9 +823,36 @@ const VuAuth = {
             return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
         },
 
-        onCaptchaClick() {
-            // reCAPTCHA validálás
-            console.log("reCAPTCHA clicked");
+        isTwofaPanel(panel) {
+            if (!this.settings.twofa || !this.settings.twofa.panels) return true;
+            return this.settings.twofa.panels.includes(panel);
+        },
+
+        async fetchCaptcha() {
+            if (!this.settings.captcha || !this.settings.captcha.url) return;
+            this.captcha.loading = true;
+            this.captcha.answers = [];
+            this.captchaError = false;
+            try {
+                const res = await fetch(this.settings.captcha.url);
+                const data = await res.json();
+                this.captcha.items = data.items;
+                this.captcha.question = data.question;
+                this.captcha.token = data.token;
+            } catch (e) {
+                console.error('[captcha] load failed', e);
+            } finally {
+                this.captcha.loading = false;
+            }
+        },
+
+        toggleCaptchaAnswer(id) {
+            const idx = this.captcha.answers.indexOf(id);
+            if (idx >= 0) {
+                this.captcha.answers.splice(idx, 1);
+            } else {
+                this.captcha.answers = [id];
+            }
         },
 
     },
@@ -729,6 +907,7 @@ const VuAuth = {
         this.updateInputs();
         this.$forceUpdate();
         this.detectQuery();
+        if (this.captchaRequired) this.fetchCaptcha();
 
         if (this.settings.debug) {
             console.log('vu-auth mounted ', __APP_VERSION__);

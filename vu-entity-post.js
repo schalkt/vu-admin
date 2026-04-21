@@ -70,7 +70,7 @@ window.VuEntities.post = (preset) => {
 					},
 					class: 'btn btn-sm btn-outline-secondary ms-2',
 					icon: 'bi bi-person-fill',
-					disabled: (params) => !params.item.user,
+					disabled: (params) => !params?.item?.user,
 				},
 			],
 
@@ -284,7 +284,7 @@ window.VuEntities.post = (preset) => {
 							class: 'dropdown-item cursor-pointer p-1 text-danger',
 							icon: 'bi bi-trash',
 							disabled: (params) => {
-								return params.item[params.form.settings.pkey] ? false : true;
+								return params?.item?.[params?.form?.settings?.pkey] ? false : true;
 							}
 						},
 					]
@@ -295,7 +295,7 @@ window.VuEntities.post = (preset) => {
 					class: 'btn btn-sm btn-outline-dark m-1',
 					icon: 'bi bi-arrow-clockwise',
 					disabled: (params) => {
-						return params.item[params.form.settings.pkey] ? false : true;
+						return params?.item?.[params?.form?.settings?.pkey] ? false : true;
 					}
 				},
 				{

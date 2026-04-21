@@ -3,6 +3,14 @@ window.VuEntities = window.VuEntities ? window.VuEntities : {};
 
 window.VuEntities.user = (preset) => {
 
+	const availableRoles = [
+		{ value: 'admin', label: 'Admin' },
+		{ value: 'superuser', label: 'Superuser' },
+		{ value: 'moderator', label: 'Moderátor' },
+		{ value: 'editor', label: 'Szerkesztő' },
+		{ value: 'guest', label: 'Vendég' },
+	];
+
 	return {
 		pkey: 'id',
 		theme: 'dark',
@@ -91,10 +99,12 @@ window.VuEntities.user = (preset) => {
 					title: 'Születési dátum',
 					convert: {
 						in: (value, item, column) => {
-							return (new Date(value)).toISOString().substring(0, 10);
+							if (!value) return '';
+							const d = new Date(value);
+							return isNaN(d.getTime()) ? '' : d.toISOString().substring(0, 10);
 						},
 						out: (value, item, column) => {
-							return value.replace('-0', '-');
+							return value ? value.replace('-0', '-') : '';
 						}
 					},
 					filter: {
@@ -216,6 +226,26 @@ window.VuEntities.user = (preset) => {
 								value: '<'
 							}
 						],
+					}
+				},
+				{
+					name: 'twofa',
+					title: '2FA',
+					sortable: false,
+					width: '7%',
+					template: (value) => {
+						if (!value) return '<span class="badge bg-secondary opacity-50">–</span>';
+						if (value === 'email') return '<span class="badge bg-info text-dark">E-mail</span>';
+						if (value === 'totp') return '<span class="badge bg-success">TOTP</span>';
+						return value;
+					},
+					filter: {
+						type: 'select',
+						options: [
+							{ value: '', label: 'Mind' },
+							{ value: 'email', label: 'E-mail' },
+							{ value: 'totp', label: 'TOTP' },
+						]
 					}
 				},
 				{
@@ -420,12 +450,12 @@ window.VuEntities.user = (preset) => {
 								action: (item, params) => {
 									console.log(item);
 									console.log(params);
-	
+
 									if (confirm('Are you sure?')) {
 										console.log(items);
 										alert('Hello :)');
 									}
-	
+
 								},
 								params: {
 									export: true,
@@ -438,7 +468,7 @@ window.VuEntities.user = (preset) => {
 								class: 'dropdown-item cursor-pointer p-1 text-danger',
 								icon: 'bi bi-trash',
 								disabled: (params) => {
-									return params.item[params.form.settings.pkey] ? false : true;
+									return params?.item?.[params?.form?.settings?.pkey] ? false : true;
 								}
 							},
 						]
@@ -449,7 +479,7 @@ window.VuEntities.user = (preset) => {
 						class: 'btn btn-sm btn-outline-dark m-1',
 						icon: 'bi bi-arrow-clockwise',
 						disabled: (params) => {
-							return params.item[params.form.settings.pkey] ? false : true;
+							return params?.item?.[params?.form?.settings?.pkey] ? false : true;
 						}
 					},
 					{
@@ -470,7 +500,7 @@ window.VuEntities.user = (preset) => {
 						class: 'btn btn-sm btn-success m-1',
 						icon: 'bi bi-save',
 					},
-	
+
 				],
 			},
 			groups: [
@@ -526,22 +556,11 @@ window.VuEntities.user = (preset) => {
 							label: 'Nem',
 							class: 'col-md-6',
 							options: [
-								{ value: 'male',   label: 'Férfi' },
+								{ value: 'male', label: 'Férfi' },
 								{ value: 'female', label: 'Nő' },
 							],
 						},
-						{
-							type: 'select',
-							name: 'role',
-							label: 'Elsődleges szerepkör',
-							class: 'col-md-6',
-							options: [
-								{ value: 'admin',     label: 'Admin' },
-								{ value: 'moderator', label: 'Moderátor' },
-								{ value: 'editor',    label: 'Szerkesztő' },
-								{ value: 'guest',     label: 'Vendég' },
-							],
-						},
+
 						{
 							type: 'dropdown',
 							name: 'roles',
@@ -553,11 +572,15 @@ window.VuEntities.user = (preset) => {
 							list: {
 								class: 'badge bg-secondary me-1 cursor-pointer',
 							},
+							options: availableRoles
+						},
+						{
+							type: 'select',
+							name: 'twofa',
+							label: 'Kétlépéses hitelesítés (2FA)',
 							options: [
-								{ value: 'admin',     label: 'Admin' },
-								{ value: 'moderator', label: 'Moderátor' },
-								{ value: 'editor',    label: 'Szerkesztő' },
-								{ value: 'guest',     label: 'Vendég' },
+								{ value: '', label: 'Kikapcsolva' },
+								{ value: 'email', label: 'E-mail kód' },
 							],
 						},
 					]

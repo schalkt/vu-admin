@@ -45,7 +45,13 @@ window.VuSettings = {
                     action: 'BUTTON_ROLES',
                     class: 'dropdown-item',
                     label: (params, settings, self) => {
-                        return 'Szerepkör váltás'
+                        if (!self.auth?.user?.role) {
+                            return `<span class='text-warning'><i class='bi bi-exclamation-triangle me-1'></i>Szerepkör nincs beállítva</span><br><small class='text-muted' style='white-space:normal;display:block;max-width:220px'>Az adatok megtekintéséhez és szerkesztéséhez szerepkör szükséges.</small>`;
+                        }
+                        return 'Szerepkör váltás';
+                    },
+                    disabled: (params, settings, self) => {
+                        return !self.auth?.user?.role;
                     },
                 },
                 {
@@ -77,12 +83,25 @@ window.VuSettings = {
     },
     auth: {
         debug: true,
+        captcha: {
+            url: '/api/auth/captcha',
+            panels: ['login', 'registration', 'forgot'],
+            error: 'Kérjük válassz ki 1 ikont a folytatáshoz!',
+        },
+        twofa: {
+            panels: ['login'],
+            label: 'Hitelesítő kód',
+            placeholder: '6 jegyű kód',
+            info: 'Add meg az e-mail címedre küldött 6 jegyű kódot. A kód 5 percig érvényes.',
+            error: 'Érvénytelen kód, kérjük próbáld újra!',
+        },
         title: {
             login: 'Bejelentkezés',
             registration: 'Regisztráció',
             forgot: 'Elfelejtett jelszó',
             activation: 'Aktiválás',
             password: 'Új jelszó beállítása',
+            twofa: 'Kétlépéses hitelesítés',
         },
         submit: {
             login: 'Bejelentkezés',
@@ -91,6 +110,8 @@ window.VuSettings = {
             forgot: 'Elfelejtett jelszó',
             password: 'Jelszó mentése',
             activation: 'Aktiválás',
+            twofa: 'Megerősítés',
+            resend: 'Újraküldés',
         },
         api: {
             login: '/api/auth/login',
@@ -99,6 +120,8 @@ window.VuSettings = {
             forgot: '/password/forgot',
             password: '/password/update',
             activation: '/api/auth/activate',
+            twofa: '/api/auth/twofa',
+            twofaResend: '/api/auth/twofa-resend',
         },
         username: {
             value: 'emilys',
@@ -133,26 +156,6 @@ window.VuSettings = {
             registration: `<div class='text-muted p-2 rounded shadow-sm'>A regisztráció beküldése után egy <strong>visszaigazoló levél</strong> fog érkezni az e-mail címedre, melyben az aktiváló linkre kell <strong>kattintani</strong>, hogy a regisztráció érvényesítve legyen. A kattintás után megjelenik weboldalunk, ahol <strong>további adatok</strong> megadására van lehetőség.</div>`
         },
         inputs: {
-            'role': {
-                label: 'Szerepkör',
-                hidden: true,
-                prefix: `<i class='bi bi-person-badge'></i>`,
-                type: 'select',
-                placeholder: null,
-                multiple: false,
-                required: true,
-                panels: ['registration'],
-                options: [{
-                    label: 'Tulajdonos',
-                    value: 'owner'
-                },
-                {
-                    label: 'Bérlő',
-                    value: 'tenant'
-                }],
-                suffix: null,
-                help: 'Ha ugyanazzal az e-mail címmel, de másik szerepkörrel is regisztrálsz, akkor mindkét szerepkört használni tudod a rendszerben. A jelszavad pedig az lesz, amit utoljára megadtál.'
-            },
             'lastname': {
                 panels: ['activation'],
                 label: 'Vezetéknév',
@@ -192,7 +195,20 @@ window.VuSettings = {
                 placeholder: null,
                 required: true,
                 colclass: 'col-md-6'
-            }
+            },
+            'twofa': {
+                panels: ['registration'],
+                label: 'Kétlépéses hitelesítés (2FA)',
+                type: 'select',
+                placeholder: null,
+                multiple: false,
+                required: false,
+                options: [
+                    { label: 'Nem kérek 2FA-t', value: '' },
+                    { label: 'E-mail kód', value: 'email' },
+                ],
+                help: 'Bejelentkezéskor egy 6 jegyű kódot küldünk az e-mail címedre, amit meg kell adnod a belépéshez.',
+            },
         },
         accepts: [{
             label: () => {
@@ -224,7 +240,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
+                    auth.response.message = 'Error ' + auth.response.code + (auth.response.data?.message ? ' - ' + auth.response.data.message : '');
                 }
 
             },
@@ -233,7 +249,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
+                    auth.response.message = 'Error ' + auth.response.code + (auth.response.data?.message ? ' - ' + auth.response.data.message : '');
                 }
 
             },
@@ -242,7 +258,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
+                    auth.response.message = 'Error ' + auth.response.code + (auth.response.data?.message ? ' - ' + auth.response.data.message : '');
                 }
             },
             password: (auth) => {
@@ -253,6 +269,16 @@ window.VuSettings = {
 
                     auth.response.message = 'A jelszó frissítése sikertelen!';
                     //auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
+                }
+            },
+            twofa: (auth) => {
+
+                console.log(auth.response);
+
+                if (auth.response) {
+                    auth.response.message = auth.response.data?.message
+                        ? auth.response.data.message
+                        : 'Error ' + auth.response.code;
                 }
             },
         },
@@ -266,6 +292,18 @@ window.VuSettings = {
                     auth.user.token = data.accessToken;
                 }
 
+                if (auth.user.role && !auth.settings) {
+                    auth.settings = {
+                        entitiesVariable: 'VuEntities',
+                        entities: {
+                            post: '/vu-entity-post.js',
+                            product: '/vu-entity-product.js',
+                            user: '/vu-entity-user.js',
+                            todos: '/vu-entity-todos.js',
+                        }
+                    };
+                }
+
             },
             
             registration: (auth) => {
@@ -273,9 +311,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = auth.response.data?.message
-                        ? auth.response.data.message
-                        : 'Sikeres regisztráció! Az aktiváló e-mail el lett küldve.';
+                    auth.response.message = auth.response.data?.message || 'Sikeres regisztráció! Az aktiváló e-mail el lett küldve.';
                 }
 
             },
@@ -285,16 +321,18 @@ window.VuSettings = {
 
                 auth.user = auth.response.data;
                 auth.user.token = auth.response.data.accessToken;
-                auth.user.roles = ['admin', 'guest'];
-                auth.settings = {
-                    entitiesVariable: 'VuEntities',
-                    entities: {
-                        post: '/vu-entity-post.js',
-                        product: '/vu-entity-product.js',
-                        user: '/vu-entity-user.js',
-                        todos: '/vu-entity-todos.js',
-                    }
-                };
+
+                if (auth.user.role) {
+                    auth.settings = {
+                        entitiesVariable: 'VuEntities',
+                        entities: {
+                            post: '/vu-entity-post.js',
+                            product: '/vu-entity-product.js',
+                            user: '/vu-entity-user.js',
+                            todos: '/vu-entity-todos.js',
+                        }
+                    };
+                }
             },
             activation: (auth) => {
 
@@ -302,16 +340,18 @@ window.VuSettings = {
 
                 auth.user = auth.response.data;
                 auth.user.token = auth.response.data.accessToken;
-                auth.user.roles = ['admin', 'guest'];
-                auth.settings = {
-                    entitiesVariable: 'VuEntities',
-                    entities: {
-                        post: '/vu-entity-post.js',
-                        product: '/vu-entity-product.js',
-                        user: '/vu-entity-user.js',
-                        todos: '/vu-entity-todos.js',
-                    }
-                };
+
+                if (auth.user.role) {
+                    auth.settings = {
+                        entitiesVariable: 'VuEntities',
+                        entities: {
+                            post: '/vu-entity-post.js',
+                            product: '/vu-entity-product.js',
+                            user: '/vu-entity-user.js',
+                            todos: '/vu-entity-todos.js',
+                        }
+                    };
+                }
             },
             forgot: (auth) => {
 
