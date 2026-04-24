@@ -45,7 +45,7 @@ window.VuEntities.product = (preset) => {
 		},
 		afterItemLoad: function (data, response) {
 
-			data.images = [];
+			if (!data.images) data.images = [];
 
 			console.log('# afterItemLoad', data, response);
 		},
@@ -106,13 +106,17 @@ window.VuEntities.product = (preset) => {
 			name: 'thumbnail',
 			title: 'Thumb',
 			class: 'text-center p-0',
-			template: function (thumbnail) {
+			template: function (thumbnail, item) {
 
-				if (!thumbnail) {
+				const types = item && item.images && item.images[0] && item.images[0].types;
+				const src = thumbnail
+					|| (types && (types.small || types.default) && ((types.small || types.default).url || (types.small || types.default).data));
+
+				if (!src) {
 					return;
 				}
 
-				return '<a target="_blank" href="' + thumbnail + '"><img class="border border-light rounded shadow" height="34" width="auto" src="' + thumbnail + '"></a>';
+				return '<a target="_blank" href="' + src + '"><img class="border border-light rounded shadow" height="34" width="auto" src="' + src + '"></a>';
 
 			}
 		},
@@ -147,7 +151,7 @@ window.VuEntities.product = (preset) => {
 			filter: {
 				type: 'number',
 				default_operator: '>',
-				default_value: 4,
+				default_value: 0,
 				operators: [
 					{
 						label: '>',
@@ -162,7 +166,7 @@ window.VuEntities.product = (preset) => {
 						value: '<'
 					}
 				],
-				fixed: true,
+				fixed: false,
 				buttonx: true
 			}
 		},
@@ -437,7 +441,7 @@ window.VuEntities.product = (preset) => {
 			},
 			'rating': {
 				dir: 'ASC',
-				fixed: true,
+				fixed: false,
 				idx: 1
 			}
 		},
@@ -793,7 +797,7 @@ window.VuEntities.product = (preset) => {
 								},
 								class: 'col-md-9',
 								inputclass: 'form-select-sm',
-								required: true
+								required: false
 							},
 							href: {
 								type: 'select',
@@ -816,7 +820,7 @@ window.VuEntities.product = (preset) => {
 								},
 								class: 'col-md-3',
 								inputclass: 'form-select-sm',
-								required: true
+								required: false
 							}
 							// label: {
 							// 	type: 'checkbox',
@@ -900,7 +904,7 @@ window.VuEntities.product = (preset) => {
 							limit: 10,
 							colclass: 'col-6',
 							text: 'Click or drop here to upload',
-							accept: ["png", "jpg", "jpeg", "webp"],
+							accept: ["png", "jpg", "jpeg", "webp", "svg"],
 							thumbnail: 'small',
 							// download: 'default',
 							editor: false,

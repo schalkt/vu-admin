@@ -5,6 +5,8 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbDir = path.join(__dirname, 'db');
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 // --- Captcha ---
 const CAPTCHA_SECRET = process.env.CAPTCHA_SECRET || 'vu-admin-dev-secret-change-in-prod';
@@ -103,11 +105,134 @@ function send(res, data, status = 200, delay = 0) {
   }, delay);
 }
 
+const UPLOAD_MIME = {
+  '.svg':  'image/svg+xml',
+  '.png':  'image/png',
+  '.jpg':  'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.gif':  'image/gif',
+  '.pdf':  'application/pdf',
+};
+
+function parseMultipart(buffer, boundary) {
+  const delim = Buffer.from('\r\n--' + boundary);
+  const parts = [];
+  let pos = buffer.indexOf('--' + boundary);
+  if (pos === -1) return parts;
+  pos += ('--' + boundary).length + 2; // skip first delimiter + \r\n
+
+  while (pos < buffer.length) {
+    const nextDelim = buffer.indexOf(delim, pos);
+    const end = nextDelim === -1 ? buffer.length : nextDelim;
+
+    const headerEnd = buffer.indexOf(Buffer.from('\r\n\r\n'), pos);
+    if (headerEnd === -1 || headerEnd >= end) break;
+
+    const headerStr = buffer.slice(pos, headerEnd).toString('latin1');
+    const body = buffer.slice(headerEnd + 4, end);
+
+    const dispMatch = headerStr.match(/Content-Disposition:[^\r\n]*?\bname="([^"]+)"(?:;\s*filename="([^"]*)")?/i);
+    const typeMatch = headerStr.match(/Content-Type:\s*([^\r\n]+)/i);
+
+    if (dispMatch) {
+      parts.push({
+        name: dispMatch[1],
+        filename: dispMatch[2] || null,
+        mime: typeMatch ? typeMatch[1].trim() : 'application/octet-stream',
+        data: body,
+      });
+    }
+
+    if (nextDelim === -1) break;
+    pos = nextDelim + delim.length + 2;
+    // check for closing --
+    if (buffer.slice(pos - 2, pos).toString() === '--') break;
+  }
+
+  return parts;
+}
+
 export function createMockMiddleware(server, { delay = 500 } = {}) {
 
   if (!fs.existsSync(dbDir)) {
     console.warn('[mock] A mock/db/ mappa nem létezik. Futtasd: npm run mock:init');
   }
+
+  // --- Feltöltött fájlok kiszolgálása: GET /mock/uploads/:filename ---
+  server.middlewares.use('/mock/uploads', (req, res, next) => {
+    const filename = (req.url || '/').split('?')[0].replace(/^\//, '');
+    if (!filename) return next();
+    const filepath = path.join(uploadsDir, filename);
+    if (!fs.existsSync(filepath)) return next();
+    const ext = path.extname(filename).toLowerCase();
+    res.setHeader('Content-Type', UPLOAD_MIME[ext] || 'application/octet-stream');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.end(fs.readFileSync(filepath));
+  });
+
+  // --- Fájl feltöltés: POST /api/upload ---
+  server.middlewares.use('/api/upload', (req, res, next) => {
+    if (req.method !== 'POST') return next();
+
+    const ct = req.headers['content-type'] || '';
+    const boundaryMatch = ct.match(/boundary=([^\s;]+)/);
+
+    // multipart/form-data kezelés
+    if (boundaryMatch) {
+      const boundary = boundaryMatch[1];
+      const chunks = [];
+      req.on('data', chunk => chunks.push(chunk));
+      req.on('end', () => {
+        const buffer = Buffer.concat(chunks);
+        const parts = parseMultipart(buffer, boundary);
+        const saved = [];
+
+        for (const part of parts) {
+          if (!part.filename) continue;
+          const ext = path.extname(part.filename).toLowerCase() || '.bin';
+          const unique = Date.now() + '-' + Math.random().toString(36).slice(2);
+          const filename = unique + ext;
+          fs.writeFileSync(path.join(uploadsDir, filename), part.data);
+          saved.push({ name: part.name, filename, url: '/mock/uploads/' + filename, mime: part.mime });
+        }
+
+        setTimeout(() => send(res, { files: saved }, 200), delay);
+      });
+      return;
+    }
+
+    // JSON body kezelés (data URL alapú feltöltés fallback)
+    let body = '';
+    req.on('data', chunk => (body += chunk));
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body);
+        const saved = [];
+
+        for (const [fieldName, files] of Object.entries(payload)) {
+          if (!Array.isArray(files)) continue;
+          for (const file of files) {
+            for (const [typeKey, typeData] of Object.entries(file.types || {})) {
+              if (!typeData.data || !typeData.data.startsWith('data:')) continue;
+              const [header, b64] = typeData.data.split(',');
+              const mimeMatch = header.match(/data:([^;]+)/);
+              const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+              const ext = '.' + (typeData.extension || 'bin');
+              const filename = (typeData.slug || typeKey) + ext;
+              const filepath = path.join(uploadsDir, filename);
+              fs.writeFileSync(filepath, Buffer.from(b64, 'base64'));
+              saved.push({ name: fieldName, type: typeKey, filename, url: '/mock/uploads/' + filename, mime });
+            }
+          }
+        }
+
+        setTimeout(() => send(res, { files: saved }, 200), delay);
+      } catch {
+        send(res, { message: 'Invalid payload' }, 400);
+      }
+    });
+  });
 
   // --- Lokális SVG avatar: GET /mock/avatar/:initials ---
   server.middlewares.use('/mock/avatar', (req, res, next) => {

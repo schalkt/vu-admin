@@ -396,7 +396,8 @@ const fileType = {
     "jpeg": "image/jpeg",
     "png": "image/png",
     "webp": "image/webp",
-    "gif": "image/gif"
+    "gif": "image/gif",
+    "svg": "image/svg+xml"
   },
   "video": {
     "mp4": "video/mp4",
@@ -514,6 +515,10 @@ const FileUpload = {
         file.tags = [];
       }
 
+      if (!file.loaded && file.types) {
+        file.loaded = Object.values(file.types).some(t => t.data || t.url);
+      }
+
     },
 
     detect(file) {
@@ -611,6 +616,8 @@ const FileUpload = {
 
           if (file.isVideo) {
             await this.createThumbnail(file);
+          } else if (file.isImage && file.original.extension === 'svg') {
+            await this.loadSvg(file);
           } else if (file.isImage) {
             await this.resizeImage(file);
           } else if (file.isDocument) {
@@ -794,6 +801,39 @@ const FileUpload = {
       // file.fullscreen = false;
       file.loaded = true;
       this.bytes += file.bytes;
+    },
+
+    async loadSvg(file) {
+      const reader = new FileReader();
+      await new Promise((resolve) => {
+        reader.addEventListener("load", (e) => {
+          const svgDataUrl = e.target.result;
+          const svgBlob = file.slice(0, file.size, 'image/svg+xml');
+          const typeEntry = {
+            extension: 'svg',
+            mime: 'image/svg+xml',
+            slug: slugify(file.title) + '-' + file.uid,
+            bytes: file.size,
+            data: svgDataUrl,
+            blob: svgBlob,
+            width: null,
+            height: null,
+            ratio: null,
+            quality: 1
+          };
+          for (let key in this.params.presets) {
+            file.types[key] = { ...typeEntry, slug: slugify(file.title) + '-' + key + '-' + file.uid };
+          }
+          if (!file.types.default) {
+            file.types.default = typeEntry;
+          }
+          file.loaded = true;
+          file.bytes += file.size;
+          this.bytes += file.bytes;
+          resolve();
+        });
+        reader.readAsDataURL(file);
+      });
     },
 
     fileToBlob(file) {
