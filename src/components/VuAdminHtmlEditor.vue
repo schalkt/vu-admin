@@ -209,8 +209,6 @@
 <script>
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
-import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
 import Image from "@tiptap/extension-image";
@@ -500,12 +498,11 @@ const HtmlEditor = {
           heading: { levels: [1, 2, 3, 4, 5] },
           codeBlock: false,
           horizontalRule: true,
-        }),
-        Underline,
-        Link.configure({
-          openOnClick: false,
-          autolink: true,
-          defaultProtocol: "https",
+          link: {
+            openOnClick: false,
+            autolink: true,
+            defaultProtocol: "https",
+          },
         }),
         TextAlign.configure({
           types: ["heading", "paragraph", "blockquote"],
