@@ -107,7 +107,14 @@ const HtmlEditor = {
   },
   methods: {
     initQuillEditor() {
-      
+      const Parchment = Quill.import("parchment");
+      const AlignClass = new Parchment.ClassAttributor("align", "text", {
+        scope: Parchment.Scope.BLOCK,
+        whitelist: ["center", "end", "justify"],
+      });
+      Quill.register(AlignClass, true);
+      Quill.register("attributors/class/align", AlignClass, true);
+
       const Block = Quill.import('blots/block');
       class DivBlock extends Block {}
       DivBlock.tagName = 'div'; // vagy 'span'
@@ -171,7 +178,7 @@ const HtmlEditor = {
         modules: {
           toolbar: {
             container: [
-              [{ header: [1, 2, 3, 4, 5, 6, false] }],
+              [{ header: [1, 2, 3, false] }],
               ["blockquote", "code-block"],
               [{ font: [] }, { size: ["small", false, "large", "huge"] }],
               ["bold", "italic", "underline", "strike"],
@@ -180,7 +187,7 @@ const HtmlEditor = {
               ["link", "image", "iframe"],
               [{ list: "ordered" }, { list: "bullet" }],
               [{ indent: "-1" }, { indent: "+1" }],
-              [{ align: [] }],
+              [{ align: ["", "center", "end", "justify"] }],
               ["clean", "html"],
             ],
             handlers: {
