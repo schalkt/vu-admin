@@ -9,7 +9,7 @@
 ## Features
 
 - **Data table** — sortable columns (multi-column), server-side pagination, per-column filters, column visibility toggle, expandable row details, inline editing, bulk actions, CSV export
-- **Form** — modal-based editor with field types: `text`, `number`, `email`, `textarea`, `date`, `datetime-local`, `checkbox`, `select`, `dropdown` (multi-select), `list` (dynamic arrays), `html` (Quill editor), `image`/`upload` (drag-and-drop with presets), `template` (custom HTML)
+- **Form** — modal-based editor with field types: `text`, `number`, `email`, `textarea`, `date`, `datetime-local`, `checkbox`, `select`, `dropdown` (multi-select), `list` (dynamic arrays), `html` (TipTap editor), `image`/`upload` (drag-and-drop with presets), `template` (custom HTML)
 - **Authentication** — login, registration, forgot password, activation flow, `/me` session restore, localStorage persistence, **two-factor authentication (email OTP)**, role-based entity access
 - **Relations** — automatic join of related entities, displayed inline in table and form
 - **Events** — lifecycle hooks: `beforeItemSave`, `afterItemSave`, `beforeItemDelete`, `afterItemDelete`, `afterItemsLoad`, `beforeItemsLoad`, etc.
@@ -27,7 +27,7 @@
 | Bootstrap | 5.3.x |
 | Bootstrap Icons | 1.11.x |
 | Vite | 8.x |
-| Quill | 2.x |
+| TipTap | 3.x |
 
 ---
 
@@ -69,7 +69,7 @@ vu-admin/
 │   │   ├── VuAdminFormSelect.vue   # select field
 │   │   ├── VuAdminFormList.vue     # dynamic list field
 │   │   ├── VuAdminFileUpload.vue   # image / document upload
-│   │   ├── VuAdminHtmlEditor.vue   # Quill rich-text editor
+│   │   ├── VuAdminHtmlEditor.vue   # TipTap rich-text editor
 │   │   ├── VuAuth.vue              # auth modal (login / register / …)
 │   │   └── VuUserButton.vue        # nav button with role switcher
 │   └── index.js
@@ -398,7 +398,7 @@ form: {
   },
 }
 
-// HTML editor (Quill)
+// HTML editor (TipTap; field.tiptap: { placeholder, imageSourceFields?: ['images'] })
 { type: 'html',   name: 'body',   label: 'Content' }
 
 // File / image upload
