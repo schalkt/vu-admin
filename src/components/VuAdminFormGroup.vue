@@ -72,7 +72,7 @@
 
             </div>
 
-            <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :class="[field.class]"></HtmlEditor>
+            <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :class="[field.class]" :quillOptions="field.quill"></HtmlEditor>
 
             <FileUpload v-if="field.type == 'image' || field.type == 'upload'" v-model="item[field.name]" :class="[field.class]" :field="field" :settings="settings"></FileUpload>
 

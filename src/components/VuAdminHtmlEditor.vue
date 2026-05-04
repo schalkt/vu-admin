@@ -53,8 +53,31 @@ import Quill from "quill";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 
+function isPlainObject(o) {
+  return o !== null && typeof o === "object" && !Array.isArray(o);
+}
+
+function mergeDeep(target, source) {
+  if (!isPlainObject(source)) return target;
+  const out = { ...target };
+  for (const key of Object.keys(source)) {
+    const sv = source[key];
+    const tv = target[key];
+    if (isPlainObject(sv) && isPlainObject(tv)) {
+      out[key] = mergeDeep(tv, sv);
+    } else {
+      out[key] = sv;
+    }
+  }
+  return out;
+}
+
 const HtmlEditor = {
-  props: ["modelValue"],
+  props: {
+    modelValue: [String, null],
+    /** vu-entity mező: `field.quill` — Quill konstruktor opciók (mély egyesítés az alapértelmezettel) */
+    quillOptions: { type: Object, default: () => ({}) },
+  },
   data() {
     return {
       showHtmlModal: false,
@@ -143,13 +166,17 @@ const HtmlEditor = {
       IframeBlot.className = 'ql-iframe';
       Quill.register(IframeBlot);
 
-      this.quill = new Quill(this.$refs.editor, {
+      const defaultQuillOptions = {
         theme: "snow",
         modules: {
-          //syntax: true,              // Include syntax module
           toolbar: {
             container: [
+              [{ header: [1, 2, 3, 4, 5, 6, false] }],
+              ["blockquote", "code-block"],
+              [{ font: [] }, { size: ["small", false, "large", "huge"] }],
               ["bold", "italic", "underline", "strike"],
+              [{ color: [] }, { background: [] }],
+              [{ script: "sub" }, { script: "super" }],
               ["link", "image", "iframe"],
               [{ list: "ordered" }, { list: "bullet" }],
               [{ indent: "-1" }, { indent: "+1" }],
@@ -162,15 +189,23 @@ const HtmlEditor = {
               },
               html: () => {
                 this.openHtmlModal();
-              }
-            }
+              },
+            },
           },
         },
         formats: [
+          "header",
+          "blockquote",
+          "code-block",
+          "font",
+          "size",
           "bold",
           "italic",
           "underline",
           "strike",
+          "color",
+          "background",
+          "script",
           "link",
           "image",
           "iframe",
@@ -178,7 +213,14 @@ const HtmlEditor = {
           "indent",
           "align",
         ],
-      });
+      };
+
+      const quillConstructorOptions = mergeDeep(
+        defaultQuillOptions,
+        this.quillOptions || {}
+      );
+
+      this.quill = new Quill(this.$refs.editor, quillConstructorOptions);
 
       const initialValue = (this.modelValue || "").trim();
       this.setHtmlContent(initialValue);

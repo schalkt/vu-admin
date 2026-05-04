@@ -856,7 +856,38 @@ window.VuEntities.product = (preset) => {
 					{
 						type: 'html',
 						name: 'description',
-						label: 'Description'
+						label: 'Description',
+						/*
+						 * Quill 2 konstruktor / field.quill — a HtmlEditor mélyen egyesíti az alapértelmezett toolbart.
+						 * Gyökér: theme, placeholder, readOnly, bounds (selector|HTMLElement|null), debug (false|true|'error'|'warn'|'log'|'info'),
+						 *   registry (speciális), formats (ha megadod: teljes whitelist, legyen benne pl. iframe + minden toolbar-gomb).
+						 * modules.history: { delay, maxStack, userOnly }
+						 * modules.clipboard: { matchers: [[Node.ELEMENT_NODE, fn], …] } — az alap matcher-ek mellé pluszok
+						 * modules.keyboard: { bindings: { … } } — csak ha tudod mit csinálsz (üres {} elrontja)
+						 * modules.uploader: { mimetypes: string[], handler(range, files) }
+						 * modules.toolbar: { container, handlers } — teljes sáv felülírás; iframe/html handler maradjon vagy másold át.
+						 */
+						quill: {
+							theme: 'snow',
+							placeholder: 'Termékleírás: H1–H6, idézet, kódblokk, színek…',
+							readOnly: false,
+							debug: false,
+							// bounds: null,
+							modules: {
+								history: {
+									delay: 2000,
+									maxStack: 150,
+									userOnly: false,
+								},
+								clipboard: {
+									// matchers: [],
+								},
+								uploader: {
+									// mimetypes: ['image/png', 'image/jpeg', 'image/webp', 'image/gif'],
+									// handler(range, files) { /* egyedi feltöltés, Promise<string[]> */ },
+								},
+							},
+						},
 					},
 					{
 						type: 'number',
