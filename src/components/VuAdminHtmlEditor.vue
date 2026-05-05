@@ -82,10 +82,185 @@
           </li>
         </ul>
       </div>
-      <span class="btn-group btn-group-sm">
+      <div class="btn-group btn-group-sm">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="true"
+          aria-expanded="false"
+        >
+          {{ textColorDropdownLabel }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <button type="button" class="dropdown-item" :class="{ active: !editor.isActive('textColor') }" @click="setTextColorMark(null)">{{ translate('Default') }}</button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li v-for="v in textColorVariants" :key="'tc-' + v">
+            <button
+              type="button"
+              class="dropdown-item"
+              :class="{ active: editor.isActive('textColor', { variant: v }) }"
+              @click="setTextColorMark(v)"
+            >
+              text-{{ v }}
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div class="btn-group btn-group-sm">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="true"
+          aria-expanded="false"
+        >
+          {{ bgColorDropdownLabel }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <button type="button" class="dropdown-item" :class="{ active: !editor.isActive('backgroundColor') }" @click="setBackgroundColorMark(null)">{{ translate('Default') }}</button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li v-for="v in bgVariants" :key="'bg-' + v">
+            <button
+              type="button"
+              class="dropdown-item"
+              :class="{ active: editor.isActive('backgroundColor', { variant: v }) }"
+              @click="setBackgroundColorMark(v)"
+            >
+              bg-{{ v }}
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div class="btn-group btn-group-sm">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="true"
+          aria-expanded="false"
+        >
+          {{ marginDropdownLabel }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <button type="button" class="dropdown-item" :class="{ active: !blockMarginActive }" @click="setBlockMarginCls('')">{{ translate('Default') }}</button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li v-for="m in marginClasses" :key="'mg-' + (m || 'none')">
+            <button v-if="m" type="button" class="dropdown-item font-monospace small" :class="{ active: blockMarginIs(m) }" @click="setBlockMarginCls(m)">{{ m }}</button>
+          </li>
+        </ul>
+      </div>
+      <div class="btn-group btn-group-sm">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="true"
+          aria-expanded="false"
+        >
+          {{ paddingDropdownLabel }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <button type="button" class="dropdown-item" :class="{ active: !blockPaddingActive }" @click="setBlockPaddingCls('')">{{ translate('Default') }}</button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li v-for="p in paddingClasses" :key="'pd-' + (p || 'none')">
+            <button v-if="p" type="button" class="dropdown-item font-monospace small" :class="{ active: blockPaddingIs(p) }" @click="setBlockPaddingCls(p)">{{ p }}</button>
+          </li>
+        </ul>
+      </div>
+      <div class="btn-group btn-group-sm">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="true"
+          aria-expanded="false"
+        >
+          {{ floatDropdownLabel }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <button type="button" class="dropdown-item" :class="{ active: !blockFloatActive }" @click="setBlockFloatCls('')">{{ translate('Default') }}</button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li v-for="f in floatClasses" :key="'fl-' + f">
+            <button
+              type="button"
+              class="dropdown-item font-monospace small"
+              :class="{ active: blockFloatIs(f) }"
+              @click="setBlockFloatCls(f)"
+            >
+              {{ f }}
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div v-if="editor.isActive('blockquote')" class="btn-group btn-group-sm">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="true"
+          aria-expanded="false"
+        >
+          {{ alertVariantDropdownLabel }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li v-for="av in alertVariants" :key="'al-' + av">
+            <button
+              type="button"
+              class="dropdown-item"
+              :class="{ active: editor.isActive('blockquote', { variant: av }) }"
+              @click="setAlertVariant(av)"
+            >
+              alert-{{ av }}
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div class="btn-group btn-group-sm" role="group">
         <button type="button" class="btn btn-sm btn-outline-secondary" :title="translate('Link')" @click="toggleLink">🔗</button>
         <button type="button" class="btn btn-sm btn-outline-secondary" :title="translate('Remove link')" @click="editor.chain().focus().unsetLink().run()">✕</button>
-      </span>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          data-bs-toggle="dropdown"
+          data-bs-auto-close="true"
+          aria-expanded="false"
+          :disabled="!editor.isActive('link')"
+        >
+          {{ linkStyleDropdownLabel }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <button type="button" class="dropdown-item" :class="{ active: !linkHasButtonClass }" @click="setLinkButtonClass(null)">{{ translate('Default') }}</button>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <button type="button" class="dropdown-item font-monospace small" :class="{ active: linkClassIs('btn btn-primary btn-sm') }" @click="setLinkButtonClass('btn btn-primary btn-sm')">btn-primary</button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item font-monospace small" :class="{ active: linkClassIs('btn btn-outline-primary btn-sm') }" @click="setLinkButtonClass('btn btn-outline-primary btn-sm')">btn-outline-primary</button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item font-monospace small" :class="{ active: linkClassIs('btn btn-secondary btn-sm') }" @click="setLinkButtonClass('btn btn-secondary btn-sm')">btn-secondary</button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item font-monospace small" :class="{ active: linkClassIs('btn btn-outline-secondary btn-sm') }" @click="setLinkButtonClass('btn btn-outline-secondary btn-sm')">btn-outline-secondary</button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item font-monospace small" :class="{ active: linkClassIs('btn btn-danger btn-sm') }" @click="setLinkButtonClass('btn btn-danger btn-sm')">btn-danger</button>
+          </li>
+        </ul>
+      </div>
       <span class="btn-group btn-group-sm">
         <button type="button" class="btn btn-sm btn-outline-secondary" :title="selectedImagePos !== null ? translate('Edit image') : translate('Insert image')" @click="openImageModalFromToolbar">🖼</button>
       </span>
@@ -119,6 +294,21 @@
             <div class="col-6 col-md-3">
               <label class="form-label small text-secondary mb-0">{{ translate('Height (px)') }}</label>
               <input v-model="imageEditForm.height" type="number" min="1" class="form-control form-control-sm" :placeholder="translate('auto')" />
+            </div>
+            <div class="col-12 mt-2">
+              <label class="form-label small text-secondary mb-1">{{ translate('Image Bootstrap classes') }}</label>
+              <div class="d-flex flex-wrap gap-2 align-items-center">
+                <div v-for="ic in imgUtilityClasses" :key="'imgc-' + ic" class="form-check form-check-inline mb-0">
+                  <input
+                    :id="'tiptap-imgcls-' + ic"
+                    class="form-check-input"
+                    type="checkbox"
+                    :checked="imageHasUtilityClass(ic)"
+                    @change="toggleImageUtilityClass(ic)"
+                  />
+                  <label class="form-check-label small font-monospace" :for="'tiptap-imgcls-' + ic">{{ ic }}</label>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -209,11 +399,31 @@
 <script>
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
-import TextAlign from "@tiptap/extension-text-align";
+import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import Image from "@tiptap/extension-image";
 import { NodeSelection } from "@tiptap/pm/state";
 import { translate as translateMessage } from "./helpers";
+import {
+  BootstrapTextAlign,
+  BootstrapBold,
+  BootstrapItalic,
+  BootstrapUnderline,
+  BootstrapStrike,
+  BootstrapBlockquote,
+  BootstrapTextColor,
+  BootstrapBackgroundColor,
+  BootstrapBlockMargin,
+  BootstrapBlockPadding,
+  BootstrapBlockFloat,
+  BootstrapImage,
+  bootstrapTextColorVariants,
+  bootstrapBgVariants,
+  bootstrapMarginClasses,
+  bootstrapPaddingClasses,
+  bootstrapFloatClasses,
+  bootstrapImgUtilityClasses,
+  bootstrapAlertVariants,
+} from "../tiptap/bootstrapEditorExtensions.js";
 
 function normalizeHtmlOutput(html) {
   const trimmed = (html || "").trim();
@@ -278,9 +488,17 @@ const HtmlEditor = {
         alt: "",
         width: "",
         height: "",
+        imgClass: "",
       },
       htmlSourceModalOpen: false,
       htmlSourceText: "",
+      textColorVariants: bootstrapTextColorVariants,
+      bgVariants: bootstrapBgVariants,
+      marginClasses: bootstrapMarginClasses,
+      paddingClasses: bootstrapPaddingClasses,
+      imgUtilityClasses: bootstrapImgUtilityClasses,
+      floatClasses: bootstrapFloatClasses,
+      alertVariants: bootstrapAlertVariants,
     };
   },
   computed: {
@@ -389,6 +607,82 @@ const HtmlEditor = {
       }
       return this.translate("Alignment");
     },
+    blockMarginCurrent() {
+      if (!this.editor) return null;
+      const sel = this.editor.state.selection;
+      if (sel instanceof NodeSelection && sel.node.type.name === "image") {
+        return sel.node.attrs.marginClass || null;
+      }
+      if (this.editor.isActive("blockquote")) return this.editor.getAttributes("blockquote").marginClass || null;
+      if (this.editor.isActive("heading")) return this.editor.getAttributes("heading").marginClass || null;
+      return this.editor.getAttributes("paragraph").marginClass || null;
+    },
+    blockMarginActive() {
+      return !!this.blockMarginCurrent;
+    },
+    textColorDropdownLabel() {
+      if (!this.editor) return this.translate("Text color");
+      for (const v of this.textColorVariants) {
+        if (this.editor.isActive("textColor", { variant: v })) return `text-${v}`;
+      }
+      return this.translate("Text color");
+    },
+    bgColorDropdownLabel() {
+      if (!this.editor) return this.translate("Background");
+      for (const v of this.bgVariants) {
+        if (this.editor.isActive("backgroundColor", { variant: v })) return `bg-${v}`;
+      }
+      return this.translate("Background");
+    },
+    marginDropdownLabel() {
+      return this.blockMarginCurrent || this.translate("Margin");
+    },
+    blockPaddingCurrent() {
+      if (!this.editor) return null;
+      const sel = this.editor.state.selection;
+      if (sel instanceof NodeSelection && sel.node.type.name === "image") {
+        return sel.node.attrs.paddingClass || null;
+      }
+      if (this.editor.isActive("blockquote")) return this.editor.getAttributes("blockquote").paddingClass || null;
+      if (this.editor.isActive("heading")) return this.editor.getAttributes("heading").paddingClass || null;
+      return this.editor.getAttributes("paragraph").paddingClass || null;
+    },
+    blockFloatCurrent() {
+      if (!this.editor) return null;
+      const sel = this.editor.state.selection;
+      if (sel instanceof NodeSelection && sel.node.type.name === "image") {
+        return sel.node.attrs.floatClass || null;
+      }
+      if (this.editor.isActive("blockquote")) return this.editor.getAttributes("blockquote").floatClass || null;
+      if (this.editor.isActive("heading")) return this.editor.getAttributes("heading").floatClass || null;
+      return this.editor.getAttributes("paragraph").floatClass || null;
+    },
+    blockFloatActive() {
+      return !!this.blockFloatCurrent;
+    },
+    floatDropdownLabel() {
+      return this.blockFloatCurrent || this.translate("Float");
+    },
+    blockPaddingActive() {
+      return !!this.blockPaddingCurrent;
+    },
+    paddingDropdownLabel() {
+      return this.blockPaddingCurrent || this.translate("Padding");
+    },
+    alertVariantDropdownLabel() {
+      if (!this.editor) return this.translate("Alert style");
+      const v = this.editor.getAttributes("blockquote").variant;
+      return v ? `alert-${v}` : this.translate("Alert style");
+    },
+    linkStyleDropdownLabel() {
+      if (!this.editor) return this.translate("Link style");
+      const c = this.editor.getAttributes("link").class;
+      return c ? String(c).split(/\s+/).slice(0, 2).join(" ") : this.translate("Link style");
+    },
+    linkHasButtonClass() {
+      if (!this.editor) return false;
+      return !!this.editor.getAttributes("link").class;
+    },
   },
   mounted() {
     this.createEditor((this.modelValue || "").trim());
@@ -447,6 +741,70 @@ const HtmlEditor = {
       if (!this.editor) return;
       this.editor.chain().focus().setTextAlign(align).run();
     },
+    setTextColorMark(variant) {
+      if (!this.editor) return;
+      if (variant == null || variant === "") this.editor.chain().focus().unsetTextColor().run();
+      else this.editor.chain().focus().setTextColor(variant).run();
+    },
+    setBackgroundColorMark(variant) {
+      if (!this.editor) return;
+      if (variant == null || variant === "") this.editor.chain().focus().unsetBackgroundColor().run();
+      else this.editor.chain().focus().setBackgroundColor(variant).run();
+    },
+    setBlockMarginCls(cls) {
+      if (!this.editor) return;
+      if (!cls) this.editor.chain().focus().unsetBlockMarginClass().run();
+      else this.editor.chain().focus().setBlockMarginClass(cls).run();
+    },
+    blockMarginIs(m) {
+      return this.blockMarginCurrent === m;
+    },
+    setBlockPaddingCls(cls) {
+      if (!this.editor) return;
+      if (!cls) this.editor.chain().focus().unsetBlockPaddingClass().run();
+      else this.editor.chain().focus().setBlockPaddingClass(cls).run();
+    },
+    blockPaddingIs(p) {
+      return this.blockPaddingCurrent === p;
+    },
+    setBlockFloatCls(cls) {
+      if (!this.editor) return;
+      if (!cls) this.editor.chain().focus().unsetBlockFloatClass().run();
+      else this.editor.chain().focus().setBlockFloatClass(cls).run();
+    },
+    blockFloatIs(f) {
+      return this.blockFloatCurrent === f;
+    },
+    imageHasUtilityClass(cls) {
+      return (this.imageEditForm.imgClass || "")
+        .split(/\s+/)
+        .filter(Boolean)
+        .includes(cls);
+    },
+    toggleImageUtilityClass(cls) {
+      const set = new Set(
+        (this.imageEditForm.imgClass || "")
+          .split(/\s+/)
+          .filter(Boolean)
+      );
+      if (set.has(cls)) set.delete(cls);
+      else set.add(cls);
+      const ordered = this.imgUtilityClasses.filter((c) => set.has(c));
+      this.imageEditForm = { ...this.imageEditForm, imgClass: ordered.join(" ") };
+    },
+    setAlertVariant(variant) {
+      if (!this.editor || !this.editor.isActive("blockquote")) return;
+      this.editor.chain().focus().updateAttributes("blockquote", { variant }).run();
+    },
+    setLinkButtonClass(cls) {
+      if (!this.editor || !this.editor.isActive("link")) return;
+      this.editor.chain().focus().extendMarkRange("link").updateAttributes({ class: cls || null }).run();
+    },
+    linkClassIs(cls) {
+      if (!this.editor) return false;
+      const c = this.editor.getAttributes("link").class;
+      return c === cls;
+    },
     findGalleryMatchForSrc(src) {
       if (!src || typeof src !== "string") return null;
       for (const entry of this.imageGalleryEntries) {
@@ -460,11 +818,13 @@ const HtmlEditor = {
       const w = parseInt(String(this.imageEditForm.width).trim(), 10);
       const h = parseInt(String(this.imageEditForm.height).trim(), 10);
       const alt = String(this.imageEditForm.alt || "").trim();
+      const imgClass = String(this.imageEditForm.imgClass || "").trim();
       return {
         alt: alt || null,
         title: alt || null,
         width: Number.isFinite(w) && w > 0 ? w : null,
         height: Number.isFinite(h) && h > 0 ? h : null,
+        imgClass: imgClass || null,
       };
     },
     getImageSelectionPos(state) {
@@ -498,19 +858,44 @@ const HtmlEditor = {
           heading: { levels: [1, 2, 3, 4, 5] },
           codeBlock: false,
           horizontalRule: true,
-          link: {
-            openOnClick: false,
-            autolink: true,
-            defaultProtocol: "https",
+          bold: false,
+          italic: false,
+          strike: false,
+          underline: false,
+          blockquote: false,
+          link: false,
+        }),
+        Link.configure({
+          openOnClick: false,
+          autolink: true,
+          defaultProtocol: "https",
+          HTMLAttributes: {
+            target: "_blank",
+            rel: "noopener noreferrer nofollow",
+            class: null,
           },
         }),
-        TextAlign.configure({
+        BootstrapBold,
+        BootstrapItalic,
+        BootstrapUnderline,
+        BootstrapStrike,
+        BootstrapBlockquote,
+        BootstrapTextAlign.configure({
           types: ["heading", "paragraph", "blockquote"],
           alignments: ["left", "center", "right", "justify"],
         }),
-        Image.extend({
-          atom: true,
-        }).configure({
+        BootstrapTextColor,
+        BootstrapBackgroundColor,
+        BootstrapBlockMargin.configure({
+          types: ["paragraph", "heading", "blockquote", "image"],
+        }),
+        BootstrapBlockPadding.configure({
+          types: ["paragraph", "heading", "blockquote", "image"],
+        }),
+        BootstrapBlockFloat.configure({
+          types: ["paragraph", "heading", "blockquote", "image"],
+        }),
+        BootstrapImage.configure({
           inline: false,
           allowBase64: true,
         }),
@@ -585,7 +970,7 @@ const HtmlEditor = {
       this.editor?.destroy();
       this.editor = null;
       this.selectedImagePos = null;
-      this.imageEditForm = { alt: "", width: "", height: "" };
+      this.imageEditForm = { alt: "", width: "", height: "", imgClass: "" };
       this.$nextTick(() => {
         this.createEditor(normalizeHtmlOutput(html));
       });
@@ -652,6 +1037,7 @@ const HtmlEditor = {
           alt: existingAlt || tagAlt,
           width: node.attrs.width != null ? String(node.attrs.width) : "",
           height: node.attrs.height != null ? String(node.attrs.height) : "",
+          imgClass: node.attrs.imgClass ? String(node.attrs.imgClass) : "",
         };
         if (match) {
           this.selectedImageId = match.entry.id;
@@ -663,7 +1049,7 @@ const HtmlEditor = {
       } else {
         this.editOriginalSrc = "";
         this.manualImageUrl = "";
-        this.imageEditForm = { alt: "", width: "", height: "" };
+        this.imageEditForm = { alt: "", width: "", height: "", imgClass: "" };
         this.selectedImageId = null;
         this.selectedPresetKey = "default";
         if (this.imageGalleryEntries.length) {
