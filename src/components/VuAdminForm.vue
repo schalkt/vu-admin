@@ -351,8 +351,7 @@ const VuAdminForm = {
           prepareFetchUrl("GET", settings.form.api, primaryId),
           prepareFetchOptions("GET", settings.api, null, auth)
         ).catch((err) => {
-
-
+          console.error('[vu-admin] fetchItem network error:', err);
         });
 
         const json = await getResponseJson(response);
@@ -370,8 +369,6 @@ const VuAdminForm = {
         if (settings.events && settings.events.afterItemLoad) {
           settings.events.afterItemLoad(json.data, response);
         }
-
-        //console.log(relations, this.settings);
 
         let item;
 
@@ -398,9 +395,7 @@ const VuAdminForm = {
               settings.relations[field.relation.config]
             ) {
 
-              // console.log(field, settings.relations[field.relation.config]);
               field.relation = deepMerge(settings.relations[field.relation.config], field.relation);
-              console.log(field.relation, auth);
               await this.fetchRelation(field, [item], auth);
 
             }
@@ -409,6 +404,10 @@ const VuAdminForm = {
 
 
           }
+        }
+
+        if (settings.debug) {
+          console.log('[vu-admin] fetchItem:', primaryId, item);
         }
 
         this.item = flattenObject(item);

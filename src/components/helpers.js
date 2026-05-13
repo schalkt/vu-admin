@@ -34,6 +34,7 @@ export async function getResponseJson(response) {
             error: null
         }
     } catch (error) {
+        console.error('[vu-admin] JSON parse error:', error);
         return {
             data: undefined,
             error: error
@@ -198,7 +199,7 @@ export function prepareFetchOptions(method, api, options, auth) {
     }
 
     if (api.debug) {
-        console.log('FETCH OPTIONS', api.options);
+        console.log('[vu-admin] fetch options:', method, api.options);
     }
 
     return api.options;
@@ -223,7 +224,13 @@ export function prepareFetchUrl(method, api, id, urlParams) {
         haveParams = Object.keys(queryParams).length;
     }
 
-    return api.url + (id ? '/' + id : '') + (haveParams ? "?" + (new URLSearchParams(queryParams)).toString() : '');
+    const url = api.url + (id ? '/' + id : '') + (haveParams ? "?" + (new URLSearchParams(queryParams)).toString() : '');
+
+    if (api.debug) {
+        console.log('[vu-admin] fetch url:', url);
+    }
+
+    return url;
 
 }
 
@@ -417,8 +424,6 @@ export function arrayItemMoveDown(arr, index) {
     if (index <= 0 || index >= arr.length) {
         return;
     }
-
-    console.log(arr[index - 1], arr[index]);
 
     [arr[index - 1], arr[index]] = [arr[index], arr[index - 1]];
 

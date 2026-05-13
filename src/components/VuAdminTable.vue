@@ -1101,6 +1101,7 @@ export default {
         }
         return path.split(".").reduce((acc, part) => acc && acc[part], item);
       } catch (e) {
+        console.error('[vu-admin] tableCellValue error:', e);
         return e.message;
       }
     },
@@ -1114,6 +1115,7 @@ export default {
 
         return template(item[column.name], item, index, column);
       } catch (e) {
+        console.error('[vu-admin] tableCellTemplate error:', e);
         return e.message;
       }
     },
@@ -1419,8 +1421,11 @@ export default {
     async fetchItems(settings, urlParams, config, auth) {
 
       if (settings.events && settings.events.beforeItemsLoad) {
-        // settings.debug && console.log('@beforeItemsLoad', urlParams);
         settings.events.beforeItemsLoad(urlParams, settings);
+      }
+
+      if (settings.debug) {
+        console.log('[vu-admin] fetchItems', prepareFetchUrl("GET", settings.table.api, null, urlParams), urlParams);
       }      
 
       const response = await fetch(
@@ -1474,6 +1479,10 @@ export default {
 
       let flattenedItems = flattenArrayObjects(items);
       this.convertIn(settings.table.columns, flattenedItems);
+
+      if (settings.debug) {
+        console.log('[vu-admin] fetchItems response:', response.status, 'items:', flattenedItems.length, 'total:', config?.pagination?.total);
+      }
 
       return flattenedItems;
 
@@ -1613,8 +1622,6 @@ export default {
 
         let itemindex = this.items.find((item) => item[this.settings.pkey] === primaryId);
 
-        // console.log(itemindex, primaryId);
-
         if (itemindex >= 0) {
           this.items.splice(itemindex, 1);
         }
@@ -1723,8 +1730,6 @@ export default {
 
     handleTableErrors(errors) {
 
-      console.log(errors);
-
       if (errors === undefined || errors === null) {
         return;
       }
@@ -1790,7 +1795,6 @@ export default {
     //             formData.append(formUpload + '[]', file, `${file.types[type].slug}.${file.types[type].extension}`);
     //           }
 
-    //           console.log(file);
     //         }
     //       }
     //     }
@@ -1881,6 +1885,10 @@ export default {
 
         const method = primaryId ? "PUT" : "POST";
 
+        if (this.settings.debug) {
+          console.log('[vu-admin] saveItem', method, prepareFetchUrl(method, this.settings.form.api, primaryId, urlParams), JSON.parse(body));
+        }
+
         response = await fetch(
           prepareFetchUrl(method, this.settings.form.api, primaryId, urlParams),
           prepareFetchOptions(method, this.settings.form.api, {
@@ -1890,6 +1898,10 @@ export default {
 
         const json = await getResponseJson(response);
         const errors = getResponseErrors(response, json.data);
+
+        if (this.settings.debug) {
+          console.log('[vu-admin] saveItem response:', response.status, json.data);
+        }
 
         if (errors) {
           if (onError) {
@@ -1915,6 +1927,8 @@ export default {
         }
 
       } catch (error) {
+
+        console.error('[vu-admin] saveItem error:', error);
 
         if (onError) {
           onError(error, input, urlParams);

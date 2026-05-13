@@ -280,7 +280,6 @@ const VuAdminFormGroup = {
         house_number: undefined,
       });
 
-      // console.log(this.item[fieldName]);
     },
 
     dropdownSelectToggleOne(field, value, option) {

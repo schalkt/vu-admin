@@ -14,7 +14,7 @@ window.VuEntities.user = (preset) => {
 	return {
 		pkey: 'id',
 		theme: 'dark',
-		debug: true,
+		debug: false,
 		events: {
 			afterItemSave: (data, urlParams, auth) => {
 				if (auth && auth.user && data && data.id === auth.user.id) {
@@ -254,6 +254,7 @@ window.VuEntities.user = (preset) => {
 					title: 'Hajszín',
 					template: (value) => {
 
+						if (!value) return '';
 						let color = value.toLowerCase();
 						let icon = '<i class="bi bi-circle-fill" style="color: ' + color.replace('blonde', '#FBE7A1') + '"></i>';
 

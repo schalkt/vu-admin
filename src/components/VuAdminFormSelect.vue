@@ -102,7 +102,6 @@ const VuAdminFormSelect = {
 
         const selectedOption = this.options.find(
           (option) => {
-            // console.log(option.value, this.newitem);
             return option.value === this.newitem
           }
         );

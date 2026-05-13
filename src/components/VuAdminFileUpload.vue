@@ -569,10 +569,7 @@ const FileUpload = {
       const reader = new FileReader();
 
       // reader.onprogress = (e) => {
-
-      // 	console.log(e);
       // 	file.percentLoaded = Math.round((e.loaded / e.total) * 100);
-      // 	console.log(file.percentLoaded);
       // }
 
       reader.onload = (e) => {
@@ -641,8 +638,6 @@ const FileUpload = {
 
             });
 
-            // console.log(blob, file);
-
             reader.readAsDataURL(file);
 
           }
@@ -678,8 +673,6 @@ const FileUpload = {
       file.original.ratio = this.calculateAspectRatio(width, height);
 
       for (let key in this.params.presets) {
-
-        // console.log(key, this.params.presets[key]);
 
         let preset = this.params.presets[key];
         preset.key = key;
@@ -910,7 +903,6 @@ const FileUpload = {
 
     // fullscreen(file) {
     // 	file.fullscreen = !file.fullscreen;
-    // 	console.log(file.fullscreen);
     // },
 
     toggleView() {

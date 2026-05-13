@@ -5,7 +5,7 @@ window.VuEntities.todos = (preset) => {
 
 	return {
 		pkey: 'id',
-		debug: true,
+		debug: false,
 		api: {
 			url: '/api/todos',
 			options: {

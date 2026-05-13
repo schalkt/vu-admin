@@ -241,7 +241,9 @@ const VuAdmin = {
         }
 
       };
-      script.onerror = () => { };
+      script.onerror = () => {
+        console.error(`[vu-admin] failed to load entity script: ${path}`);
+      };
 
       document.head.appendChild(script);
 
@@ -279,13 +281,7 @@ const VuAdmin = {
         }
 
         if (this.settings.debug) {
-
-          console.log(`Entity config (${this.entity}) initialized`);
-
-          if (this.settings.debug > 1) {
-            console.log(this.settings);
-          }
-
+          console.log(`[vu-admin] entity "${this.entity}" initialized`, this.settings.debug > 1 ? this.settings : '');
         }
 
       } else {

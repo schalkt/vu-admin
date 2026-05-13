@@ -210,6 +210,7 @@ window.VuEntities.product = (preset) => {
 			sortable: false,
 			class: 'text-nowrap',
 			template: (tags) => {
+				if (!tags || !tags.length) return '';
 				return '<span class="badge border text-dark me-1 p-1">' + tags.join('</span><span class="badge border text-dark me-1 p-1">') + '</span>'
 			},
 			filter: {
@@ -995,7 +996,7 @@ window.VuEntities.product = (preset) => {
 
 		// set the primary key field
 		pkey: 'id',
-		debug: true,
+		debug: false,
 		api: api,
 		events: events,
 		language: 'en',

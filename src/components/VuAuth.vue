@@ -550,22 +550,14 @@ const VuAuth = {
         },
 
         async handleSubmit() {
-            console.log('[auth] handleSubmit called, panel:', this.auth.panel);
-            console.log('[auth] honeypot:', JSON.stringify(this.honeypot));
-            console.log('[auth] captchaRequired:', this.captchaRequired);
-            console.log('[auth] captcha.answers:', this.captcha.answers);
-            console.log('[auth] captcha.token:', this.captcha.token);
-
             // Honeypot check — skip for twofa (no honeypot field on that panel)
             if (this.auth.panel !== 'twofa' && this.honeypot) {
-                console.log('[auth] blocked by honeypot');
                 return;
             }
 
             // Captcha check — need exactly 2 selected
             if (this.captchaRequired) {
                 if (this.captcha.answers.length !== 1) {
-                    console.log('[auth] captcha incomplete, answers count:', this.captcha.answers.length);
                     this.captchaError = true;
                     return;
                 }
@@ -575,7 +567,6 @@ const VuAuth = {
             this.loading = true;
 
             try {
-                console.log('[auth] calling handler for panel:', this.auth.panel);
                 switch (this.auth.panel) {
                     case 'login':
                         await this.handleLogin();
@@ -643,10 +634,8 @@ const VuAuth = {
 
         async handleNewRegistrationSubmit() {
             this.auth.response = {};
-            console.log('[auth] registration: username:', this.username, 'password len:', this.password.length, 'password_again len:', this.password_again.length, 'match:', this.password === this.password_again);
 
             if (!this.username || !this.password || !this.password_again || this.password !== this.password_again) {
-                console.log('[auth] registration: validation failed — returning early');
                 return;
             }
 
@@ -665,7 +654,6 @@ const VuAuth = {
             });
 
             await this.getStatusAndJson(response);
-            console.log('[auth] registration response status:', response.status, 'ok:', response.ok, 'data:', this.auth.response.data);
 
             if (response.ok) {
                 this.onSuccess('registration');
@@ -900,19 +888,12 @@ const VuAuth = {
             };            
         }
         
-        console.log(this.auth);
-           
         this.checkStorage();
         this.reset();
         this.updateInputs();
         this.$forceUpdate();
         this.detectQuery();
         if (this.captchaRequired) this.fetchCaptcha();
-
-        if (this.settings.debug) {
-            console.log('vu-auth mounted ', __APP_VERSION__);
-        }
-
 
         // this.modalElement = document.getElementById(this.modalId);
         // this.modalWindow = new Modal(this.modalElement);
