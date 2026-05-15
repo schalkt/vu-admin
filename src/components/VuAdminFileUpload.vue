@@ -44,21 +44,25 @@
           <table class="table table-sm table-responsive table-borderless">
             <tbody>
               <template v-for="(file, index) in files" :key="index">
-                <tr>
+                <tr draggable="true"
+                    @dragstart="itemDragStart(index)"
+                    @dragover.prevent="itemDragOver(index)"
+                    @drop.prevent="itemDrop(index)"
+                    @dragend="itemDragEnd"
+                    :class="{ 'opacity-50': dragIndex === index, 'table-primary': dragOverIndex === index && dragIndex !== index }">
                   <td class="align-middle px-0">
 
                     <div class="input-group border">
 
-                      <span class="d-block p-1 px-2">
-                        {{ index + 1 }}
+                      <span class="cursor-move p-1 px-2 border-end d-flex align-items-center" title="Húzd a sorrendezéshez">
+                        <i class="bi bi-grip-vertical text-muted"></i>
                       </span>
 
-                      <span class="cursor-pointer p-1 border-start border-end h-100" @click="arrayItemMoveDown(files, index)">
-                        <i class="bi bi-arrow-up" :class="{ 'opacity-25': index < 1 }"></i>
-                      </span>
-                      <span class="cursor-pointer p-1 border-start border-end h-100" @click="arrayItemMoveUp(files, index + 1)">
-                        <i class="bi bi-arrow-down" :class="{ 'opacity-25': index >= files.length - 1 }"></i>
-                      </span>
+                      <input type="number" min="1" :max="files.length" :value="index + 1"
+                             @change="moveToPosition(index, $event)"
+                             @keydown.enter.prevent
+                             class="form-control form-control-sm text-center border-0 p-1 fw-bold"
+                             style="width: 3rem; -moz-appearance: textfield;" />
 
                       <span class="fs-5 mx-2" v-if="file.isDocument">
                         <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
@@ -151,9 +155,15 @@
 
         </div>
 
-        <div v-else :class="[params.colclass ? params.colclass : 'col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3']" v-for="(file, index) in files" :key="index">
+        <div v-else :class="[params.colclass ? params.colclass : 'col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3']" v-for="(file, index) in files" :key="index"
+             draggable="true"
+             @dragstart="itemDragStart(index)"
+             @dragover.prevent="itemDragOver(index)"
+             @drop.prevent="itemDrop(index)"
+             @dragend="itemDragEnd">
 
-          <div class="vsa-image-container h-100 position-relative">
+          <div class="vsa-image-container h-100 position-relative"
+               :class="{ 'opacity-50': dragIndex === index, 'vsa-drag-over': dragOverIndex === index && dragIndex !== index }">
 
             <div v-if="file.loaded" class="w-100 h-100 d-flex align-items-center flex-column">
 
@@ -220,16 +230,15 @@
 
               <div class="w-100 mb-2 d-flex justify-content-around align-items-center">
 
-                <span class="p-1 px-2 border border-end-0 h-100">
-                  {{ index + 1 }}
+                <span class="cursor-move p-1 px-2 border border-end-0 h-100 d-flex align-items-center" title="Húzd a sorrendezéshez">
+                  <i class="bi bi-grip-vertical text-muted"></i>
                 </span>
 
-                <span class="cursor-pointer p-1 border border-end-0 h-100" @click="arrayItemMoveDown(files, index)">
-                  <i class="bi bi-arrow-up" :class="{ 'opacity-25': index < 1 }"></i>
-                </span>
-                <span class="cursor-pointer p-1 border border-end-0 h-100" @click="arrayItemMoveUp(files, index + 1)">
-                  <i class="bi bi-arrow-down" :class="{ 'opacity-25': index >= files.length - 1 }"></i>
-                </span>
+                <input type="number" min="1" :max="files.length" :value="index + 1"
+                       @change="moveToPosition(index, $event)"
+                       @keydown.enter.prevent
+                       class="form-control form-control-sm text-center rounded-0 border-end-0 p-1 h-100 fw-bold"
+                       style="width: 3.5rem; -moz-appearance: textfield;" />
 
                 <div class="dropdown border border-end-0 h-100 w-100" v-if="params.tags">
                   <button class="btn btn-sm rounded-0 h-100 w-100" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
@@ -435,6 +444,8 @@ const FileUpload = {
       wait: false,
       uploadEvent: null,
       isDragging: false,
+      dragIndex: null,
+      dragOverIndex: null,
     };
   },
   components: {
@@ -865,6 +876,43 @@ const FileUpload = {
       arrayItemMoveDown(array, index);
     },
 
+    moveToPosition(fromIndex, event) {
+      const toIndex = parseInt(event.target.value) - 1;
+      if (isNaN(toIndex) || toIndex < 0 || toIndex >= this.files.length || toIndex === fromIndex) {
+        event.target.value = fromIndex + 1;
+        return;
+      }
+      const item = this.files.splice(fromIndex, 1)[0];
+      this.files.splice(toIndex, 0, item);
+      this.$forceUpdate();
+    },
+
+    itemDragStart(index) {
+      this.dragIndex = index;
+    },
+
+    itemDragOver(index) {
+      this.dragOverIndex = index;
+    },
+
+    itemDrop(index) {
+      if (this.dragIndex === null || this.dragIndex === index) {
+        this.dragIndex = null;
+        this.dragOverIndex = null;
+        return;
+      }
+      const item = this.files.splice(this.dragIndex, 1)[0];
+      this.files.splice(index, 0, item);
+      this.dragIndex = null;
+      this.dragOverIndex = null;
+      this.$forceUpdate();
+    },
+
+    itemDragEnd() {
+      this.dragIndex = null;
+      this.dragOverIndex = null;
+    },
+
     download(index, params) {
 
       let file = this.files[index].types[params.download ? params.download : 'default'];
@@ -1089,6 +1137,18 @@ export default FileUpload;
       border-left-color: #777;
       border-radius: 50%;
       animation: vsa-spin 1s linear infinite;
+    }
+
+    .cursor-move {
+      cursor: grab;
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    .vsa-drag-over {
+      outline: 2px solid var(--bs-primary);
+      outline-offset: -2px;
     }
 
     .vsa-image-container {
