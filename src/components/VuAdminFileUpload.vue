@@ -92,8 +92,10 @@
                       <div class="dropdown rounded-bottom" v-if="params.tags">
                         <button class="btn btn-sm border border-start-1 border-top-0 border-bottom-0 rounded-0 h-100 w-100" type="button" data-bs-auto-close="outside"
                           data-bs-toggle="dropdown" aria-expanded="false">
-                          <i class="bi bi-tag"></i>
-                          {{ file.tags ? file.tags.length : 0 }}
+                          <span class="text-nowrap">
+                            <i class="bi bi-tag"></i>
+                            {{ file.tags ? file.tags.length : 0 }}
+                          </span>
                         </button>
                         <ul class="dropdown-menu">
                           <li>
@@ -125,12 +127,23 @@
                       </div>
 
                       <div class="dropdown">
-                        <button class="btn btn-sm _dropdown-toggle border border-start-1 border-top-0 border-bottom-0 rounded-0 h-100" type="button" data-bs-toggle="dropdown"
+                        <button class="btn btn-sm _dropdown-toggle border border-start-1 border-top-0 border-bottom-0 border-end-0 rounded-0 h-100" type="button" data-bs-toggle="dropdown"
                           aria-expanded="false">
                           <i class="bi bi-list"></i>
                         </button>
-                        <ul class="dropdown-menu">
-                          <li class="p-2">
+                        <ul class="dropdown-menu vsa-file-actions-menu">
+                          <li class="px-2 pt-2 pb-0">
+                            <div class="d-flex gap-1">
+                              <button v-if="file.isImage && !isSvgFile(file)" type="button" class="btn btn-sm btn-outline-secondary flex-fill" @click="openEditor(file)" :title="translate('Szerkesztés')">
+                                <i class="bi bi-pencil me-1"></i>{{ translate('Szerkesztés') }}
+                              </button>
+                              <button type="button" class="btn btn-sm btn-outline-danger flex-fill" @click="remove(index)" :title="translate('Törlés')">
+                                <i class="bi bi-x-circle me-1"></i>{{ translate('Törlés') }}
+                              </button>
+                            </div>
+                          </li>
+                          <li><hr class="dropdown-divider my-2"></li>
+                          <li class="p-2 pt-0">
                             <small class="fw-light">
                               <VuAdminFileUploadInfo :file="file"></VuAdminFileUploadInfo>
                             </small>
@@ -138,11 +151,6 @@
                         </ul>
 
                       </div>
-
-                      <button class="btn btn-sm btn-outline-danger border border-start-1 border-top-0 border-bottom-0 border-end-0 rounded-0 px-2" @click="remove(index)"
-                        type="button">
-                        <i class="bi bi-x-circle"></i>
-                      </button>
 
                     </div>
 
@@ -242,8 +250,10 @@
 
                 <div class="dropdown border border-end-0 h-100 w-100" v-if="params.tags">
                   <button class="btn btn-sm rounded-0 h-100 w-100" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-tag"></i>
-                    {{ file.tags ? file.tags.length : 0 }}
+                    <span class="text-nowrap">
+                      <i class="bi bi-tag"></i>
+                      {{ file.tags ? file.tags.length : 0 }}
+                    </span>
                   </button>
                   <ul class="dropdown-menu">
                     <li>
@@ -278,8 +288,19 @@
                   <button class="btn btn-sm rounded-0 h-100 _dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-list"></i>
                   </button>
-                  <ul class="dropdown-menu">
-                    <li class="p-2">
+                  <ul class="dropdown-menu vsa-file-actions-menu">
+                    <li class="px-2 pt-2 pb-0">
+                      <div class="d-flex gap-1">
+                        <button v-if="file.isImage && !isSvgFile(file)" type="button" class="btn btn-sm btn-outline-secondary flex-fill" @click="openEditor(file)" :title="translate('Szerkesztés')">
+                          <i class="bi bi-pencil me-1"></i>{{ translate('Szerkesztés') }}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger flex-fill" @click="remove(index)" :title="translate('Törlés')">
+                          <i class="bi bi-x-circle me-1"></i>{{ translate('Törlés') }}
+                        </button>
+                      </div>
+                    </li>
+                    <li><hr class="dropdown-divider my-2"></li>
+                    <li class="p-2 pt-0">
                       <small class="fw-light">
                         <VuAdminFileUploadInfo :file="file"></VuAdminFileUploadInfo>
                       </small>
@@ -287,10 +308,6 @@
                   </ul>
 
                 </div>
-
-                <button class="btn btn-outline-danger border rounded-0 border-start-0 px-2 py-1" @click="remove(index)" type="button">
-                  <i class="bi bi-x-circle"></i>
-                </button>
 
               </div>
 
@@ -376,6 +393,57 @@
 
       <input v-cloak v-if="uploadId" multiple style="opacity: 0; height: 1px; width: 1px" :id="uploadId" type="file" :accept="getAcceptMimeTypes(params.accept)"
         @change="handleFileChange" />
+
+      <!-- Image Editor Modal -->
+      <div v-if="editor.file" class="vsa-editor-overlay"
+           @mousemove.prevent="editorMouseMove"
+           @mouseup="editorMouseUp"
+           @mouseleave="editorMouseUp">
+
+        <div class="vsa-editor-toolbar d-flex align-items-center flex-wrap gap-1 p-2 bg-dark border-bottom border-secondary">
+
+          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(-90)" title="Forgatás balra 90°">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(90)" title="Forgatás jobbra 90°">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+
+          <span class="text-secondary mx-1">|</span>
+
+          <button type="button" class="btn btn-sm" :class="editor.flipX ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('x')" title="Vízszintes tükrözés">
+            <i class="bi bi-symmetry-vertical"></i>
+          </button>
+          <button type="button" class="btn btn-sm" :class="editor.flipY ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('y')" title="Függőleges tükrözés">
+            <i class="bi bi-symmetry-horizontal"></i>
+          </button>
+
+          <span class="text-secondary mx-1">|</span>
+
+          <button type="button" class="btn btn-sm" :class="editor.cropMode ? 'btn-warning' : 'btn-outline-light'" @click="editorCropButtonClick" title="Vágás">
+            <i class="bi bi-crop"></i>
+            <span v-if="editor.cropMode" class="ms-1 small">{{ editor.crop ? 'Terület kivágása' : 'Rajzolj területet' }}</span>
+          </button>
+          <button v-if="editor.cropMode && editor.crop" type="button" class="btn btn-sm btn-outline-warning" @click="editor.crop = null; editorDraw()" title="Vágás törlése">
+            <i class="bi bi-x"></i>
+          </button>
+
+          <div class="ms-auto d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary text-light border-secondary" @click="editorClose">Mégse</button>
+            <button type="button" class="btn btn-sm btn-primary" @click="editorApply">
+              <i class="bi bi-check2 me-1"></i>Alkalmaz
+            </button>
+          </div>
+        </div>
+
+        <div class="vsa-editor-canvas-area d-flex align-items-center justify-content-center flex-grow-1">
+          <canvas ref="editorCanvas"
+                  :style="{ cursor: editor.cropMode ? 'crosshair' : 'default' }"
+                  @mousedown.prevent="editorMouseDown">
+          </canvas>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -446,6 +514,7 @@ const FileUpload = {
       isDragging: false,
       dragIndex: null,
       dragOverIndex: null,
+      editor: { file: null },
     };
   },
   components: {
@@ -530,6 +599,12 @@ const FileUpload = {
         file.loaded = Object.values(file.types).some(t => t.data || t.url);
       }
 
+    },
+
+    isSvgFile(file) {
+      const ext = file?.original?.extension || this.extensionByFilename(file?.name || '');
+      const mime = file?.original?.mime || file?.type || '';
+      return ext === 'svg' || mime === 'image/svg+xml';
     },
 
     detect(file) {
@@ -624,7 +699,7 @@ const FileUpload = {
 
           if (file.isVideo) {
             await this.createThumbnail(file);
-          } else if (file.isImage && file.original.extension === 'svg') {
+          } else if (file.isImage && this.isSvgFile(file)) {
             await this.loadSvg(file);
           } else if (file.isImage) {
             await this.resizeImage(file);
@@ -797,6 +872,10 @@ const FileUpload = {
 
 
     async resizeImage(file) {
+      if (this.isSvgFile(file)) {
+        await this.loadSvg(file);
+        return;
+      }
       const blob = await this.fileToBlob(file);
       const image = await createImageBitmap(blob);
 
@@ -911,6 +990,308 @@ const FileUpload = {
     itemDragEnd() {
       this.dragIndex = null;
       this.dragOverIndex = null;
+    },
+
+    openEditor(file) {
+      if (this.isSvgFile(file)) {
+        return;
+      }
+      const type = file.types && file.types.default;
+      const src = type ? (type.data || type.url) : null;
+      if (!src) return;
+
+      this.editor = { file, imgBitmap: null, rotate: 0, flipX: false, flipY: false, cropMode: false, crop: null, dragging: false, cropDrag: null, cropAnchor: null, scale: 1 };
+
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = async () => {
+        try {
+          const w = img.naturalWidth || 1920;
+          const h = img.naturalHeight || 1080;
+          const opts = (!img.naturalWidth || !img.naturalHeight)
+            ? { resizeWidth: w, resizeHeight: h }
+            : undefined;
+          this.editor.imgBitmap = await createImageBitmap(img, opts);
+          this.$nextTick(() => this.editorDraw());
+        } catch (err) {
+          console.error('[vu-admin] openEditor:', err);
+          this.editor = { file: null };
+        }
+      };
+      img.onerror = () => {
+        console.error('[vu-admin] openEditor: image load failed');
+        this.editor = { file: null };
+      };
+      img.src = src;
+    },
+
+    editorDraw(skipOverlay = false) {
+      const canvas = this.$refs.editorCanvas;
+      if (!canvas || !this.editor.imgBitmap) return;
+
+      const img = this.editor.imgBitmap;
+      const rotate = this.editor.rotate;
+      const isRotated90 = rotate % 180 !== 0;
+      const logW = isRotated90 ? img.height : img.width;
+      const logH = isRotated90 ? img.width : img.height;
+
+      const maxW = Math.min(window.innerWidth * 0.9, 1400);
+      const maxH = window.innerHeight * 0.8;
+      const scale = Math.min(maxW / logW, maxH / logH, 1);
+      this.editor.scale = scale;
+
+      canvas.width = Math.round(logW * scale);
+      canvas.height = Math.round(logH * scale);
+
+      const ctx = canvas.getContext('2d');
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(rotate * Math.PI / 180);
+      ctx.scale(this.editor.flipX ? -1 : 1, this.editor.flipY ? -1 : 1);
+      ctx.drawImage(img, -img.width * scale / 2, -img.height * scale / 2, img.width * scale, img.height * scale);
+      ctx.restore();
+
+      if (!skipOverlay && this.editor.cropMode && this.editor.crop) {
+        const { x1, y1, x2, y2 } = this.editor.crop;
+        const cx = Math.min(x1, x2), cy = Math.min(y1, y2);
+        const cw = Math.abs(x2 - x1), ch = Math.abs(y2 - y1);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        ctx.fillRect(0, 0, canvas.width, cy);
+        ctx.fillRect(0, cy, cx, ch);
+        ctx.fillRect(cx + cw, cy, canvas.width - cx - cw, ch);
+        ctx.fillRect(0, cy + ch, canvas.width, canvas.height - cy - ch);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 3]);
+        ctx.strokeRect(cx + 0.5, cy + 0.5, cw - 1, ch - 1);
+        ctx.setLineDash([]);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(cx + cw / 3, cy); ctx.lineTo(cx + cw / 3, cy + ch);
+        ctx.moveTo(cx + 2 * cw / 3, cy); ctx.lineTo(cx + 2 * cw / 3, cy + ch);
+        ctx.moveTo(cx, cy + ch / 3); ctx.lineTo(cx + cw, cy + ch / 3);
+        ctx.moveTo(cx, cy + 2 * ch / 3); ctx.lineTo(cx + cw, cy + 2 * ch / 3);
+        ctx.stroke();
+
+        const hs = 7;
+        ctx.fillStyle = 'white';
+        [[cx, cy], [cx + cw, cy], [cx, cy + ch], [cx + cw, cy + ch]].forEach(([hx, hy]) => {
+          ctx.fillRect(hx - hs / 2, hy - hs / 2, hs, hs);
+        });
+      }
+    },
+
+    editorCanvasCoords(event) {
+      const canvas = this.$refs.editorCanvas;
+      const rect = canvas.getBoundingClientRect();
+      const sx = canvas.width / rect.width;
+      const sy = canvas.height / rect.height;
+      return {
+        x: Math.max(0, Math.min((event.clientX - rect.left) * sx, canvas.width)),
+        y: Math.max(0, Math.min((event.clientY - rect.top) * sy, canvas.height)),
+      };
+    },
+
+    editorCropRect(crop) {
+      const cx = Math.min(crop.x1, crop.x2);
+      const cy = Math.min(crop.y1, crop.y2);
+      return { cx, cy, cw: Math.abs(crop.x2 - crop.x1), ch: Math.abs(crop.y2 - crop.y1) };
+    },
+
+    editorHitCropHandle(x, y) {
+      if (!this.editor.crop || !this.hasValidCrop(this.editor.crop)) return null;
+      const { cx, cy, cw, ch } = this.editorCropRect(this.editor.crop);
+      const r = 10;
+      const corners = [
+        ['nw', cx, cy],
+        ['ne', cx + cw, cy],
+        ['sw', cx, cy + ch],
+        ['se', cx + cw, cy + ch],
+      ];
+      for (const [id, hx, hy] of corners) {
+        if (Math.abs(x - hx) <= r && Math.abs(y - hy) <= r) return id;
+      }
+      return null;
+    },
+
+    editorHandleCursor(handle) {
+      const map = { nw: 'nwse-resize', ne: 'nesw-resize', sw: 'nesw-resize', se: 'nwse-resize' };
+      return map[handle] || 'crosshair';
+    },
+
+    editorMouseDown(event) {
+      if (!this.editor.cropMode) return;
+      const { x, y } = this.editorCanvasCoords(event);
+      const handle = this.editorHitCropHandle(x, y);
+
+      if (handle) {
+        const c = this.editor.crop;
+        const left = Math.min(c.x1, c.x2);
+        const top = Math.min(c.y1, c.y2);
+        const right = Math.max(c.x1, c.x2);
+        const bottom = Math.max(c.y1, c.y2);
+        const anchors = {
+          nw: { ax: right, ay: bottom },
+          ne: { ax: left, ay: bottom },
+          sw: { ax: right, ay: top },
+          se: { ax: left, ay: top },
+        };
+        this.editor.cropAnchor = anchors[handle];
+        this.editor.cropDrag = handle;
+        this.editor.dragging = true;
+        return;
+      }
+
+      this.editor.dragging = true;
+      this.editor.cropDrag = 'new';
+      this.editor.cropAnchor = null;
+      this.editor.crop = { x1: x, y1: y, x2: x, y2: y };
+    },
+
+    editorMouseMove(event) {
+      if (!this.editor.cropMode) return;
+      const canvas = this.$refs.editorCanvas;
+      if (!canvas) return;
+
+      const { x, y } = this.editorCanvasCoords(event);
+
+      if (!this.editor.dragging) {
+        const handle = this.editorHitCropHandle(x, y);
+        canvas.style.cursor = handle ? this.editorHandleCursor(handle) : 'crosshair';
+        return;
+      }
+
+      if (this.editor.cropDrag === 'new') {
+        this.editor.crop.x2 = x;
+        this.editor.crop.y2 = y;
+      } else if (this.editor.cropDrag && this.editor.cropAnchor) {
+        const { ax, ay } = this.editor.cropAnchor;
+        const minSize = 3;
+        let nx = x;
+        let ny = y;
+        if (Math.abs(nx - ax) < minSize) nx = ax + (nx >= ax ? minSize : -minSize);
+        if (Math.abs(ny - ay) < minSize) ny = ay + (ny >= ay ? minSize : -minSize);
+        nx = Math.max(0, Math.min(nx, canvas.width));
+        ny = Math.max(0, Math.min(ny, canvas.height));
+        this.editor.crop = { x1: nx, y1: ny, x2: ax, y2: ay };
+      }
+
+      this.editorDraw();
+    },
+
+    editorMouseUp() {
+      this.editor.dragging = false;
+      this.editor.cropDrag = null;
+      this.editor.cropAnchor = null;
+    },
+
+    editorRotate(deg) {
+      this.editor.rotate = ((this.editor.rotate + deg) + 360) % 360;
+      this.editor.crop = null;
+      this.$nextTick(() => this.editorDraw());
+    },
+
+    editorFlip(axis) {
+      if (axis === 'x') this.editor.flipX = !this.editor.flipX;
+      else this.editor.flipY = !this.editor.flipY;
+      this.$nextTick(() => this.editorDraw());
+    },
+
+    hasValidCrop(crop) {
+      if (!crop) return false;
+      return Math.abs(crop.x2 - crop.x1) > 2 && Math.abs(crop.y2 - crop.y1) > 2;
+    },
+
+    editorToggleCrop() {
+      this.editor.cropMode = !this.editor.cropMode;
+      if (!this.editor.cropMode) this.editor.crop = null;
+      this.editorDraw();
+    },
+
+    editorCropButtonClick() {
+      if (this.editor.cropMode && this.hasValidCrop(this.editor.crop)) {
+        this.editorApplyCrop();
+        return;
+      }
+      this.editorToggleCrop();
+    },
+
+    editorRenderSource() {
+      const img = this.editor.imgBitmap;
+      if (!img) return null;
+
+      const { rotate, flipX, flipY, crop } = this.editor;
+      const scale = this.editor.scale || 1;
+      const isRotated90 = rotate % 180 !== 0;
+      const tw = isRotated90 ? img.height : img.width;
+      const th = isRotated90 ? img.width : img.height;
+
+      const transformCanvas = document.createElement('canvas');
+      transformCanvas.width = tw;
+      transformCanvas.height = th;
+      const ctx = transformCanvas.getContext('2d');
+      ctx.translate(tw / 2, th / 2);
+      ctx.rotate(rotate * Math.PI / 180);
+      ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+      ctx.drawImage(img, -img.width / 2, -img.height / 2);
+
+      if (!this.hasValidCrop(crop)) {
+        return transformCanvas;
+      }
+
+      const cx = Math.max(0, Math.round(Math.min(crop.x1, crop.x2) / scale));
+      const cy = Math.max(0, Math.round(Math.min(crop.y1, crop.y2) / scale));
+      const cw = Math.min(tw - cx, Math.max(1, Math.round(Math.abs(crop.x2 - crop.x1) / scale)));
+      const ch = Math.min(th - cy, Math.max(1, Math.round(Math.abs(crop.y2 - crop.y1) / scale)));
+      const cropCanvas = document.createElement('canvas');
+      cropCanvas.width = cw;
+      cropCanvas.height = ch;
+      cropCanvas.getContext('2d').drawImage(transformCanvas, cx, cy, cw, ch, 0, 0, cw, ch);
+      return cropCanvas;
+    },
+
+    async editorApplyCrop() {
+      if (!this.hasValidCrop(this.editor.crop)) return;
+
+      const sourceCanvas = this.editorRenderSource();
+      if (!sourceCanvas) return;
+
+      this.editor.imgBitmap = await createImageBitmap(sourceCanvas);
+      this.editor.rotate = 0;
+      this.editor.flipX = false;
+      this.editor.flipY = false;
+      this.editor.crop = null;
+      this.editor.cropMode = false;
+      this.$nextTick(() => this.editorDraw());
+    },
+
+    async editorApply() {
+      const file = this.editor.file;
+      if (!file || !this.editor.imgBitmap) return;
+
+      const sourceCanvas = this.editorRenderSource();
+      if (!sourceCanvas) return;
+
+      this.bytes -= file.bytes;
+      file.bytes = 0;
+      file.uploaded = false;
+      file.loaded = false;
+
+      const bitmap = await createImageBitmap(sourceCanvas);
+      await this.forEachPresets(file, bitmap);
+      file.loaded = true;
+      this.bytes += file.bytes;
+
+      this.editor = { file: null };
+      this.$forceUpdate();
+    },
+
+    editorClose() {
+      this.editor = { file: null };
     },
 
     download(index, params) {
@@ -1146,9 +1527,39 @@ export default FileUpload;
       }
     }
 
+    .vsa-editor-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1070;
+      display: flex;
+      flex-direction: column;
+      background: #111;
+    }
+
+    .vsa-editor-toolbar {
+      flex-shrink: 0;
+    }
+
+    .vsa-editor-canvas-area {
+      flex: 1;
+      overflow: hidden;
+      padding: 1rem;
+    }
+
+    .vsa-editor-canvas {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+    }
+
     .vsa-drag-over {
       outline: 2px solid var(--bs-primary);
       outline-offset: -2px;
+    }
+
+    .vsa-file-actions-menu {
+      min-width: 14rem;
     }
 
     .vsa-image-container {

@@ -255,6 +255,7 @@ import {
     translate,
     getValueOrFunction,
     secureRandomInt,
+    getResponseErrors,
 } from "./helpers";
 
 
@@ -517,6 +518,16 @@ const VuAuth = {
 
             if (this.settings.onError && this.settings.onError[panel]) {
                 this.settings.onError[panel](this.auth);
+            }
+
+            if (!this.auth.response.message) {
+                const errors = getResponseErrors(
+                    { status: this.auth.response.code || 400 },
+                    this.auth.response.data
+                );
+                if (errors?.length) {
+                    this.auth.response.message = errors.map((e) => e.message).join('<br>');
+                }
             }
 
             setTimeout(() => {
