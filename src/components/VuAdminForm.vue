@@ -143,6 +143,10 @@ import {
   secureRandomString,
 
 } from "./helpers";
+import {
+  getButtonClassByAction as resolveButtonClass,
+  getButtonIconClassByAction as resolveButtonIcon,
+} from "./buttonActions";
 import VuAdminFormGroup from "./VuAdminFormGroup.vue";
 
 const VuAdminForm = {
@@ -202,6 +206,14 @@ const VuAdminForm = {
 
     getValueOrFunction(object, params) {
       return getValueOrFunction(object, params, this.settings, this);
+    },
+
+    getButtonClassByAction(action) {
+      return resolveButtonClass(action);
+    },
+
+    getButtonIconClassByAction(action) {
+      return resolveButtonIcon(action);
     },
 
     formWait(block) {
@@ -347,64 +359,70 @@ const VuAdminForm = {
 
         this.formWait(true);
 
-        const response = await fetch(
-          prepareFetchUrl("GET", settings.form.api, primaryId),
-          prepareFetchOptions("GET", settings.api, null, auth)
-        ).catch((err) => {
-          console.error('[vu-admin] fetchItem network error:', err);
-        });
-
-        const json = await getResponseJson(response);
-        let error = getResponseErrors(response, json.data, 'form');
-
-        if (error || !json.data) {
-          this.formNoWait();
-          return false;
-        }
-
-        if (settings.form.default) {
-          json.data = Object.assign({}, settings.form.default, json.data);
-        }
-
-        if (settings.events && settings.events.afterItemLoad) {
-          settings.events.afterItemLoad(json.data, response);
-        }
-
         let item;
 
-        if (settings.form.api.input.item) {
-          item =
-            typeof settings.form.api.input.item === "string"
-              ? json.data[settings.form.api.input.item]
-              : settings.form.api.input.item(json.data, response);
+        if (primaryId) {
+
+          const response = await fetch(
+            prepareFetchUrl("GET", settings.form.api, primaryId),
+            prepareFetchOptions("GET", settings.api, null, auth)
+          ).catch((err) => {
+            console.error('[vu-admin] fetchItem network error:', err);
+          });
+
+          const json = await getResponseJson(response);
+          let error = getResponseErrors(response, json.data, 'form');
+
+          if (error || !json.data) {
+            this.formNoWait();
+            return false;
+          }
+
+          if (settings.form.default) {
+            json.data = Object.assign({}, settings.form.default, json.data);
+          }
+
+          if (settings.events && settings.events.afterItemLoad) {
+            settings.events.afterItemLoad(json.data, response);
+          }
+
+          if (settings.form.api.input.item) {
+            item =
+              typeof settings.form.api.input.item === "string"
+                ? json.data[settings.form.api.input.item]
+                : settings.form.api.input.item(json.data, response);
+          } else {
+            item = json.data;
+          }
+
         } else {
-          item = json.data;
+          item = settings.form.default ? Object.assign({}, settings.form.default) : {};
         }
+
+        const relationPromises = [];
 
         for (let group of settings.form.groups) {
           for (let field of group.fields) {
-            
+
             // preset dropdowns multiple
             if (field.type === "dropdown" && field.name !== '__proto__' && field.name !== 'constructor' && field.name !== 'prototype' && !item[field.name]) {
               item[field.name] = [];
             }
-            
+
             // collect relations
             if (
               field.relation &&
+              settings.relations &&
               settings.relations[field.relation.config]
             ) {
-
               field.relation = deepMerge(settings.relations[field.relation.config], field.relation);
-              await this.fetchRelation(field, [item], auth);
-
+              relationPromises.push(this.fetchRelation(field, [item], auth));
             }
-
-
-
 
           }
         }
+
+        await Promise.all(relationPromises);
 
         if (settings.debug) {
           console.log('[vu-admin] fetchItem:', primaryId, item);
@@ -605,9 +623,15 @@ export default VuAdminForm;
 
 <style lang="scss" >
 .vu-admin {
-  
-  [data-bs-theme="light"] {}
-
-  [data-bs-theme="dark"] {}
+  [data-bs-theme="dark"] .modal-header.bg-body .btn-outline-dark {
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-border-color: var(--bs-border-color);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--bs-secondary-bg);
+    --bs-btn-hover-border-color: var(--bs-border-color);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--bs-secondary-bg);
+    --bs-btn-active-border-color: var(--bs-border-color);
+  }
 }
 </style>

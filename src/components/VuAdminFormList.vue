@@ -73,7 +73,7 @@
                 {{ element.prefix }}
               </span>
 
-              <VuAdminFormSelect v-if="element.type == 'select' && (!element.relation || (element.relation && element.relation.items))" v-model="element.value" :field="element"
+              <VuAdminFormSelect v-if="element.type == 'select' && (!element.relation || (element.relation && element.relation.items))" v-model="element.value" :field="Object.assign({}, element, { required: false })"
                 :item="item" :settings="settings" :formId="formId" :optionValue="'object'"></VuAdminFormSelect>
 
               <input v-else :type="element.type" :placeholder="element.placeholder || element.name" class="form-control form-control-sm" v-model="element.value">
