@@ -504,6 +504,10 @@ const FileUpload = {
     settings: Object,
   },
 
+  inject: {
+    setFormOverlayMessage: { default: null },
+  },
+
   data: function () {
     return {
       files: [],
@@ -535,6 +539,9 @@ const FileUpload = {
     }
 
   },
+  beforeUnmount() {
+    this.setProcessingOverlay(null);
+  },
   watch: {
     modelValue(newValue) {
 
@@ -555,6 +562,13 @@ const FileUpload = {
   },
 
   methods: {
+
+    setProcessingOverlay(message) {
+      this.wait = !!message;
+      if (typeof this.setFormOverlayMessage === 'function') {
+        this.setFormOverlayMessage(message);
+      }
+    },
 
     roundFileSize(fileSize, suffix) {
       return roundFileSize(fileSize, suffix);
@@ -685,53 +699,59 @@ const FileUpload = {
     async handleFileChange(event) {
       this.uploadEvent = event;
       this.count = this.files ? this.files.length : 0;
-      this.wait = true;
 
-      for (let file of event.target.files) {
+      try {
+        this.setProcessingOverlay(this.translate('Processing files...'));
 
-        this.count++;
+        for (let file of event.target.files) {
 
-        if (this.count <= this.params.limit) {
+          this.count++;
 
-          this.files.push(file);
-          this.detect(file);
+          if (this.count <= this.params.limit) {
 
-          if (file.isVideo) {
-            await this.createThumbnail(file);
-          } else if (file.isImage && this.isSvgFile(file)) {
-            await this.loadSvg(file);
-          } else if (file.isImage) {
-            await this.resizeImage(file);
-          } else if (file.isDocument) {
+            this.files.push(file);
+            this.detect(file);
 
-            // const blob = await this.fileToBlob(file);
-            const reader = new FileReader();
+            if (file.isVideo) {
+              this.setProcessingOverlay(this.translate('Processing video: {name}', { name: file.name }));
+              await this.createThumbnail(file);
+            } else if (file.isImage && this.isSvgFile(file)) {
+              this.setProcessingOverlay(this.translate('Loading image: {name}', { name: file.name }));
+              await this.loadSvg(file);
+            } else if (file.isImage) {
+              await this.resizeImage(file);
+            } else if (file.isDocument) {
+              this.setProcessingOverlay(this.translate('Loading file: {name}', { name: file.name }));
 
-            reader.addEventListener("load", (e) => {
+              const reader = new FileReader();
 
-              file.types.default = {
-                extension: file.original.extension,
-                mime: file.original.mime,
-                slug: slugify(file.title) + "-" + file.uid,
-                bytes: file.size,
-                data: e.target.result
-              }
+              reader.addEventListener("load", (e) => {
 
-              file.loaded = true;
-              file.bytes += file.size;
-              this.bytes += file.bytes
+                file.types.default = {
+                  extension: file.original.extension,
+                  mime: file.original.mime,
+                  slug: slugify(file.title) + "-" + file.uid,
+                  bytes: file.size,
+                  data: e.target.result
+                }
 
-            });
+                file.loaded = true;
+                file.bytes += file.size;
+                this.bytes += file.bytes
 
-            reader.readAsDataURL(file);
+              });
+
+              reader.readAsDataURL(file);
+
+            }
 
           }
-
         }
-      }
 
-      this.$emit("update:modelValue", this.files);
-      this.wait = false;
+        this.$emit("update:modelValue", this.files);
+      } finally {
+        this.setProcessingOverlay(null);
+      }
 
       // Important - Choosing the same file doesn't trigger onChange
       // https://github.com/ngokevin/react-file-reader-input/issues/11
@@ -878,9 +898,13 @@ const FileUpload = {
       const blob = await this.fileToBlob(file);
       const image = await createImageBitmap(blob);
 
-      await this.forEachPresets(file, image);
+      await this.forEachPresets(file, image, (preset) => {
+        const name = file.title || file.name;
+        this.setProcessingOverlay(
+          this.translate('Resizing image: {name} ({preset})', { name, preset: preset.key })
+        );
+      });
 
-      // file.fullscreen = false;
       file.loaded = true;
       this.bytes += file.bytes;
     },
@@ -1275,18 +1299,29 @@ const FileUpload = {
       const sourceCanvas = this.editorRenderSource();
       if (!sourceCanvas) return;
 
-      this.bytes -= file.bytes;
-      file.bytes = 0;
-      file.uploaded = false;
-      file.loaded = false;
+      try {
+        this.setProcessingOverlay(this.translate('Applying image edits...'));
 
-      const bitmap = await createImageBitmap(sourceCanvas);
-      await this.forEachPresets(file, bitmap);
-      file.loaded = true;
-      this.bytes += file.bytes;
+        this.bytes -= file.bytes;
+        file.bytes = 0;
+        file.uploaded = false;
+        file.loaded = false;
 
-      this.editor = { file: null };
-      this.$forceUpdate();
+        const bitmap = await createImageBitmap(sourceCanvas);
+        await this.forEachPresets(file, bitmap, (preset) => {
+          const name = file.title || file.name;
+          this.setProcessingOverlay(
+            this.translate('Resizing image: {name} ({preset})', { name, preset: preset.key })
+          );
+        });
+        file.loaded = true;
+        this.bytes += file.bytes;
+
+        this.editor = { file: null };
+        this.$forceUpdate();
+      } finally {
+        this.setProcessingOverlay(null);
+      }
     },
 
     editorClose() {

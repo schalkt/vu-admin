@@ -270,12 +270,17 @@ export async function uploadPendingFormFiles({
   settings,
   auth,
   debug,
+  onProgress,
 }) {
   if (!tasks.length) return [];
 
   const results = [];
 
-  for (const task of tasks) {
+  for (let i = 0; i < tasks.length; i++) {
+    const task = tasks[i];
+    if (onProgress) {
+      onProgress({ current: i, total: tasks.length, task });
+    }
     const uploadConfig = task.uploadConfig;
     const uploadApi = {
       url: uploadConfig.url,
@@ -320,6 +325,9 @@ export async function uploadPendingFormFiles({
 
     const url = pickUploadUrl(json.data);
     results.push({ task, data: json.data, url });
+    if (onProgress) {
+      onProgress({ current: i + 1, total: tasks.length, task });
+    }
   }
 
   return results;

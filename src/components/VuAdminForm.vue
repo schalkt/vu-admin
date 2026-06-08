@@ -1,7 +1,19 @@
 <template>
   <form ref="form" v-cloak v-if="item" :id="formId" class="form" @submit.prevent="submitItem" :class="[settings.form.class, { wait: ui.wait.form }]"
     :data-bs-theme="[settings.theme]">
-    <div class="vua-overlay" :class="{ blocked: ui.block.form }"></div>
+    <div class="vua-overlay" :class="{ blocked: !!overlayCenterMessage, immediate: !!overlayCenterMessage }">
+      <div v-if="overlayCenterMessage" class="vua-overlay-panel text-center px-4 py-3">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="vua-overlay-message">{{ overlayCenterMessage }}</div>
+        <div v-if="overlayShowUploadProgress" class="progress mt-3 mx-auto" style="width: 240px; height: 8px;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+            :style="{ width: saveProgressPercent + '%' }" :aria-valuenow="saveProgress.uploadCurrent"
+            :aria-valuemin="0" :aria-valuemax="saveProgress.uploadTotal"></div>
+        </div>
+      </div>
+    </div>
     <div class="modal-header">
 
       <h5 v-if="loaded" class="modal-title">
@@ -26,10 +38,11 @@
         </span>
       </span>
 
-      <span v-show="ui.wait.form" class="spinner-border spinner-border-sm mx-2" role="status">
+      <span v-if="ui.wait.form && !overlayCenterMessage" class="spinner-border spinner-border-sm mx-2" role="status">
         <span class="visually-hidden">Loading...</span>
       </span>
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+        :disabled="saveProgress?.active && saveProgress?.warnLeave"></button>
 
     </div>
 
@@ -55,12 +68,12 @@
         </span>
 
         <span v-for="button in settings.form.control.buttons" :key="button.action">
-          <button v-if="!button.dropdowns" type="button" :disabled="button.disabled !== undefined
+          <button v-if="!button.dropdowns" type="button" :disabled="saveProgress?.active || (button.disabled !== undefined
             ? getValueOrFunction(button.disabled, {
               button: button,
               item: item,
               form: this,
-            }) : false" :class="[
+            }) : false)" :class="[
               button.class ? button.class : getButtonClassByAction(button.action),
             ]" @click="formAction(button, {
               button: button,
@@ -81,7 +94,8 @@
           </button>
 
           <div class="dropdown d-inline-block" v-cloak v-if="button.dropdowns">
-            <button type="button" :class="[button.class]" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            <button type="button" :class="[button.class]" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
+              :disabled="saveProgress?.active">
               <span class="mx-1">
                 <i :class="[
                   button.icon !== undefined
@@ -160,11 +174,63 @@ const VuAdminForm = {
     formId: String,
     settings: Object,
     auth: Object,
+    saveProgress: {
+      type: Object,
+      default: null,
+    },
+  },
+  computed: {
+    saveProgressLabel() {
+      const p = this.saveProgress;
+      if (!p?.active) return '';
+      if (p.phase === 'upload' && p.uploadTotal > 0) {
+        let label = this.translate('Uploading files {current}/{total}', {
+          current: p.uploadCurrent,
+          total: p.uploadTotal,
+        });
+        if (p.uploadField) {
+          label += ` (${p.uploadField}${p.uploadTypeKey ? '/' + p.uploadTypeKey : ''})`;
+        }
+        return label;
+      }
+      if (p.phase === 'persist') {
+        return this.translate('Saving uploaded files...');
+      }
+      return this.translate('Saving...');
+    },
+    saveProgressPercent() {
+      const p = this.saveProgress;
+      if (!p?.uploadTotal) return 0;
+      return Math.min(100, Math.round((p.uploadCurrent / p.uploadTotal) * 100));
+    },
+    overlayCenterMessage() {
+      if (this.saveProgress?.active) {
+        return this.saveProgressLabel;
+      }
+      if (this.fileOverlayMessage) {
+        return this.fileOverlayMessage;
+      }
+      if (this.ui.wait.form) {
+        return this.translate('Loading...');
+      }
+      return '';
+    },
+    overlayShowUploadProgress() {
+      return !!(this.saveProgress?.active && this.saveProgress.uploadTotal > 0);
+    },
+  },
+  provide() {
+    return {
+      setFormOverlayMessage: (message) => {
+        this.fileOverlayMessage = message || null;
+      },
+    };
   },
   data: function () {
     return {
       item: {},
       loaded: false,
+      fileOverlayMessage: null,
       ui: {
         wait: {
           table: false,
@@ -196,6 +262,16 @@ const VuAdminForm = {
   watch: {
     modelValue(newValue) {
       this.item = this.modelValue;
+    },
+    saveProgress: {
+      handler(p) {
+        if (p?.active) {
+          this.formWait(true);
+        } else {
+          this.formNoWait();
+        }
+      },
+      deep: true,
     },
   },
   methods: {
@@ -470,13 +546,12 @@ const VuAdminForm = {
           item =
             typeof this.settings.form.api.input.item === "string"
               ? data[this.settings.form.api.input.item]
-              : this.settings.form.api.input.item(data, response);
+              : this.settings.form.api.input.item(data);
         } else {
           item = data;
         }
 
         if (item) {
-
           this.addFormMessage(
             this.translate("Saved") + ` <small>( ${this.settings.pkey}:  ${item[this.settings.pkey]} )</small>`,
             2500

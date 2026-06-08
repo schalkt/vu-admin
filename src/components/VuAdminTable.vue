@@ -596,7 +596,8 @@
       <div class="modal-dialog modal-xl">
         <div class="modal-content h-100">
           <VuAdminForm v-cloak v-if="authAndSettings() && settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings"
-            :modalWindow="modalWindow" :auth="auth" :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation"></VuAdminForm>
+            :modalWindow="modalWindow" :auth="auth" :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation"
+            :saveProgress="saveProgress"></VuAdminForm>
         </div>
       </div>
     </div>
@@ -713,6 +714,15 @@ export default {
         form: null,
       },
       messageTimeOut: null,
+      saveProgress: {
+        active: false,
+        warnLeave: false,
+        phase: null,
+        uploadCurrent: 0,
+        uploadTotal: 0,
+        uploadField: null,
+        uploadTypeKey: null,
+      },
     };
   },
   watch: {
@@ -748,6 +758,27 @@ export default {
       this.settings.form.visible = true;
     });
 
+    this.modalElement.addEventListener('hide.bs.modal', (event) => {
+      if (this.saveProgress.active && this.saveProgress.warnLeave) {
+        const msg = this.translate(
+          'File upload is in progress. Are you sure you want to close?'
+        );
+        if (!confirm(msg)) {
+          event.preventDefault();
+        }
+      }
+    });
+
+    this._handleBeforeUnload = (event) => {
+      if (this.saveProgress.active && this.saveProgress.warnLeave) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+
+  },
+  beforeUnmount() {
+    window.removeEventListener('beforeunload', this._handleBeforeUnload);
   },
 
   methods: {
@@ -1789,7 +1820,53 @@ export default {
     },
 
 
+    beginSaveProgress({ warnLeave = false, uploadTotal = 0 } = {}) {
+      this.saveProgress = {
+        active: true,
+        warnLeave: !!warnLeave,
+        phase: 'save',
+        uploadCurrent: 0,
+        uploadTotal: uploadTotal || 0,
+        uploadField: null,
+        uploadTypeKey: null,
+      };
+      if (warnLeave) {
+        window.addEventListener('beforeunload', this._handleBeforeUnload);
+      }
+    },
+
+    setSaveProgress(patch) {
+      Object.assign(this.saveProgress, patch);
+    },
+
+    endSaveProgress() {
+      if (!this.saveProgress?.active) {
+        return;
+      }
+      window.removeEventListener('beforeunload', this._handleBeforeUnload);
+      this.saveProgress = {
+        active: false,
+        warnLeave: false,
+        phase: null,
+        uploadCurrent: 0,
+        uploadTotal: 0,
+        uploadField: null,
+        uploadTypeKey: null,
+      };
+    },
+
     async saveItem(input, onSuccess, onError, urlParams) {
+
+      const fieldUploadMap = getSeparateUploadFieldsMap(this.settings);
+      const separateUploadFields = Object.keys(fieldUploadMap);
+      const pendingUploadTasks = separateUploadFields.length
+        ? collectPendingFileUploads(input, fieldUploadMap)
+        : [];
+
+      this.beginSaveProgress({
+        warnLeave: pendingUploadTasks.length > 0,
+        uploadTotal: pendingUploadTasks.length,
+      });
 
       try {
 
@@ -1841,8 +1918,8 @@ export default {
           this.settings.events.beforeItemSave(item, urlParams, input);
         }
 
-        const fieldUploadMap = getSeparateUploadFieldsMap(this.settings);
-        const separateUploadFields = Object.keys(fieldUploadMap);
+        this.setSaveProgress({ phase: 'save' });
+
         const itemForSave = prepareAllFileFieldsForJsonSave(item, this.settings);
 
         if (!this.settings.form.api.output.item) {
@@ -1898,16 +1975,24 @@ export default {
 
         let responseData = json.data;
 
-        if (separateUploadFields.length) {
-          const pendingTasks = collectPendingFileUploads(input, fieldUploadMap);
-          if (pendingTasks.length) {
+        if (separateUploadFields.length && pendingUploadTasks.length) {
             try {
+              this.setSaveProgress({ phase: 'upload', uploadCurrent: 0 });
               const uploadResults = await uploadPendingFormFiles({
-                tasks: pendingTasks,
+                tasks: pendingUploadTasks,
                 savedItem: extractSavedItemFromResponse(responseData, this.settings),
                 settings: this.settings,
                 auth: this.auth,
                 debug: this.settings.debug,
+                onProgress: ({ current, total, task }) => {
+                  this.setSaveProgress({
+                    phase: 'upload',
+                    uploadCurrent: current,
+                    uploadTotal: total,
+                    uploadField: task?.fieldName || null,
+                    uploadTypeKey: task?.typeKey || null,
+                  });
+                },
               });
               applyUploadResultsToItem(input, separateUploadFields, uploadResults);
               responseData = mergeUploadFieldsIntoResponse(
@@ -1916,6 +2001,7 @@ export default {
                 separateUploadFields,
                 this.settings
               );
+              this.setSaveProgress({ phase: 'persist' });
               const savedAfterUpload = await persistUploadedFileFields({
                 savedItem: extractSavedItemFromResponse(responseData, this.settings),
                 item: input,
@@ -1945,12 +2031,13 @@ export default {
                 );
               }
             }
-          }
         }
 
         if (this.settings.events && this.settings.events.afterItemSave) {
           this.settings.events.afterItemSave(responseData, urlParams, this.auth);
         }
+
+        this.endSaveProgress();
 
         if (onSuccess) {
           onSuccess(responseData, response);
@@ -1964,6 +2051,8 @@ export default {
           onError(error, input, urlParams);
         }
 
+      } finally {
+        this.endSaveProgress();
       }
     },
 
@@ -2384,6 +2473,37 @@ export default {
     position: relative;
   }
 
+  .modal .modal-dialog {
+    max-height: calc(100vh - 1.75rem);
+  }
+
+  .modal .modal-content {
+    max-height: calc(100vh - 1.75rem);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  form.form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+
+    > .modal-header,
+    > .modal-footer {
+      flex-shrink: 0;
+    }
+
+    > .modal-body.custom-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+    }
+  }
+
   .vua-overlay {
     content: "";
     position: absolute;
@@ -2403,6 +2523,29 @@ export default {
       animation-iteration-count: 1;
       animation-fill-mode: forwards;
       animation-direction: normal;
+
+      &.immediate {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: none;
+        opacity: 0.92;
+        position: absolute;
+        inset: 0;
+        z-index: 10050;
+      }
+    }
+
+    .vua-overlay-panel {
+      max-width: 420px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .vua-overlay-message {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: var(--bs-body-color);
     }
   }
 
