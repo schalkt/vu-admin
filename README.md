@@ -9,7 +9,7 @@
 ## Features
 
 - **Data table** — sortable columns (multi-column), server-side pagination, per-column filters, column visibility toggle, expandable row details, inline editing, bulk actions, CSV export
-- **Form** — modal-based editor with field types: `text`, `number`, `email`, `textarea`, `date`, `datetime-local`, `checkbox`, `select`, `dropdown` (multi-select), `list` (dynamic arrays), `html` (TipTap editor), `image`/`upload` (drag-and-drop with presets), `template` (custom HTML)
+- **Form** — modal-based editor with field types: `text`, `number`, `email`, `textarea`, `date`, `datetime-local`, `checkbox`, `select`, `dropdown` (multi-select), `list` (dynamic arrays), `html` (TipTap editor), `image`/`upload` (drag-and-drop with presets, inline JSON or separate upload URL per field), `template` (custom HTML)
 - **Authentication** — login, registration, forgot password, activation flow, `/me` session restore, localStorage persistence, **two-factor authentication (email OTP)**, role-based entity access
 - **Relations** — automatic join of related entities, displayed inline in table and form
 - **Events** — lifecycle hooks: `beforeItemSave`, `afterItemSave`, `beforeItemDelete`, `afterItemDelete`, `afterItemsLoad`, `beforeItemsLoad`, etc.
@@ -68,7 +68,8 @@ vu-admin/
 │   │   ├── VuAdminFormGroup.vue    # field renderer
 │   │   ├── VuAdminFormSelect.vue   # select field
 │   │   ├── VuAdminFormList.vue     # dynamic list field
-│   │   ├── VuAdminFileUpload.vue   # image / document upload
+│   │   ├── VuAdminFileUpload.vue   # image / document upload UI
+│   │   ├── formUploadHelpers.js    # save / upload / persist logic
 │   │   ├── VuAdminHtmlEditor.vue   # TipTap rich-text editor
 │   │   ├── VuAuth.vue              # auth modal (login / register / …)
 │   │   └── VuUserButton.vue        # nav button with role switcher
@@ -401,13 +402,15 @@ form: {
 // HTML editor (TipTap; field.tiptap: { placeholder, imageSourceFields?: ['images'] })
 { type: 'html',   name: 'body',   label: 'Content' }
 
-// File / image upload
+// File / image upload — see "File upload" section below
 {
   type: 'upload', name: 'images', label: 'Images',
+  url: '/api/upload',   // separate upload endpoint (optional)
   params: {
     ui: 'card',         // or 'list'
     limit: 10,
     accept: ['png', 'jpg', 'webp'],
+    thumbnail: 'small',
     presets: {
       default: { width: 1920, height: 1080, extension: 'webp', quality: 0.9 },
       small:   { width: 400,  height: 320,  extension: 'webp', quality: 0.75, crop: 'contain' },
@@ -432,6 +435,137 @@ form: {
   disabled: true,
 }
 ```
+
+---
+
+## File upload
+
+`image` and `upload` fields share the same component (`VuAdminFileUpload.vue`).  
+Storage mode is configured **per field** — different fields on the same form can use different endpoints or inline JSON.
+
+### Modes
+
+| Mode | Field config | Behaviour |
+|---|---|---|
+| **Separate upload** (recommended) | `url: '/api/upload'` on the field | Item is saved as JSON first (metadata only, no binary). After a successful save, each generated preset is uploaded via `multipart/form-data` to `field.url`. URLs are written back and persisted with a follow-up `PUT`. |
+| **Inline JSON** (default when `url` is omitted) | no `url`; optional `upload: 'dataurl'` | File data is embedded in the JSON request body. `dataurl` keeps base64 `data` URLs and strips `Blob` objects before save. |
+| **Inline metadata only** | `upload: 'blob'` | Only file metadata is sent in JSON (`Blob` values are not JSON-serializable). Use separate upload (`url`) when binary storage is required. |
+
+### Separate upload — save flow
+
+```
+1. PUT/POST  form.api     →  JSON body (file metadata, no blob/data)
+2. POST      field.url    →  multipart per preset (file + json meta), repeated for each size
+3. PUT       form.api     →  patch file fields with returned URLs (reload-safe)
+```
+
+The main entity save endpoint does **not** need to change — it keeps accepting the same JSON structure.  
+Binary content goes only to `field.url`.
+
+### Field config
+
+```js
+// Minimal — separate upload
+{
+  type: 'upload',
+  name: 'images',
+  label: 'Images',
+  url: '/api/upload',
+  params: {
+    ui: 'card',
+    limit: 10,
+    accept: ['png', 'jpg', 'webp'],
+    thumbnail: 'small',
+    presets: {
+      default: { width: 1920, height: 1080, extension: 'webp', quality: 0.9 },
+      small:   { width: 400,  height: 320,  extension: 'webp', quality: 0.75, crop: 'contain' },
+    },
+  },
+}
+
+// Different endpoints per field on the same form
+{ type: 'upload', name: 'images',    url: '/api/upload/images' }
+{ type: 'upload', name: 'documents', url: '/api/upload/documents' }
+
+// Inline JSON (no separate request)
+{ type: 'upload', name: 'attachments', upload: 'dataurl', params: { … } }
+```
+
+### Optional `upload` object (advanced, no `url` here)
+
+When `field.url` is set, fine-tuning goes in an optional `upload` object:
+
+```js
+{
+  type: 'upload',
+  name: 'documents',
+  url: '/api/upload',
+  upload: {
+    fileField: 'file',       // multipart field name for the binary (default: file)
+    jsonField: 'json',       // multipart field name for metadata (default: json)
+    persist: true,           // PUT file fields after upload (default: true)
+    presets: ['default'],    // limit which params.presets keys are uploaded (default: all)
+    meta: (base, task, savedItem, settings, auth) => ({
+      ...base,
+      // base already contains: entity, id, field, fileIndex, typeKey, file, type, item
+    }),
+    api: { options: { /* extra fetch options for upload POST */ } },
+  },
+  params: { … },
+}
+```
+
+Set `upload.persist: false` if your upload endpoint updates the entity record itself.
+
+### Multipart upload request
+
+Each preset variant is uploaded in its own request:
+
+| Part | Default name | Content |
+|---|---|---|
+| Binary file | `file` | WebP/JPEG/… blob for that preset |
+| Metadata | `json` | JSON string: entity id, field name, file index, preset key, file/type metadata, saved item snapshot |
+
+Expected response (any of):
+
+```json
+{ "url": "/uploads/abc.webp" }
+{ "file": { "url": "/uploads/abc.webp" } }
+{ "files": [{ "url": "/uploads/abc.webp" }] }
+```
+
+### File object shape (in item JSON)
+
+```js
+images: [
+  {
+    uid: '…',
+    slug: 'product-photo',
+    title: 'Product photo',
+    tags: ['public'],
+    uploaded: true,
+    types: {
+      default: { slug: '…', extension: 'webp', width: 1920, height: 1080, url: '/uploads/…' },
+      small:   { slug: '…', extension: 'webp', width: 400,  height: 320,  url: '/uploads/…' },
+    },
+    original: { name: 'photo.jpg', mime: 'image/jpeg', bytes: 204800, … },
+  },
+]
+```
+
+### `params` reference (UI)
+
+| Key | Description |
+|---|---|
+| `ui` | `'card'` or `'list'` layout |
+| `limit` | Max number of files |
+| `accept` | Allowed extensions |
+| `thumbnail` | Preset key used for list/card preview |
+| `download` | Preset key used for download link (default: `default`) |
+| `presets` | Resize/crop/quality variants generated client-side before upload |
+| `tags` | Tag checkbox options (`{ value, label }[]`) |
+| `editor` | Enable built-in image editor (`true` / `false`) |
+| `text` | Drop-zone label |
 
 ---
 
@@ -549,6 +683,8 @@ npm run mock:reset  # write empty arrays to all db/ files
 | `POST` | `/api/{entity}` | Create (auto-increment id) |
 | `PUT/PATCH` | `/api/{entity}/{id}` | Update (merge) |
 | `DELETE` | `/api/{entity}/{id}` | Remove |
+| `POST` | `/api/upload` | Multipart file upload (`file` + `json` parts); returns `{ url, files, meta }` |
+| `GET`  | `/mock/uploads/{filename}` | Serve uploaded mock files |
 | `GET`  | `/mock/avatar/{initials}` | Colored SVG avatar circle |
 | `GET`  | `/mock/thumb/{label}` | Colored SVG thumbnail |
 
