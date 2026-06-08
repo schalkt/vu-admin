@@ -187,17 +187,32 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
         const buffer = Buffer.concat(chunks);
         const parts = parseMultipart(buffer, boundary);
         const saved = [];
+        let meta = null;
 
         for (const part of parts) {
-          if (!part.filename) continue;
-          const ext = path.extname(part.filename).toLowerCase() || '.bin';
-          const unique = Date.now() + '-' + Math.random().toString(36).slice(2);
-          const filename = unique + ext;
-          fs.writeFileSync(path.join(uploadsDir, filename), part.data);
-          saved.push({ name: part.name, filename, url: '/mock/uploads/' + filename, mime: part.mime });
+          if (part.filename) {
+            const ext = path.extname(part.filename).toLowerCase() || '.bin';
+            const unique = Date.now() + '-' + Math.random().toString(36).slice(2);
+            const filename = unique + ext;
+            fs.writeFileSync(path.join(uploadsDir, filename), part.data);
+            saved.push({ name: part.name, filename, url: '/mock/uploads/' + filename, mime: part.mime });
+            continue;
+          }
+          if (part.name === 'json' || part.mime === 'application/json') {
+            try {
+              meta = JSON.parse(part.data.toString('utf8'));
+            } catch {
+              meta = { raw: part.data.toString('utf8') };
+            }
+          }
         }
 
-        setTimeout(() => send(res, { files: saved }, 200), delay);
+        const payload = {
+          files: saved,
+          meta,
+          url: saved[0]?.url || null,
+        };
+        setTimeout(() => send(res, payload, 200), delay);
       });
       return;
     }

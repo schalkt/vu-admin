@@ -630,6 +630,16 @@ import {
   secureRandomString
 } from "./helpers";
 import {
+  getSeparateUploadFieldsMap,
+  prepareAllFileFieldsForJsonSave,
+  collectPendingFileUploads,
+  uploadPendingFormFiles,
+  applyUploadResultsToItem,
+  mergeUploadFieldsIntoResponse,
+  extractSavedItemFromResponse,
+  persistUploadedFileFields,
+} from "./formUploadHelpers";
+import {
   getButtonClassByAction as resolveButtonClass,
   getButtonIconClassByAction as resolveButtonIcon,
 } from "./buttonActions";
@@ -1831,11 +1841,15 @@ export default {
           this.settings.events.beforeItemSave(item, urlParams, input);
         }
 
+        const fieldUploadMap = getSeparateUploadFieldsMap(this.settings);
+        const separateUploadFields = Object.keys(fieldUploadMap);
+        const itemForSave = prepareAllFileFieldsForJsonSave(item, this.settings);
+
         if (!this.settings.form.api.output.item) {
-          body = JSON.stringify(item);
+          body = JSON.stringify(itemForSave);
         } else if (typeof this.settings.form.api.output.item === "string") {
           let output = {};
-          output[this.settings.form.api.output.item] = item;
+          output[this.settings.form.api.output.item] = itemForSave;
           body = JSON.stringify(output);
         } else {
           body = JSON.stringify(
@@ -1882,12 +1896,64 @@ export default {
         }
 
 
+        let responseData = json.data;
+
+        if (separateUploadFields.length) {
+          const pendingTasks = collectPendingFileUploads(input, fieldUploadMap);
+          if (pendingTasks.length) {
+            try {
+              const uploadResults = await uploadPendingFormFiles({
+                tasks: pendingTasks,
+                savedItem: extractSavedItemFromResponse(responseData, this.settings),
+                settings: this.settings,
+                auth: this.auth,
+                debug: this.settings.debug,
+              });
+              applyUploadResultsToItem(input, separateUploadFields, uploadResults);
+              responseData = mergeUploadFieldsIntoResponse(
+                responseData,
+                input,
+                separateUploadFields,
+                this.settings
+              );
+              const savedAfterUpload = await persistUploadedFileFields({
+                savedItem: extractSavedItemFromResponse(responseData, this.settings),
+                item: input,
+                uploadFieldNames: separateUploadFields,
+                fieldUploadMap,
+                settings: this.settings,
+                auth: this.auth,
+                urlParams,
+                debug: this.settings.debug,
+              });
+              if (savedAfterUpload) {
+                responseData = mergeUploadFieldsIntoResponse(
+                  responseData,
+                  savedAfterUpload,
+                  separateUploadFields,
+                  this.settings
+                );
+              }
+            } catch (uploadError) {
+              console.error('[vu-admin] saveItem upload error:', uploadError);
+              if (onError) {
+                onError(
+                  [{ message: uploadError.message || String(uploadError), priority: 'warning' }],
+                  input,
+                  urlParams,
+                  response
+                );
+              }
+            }
+          }
+        }
+
         if (this.settings.events && this.settings.events.afterItemSave) {
-          this.settings.events.afterItemSave(json.data, urlParams, this.auth);
+          this.settings.events.afterItemSave(responseData, urlParams, this.auth);
         }
 
         if (onSuccess) {
-          onSuccess(json.data, response);
+          onSuccess(responseData, response);
         }
 
       } catch (error) {

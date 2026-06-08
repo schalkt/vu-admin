@@ -584,7 +584,6 @@ window.VuEntities.product = (preset) => {
 		title: (item) => {
 			return (item.title ? item.title : '');
 		},
-		upload: 'blob', // dataurl or blob
 		default: {
 			new: 1,
 			discount: false,
@@ -950,6 +949,7 @@ window.VuEntities.product = (preset) => {
 						name: 'documents',
 						label: 'Documents',
 						required: true,
+						url: '/api/upload',
 						params: {
 							ui: 'list',
 							limit: 15,

@@ -464,6 +464,7 @@ import {
   secureRandomInt,
   secureRandomFloat
 } from "./helpers";
+import { syncFileUploadState } from "./formUploadHelpers";
 
 import VuAdminFileUploadInfo from "./VuAdminFileUploadInfo.vue";
 
@@ -595,9 +596,7 @@ const FileUpload = {
         file.tags = [];
       }
 
-      if (!file.loaded && file.types) {
-        file.loaded = Object.values(file.types).some(t => t.data || t.url);
-      }
+      syncFileUploadState(file);
 
     },
 

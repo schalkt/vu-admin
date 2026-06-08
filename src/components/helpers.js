@@ -198,6 +198,10 @@ export function prepareFetchOptions(method, api, options, auth) {
         Object.assign(api.options, options);
     }
 
+    if (api.options.body instanceof FormData) {
+        delete api.options.headers['Content-Type'];
+    }
+
     if (api.debug) {
         console.log('[vu-admin] fetch options:', method, api.options);
     }
