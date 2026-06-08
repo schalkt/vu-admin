@@ -379,7 +379,7 @@
           <button type="button" class="btn-close" :aria-label="translate('Close')" @click="closeHtmlSourceModal"></button>
         </div>
         <div class="tiptap-modal-body">
-          <textarea
+          <textarea 
             ref="htmlSourceTextarea"
             v-model="htmlSourceText"
             class="form-control font-monospace tiptap-html-source"
@@ -723,7 +723,7 @@ const HtmlEditor = {
       if (!this.editor) return;
       if (level == null) {
         this.editor.chain().focus().setParagraph().run();
-      } else {
+          } else {
         this.editor.chain().focus().setHeading({ level }).run();
       }
     },
@@ -1132,26 +1132,26 @@ export default HtmlEditor;
     }
 
     .tiptap-modal-overlay {
-      position: fixed;
+    position: fixed;
       inset: 0;
       z-index: 1055;
       background: rgba(0, 0, 0, 0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
       padding: 1rem;
-    }
+  }
 
     .tiptap-modal-content {
-      background: var(--bs-body-bg);
+    background: var(--bs-body-bg);
       color: var(--bs-body-color);
       border-radius: var(--bs-border-radius);
       box-shadow: var(--bs-box-shadow);
       max-width: 720px;
       width: 100%;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
 
       &.tiptap-html-modal-wide {
         max-width: min(960px, 100vw - 2rem);
@@ -1166,11 +1166,11 @@ export default HtmlEditor;
 
     .tiptap-modal-header,
     .tiptap-modal-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
       padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--bs-border-color);
+    border-bottom: 1px solid var(--bs-border-color);
     }
 
     .tiptap-modal-footer {
@@ -1181,8 +1181,8 @@ export default HtmlEditor;
     }
 
     .tiptap-modal-body {
-      padding: 1rem;
-      overflow-y: auto;
+    padding: 1rem;
+    overflow-y: auto;
     }
 
     .tiptap-content-wrap {

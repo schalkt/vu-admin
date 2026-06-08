@@ -7,6 +7,11 @@
           <span class="visually-hidden">Loading...</span>
         </div>
         <div class="vua-overlay-message">{{ overlayCenterMessage }}</div>
+        <div v-if="saveProgress?.uploadTypeKey" class="vua-overlay-preset text-muted small mt-2">
+          <span class="badge bg-secondary-subtle text-secondary-emphasis text-uppercase">{{ saveProgress.uploadTypeKey }}</span>
+          <span v-if="saveProgress.uploadPresetSize" class="ms-2">{{ saveProgress.uploadPresetSize }}</span>
+          <span v-if="saveProgress.uploadExtension" class="ms-1 text-uppercase">.{{ saveProgress.uploadExtension }}</span>
+        </div>
         <div v-if="overlayShowUploadProgress" class="progress mt-3 mx-auto" style="width: 240px; height: 8px;">
           <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
             :style="{ width: saveProgressPercent + '%' }" :aria-valuenow="saveProgress.uploadCurrent"
@@ -184,14 +189,13 @@ const VuAdminForm = {
       const p = this.saveProgress;
       if (!p?.active) return '';
       if (p.phase === 'upload' && p.uploadTotal > 0) {
-        let label = this.translate('Uploading files {current}/{total}', {
-          current: p.uploadCurrent,
-          total: p.uploadTotal,
-        });
-        if (p.uploadField) {
-          label += ` (${p.uploadField}${p.uploadTypeKey ? '/' + p.uploadTypeKey : ''})`;
-        }
-        return label;
+        const counter = `${p.uploadCurrent}/${p.uploadTotal}`;
+        const field = p.uploadField || '';
+        const preset = p.uploadTypeKey || '';
+        const size = p.uploadPresetSize ? ` (${p.uploadPresetSize})` : '';
+        const file = p.uploadFileName ? ` — ${p.uploadFileName}` : '';
+        const parts = [field, preset].filter(Boolean).join(' / ');
+        return `${this.translate('Uploading')} ${counter}${parts ? ` — ${parts}${size}` : ''}${file}`;
       }
       if (p.phase === 'persist') {
         return this.translate('Saving uploaded files...');
@@ -201,7 +205,8 @@ const VuAdminForm = {
     saveProgressPercent() {
       const p = this.saveProgress;
       if (!p?.uploadTotal) return 0;
-      return Math.min(100, Math.round((p.uploadCurrent / p.uploadTotal) * 100));
+      const done = p.uploadCompleted ?? p.uploadCurrent ?? 0;
+      return Math.min(100, Math.round((done / p.uploadTotal) * 100));
     },
     overlayCenterMessage() {
       if (this.saveProgress?.active) {

@@ -722,6 +722,11 @@ export default {
         uploadTotal: 0,
         uploadField: null,
         uploadTypeKey: null,
+        uploadFileName: null,
+        uploadFileIndex: null,
+        uploadPresetSize: null,
+        uploadExtension: null,
+        uploadCompleted: 0,
       },
     };
   },
@@ -1829,6 +1834,11 @@ export default {
         uploadTotal: uploadTotal || 0,
         uploadField: null,
         uploadTypeKey: null,
+        uploadFileName: null,
+        uploadFileIndex: null,
+        uploadPresetSize: null,
+        uploadExtension: null,
+        uploadCompleted: 0,
       };
       if (warnLeave) {
         window.addEventListener('beforeunload', this._handleBeforeUnload);
@@ -1852,6 +1862,11 @@ export default {
         uploadTotal: 0,
         uploadField: null,
         uploadTypeKey: null,
+        uploadFileName: null,
+        uploadFileIndex: null,
+        uploadPresetSize: null,
+        uploadExtension: null,
+        uploadCompleted: 0,
       };
     },
 
@@ -1984,13 +1999,18 @@ export default {
                 settings: this.settings,
                 auth: this.auth,
                 debug: this.settings.debug,
-                onProgress: ({ current, total, task }) => {
+                onProgress: (progress) => {
                   this.setSaveProgress({
                     phase: 'upload',
-                    uploadCurrent: current,
-                    uploadTotal: total,
-                    uploadField: task?.fieldName || null,
-                    uploadTypeKey: task?.typeKey || null,
+                    uploadCurrent: progress.current,
+                    uploadTotal: progress.total,
+                    uploadCompleted: progress.uploadCompleted,
+                    uploadField: progress.uploadField || null,
+                    uploadTypeKey: progress.uploadTypeKey || null,
+                    uploadFileName: progress.uploadFileName || null,
+                    uploadFileIndex: progress.uploadFileIndex || null,
+                    uploadPresetSize: progress.uploadPresetSize || null,
+                    uploadExtension: progress.uploadExtension || null,
                   });
                 },
               });
@@ -2022,14 +2042,23 @@ export default {
               }
             } catch (uploadError) {
               console.error('[vu-admin] saveItem upload error:', uploadError);
+              const uploadErrors = uploadError.uploadErrors || [
+                {
+                  message: uploadError.message || String(uploadError),
+                  priority: 'danger',
+                  timeout: 14500,
+                },
+              ];
               if (onError) {
                 onError(
-                  [{ message: uploadError.message || String(uploadError), priority: 'warning' }],
+                  uploadErrors,
                   input,
                   urlParams,
-                  response
+                  uploadError.response || response
                 );
               }
+              this.endSaveProgress();
+              return;
             }
         }
 

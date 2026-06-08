@@ -263,6 +263,90 @@ function pickUploadUrl(data) {
   return null;
 }
 
+function uploadErrorContext(task, label) {
+  if (!task?.fieldName) return label || "Upload";
+  const part = task.typeKey ? `${task.fieldName}/${task.typeKey}` : task.fieldName;
+  return `${label || "Upload"} (${part})`;
+}
+
+/** HTTP / API hibák feltöltésnél (400, 405, 500, message, errors, …). */
+export function collectUploadResponseErrors(response, json, task, label) {
+  const data = json?.data;
+  const baseErrors = getResponseErrors(response, data);
+  const errors = baseErrors ? [...baseErrors] : [];
+
+  if (data?.message && typeof data.message === "string") {
+    const known = errors.some((e) => e.message === data.message);
+    if (!known) {
+      errors.unshift({
+        message: data.message,
+        priority: "danger",
+        timeout: 14500,
+      });
+    }
+  }
+
+  if (!errors.length && json?.error) {
+    errors.push({
+      message: json.error.message || String(json.error),
+      priority: "danger",
+      timeout: 14500,
+    });
+  }
+
+  const status = response?.status;
+  const prefix = status ? `HTTP ${status}` : "HTTP error";
+  const ctx = uploadErrorContext(task, label);
+
+  if (errors.length) {
+    return errors.map((e) => ({
+      ...e,
+      message: `${ctx} — ${prefix}: ${e.message}`,
+      priority: "danger",
+      timeout: e.timeout || 14500,
+    }));
+  }
+
+  if (status >= 400 || response?.ok === false) {
+    const detail =
+      (typeof data === "string" && data) ||
+      data?.error ||
+      response?.statusText ||
+      "Request failed";
+    return [
+      {
+        message: `${ctx} — ${prefix}: ${detail}`,
+        priority: "danger",
+        timeout: 14500,
+      },
+    ];
+  }
+
+  return null;
+}
+
+function throwIfUploadResponseFailed(response, json, task, label) {
+  const errors = collectUploadResponseErrors(response, json, task, label);
+  if (errors?.length) {
+    const err = new Error(errors.map((e) => e.message).join("; "));
+    err.uploadErrors = errors;
+    err.response = response;
+    throw err;
+  }
+  if (!response.ok) {
+    const err = new Error(`HTTP ${response.status}`);
+    err.uploadErrors = collectUploadResponseErrors(response, json, task, label) || [
+      {
+        message: `${uploadErrorContext(task, label)} — HTTP ${response.status}`,
+        priority: "danger",
+        timeout: 14500,
+      },
+    ];
+    err.response = response;
+    throw err;
+  }
+}
+
 /** Sikeres JSON mentés után: mezőnkénti multipart feltöltés, json meta mezővel. */
 export async function uploadPendingFormFiles({
   tasks,
@@ -278,9 +362,24 @@ export async function uploadPendingFormFiles({
 
   for (let i = 0; i < tasks.length; i++) {
     const task = tasks[i];
-    if (onProgress) {
-      onProgress({ current: i, total: tasks.length, task });
-    }
+    const notifyProgress = (uploadCompleted) => {
+      if (!onProgress) return;
+      const t = task?.typeEntry;
+      onProgress({
+        current: i + 1,
+        total: tasks.length,
+        uploadCompleted,
+        task,
+        uploadField: task.fieldName,
+        uploadTypeKey: task.typeKey,
+        uploadFileName: task.file?.title || task.file?.name || null,
+        uploadFileIndex: task.fileIndex + 1,
+        uploadPresetSize:
+          t?.width && t?.height ? `${t.width}×${t.height}` : null,
+        uploadExtension: t?.extension || null,
+      });
+    };
+    notifyProgress(i);
     const uploadConfig = task.uploadConfig;
     const uploadApi = {
       url: uploadConfig.url,
@@ -310,24 +409,25 @@ export async function uploadPendingFormFiles({
     );
 
     const json = await getResponseJson(response);
-    const errors = getResponseErrors(response, json.data);
-
-    if (errors) {
-      const msg = errors.map((e) => e.message).join("; ");
-      throw new Error(msg || `Upload failed (${response.status})`);
-    }
-    if (json.error) {
-      throw new Error(json.error.message || String(json.error));
-    }
-    if (!response.ok) {
-      throw new Error(`Upload failed (${response.status})`);
-    }
+    throwIfUploadResponseFailed(response, json, task, "Upload");
 
     const url = pickUploadUrl(json.data);
-    results.push({ task, data: json.data, url });
-    if (onProgress) {
-      onProgress({ current: i + 1, total: tasks.length, task });
+    if (!url) {
+      const err = new Error(
+        `${uploadErrorContext(task, "Upload")} — HTTP ${response.status}: missing url in response`
+      );
+      err.uploadErrors = [
+        {
+          message: err.message,
+          priority: "danger",
+          timeout: 14500,
+        },
+      ];
+      err.response = response;
+      throw err;
     }
+    results.push({ task, data: json.data, url });
+    notifyProgress(i + 1);
   }
 
   return results;
@@ -420,18 +520,7 @@ export async function persistUploadedFileFields({
   );
 
   const json = await getResponseJson(response);
-  const errors = getResponseErrors(response, json.data);
-
-  if (errors) {
-    const msg = errors.map((e) => e.message).join("; ");
-    throw new Error(msg || `Persist upload fields failed (${response.status})`);
-  }
-  if (json.error) {
-    throw new Error(json.error.message || String(json.error));
-  }
-  if (!response.ok) {
-    throw new Error(`Persist upload fields failed (${response.status})`);
-  }
+  throwIfUploadResponseFailed(response, json, null, "Save file URLs");
 
   return extractSavedItemFromResponse(json.data, settings);
 }
