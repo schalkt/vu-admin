@@ -331,10 +331,30 @@ export function translate(key, translates, vars, language) {
 
         if (!value || !vars) return value;
 
-        return value.replace(/{([^}]*)}/g, (match, p1) => {
-            const key = p1.trim();
-            return vars[key] ? vars[key] : '';
-        });
+        let result = '';
+        let i = 0;
+
+        while (i < value.length) {
+            const open = value.indexOf('{', i);
+            if (open === -1) {
+                result += value.slice(i);
+                break;
+            }
+
+            result += value.slice(i, open);
+
+            const close = value.indexOf('}', open + 1);
+            if (close === -1) {
+                result += value.slice(open);
+                break;
+            }
+
+            const varKey = value.slice(open + 1, close).trim();
+            result += vars[varKey] ? vars[varKey] : '';
+            i = close + 1;
+        }
+
+        return result;
     }
 
     if (!translates) {
