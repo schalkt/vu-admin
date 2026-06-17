@@ -229,6 +229,9 @@ const VuAdminForm = {
       setFormOverlayMessage: (message) => {
         this.fileOverlayMessage = message || null;
       },
+      handleFormErrors: (errors) => {
+        this.handleFormErrors(errors);
+      },
     };
   },
   data: function () {
@@ -321,6 +324,11 @@ const VuAdminForm = {
 
       const defaultTimeout = 14500;
       const defaultLevel = 'danger';
+
+      if (errors instanceof Error) {
+        this.addFormMessage(errors.message, defaultTimeout, defaultLevel);
+        return;
+      }
 
       // Ha string, akkor közvetlenül megjelenítjük
       if (typeof errors === 'string') {
@@ -446,15 +454,23 @@ const VuAdminForm = {
 
           const response = await fetch(
             prepareFetchUrl("GET", settings.form.api, primaryId),
-            prepareFetchOptions("GET", settings.api, null, auth)
+            prepareFetchOptions("GET", settings.form.api, null, auth)
           ).catch((err) => {
             console.error('[vu-admin] fetchItem network error:', err);
+            return null;
           });
 
           const json = await getResponseJson(response);
-          let error = getResponseErrors(response, json.data, 'form');
+          const errors = getResponseErrors(response, json);
 
-          if (error || !json.data) {
+          if (errors) {
+            this.handleFormErrors(errors);
+            this.formNoWait();
+            return false;
+          }
+
+          if (!json.data) {
+            this.handleFormErrors(this.translate('Empty response'));
             this.formNoWait();
             return false;
           }
@@ -515,7 +531,8 @@ const VuAdminForm = {
 
         this.formNoWait();
       } catch (error) {
-        console.error(error);
+        console.error('[vu-admin] fetchItem error:', error);
+        this.handleFormErrors(error);
         this.formNoWait();
       }
     },
@@ -609,13 +626,19 @@ const VuAdminForm = {
             primaryId,
             urlParams
           ),
-          prepareFetchOptions("DELETE", this.settings.api, null, this.auth)
-        );
+          prepareFetchOptions("DELETE", this.settings.form.api, null, this.auth)
+        ).catch((err) => {
+          console.error('[vu-admin] deleteItem network error:', err);
+          return null;
+        });
 
-        if (response.status !== 200) {
-          throw new Error(
-            this.translate("Response status: " + response.status)
-          );
+        const json = await getResponseJson(response);
+        const errors = getResponseErrors(response, json);
+
+        if (errors) {
+          this.handleFormErrors(errors);
+          this.formNoWait();
+          return;
         }
 
         if (this.item) {
@@ -623,7 +646,7 @@ const VuAdminForm = {
           this.modalWindow.hide();
         }
 
-        const data = await response.json();
+        const data = json.data !== undefined ? json.data : null;
 
         if (this.settings.events && this.settings.events.afterItemDelete) {
           this.settings.events.afterItemDelete(data, response);
@@ -633,7 +656,8 @@ const VuAdminForm = {
         this.formNoWait();
 
       } catch (error) {
-        console.error(error.message);
+        console.error('[vu-admin] deleteItem error:', error);
+        this.handleFormErrors(error);
         this.formNoWait();
       }
     },

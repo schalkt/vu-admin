@@ -272,7 +272,7 @@ function uploadErrorContext(task, label) {
 /** HTTP / API hibák feltöltésnél (400, 405, 500, message, errors, …). */
 export function collectUploadResponseErrors(response, json, task, label) {
   const data = json?.data;
-  const baseErrors = getResponseErrors(response, data);
+  const baseErrors = getResponseErrors(response, json);
   const errors = baseErrors ? [...baseErrors] : [];
 
   if (data?.message && typeof data.message === "string") {
@@ -286,14 +286,6 @@ export function collectUploadResponseErrors(response, json, task, label) {
     }
   }
 
-  if (!errors.length && json?.error) {
-    errors.push({
-      message: json.error.message || String(json.error),
-      priority: "danger",
-      timeout: 14500,
-    });
-  }
-
   const status = response?.status;
   const prefix = status ? `HTTP ${status}` : "HTTP error";
   const ctx = uploadErrorContext(task, label);
@@ -305,21 +297,6 @@ export function collectUploadResponseErrors(response, json, task, label) {
       priority: "danger",
       timeout: e.timeout || 14500,
     }));
-  }
-
-  if (status >= 400 || response?.ok === false) {
-    const detail =
-      (typeof data === "string" && data) ||
-      data?.error ||
-      response?.statusText ||
-      "Request failed";
-    return [
-      {
-        message: `${ctx} — ${prefix}: ${detail}`,
-        priority: "danger",
-        timeout: 14500,
-      },
-    ];
   }
 
   return null;

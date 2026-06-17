@@ -105,6 +105,31 @@ function send(res, data, status = 200, delay = 0) {
   }, delay);
 }
 
+/**
+ * Entity CRUD (/api/{entity}) hibaszimuláció.
+ * Itt állítsd true-ra, vagy env: MOCK_ERROR_GET / POST / PUT / DELETE (=true|1).
+ */
+export const mockErrors = {
+  GET: false,
+  POST: false,
+  PUT: false,
+  DELETE: false,
+};
+
+for (const key of Object.keys(mockErrors)) {
+  const env = process.env[`MOCK_ERROR_${key}`];
+  if (env === 'true' || env === '1') mockErrors[key] = true;
+  if (env === 'false' || env === '0') mockErrors[key] = false;
+}
+
+function resolveMockErrors(overrides = {}) {
+  return { ...mockErrors, ...overrides };
+}
+
+function mockErrorPayload(method) {
+  return { message: `Mock API hiba (${method})` };
+}
+
 const UPLOAD_MIME = {
   '.svg':  'image/svg+xml',
   '.png':  'image/png',
@@ -153,7 +178,18 @@ function parseMultipart(buffer, boundary) {
   return parts;
 }
 
-export function createMockMiddleware(server, { delay = 500 } = {}) {
+export function createMockMiddleware(server, { delay = 500, mockErrors: mockErrorOverrides = {} } = {}) {
+
+  const errors = resolveMockErrors(mockErrorOverrides);
+
+  if (Object.values(errors).some(Boolean)) {
+    console.log('[mock] API hibaszimuláció (entity CRUD):', errors);
+  }
+
+  const rejectMock = (res, method) => {
+    send(res, mockErrorPayload(method), 500, delay);
+    return true;
+  };
 
   if (!fs.existsSync(dbDir)) {
     console.warn('[mock] A mock/db/ mappa nem létezik. Futtasd: npm run mock:init');
@@ -383,6 +419,7 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
 
     // GET /api/todos/user/1 — userId szerinti szűrés
     if (req.method === 'GET' && parts[1] === 'user' && parts[2]) {
+      if (errors.GET) return rejectMock(res, 'GET');
       const userId = parseInt(parts[2]);
       const filtered = items.filter(i => i.userId === userId);
       const page = limit === Infinity ? filtered.slice(skip) : filtered.slice(skip, skip + limit);
@@ -393,6 +430,8 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
     const id = rawId ? parseInt(rawId) : null;
 
     if (req.method === 'GET') {
+      if (errors.GET) return rejectMock(res, 'GET');
+
       if (id) {
         const item = items.find(i => i.id === id);
         return item
@@ -438,6 +477,8 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
     }
 
     if (req.method === 'POST') {
+      if (errors.POST) return rejectMock(res, 'POST');
+
       const body = await readBody(req);
       const newItem = { id: nextId(items), ...body };
       items.push(newItem);
@@ -446,6 +487,8 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
     }
 
     if ((req.method === 'PUT' || req.method === 'PATCH') && id) {
+      if (errors.PUT) return rejectMock(res, 'PUT');
+
       const body = await readBody(req);
       const idx = items.findIndex(i => i.id === id);
       if (idx === -1) return send(res, { message: 'Not found' }, 404, delay);
@@ -455,8 +498,11 @@ export function createMockMiddleware(server, { delay = 500 } = {}) {
     }
 
     if (req.method === 'DELETE' && id) {
+      if (errors.DELETE) return rejectMock(res, 'DELETE');
+
       const idx = items.findIndex(i => i.id === id);
       if (idx === -1) return send(res, { message: 'Not found' }, 404, delay);
+
       const [deleted] = items.splice(idx, 1);
       writeDb(entity, items);
       return send(res, { ...deleted, isDeleted: true, deletedOn: new Date().toISOString() }, 200, delay);

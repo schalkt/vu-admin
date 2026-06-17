@@ -43,61 +43,85 @@ export async function getResponseJson(response) {
 }
 
 
-export function getResponseErrors(response, data) {
+const ERROR_DEFAULTS = { timeout: 3500, priority: 'danger' };
 
-    let errors = [];
+function formatHttpStatus(response) {
+    return `HTTP ${response.status}${response.statusText ? ' ' + response.statusText : ''}`;
+}
 
-    if (data && data.errors) {
+function normalizeErrorEntry(error) {
+    return {
+        message: error?.message || error,
+        ...ERROR_DEFAULTS,
+    };
+}
 
-        // Ha data.errors egy array, akkor közvetlenül használjuk
+function appendErrorsFromList(errors, list) {
+    for (const error of list) {
+        errors.push(normalizeErrorEntry(error));
+    }
+}
+
+/** getResponseJson() visszatérési érték: { data, error } */
+function isResponseJsonEnvelope(payload) {
+    return payload != null
+        && typeof payload === 'object'
+        && Object.prototype.hasOwnProperty.call(payload, 'data')
+        && Object.prototype.hasOwnProperty.call(payload, 'error');
+}
+
+function collectErrorsFromData(response, data) {
+    const errors = [];
+
+    if (data?.errors) {
         if (Array.isArray(data.errors)) {
-            for (let error of data.errors) {
-                errors.push({
-                    message: error.message || error,
-                    timeout: 3500,
-                    priority: 'danger',
-                });
-            }
-        } 
-        // Ha data.errors egy objektum, akkor keressük benne az array-t
-        else if (typeof data.errors === 'object') {
-            // Először próbáljuk az 'exception' mezőt
+            appendErrorsFromList(errors, data.errors);
+        } else if (typeof data.errors === 'object') {
             if (Array.isArray(data.errors.exception)) {
-                for (let error of data.errors.exception) {
-                    errors.push({
-                        message: error.message || error,
-                        timeout: 3500,
-                        priority: 'danger',
-                    });
-                }
-            }
-            // Ha nincs exception, akkor keressük az összes array mezőt
-            else {
-                for (let key in data.errors) {
+                appendErrorsFromList(errors, data.errors.exception);
+            } else {
+                for (const key in data.errors) {
                     if (Array.isArray(data.errors[key])) {
-                        for (let error of data.errors[key]) {
-                            errors.push({
-                                message: error.message || error,
-                                timeout: 3500,
-                                priority: 'danger',
-                            });
-                        }
+                        appendErrorsFromList(errors, data.errors[key]);
                     }
                 }
             }
         }
-
+    } else if (data && typeof data.message === 'string' && response.status >= 400) {
+        errors.push(normalizeErrorEntry(data.message));
     } else if (response.status >= 400 && response.status <= 511) {
-
-        errors.push({
-            message: response.status + (response.statusText ? (' ' + response.statusText) : ''),
-            timeout: 3500,
-            priority: 'danger'
-        });
-
+        errors.push(normalizeErrorEntry(formatHttpStatus(response)));
     }
 
     return errors.length > 0 ? errors : null;
+}
+
+/**
+ * @param {Response|null} response
+ * @param {object|undefined} payload - API body (json.data) vagy getResponseJson() eredmény
+ */
+export function getResponseErrors(response, payload) {
+    if (!response) {
+        return [normalizeErrorEntry('Network error')];
+    }
+
+    const envelope = isResponseJsonEnvelope(payload) ? payload : null;
+    const data = envelope ? envelope.data : payload;
+
+    const dataErrors = collectErrorsFromData(response, data);
+    if (dataErrors) {
+        return dataErrors;
+    }
+
+    if (envelope?.error) {
+        return [normalizeErrorEntry(envelope.error.message || String(envelope.error))];
+    }
+
+    if (!response.ok) {
+        return [normalizeErrorEntry(formatHttpStatus(response))];
+    }
+
+    return null;
 }
 
 

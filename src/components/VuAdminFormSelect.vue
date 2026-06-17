@@ -21,6 +21,9 @@ import {
 } from "./helpers";
 
 const VuAdminFormSelect = {
+  inject: {
+    handleFormErrors: { default: null },
+  },
   props: {
     modelValue: String | Object | Number,
     optionValue: String,
@@ -83,12 +86,18 @@ const VuAdminFormSelect = {
       const response = await fetch(
         prepareFetchUrl("GET", { url: url }, options),
         prepareFetchOptions("GET", this.settings.form.api, null, this.auth)
-      );
+      ).catch((err) => {
+        console.error('[vu-admin] fetchCustom network error:', err);
+        return null;
+      });
 
       const json = await getResponseJson(response);
-      const errors = getResponseErrors(response, json.data);
+      const errors = getResponseErrors(response, json);
 
       if (errors) {
+        if (this.handleFormErrors) {
+          this.handleFormErrors(errors);
+        }
         return;
       }
 

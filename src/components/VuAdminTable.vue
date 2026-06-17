@@ -1444,16 +1444,16 @@ export default {
       );      
 
       const json = await getResponseJson(response);
-      const errors = getResponseErrors(response, json.data);
+      const errors = getResponseErrors(response, json);
 
       if (errors) {
         this.handleTableErrors(errors);
-        return;
+        return false;
       }
 
-      if (json.error) {
-        this.handleTableErrors(json.error);
-        return;
+      if (!json.data) {
+        this.handleTableErrors(this.translate('Empty response'));
+        return false;
       }
 
       if (settings.events && settings.events.afterItemsLoad) {
@@ -1537,16 +1537,15 @@ export default {
           prepareFetchOptions("GET", column.relation.api, null, auth)
         );
 
-        if (response.status !== 200) {
-          throw new Error(
-            this.translate("Response status: " + response.status)
-          );
+        const json = await getResponseJson(response);
+        const errors = getResponseErrors(response, json);
+
+        if (errors) {
+          this.handleTableErrors(errors);
+          return;
         }
 
-        const json = await getResponseJson(response);
-        const error = getResponseErrors(response, json.data);
-
-        if (error || !json.data) {
+        if (!json.data) {
           return;
         }
 
@@ -1571,7 +1570,8 @@ export default {
           }
         }
       } catch (error) {
-        console.error(error);
+        console.error('[vu-admin] fetchRelation error:', error);
+        this.handleTableErrors(error.message || String(error));
       }
     },
 
@@ -1621,16 +1621,21 @@ export default {
             primaryId,
             urlParams
           ),
-          prepareFetchOptions("DELETE", this.settings.api, null, this.auth)
+          prepareFetchOptions("DELETE", this.settings.form.api, null, this.auth)
         );
 
-        if (response.status !== 200) {
-          throw new Error(
-            this.translate("Response status: " + response.status)
-          );
+        const json = await getResponseJson(response);
+        const errors = getResponseErrors(response, json);
+
+        if (errors) {
+          this.handleTableErrors(errors);
+          this.tableNoWait();
+          return;
         }
 
-        let itemindex = this.items.find((item) => item[this.settings.pkey] === primaryId);
+        const itemindex = this.items.findIndex(
+          (row) => row[this.settings.pkey] === primaryId
+        );
 
         if (itemindex >= 0) {
           this.items.splice(itemindex, 1);
@@ -1638,21 +1643,20 @@ export default {
 
         if (this.item) {
           this.item = {};
-          // this.modalWindow.hide();
         }
 
-        const data = await response.json();
+        const data = json.data !== undefined ? json.data : null;
 
         if (this.settings.events && this.settings.events.afterItemDelete) {
           this.settings.events.afterItemDelete(data, response);
         }
 
         this.reloadTable();
-        //this.tableNoWait();
 
       } catch (error) {
-        console.error(error);
+        console.error('[vu-admin] deleteItem error:', error);
         this.tableNoWait();
+        this.handleTableErrors(error.message || String(error));
       }
     },
 
@@ -1675,17 +1679,20 @@ export default {
 
         const response = await fetch(
           prepareFetchUrl("DELETE", this.settings.table.api),
-          prepareFetchOptions("DELETE", this.settings.api, {
+          prepareFetchOptions("DELETE", this.settings.table.api, {
             body: JSON.stringify({
               ids: ids,
             }),
           }, this.auth)
         );
 
-        if (response.status !== 200) {
-          throw new Error(
-            this.translate("Response status: " + response.status)
-          );
+        const json = await getResponseJson(response);
+        const errors = getResponseErrors(response, json);
+
+        if (errors) {
+          this.handleTableErrors(errors);
+          this.tableNoWait();
+          return;
         }
 
         if (callback) {
@@ -1695,8 +1702,9 @@ export default {
         this.reloadTable();
         this.tableNoWait();
       } catch (error) {
-        console.error(error);
+        console.error('[vu-admin] deleteItems error:', error);
         this.tableNoWait();
+        this.handleTableErrors(error.message || String(error));
       }
     },
 
@@ -1752,37 +1760,35 @@ export default {
         return;
       }
 
-      if (errors.length > 0) {
-
-        for (let error of errors) {
-          this.addTableMessage(error.message, error.timeout, error.priority)
-        }
-      }
-
-    },
-    handleFormErrors() {
-
-      if (errors === undefined || errors === null) {
+      if (errors instanceof Error) {
+        this.addTableMessage(errors.message || String(errors), timeout, level);
         return;
       }
 
-      const timeout = 3500;
-      const level = 'danger';
-
-      if (typeof errors === 'string') {
-        this.addTableMessage(errors, timeout, level);
+      if (Array.isArray(errors) && errors.length > 0) {
+        for (let error of errors) {
+          if (error && typeof error === 'object' && error.message) {
+            this.addTableMessage(
+              error.message,
+              error.timeout || timeout,
+              error.priority || level
+            );
+          } else if (typeof error === 'string') {
+            this.addTableMessage(error, timeout, level);
+          }
+        }
         return;
       }
 
-      if (errors.length > 0) {
-
-        for (let error of errors) {
-          this.addTableMessage(error.message, error.timeout, error.priority)
-        }
+      if (typeof errors === 'object' && errors.message) {
+        this.addTableMessage(
+          errors.message,
+          errors.timeout || timeout,
+          errors.priority || level
+        );
       }
 
     },
-
 
     getColumnByName(columnName) {
 
@@ -1967,7 +1973,7 @@ export default {
         );
 
         const json = await getResponseJson(response);
-        const errors = getResponseErrors(response, json.data);
+        const errors = getResponseErrors(response, json);
 
         if (this.settings.debug) {
           console.log('[vu-admin] saveItem response:', response.status, json.data);
@@ -1976,13 +1982,6 @@ export default {
         if (errors) {
           if (onError) {
             onError(errors, input, urlParams, response);
-          }
-          return;
-        }
-
-        if (json.error) {
-          if (onError) {
-            onError(json.error, input, urlParams, response);
           }
           return;
         }
@@ -2127,16 +2126,17 @@ export default {
             }),
           }, this.auth)
         ).catch((err) => {
-          console.error(err);
-          this.addTableMessage(err.message, 3500, "danger", err);
+          console.error('[vu-admin] saveBulk network error:', err);
+          return null;
         });
 
         const json = await getResponseJson(response);
-        const error = getResponseErrors(response, json.data);
+        const errors = getResponseErrors(response, json);
 
         this.tableNoWait();
 
-        if (error) {
+        if (errors) {
+          this.handleTableErrors(errors);
           return;
         }
 
