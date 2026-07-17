@@ -72,15 +72,15 @@
 
             </div>
 
-            <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :class="[field.class]" :tiptapOptions="field.tiptap" :form-item="item" :form-settings="settings"></HtmlEditor>
+            <HtmlEditor v-if="field.type == 'html'" v-model="item[field.name]" :tiptapOptions="field.tiptap" :form-item="item" :form-settings="settings"></HtmlEditor>
 
-            <FileUpload v-if="field.type == 'image' || field.type == 'upload'" v-model="item[field.name]" :class="[field.class]" :field="field" :settings="settings"></FileUpload>
+            <FileUpload v-if="field.type == 'image' || field.type == 'upload'" v-model="item[field.name]" :field="field" :settings="settings"></FileUpload>
 
             <VuAdminFormList v-if="field.type == 'list' && (!field.relation || (field.relation && field.relation.items))" v-model="item[field.name]" :field="field" :item="item"
               :settings="settings" :formId="formId"></VuAdminFormList>
 
 
-            <div v-cloak v-if="field.type == 'dropdown' && item[field.name]" :class="[field.class]">
+            <div v-cloak v-if="field.type == 'dropdown' && item[field.name]">
               <div class="dropdown d-inline-block">
                 <button class="btn dropdown-toggle" :class="[field.dropdown ? field.dropdown.class : '']" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
                   <span>{{ translate(field.dropdown ? field.dropdown.label : 'Select') }}</span>
