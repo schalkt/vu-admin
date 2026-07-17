@@ -356,6 +356,27 @@ form: {
       class: 'col-md-6 border rounded p-4',
       fields: [ /* see Field types */ ],
     },
+    {
+      title: 'Images',
+      class: 'col-md-6 border rounded p-4',
+      fields: [
+        {
+          type: 'upload', name: 'images', label: 'Images',
+          url: '/api/upload/products',
+          params: {
+            ui: 'card',
+            limit: 10,
+            accept: ['png', 'jpg', 'webp'],
+            thumbnail: 'small',
+            languages: ['hu', 'en'],   // translatable titles — HU/EN toggle prefix on the title input
+            presets: {
+              default: { width: 1920, height: 1080, extension: 'webp', quality: 0.9 },
+              small:   { width: 400,  height: 320,  extension: 'webp', quality: 0.75, crop: 'contain' },
+            },
+          },
+        },
+      ],
+    },
   ],
 }
 ```
@@ -553,6 +574,8 @@ images: [
 ]
 ```
 
+`title` is a plain string by default. When `params.languages` is set (see below), `title` becomes an object keyed by language: `{ hu: 'Termékfotó', en: 'Product photo' }`.
+
 ### `params` reference (UI)
 
 | Key | Description |
@@ -566,6 +589,26 @@ images: [
 | `tags` | Tag checkbox options (`{ value, label }[]`) |
 | `editor` | Enable built-in image editor (`true` / `false`) |
 | `text` | Drop-zone label |
+| `languages` | Language codes for translatable file titles, e.g. `['hu', 'en']` (2+ enables the feature) |
+
+### Multi-language file titles
+
+When `params.languages` has 2 or more entries, the title input is prefixed with a small button showing the
+currently active language code (e.g. `HU`). Clicking it cycles through the configured languages, switching
+which language's value the title input reads and writes — this keeps a single input per file row regardless
+of how many languages are configured. `file.title` is stored as `{ [lang]: string }`; slugs and upload
+metadata use the primary (first) language, falling back to the active one.
+
+```js
+{
+  type: 'upload', name: 'images', label: 'Images',
+  url: '/api/upload',
+  params: {
+    languages: ['hu', 'en'],
+    // …
+  },
+}
+```
 
 ---
 

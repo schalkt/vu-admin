@@ -912,6 +912,7 @@ window.VuEntities.product = (preset) => {
 							thumbnail: 'small',
 							// download: 'default',
 							editor: false,
+							languages: ['hu', 'en'],
 							tags: [{
 								value: 'public',
 								label: 'Public',

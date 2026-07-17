@@ -76,7 +76,14 @@
                         <i class="bi bi-file-play"></i>
                       </span>
 
-                      <input required="text" class="form-control py-1 px-2 border-top-0 border-bottom-0 border-start-1 fw-light" v-model="file.title" @input="slug(file)"
+                      <button v-if="hasLanguages()" type="button"
+                        class="btn btn-sm btn-outline-secondary border-top-0 border-bottom-0 rounded-0 fw-bold text-uppercase px-2"
+                        style="min-width: 2.75rem;" @click="cycleLanguage()" :title="translate('Nyelv váltása')">
+                        {{ activeLanguage }}
+                      </button>
+
+                      <input required="text" class="form-control py-1 px-2 border-top-0 border-bottom-0 border-start-1 fw-light" :value="fileTitle(file)"
+                        @input="setFileTitle(file, $event.target.value); slug(file)"
                         @keydown.enter.prevent />
 
                       <span v-if="!file.isDocument && file.types && file.types[params.thumbnail]" class="mx-0">
@@ -234,7 +241,15 @@
                 <i :class="['bi bi-filetype-' + file.types.default.extension]"></i>
               </div>
 
-              <input required="text" class="form-control rounded-0 border-bottom-0 py-1 px-2 fw-light" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
+              <div v-if="hasLanguages()" class="input-group">
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-0 fw-bold text-uppercase px-2"
+                  @click="cycleLanguage()" :title="translate('Nyelv váltása')">
+                  {{ activeLanguage }}
+                </button>
+                <input required="text" class="form-control rounded-0 border-bottom-0 py-1 px-2 fw-light" :value="fileTitle(file)"
+                  @input="setFileTitle(file, $event.target.value); slug(file)" @keydown.enter.prevent />
+              </div>
+              <input v-else required="text" class="form-control rounded-0 border-bottom-0 py-1 px-2 fw-light" v-model="file.title" @input="slug(file)" @keydown.enter.prevent />
 
               <div class="w-100 mb-2 d-flex justify-content-around align-items-center">
 
@@ -520,6 +535,7 @@ const FileUpload = {
       dragIndex: null,
       dragOverIndex: null,
       editor: { file: null },
+      activeLanguage: null,
     };
   },
   components: {
@@ -529,6 +545,7 @@ const FileUpload = {
     let uid = secureRandomInt(100000);
     this.uploadId = "image_upload_" + uid;
     this.params = this.field.params;
+    this.activeLanguage = this.hasLanguages() ? this.params.languages[0] : null;
   },
   mounted() {
 
@@ -610,8 +627,72 @@ const FileUpload = {
         file.tags = [];
       }
 
+      this.normalizeTitle(file);
+
       syncFileUploadState(file);
 
+    },
+
+    hasLanguages() {
+      return !!(this.params && Array.isArray(this.params.languages) && this.params.languages.length > 1);
+    },
+
+    primaryLanguage() {
+      return this.params.languages[0];
+    },
+
+    normalizeTitle(file) {
+      if (!file || !this.hasLanguages()) {
+        return;
+      }
+
+      if (!file.title || typeof file.title !== "object") {
+        file.title = { [this.primaryLanguage()]: file.title || "" };
+      }
+
+      for (const lang of this.params.languages) {
+        if (file.title[lang] === undefined) {
+          file.title[lang] = "";
+        }
+      }
+    },
+
+    titleText(file) {
+      if (!this.hasLanguages()) {
+        return file.title || "";
+      }
+
+      this.normalizeTitle(file);
+      return file.title[this.activeLanguage] || file.title[this.primaryLanguage()] || "";
+    },
+
+    fileTitle(file) {
+      if (!this.hasLanguages()) {
+        return file.title;
+      }
+
+      this.normalizeTitle(file);
+      return file.title[this.activeLanguage] || "";
+    },
+
+    setFileTitle(file, value) {
+      if (!this.hasLanguages()) {
+        file.title = value;
+        return;
+      }
+
+      this.normalizeTitle(file);
+      file.title[this.activeLanguage] = value;
+    },
+
+    cycleLanguage() {
+      if (!this.hasLanguages()) {
+        return;
+      }
+
+      const languages = this.params.languages;
+      const index = languages.indexOf(this.activeLanguage);
+      this.activeLanguage = languages[(index + 1) % languages.length];
     },
 
     isSvgFile(file) {
@@ -629,9 +710,19 @@ const FileUpload = {
         default: {
         }
       };
-      file.title = file.name.split(".").slice(0, -1).join(".");
+      const baseTitle = file.name.split(".").slice(0, -1).join(".");
+
+      if (this.hasLanguages()) {
+        file.title = {};
+        for (const lang of this.params.languages) {
+          file.title[lang] = lang === this.primaryLanguage() ? baseTitle : "";
+        }
+      } else {
+        file.title = baseTitle;
+      }
+
       file.uid = secureRandomInt(9999999).toString(32) + Date.now().toString(32);
-      file.slug = slugify(file.title);
+      file.slug = slugify(this.titleText(file));
       file.timestamp = Math.round(Date.now() / 1000);
       file.original = {
         bytes: file.size,
@@ -730,7 +821,7 @@ const FileUpload = {
                 file.types.default = {
                   extension: file.original.extension,
                   mime: file.original.mime,
-                  slug: slugify(file.title) + "-" + file.uid,
+                  slug: slugify(this.titleText(file)) + "-" + file.uid,
                   bytes: file.size,
                   data: e.target.result
                 }
@@ -783,10 +874,9 @@ const FileUpload = {
         preset.key = key;
 
         preset.width = preset.width ? preset.width : 1920;
-        preset.height = preset.height ? preset.height : 1080;
 
         let targetWidth = preset.width;
-        let targetHeight = preset.height;
+        let targetHeight = preset.height != null ? preset.height : null;
 
         if (preset.crop === "cover") {
           // Fit mód: a kép közepéről vágunk ki részt, hogy kitöltse a célméretet
@@ -822,7 +912,7 @@ const FileUpload = {
             width = targetWidth;
           }
 
-          if (height > targetHeight) {
+          if (targetHeight != null && height > targetHeight) {
             width = Math.round(width * (targetHeight / height));
             height = targetHeight;
           }
@@ -844,7 +934,7 @@ const FileUpload = {
         };
 
         file.types[preset.key].slug =
-          slugify(file.title) +
+          slugify(this.titleText(file)) +
           "-" +
           canvas.width +
           "x" +
@@ -899,7 +989,7 @@ const FileUpload = {
       const image = await createImageBitmap(blob);
 
       await this.forEachPresets(file, image, (preset) => {
-        const name = file.title || file.name;
+        const name = this.titleText(file) || file.name;
         this.setProcessingOverlay(
           this.translate('Resizing image: {name} ({preset})', { name, preset: preset.key })
         );
@@ -918,7 +1008,7 @@ const FileUpload = {
           const typeEntry = {
             extension: 'svg',
             mime: 'image/svg+xml',
-            slug: slugify(file.title) + '-' + file.uid,
+            slug: slugify(this.titleText(file)) + '-' + file.uid,
             bytes: file.size,
             data: svgDataUrl,
             blob: svgBlob,
@@ -928,7 +1018,7 @@ const FileUpload = {
             quality: 1
           };
           for (let key in this.params.presets) {
-            file.types[key] = { ...typeEntry, slug: slugify(file.title) + '-' + key + '-' + file.uid };
+            file.types[key] = { ...typeEntry, slug: slugify(this.titleText(file)) + '-' + key + '-' + file.uid };
           }
           if (!file.types.default) {
             file.types.default = typeEntry;
@@ -959,11 +1049,11 @@ const FileUpload = {
         return;
       }
 
-      file.slug = slugify(file.title);
+      file.slug = slugify(this.titleText(file));
 
       for (let key in file.types) {
         let preset = this.params.presets[key];
-        file.types[key].slug = slugify(file.title) + "-" + preset.width + "x" + preset.height;
+        file.types[key].slug = slugify(this.titleText(file)) + "-" + preset.width + "x" + preset.height;
       }
 
       this.$forceUpdate();
@@ -1309,7 +1399,7 @@ const FileUpload = {
 
         const bitmap = await createImageBitmap(sourceCanvas);
         await this.forEachPresets(file, bitmap, (preset) => {
-          const name = file.title || file.name;
+          const name = this.titleText(file) || file.name;
           this.setProcessingOverlay(
             this.translate('Resizing image: {name} ({preset})', { name, preset: preset.key })
           );
