@@ -383,6 +383,15 @@
               <strong class="ms-1 text-muted" v-for="ext in params.accept" :key="ext">{{ ext }}</strong>
             </div>
 
+            <div v-if="files && params.limit > files.length"
+                 tabindex="0"
+                 class="vsa-paste-zone text-secondary cursor-pointer"
+                 :class="{ 'vsa-paste-zone-active': isPasteZoneFocused }"
+                 @focus="isPasteZoneFocused = true"
+                 @blur="isPasteZoneFocused = false">
+              <i class="bi bi-clipboard me-1"></i>{{ translate('Vágólapról beillesztéshez, kattints ide és nyomj Ctrl+V-t') }}
+            </div>
+
             <div v-if="0 && params.presets">
               <div class="mt-1" v-for="(preset, index) in params.presets" :key="index">
                 preset
@@ -536,6 +545,7 @@ const FileUpload = {
       dragOverIndex: null,
       editor: { file: null },
       activeLanguage: null,
+      isPasteZoneFocused: false,
     };
   },
   components: {
@@ -555,8 +565,11 @@ const FileUpload = {
       this.editfile = [];
     }
 
+    document.addEventListener("paste", this.handlePaste);
+
   },
   beforeUnmount() {
+    document.removeEventListener("paste", this.handlePaste);
     this.setProcessingOverlay(null);
   },
   watch: {
@@ -1585,6 +1598,34 @@ const FileUpload = {
       this.handleFileChange({ target: { files } });
     },
 
+    handlePaste(event) {
+      if (!this.isPasteZoneFocused || this.wait) {
+        return;
+      }
+
+      const items = event.clipboardData && event.clipboardData.items;
+      if (!items) {
+        return;
+      }
+
+      const files = [];
+      for (const item of items) {
+        if (item.kind === "file" && item.type.indexOf("image/") === 0) {
+          const file = item.getAsFile();
+          if (file) {
+            files.push(file);
+          }
+        }
+      }
+
+      if (!files.length) {
+        return;
+      }
+
+      event.preventDefault();
+      this.handleFileChange({ target: { files } });
+    },
+
   },
 };
 
@@ -1680,6 +1721,20 @@ export default FileUpload;
     .vsa-drag-over {
       outline: 2px solid var(--bs-primary);
       outline-offset: -2px;
+    }
+
+    .vsa-paste-zone {
+      display: inline-block;
+      border: 1px dashed transparent;
+      border-radius: 0.25rem;
+      padding: 0.1rem 0.4rem;
+      outline: none;
+
+      &.vsa-paste-zone-active,
+      &:focus {
+        border-color: var(--bs-primary);
+        color: var(--bs-primary);
+      }
     }
 
     .vsa-file-actions-menu {

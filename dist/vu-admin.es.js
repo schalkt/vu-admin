@@ -21027,7 +21027,8 @@ var Rj = /*#__PURE__*/ Sk(mj, [["render", Lj]]), zj = {
 			dragIndex: null,
 			dragOverIndex: null,
 			editor: { file: null },
-			activeLanguage: null
+			activeLanguage: null,
+			isPasteZoneFocused: !1
 		};
 	},
 	components: { VuAdminFileUploadInfo: Rj },
@@ -21036,10 +21037,10 @@ var Rj = /*#__PURE__*/ Sk(mj, [["render", Lj]]), zj = {
 		this.uploadId = "image_upload_" + e, this.params = this.field.params, this.activeLanguage = this.hasLanguages() ? this.params.languages[0] : null;
 	},
 	mounted() {
-		this.editfile = this.modelValue, this.editfile ||= [];
+		this.editfile = this.modelValue, this.editfile ||= [], document.addEventListener("paste", this.handlePaste);
 	},
 	beforeUnmount() {
-		this.setProcessingOverlay(null);
+		document.removeEventListener("paste", this.handlePaste), this.setProcessingOverlay(null);
 	},
 	watch: { modelValue(e) {
 		if (e == null) this.reset();
@@ -21572,6 +21573,17 @@ var Rj = /*#__PURE__*/ Sk(mj, [["render", Lj]]), zj = {
 			e.preventDefault(), this.isDragging = !1;
 			let t = e.dataTransfer.files;
 			this.handleFileChange({ target: { files: t } });
+		},
+		handlePaste(e) {
+			if (!this.isPasteZoneFocused || this.wait) return;
+			let t = e.clipboardData && e.clipboardData.items;
+			if (!t) return;
+			let n = [];
+			for (let e of t) if (e.kind === "file" && e.type.indexOf("image/") === 0) {
+				let t = e.getAsFile();
+				t && n.push(t);
+			}
+			n.length && (e.preventDefault(), this.handleFileChange({ target: { files: n } }));
 		}
 	}
 }, Vj = { class: "" }, Hj = {
@@ -21724,7 +21736,7 @@ function kN(t, n, c, l, u, d) {
 				"table-primary": t.dragOverIndex === l && t.dragIndex !== l
 			})
 		}, [a("td", rM, [a("div", iM, [
-			n[39] ||= a("span", {
+			n[41] ||= a("span", {
 				class: "cursor-move p-1 px-2 border-end d-flex align-items-center",
 				title: "Húzd a sorrendezéshez"
 			}, [a("i", { class: "bi bi-grip-vertical text-muted" })], -1),
@@ -21741,7 +21753,7 @@ function kN(t, n, c, l, u, d) {
 					"-moz-appearance": "textfield"
 				}
 			}, null, 40, aM),
-			c.isDocument ? (_(), i("span", oM, [a("i", { class: m(["bi bi-filetype-" + c.types.default.extension]) }, null, 2)])) : c.isImage ? (_(), i("span", sM, [...n[31] ||= [a("i", { class: "bi bi-file-image" }, null, -1)]])) : c.isVideo ? (_(), i("span", cM, [...n[32] ||= [a("i", { class: "bi bi-file-play" }, null, -1)]])) : r("", !0),
+			c.isDocument ? (_(), i("span", oM, [a("i", { class: m(["bi bi-filetype-" + c.types.default.extension]) }, null, 2)])) : c.isImage ? (_(), i("span", sM, [...n[33] ||= [a("i", { class: "bi bi-file-image" }, null, -1)]])) : c.isVideo ? (_(), i("span", cM, [...n[34] ||= [a("i", { class: "bi bi-file-play" }, null, -1)]])) : r("", !0),
 			t.hasLanguages() ? (_(), i("button", {
 				key: 3,
 				type: "button",
@@ -21777,13 +21789,13 @@ function kN(t, n, c, l, u, d) {
 				src: c.types[t.params.thumbnail].data,
 				alt: c.name
 			}, null, 8, mM))])) : r("", !0),
-			t.params.tags ? (_(), i("div", hM, [a("button", gM, [a("span", _M, [n[33] ||= a("i", { class: "bi bi-tag" }, null, -1), o(" " + x(c.tags ? c.tags.length : 0), 1)])]), a("ul", vM, [
+			t.params.tags ? (_(), i("div", hM, [a("button", gM, [a("span", _M, [n[35] ||= a("i", { class: "bi bi-tag" }, null, -1), o(" " + x(c.tags ? c.tags.length : 0), 1)])]), a("ul", vM, [
 				a("li", null, [(_(!0), i(e, null, y(t.params.tags, (e) => (_(), i("span", {
 					key: e,
 					class: "dropdown-item cursor-pointer",
 					onClick: (n) => t.dropdownSelectToggleOne(c.tags, e.value)
 				}, [c.tags && c.tags.indexOf(e.value) >= 0 ? (_(), i("i", bM)) : (_(), i("i", xM)), o(" " + x(t.translate(e.label ? e.label : e.value)), 1)], 8, yM))), 128))]),
-				n[34] ||= a("li", null, [a("hr", { class: "dropdown-divider" })], -1),
+				n[36] ||= a("li", null, [a("hr", { class: "dropdown-divider" })], -1),
 				a("li", null, [a("span", {
 					class: "dropdown-item cursor-pointer",
 					onClick: (e) => t.dropdownSelectAll(c.tags, t.params.tags)
@@ -21797,7 +21809,7 @@ function kN(t, n, c, l, u, d) {
 					onClick: (e) => t.dropdownSelectInvert(c.tags, t.params.tags)
 				}, x(t.translate("Invert all")), 9, wM)])
 			])])) : r("", !0),
-			a("div", TM, [n[38] ||= a("button", {
+			a("div", TM, [n[40] ||= a("button", {
 				class: "btn btn-sm _dropdown-toggle border border-start-1 border-top-0 border-bottom-0 border-end-0 rounded-0 h-100",
 				type: "button",
 				"data-bs-toggle": "dropdown",
@@ -21809,13 +21821,13 @@ function kN(t, n, c, l, u, d) {
 					class: "btn btn-sm btn-outline-secondary flex-fill",
 					onClick: (e) => t.openEditor(c),
 					title: t.translate("Szerkesztés")
-				}, [n[35] ||= a("i", { class: "bi bi-pencil me-1" }, null, -1), o(x(t.translate("Szerkesztés")), 1)], 8, kM)) : r("", !0), a("button", {
+				}, [n[37] ||= a("i", { class: "bi bi-pencil me-1" }, null, -1), o(x(t.translate("Szerkesztés")), 1)], 8, kM)) : r("", !0), a("button", {
 					type: "button",
 					class: "btn btn-sm btn-outline-danger flex-fill",
 					onClick: (e) => t.remove(l),
 					title: t.translate("Törlés")
-				}, [n[36] ||= a("i", { class: "bi bi-x-circle me-1" }, null, -1), o(x(t.translate("Törlés")), 1)], 8, AM)])]),
-				n[37] ||= a("li", null, [a("hr", { class: "dropdown-divider my-2" })], -1),
+				}, [n[38] ||= a("i", { class: "bi bi-x-circle me-1" }, null, -1), o(x(t.translate("Törlés")), 1)], 8, AM)])]),
+				n[39] ||= a("li", null, [a("hr", { class: "dropdown-divider my-2" })], -1),
 				a("li", jM, [a("small", MM, [s(f, { file: c }, null, 8, ["file"])])])
 			])])
 		])])], 42, nM))), 128))])])])) : (_(!0), i(e, { key: 1 }, y(t.files, (c, l) => (_(), i("div", {
@@ -21868,7 +21880,7 @@ function kN(t, n, c, l, u, d) {
 				onKeydown: n[10] ||= ne(O(() => {}, ["prevent"]), ["enter"])
 			}, null, 40, UM)), [[E, c.title]]),
 			a("div", WM, [
-				n[49] ||= a("span", {
+				n[51] ||= a("span", {
 					class: "cursor-move p-1 px-2 border border-end-0 h-100 d-flex align-items-center",
 					title: "Húzd a sorrendezéshez"
 				}, [a("i", { class: "bi bi-grip-vertical text-muted" })], -1),
@@ -21885,13 +21897,13 @@ function kN(t, n, c, l, u, d) {
 						"-moz-appearance": "textfield"
 					}
 				}, null, 40, GM),
-				t.params.tags ? (_(), i("div", KM, [a("button", qM, [a("span", JM, [n[43] ||= a("i", { class: "bi bi-tag" }, null, -1), o(" " + x(c.tags ? c.tags.length : 0), 1)])]), a("ul", YM, [
+				t.params.tags ? (_(), i("div", KM, [a("button", qM, [a("span", JM, [n[45] ||= a("i", { class: "bi bi-tag" }, null, -1), o(" " + x(c.tags ? c.tags.length : 0), 1)])]), a("ul", YM, [
 					a("li", null, [(_(!0), i(e, null, y(t.params.tags, (e) => (_(), i("span", {
 						key: e,
 						class: "dropdown-item cursor-pointer",
 						onClick: (n) => t.dropdownSelectToggleOne(c.tags, e.value)
 					}, [c.tags && c.tags.indexOf(e.value) >= 0 ? (_(), i("i", ZM)) : (_(), i("i", QM)), o(" " + x(t.translate(e.label ? e.label : e.value)), 1)], 8, XM))), 128))]),
-					n[44] ||= a("li", null, [a("hr", { class: "dropdown-divider" })], -1),
+					n[46] ||= a("li", null, [a("hr", { class: "dropdown-divider" })], -1),
 					a("li", null, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: (e) => t.dropdownSelectAll(c.tags, t.params.tags)
@@ -21905,7 +21917,7 @@ function kN(t, n, c, l, u, d) {
 						onClick: (e) => t.dropdownSelectInvert(c.tags, t.params.tags)
 					}, x(t.translate("Invert all")), 9, tN)])
 				])])) : r("", !0),
-				a("div", nN, [n[48] ||= a("button", {
+				a("div", nN, [n[50] ||= a("button", {
 					class: "btn btn-sm rounded-0 h-100 _dropdown-toggle w-100",
 					type: "button",
 					"data-bs-toggle": "dropdown",
@@ -21917,17 +21929,17 @@ function kN(t, n, c, l, u, d) {
 						class: "btn btn-sm btn-outline-secondary flex-fill",
 						onClick: (e) => t.openEditor(c),
 						title: t.translate("Szerkesztés")
-					}, [n[45] ||= a("i", { class: "bi bi-pencil me-1" }, null, -1), o(x(t.translate("Szerkesztés")), 1)], 8, oN)) : r("", !0), a("button", {
+					}, [n[47] ||= a("i", { class: "bi bi-pencil me-1" }, null, -1), o(x(t.translate("Szerkesztés")), 1)], 8, oN)) : r("", !0), a("button", {
 						type: "button",
 						class: "btn btn-sm btn-outline-danger flex-fill",
 						onClick: (e) => t.remove(l),
 						title: t.translate("Törlés")
-					}, [n[46] ||= a("i", { class: "bi bi-x-circle me-1" }, null, -1), o(x(t.translate("Törlés")), 1)], 8, sN)])]),
-					n[47] ||= a("li", null, [a("hr", { class: "dropdown-divider my-2" })], -1),
+					}, [n[48] ||= a("i", { class: "bi bi-x-circle me-1" }, null, -1), o(x(t.translate("Törlés")), 1)], 8, sN)])]),
+					n[49] ||= a("li", null, [a("hr", { class: "dropdown-divider my-2" })], -1),
 					a("li", cN, [a("small", lN, [s(f, { file: c }, null, 8, ["file"])])])
 				])])
 			])
-		])) : (_(), i("div", uN, [...n[50] ||= [a("span", null, null, -1)]]))], 2)], 42, NM))), 128))])) : r("", !0),
+		])) : (_(), i("div", uN, [...n[52] ||= [a("span", null, null, -1)]]))], 2)], 42, NM))), 128))])) : r("", !0),
 		a("div", dN, [a("div", fN, [
 			a("label", {
 				for: t.uploadId,
@@ -21940,16 +21952,16 @@ function kN(t, n, c, l, u, d) {
 				onDragenter: n[14] ||= O(() => {}, ["prevent"]),
 				onDrop: n[15] ||= O((...e) => t.handleDrop && t.handleDrop(...e), ["prevent"])
 			}, [t.files && t.params.limit > t.files.length ? (_(), i("span", mN, [
-				n[54] ||= a("i", { class: "bi bi-upload me-2" }, null, -1),
+				n[56] ||= a("i", { class: "bi bi-upload me-2" }, null, -1),
 				o(" " + x(t.params.text) + " ", 1),
 				t.params.limit ? (_(), i("small", hN, [
-					n[51] ||= o(" ( ", -1),
+					n[53] ||= o(" ( ", -1),
 					a("strong", gN, x(t.files.length), 1),
-					n[52] ||= o(" / ", -1),
+					n[54] ||= o(" / ", -1),
 					a("span", _N, x(t.params.limit), 1),
-					n[53] ||= o(" ) ", -1)
+					n[55] ||= o(" ) ", -1)
 				])) : r("", !0)
-			])) : (_(), i("span", vN, [...n[55] ||= [a("i", { class: "bi bi-exclamation-circle" }, null, -1), o(" You've reached the upload limit ", -1)]]))], 42, pN),
+			])) : (_(), i("span", vN, [...n[57] ||= [a("i", { class: "bi bi-exclamation-circle" }, null, -1), o(" You've reached the upload limit ", -1)]]))], 42, pN),
 			a("button", {
 				type: "button",
 				class: "btn btn-outline-primary ms-1",
@@ -21960,11 +21972,21 @@ function kN(t, n, c, l, u, d) {
 				type: "button",
 				class: "btn btn-outline-danger ms-1",
 				onClick: n[17] ||= (e) => t.resetConfirm()
-			}, [...n[56] ||= [a("i", { class: "bi bi-trash" }, null, -1)]], 8, xN)
-		]), a("div", SN, [a("small", null, [t.params.accept ? (_(), i("div", CN, [n[57] ||= a("span", { class: "text-secondary" }, "accept only", -1), (_(!0), i(e, null, y(t.params.accept, (e) => (_(), i("strong", {
-			class: "ms-1 text-muted",
-			key: e
-		}, x(e), 1))), 128))])) : r("", !0), r("", !0)])])]),
+			}, [...n[58] ||= [a("i", { class: "bi bi-trash" }, null, -1)]], 8, xN)
+		]), a("div", SN, [a("small", null, [
+			t.params.accept ? (_(), i("div", CN, [n[59] ||= a("span", { class: "text-secondary" }, "accept only", -1), (_(!0), i(e, null, y(t.params.accept, (e) => (_(), i("strong", {
+				class: "ms-1 text-muted",
+				key: e
+			}, x(e), 1))), 128))])) : r("", !0),
+			t.files && t.params.limit > t.files.length ? (_(), i("div", {
+				key: 1,
+				tabindex: "0",
+				class: m(["vsa-paste-zone text-secondary cursor-pointer", { "vsa-paste-zone-active": t.isPasteZoneFocused }]),
+				onFocus: n[18] ||= (e) => t.isPasteZoneFocused = !0,
+				onBlur: n[19] ||= (e) => t.isPasteZoneFocused = !1
+			}, [n[60] ||= a("i", { class: "bi bi-clipboard me-1" }, null, -1), o(x(t.translate("Vágólapról beillesztéshez, kattints ide és nyomj Ctrl+V-t")), 1)], 34)) : r("", !0),
+			r("", !0)
+		])])]),
 		t.uploadId ? (_(), i("input", {
 			key: 2,
 			multiple: "",
@@ -21976,69 +21998,69 @@ function kN(t, n, c, l, u, d) {
 			id: t.uploadId,
 			type: "file",
 			accept: t.getAcceptMimeTypes(t.params.accept),
-			onChange: n[18] ||= (...e) => t.handleFileChange && t.handleFileChange(...e)
+			onChange: n[20] ||= (...e) => t.handleFileChange && t.handleFileChange(...e)
 		}, null, 40, wN)) : r("", !0),
 		t.editor.file ? (_(), i("div", {
 			key: 3,
 			class: "vsa-editor-overlay",
-			onMousemove: n[28] ||= O((...e) => t.editorMouseMove && t.editorMouseMove(...e), ["prevent"]),
-			onMouseup: n[29] ||= (...e) => t.editorMouseUp && t.editorMouseUp(...e),
-			onMouseleave: n[30] ||= (...e) => t.editorMouseUp && t.editorMouseUp(...e)
+			onMousemove: n[30] ||= O((...e) => t.editorMouseMove && t.editorMouseMove(...e), ["prevent"]),
+			onMouseup: n[31] ||= (...e) => t.editorMouseUp && t.editorMouseUp(...e),
+			onMouseleave: n[32] ||= (...e) => t.editorMouseUp && t.editorMouseUp(...e)
 		}, [a("div", TN, [
 			a("button", {
 				type: "button",
 				class: "btn btn-sm btn-outline-light",
-				onClick: n[19] ||= (e) => t.editorRotate(-90),
+				onClick: n[21] ||= (e) => t.editorRotate(-90),
 				title: "Forgatás balra 90°"
-			}, [...n[59] ||= [a("i", { class: "bi bi-arrow-counterclockwise" }, null, -1)]]),
+			}, [...n[62] ||= [a("i", { class: "bi bi-arrow-counterclockwise" }, null, -1)]]),
 			a("button", {
 				type: "button",
 				class: "btn btn-sm btn-outline-light",
-				onClick: n[20] ||= (e) => t.editorRotate(90),
+				onClick: n[22] ||= (e) => t.editorRotate(90),
 				title: "Forgatás jobbra 90°"
-			}, [...n[60] ||= [a("i", { class: "bi bi-arrow-clockwise" }, null, -1)]]),
-			n[66] ||= a("span", { class: "text-secondary mx-1" }, "|", -1),
+			}, [...n[63] ||= [a("i", { class: "bi bi-arrow-clockwise" }, null, -1)]]),
+			n[69] ||= a("span", { class: "text-secondary mx-1" }, "|", -1),
 			a("button", {
 				type: "button",
 				class: m(["btn btn-sm", t.editor.flipX ? "btn-light" : "btn-outline-light"]),
-				onClick: n[21] ||= (e) => t.editorFlip("x"),
+				onClick: n[23] ||= (e) => t.editorFlip("x"),
 				title: "Vízszintes tükrözés"
-			}, [...n[61] ||= [a("i", { class: "bi bi-symmetry-vertical" }, null, -1)]], 2),
+			}, [...n[64] ||= [a("i", { class: "bi bi-symmetry-vertical" }, null, -1)]], 2),
 			a("button", {
 				type: "button",
 				class: m(["btn btn-sm", t.editor.flipY ? "btn-light" : "btn-outline-light"]),
-				onClick: n[22] ||= (e) => t.editorFlip("y"),
+				onClick: n[24] ||= (e) => t.editorFlip("y"),
 				title: "Függőleges tükrözés"
-			}, [...n[62] ||= [a("i", { class: "bi bi-symmetry-horizontal" }, null, -1)]], 2),
-			n[67] ||= a("span", { class: "text-secondary mx-1" }, "|", -1),
+			}, [...n[65] ||= [a("i", { class: "bi bi-symmetry-horizontal" }, null, -1)]], 2),
+			n[70] ||= a("span", { class: "text-secondary mx-1" }, "|", -1),
 			a("button", {
 				type: "button",
 				class: m(["btn btn-sm", t.editor.cropMode ? "btn-warning" : "btn-outline-light"]),
-				onClick: n[23] ||= (...e) => t.editorCropButtonClick && t.editorCropButtonClick(...e),
+				onClick: n[25] ||= (...e) => t.editorCropButtonClick && t.editorCropButtonClick(...e),
 				title: "Vágás"
-			}, [n[63] ||= a("i", { class: "bi bi-crop" }, null, -1), t.editor.cropMode ? (_(), i("span", EN, x(t.editor.crop ? "Terület kivágása" : "Rajzolj területet"), 1)) : r("", !0)], 2),
+			}, [n[66] ||= a("i", { class: "bi bi-crop" }, null, -1), t.editor.cropMode ? (_(), i("span", EN, x(t.editor.crop ? "Terület kivágása" : "Rajzolj területet"), 1)) : r("", !0)], 2),
 			t.editor.cropMode && t.editor.crop ? (_(), i("button", {
 				key: 0,
 				type: "button",
 				class: "btn btn-sm btn-outline-warning",
-				onClick: n[24] ||= (e) => {
+				onClick: n[26] ||= (e) => {
 					t.editor.crop = null, t.editorDraw();
 				},
 				title: "Vágás törlése"
-			}, [...n[64] ||= [a("i", { class: "bi bi-x" }, null, -1)]])) : r("", !0),
+			}, [...n[67] ||= [a("i", { class: "bi bi-x" }, null, -1)]])) : r("", !0),
 			a("div", DN, [a("button", {
 				type: "button",
 				class: "btn btn-sm btn-outline-secondary text-light border-secondary",
-				onClick: n[25] ||= (...e) => t.editorClose && t.editorClose(...e)
+				onClick: n[27] ||= (...e) => t.editorClose && t.editorClose(...e)
 			}, "Mégse"), a("button", {
 				type: "button",
 				class: "btn btn-sm btn-primary",
-				onClick: n[26] ||= (...e) => t.editorApply && t.editorApply(...e)
-			}, [...n[65] ||= [a("i", { class: "bi bi-check2 me-1" }, null, -1), o("Alkalmaz ", -1)]])])
+				onClick: n[28] ||= (...e) => t.editorApply && t.editorApply(...e)
+			}, [...n[68] ||= [a("i", { class: "bi bi-check2 me-1" }, null, -1), o("Alkalmaz ", -1)]])])
 		]), a("div", ON, [a("canvas", {
 			ref: "editorCanvas",
 			style: h({ cursor: t.editor.cropMode ? "crosshair" : "default" }),
-			onMousedown: n[27] ||= O((...e) => t.editorMouseDown && t.editorMouseDown(...e), ["prevent"])
+			onMousedown: n[29] ||= O((...e) => t.editorMouseDown && t.editorMouseDown(...e), ["prevent"])
 		}, null, 36)])], 32)) : r("", !0)
 	], 2)]);
 }
