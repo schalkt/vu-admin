@@ -37,6 +37,11 @@
         </div>
       </div>
 
+      <div v-if="uploadErrors && uploadErrors.length" class="alert alert-danger alert-dismissible py-2 px-3 mb-2" role="alert">
+        <div v-for="(message, index) in uploadErrors" :key="index" class="small">{{ message }}</div>
+        <button type="button" class="btn-close" :aria-label="translate('Bezárás')" @click="uploadErrors = []"></button>
+      </div>
+
       <div class="row g-2 mb-1" v-if="files && files.length">
 
         <div v-if="params.ui === 'list'">
@@ -546,6 +551,7 @@ const FileUpload = {
       editor: { file: null },
       activeLanguage: null,
       isPasteZoneFocused: false,
+      uploadErrors: [],
     };
   },
   components: {
@@ -803,6 +809,7 @@ const FileUpload = {
     async handleFileChange(event) {
       this.uploadEvent = event;
       this.count = this.files ? this.files.length : 0;
+      this.uploadErrors = [];
 
       try {
         this.setProcessingOverlay(this.translate('Processing files...'));
@@ -814,39 +821,55 @@ const FileUpload = {
           if (this.count <= this.params.limit) {
 
             this.files.push(file);
-            this.detect(file);
 
-            if (file.isVideo) {
-              this.setProcessingOverlay(this.translate('Processing video: {name}', { name: file.name }));
-              await this.createThumbnail(file);
-            } else if (file.isImage && this.isSvgFile(file)) {
-              this.setProcessingOverlay(this.translate('Loading image: {name}', { name: file.name }));
-              await this.loadSvg(file);
-            } else if (file.isImage) {
-              await this.resizeImage(file);
-            } else if (file.isDocument) {
-              this.setProcessingOverlay(this.translate('Loading file: {name}', { name: file.name }));
+            try {
+              this.detect(file);
 
-              const reader = new FileReader();
+              if (file.isVideo) {
+                this.setProcessingOverlay(this.translate('Processing video: {name}', { name: file.name }));
+                await this.createThumbnail(file);
+              } else if (file.isImage && this.isSvgFile(file)) {
+                this.setProcessingOverlay(this.translate('Loading image: {name}', { name: file.name }));
+                await this.loadSvg(file);
+              } else if (file.isImage) {
+                await this.resizeImage(file);
+              } else if (file.isDocument) {
+                this.setProcessingOverlay(this.translate('Loading file: {name}', { name: file.name }));
 
-              reader.addEventListener("load", (e) => {
+                const reader = new FileReader();
 
-                file.types.default = {
-                  extension: file.original.extension,
-                  mime: file.original.mime,
-                  slug: slugify(this.titleText(file)) + "-" + file.uid,
-                  bytes: file.size,
-                  data: e.target.result
-                }
+                reader.addEventListener("load", (e) => {
 
-                file.loaded = true;
-                file.bytes += file.size;
-                this.bytes += file.bytes
+                  file.types.default = {
+                    extension: file.original.extension,
+                    mime: file.original.mime,
+                    slug: slugify(this.titleText(file)) + "-" + file.uid,
+                    bytes: file.size,
+                    data: e.target.result
+                  }
 
-              });
+                  file.loaded = true;
+                  file.bytes += file.size;
+                  this.bytes += file.bytes
 
-              reader.readAsDataURL(file);
+                });
 
+                reader.readAsDataURL(file);
+
+              }
+            } catch (err) {
+              console.error('[vu-admin] handleFileChange:', file.name, err);
+
+              const index = this.files.indexOf(file);
+              if (index >= 0) {
+                this.bytes -= file.bytes || 0;
+                this.files.splice(index, 1);
+              }
+              this.count--;
+
+              this.uploadErrors.push(
+                this.translate('Could not process file "{name}": it appears to be corrupted or is not a valid file of its type.', { name: file.name })
+              );
             }
 
           }
