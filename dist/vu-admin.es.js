@@ -21235,29 +21235,54 @@ var Rj = /*#__PURE__*/ Sk(mj, [["render", Lj]]), zj = {
 				}, n.src = e;
 			})), this._watermarkCache[e];
 		},
+		resolveWatermarkSize(e, t, n) {
+			let r = n.naturalWidth / n.naturalHeight, i = typeof e == "string" ? e.trim().match(/^([wh])(\d+(?:\.\d+)?)$/i) : null;
+			if (i) {
+				let e = i[1].toLowerCase(), n = Number(i[2]) / 100;
+				if (e === "h") {
+					let e = t.height * n;
+					return {
+						wmWidth: e * r,
+						wmHeight: e
+					};
+				}
+				let a = t.width * n;
+				return {
+					wmWidth: a,
+					wmHeight: a / r
+				};
+			}
+			let a = e ? Number(e) : n.naturalWidth;
+			return {
+				wmWidth: a,
+				wmHeight: a / r
+			};
+		},
 		async applyWatermark(e, t, n) {
 			let r = await this.loadWatermarkImage(n.url);
 			if (!r) return;
-			let i = n.width ? Number(n.width) : r.naturalWidth, a = i / r.naturalWidth, o = i, s = r.naturalHeight * a, c = n.margin == null ? Math.round(t.width * .03) : Number(n.margin), l, u;
+			let { wmWidth: i, wmHeight: a } = this.resolveWatermarkSize(n.width, t, r), o = n.margin == null ? Math.round(t.width * .03) : Number(n.margin), s = Math.max(0, t.width - o * 2), c = Math.max(0, t.height - o * 2), l = Math.min(1, i ? s / i : 1, a ? c / a : 1);
+			l < 1 && (i *= l, a *= l);
+			let u, d;
 			switch (n.position || "right-bottom") {
 				case "left-top":
-					l = t.x + c, u = t.y + c;
+					u = t.x + o, d = t.y + o;
 					break;
 				case "right-top":
-					l = t.x + t.width - o - c, u = t.y + c;
+					u = t.x + t.width - i - o, d = t.y + o;
 					break;
 				case "left-bottom":
-					l = t.x + c, u = t.y + t.height - s - c;
+					u = t.x + o, d = t.y + t.height - a - o;
 					break;
 				case "center":
-					l = t.x + (t.width - o) / 2, u = t.y + (t.height - s) / 2;
+					u = t.x + (t.width - i) / 2, d = t.y + (t.height - a) / 2;
 					break;
 				default:
-					l = t.x + t.width - o - c, u = t.y + t.height - s - c;
+					u = t.x + t.width - i - o, d = t.y + t.height - a - o;
 					break;
 			}
-			let d = e.globalAlpha;
-			e.globalAlpha = n.opacity == null ? 1 : Number(n.opacity), e.drawImage(r, l, u, o, s), e.globalAlpha = d;
+			let f = e.globalAlpha;
+			e.globalAlpha = n.opacity == null ? 1 : Number(n.opacity), e.drawImage(r, u, d, i, a), e.globalAlpha = f;
 		},
 		async resizeImage(e) {
 			if (this.isSvgFile(e)) {
