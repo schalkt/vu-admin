@@ -397,6 +397,11 @@
               <i class="bi bi-clipboard me-1"></i>{{ translate('Vágólapról beillesztéshez, kattints ide és nyomj Ctrl+V-t') }}
             </div>
 
+            <div v-if="hasWatermarkPresets()" class="form-check form-switch d-inline-flex align-items-center mt-1">
+              <input class="form-check-input" type="checkbox" role="switch" :id="uploadId + '_watermark'" v-model="applyWatermarkOnUpload">
+              <label class="form-check-label ms-1" :for="uploadId + '_watermark'">{{ translate('Vízjel hozzáadása feltöltéskor') }}</label>
+            </div>
+
             <div v-if="0 && params.presets">
               <div class="mt-1" v-for="(preset, index) in params.presets" :key="index">
                 preset
@@ -456,6 +461,15 @@
           <button v-if="editor.cropMode && editor.crop" type="button" class="btn btn-sm btn-outline-warning" @click="editor.crop = null; editorDraw()" title="Vágás törlése">
             <i class="bi bi-x"></i>
           </button>
+
+          <template v-if="hasWatermarkPresets()">
+            <span class="text-secondary mx-1">|</span>
+
+            <div class="form-check form-switch d-inline-flex align-items-center text-light">
+              <input class="form-check-input" type="checkbox" role="switch" id="editor_apply_watermark" v-model="editor.applyWatermark">
+              <label class="form-check-label ms-1" for="editor_apply_watermark">{{ translate('Vízjel hozzáadása mentéskor') }}</label>
+            </div>
+          </template>
 
           <div class="ms-auto d-flex gap-2">
             <button type="button" class="btn btn-sm btn-outline-secondary text-light border-secondary" @click="editorClose">Mégse</button>
@@ -556,6 +570,7 @@ const FileUpload = {
       activeLanguage: null,
       isPasteZoneFocused: false,
       uploadErrors: [],
+      applyWatermarkOnUpload: true,
     };
   },
   components: {
@@ -724,6 +739,11 @@ const FileUpload = {
       return ext === 'svg' || mime === 'image/svg+xml';
     },
 
+    hasWatermarkPresets() {
+      const presets = this.params.presets;
+      return !!(presets && Object.values(presets).some((preset) => preset && preset.watermark && preset.watermark.url));
+    },
+
     detect(file) {
 
       this.setDefaults(file);
@@ -793,7 +813,7 @@ const FileUpload = {
         });
 
         video.addEventListener("seeked", () => {
-          this.forEachPresets(file, video);
+          this.forEachPresets(file, video, undefined, { watermark: this.applyWatermarkOnUpload });
           file.loaded = true;
           this.bytes += file.bytes;
         });
@@ -889,7 +909,8 @@ const FileUpload = {
       this.uploadEvent.target.value = "";
     },
 
-    async forEachPresets(file, source, callback) {
+    async forEachPresets(file, source, callback, options = {}) {
+      const applyWatermarks = options.watermark !== false;
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
@@ -917,6 +938,7 @@ const FileUpload = {
 
         let targetWidth = preset.width;
         let targetHeight = preset.height != null ? preset.height : null;
+        let contentRect;
 
         if (preset.crop === "cover") {
           // Fit mód: a kép közepéről vágunk ki részt, hogy kitöltse a célméretet
@@ -932,6 +954,9 @@ const FileUpload = {
           canvas.height = targetHeight;
           ctx.drawImage(source, -offsetX, -offsetY, drawWidth, drawHeight);
 
+          // "cover" módban a kép kitölti a teljes canvas-t, nincs üres terület
+          contentRect = { x: 0, y: 0, width: canvas.width, height: canvas.height };
+
         } else if (preset.crop === "contain") {
           // Contain mód: a kép illeszkedik a célterületbe, üres helyek maradhatnak
           let scale = Math.min(targetWidth / width, targetHeight / height);
@@ -944,6 +969,10 @@ const FileUpload = {
           canvas.height = targetHeight;
           ctx.clearRect(0, 0, targetWidth, targetHeight); // Töröljük az üres területeket
           ctx.drawImage(source, offsetX, offsetY, drawWidth, drawHeight);
+
+          // "contain" módban a kép csak a canvas egy részét tölti ki (letterbox) -
+          // a vízjelet ehhez a tényleges méretű területhez kell igazítani, nem a teljes canvas-hoz
+          contentRect = { x: offsetX, y: offsetY, width: drawWidth, height: drawHeight };
 
         } else {
           // Nincs crop, marad az eredeti átméretezés
@@ -962,10 +991,11 @@ const FileUpload = {
 
           ctx.drawImage(source, 0, 0, width, height);
 
+          contentRect = { x: 0, y: 0, width: canvas.width, height: canvas.height };
         }
 
-        if (preset.watermark && preset.watermark.url) {
-          await this.applyWatermark(ctx, canvas, preset.watermark);
+        if (applyWatermarks && preset.watermark && preset.watermark.url) {
+          await this.applyWatermark(ctx, contentRect, preset.watermark);
         }
 
         file.types[preset.key] = {
@@ -1047,7 +1077,7 @@ const FileUpload = {
       return this._watermarkCache[url];
     },
 
-    async applyWatermark(ctx, canvas, watermark) {
+    async applyWatermark(ctx, contentRect, watermark) {
       const img = await this.loadWatermarkImage(watermark.url);
       if (!img) return;
 
@@ -1055,25 +1085,25 @@ const FileUpload = {
       const scale = targetWidth / img.naturalWidth;
       const wmWidth = targetWidth;
       const wmHeight = img.naturalHeight * scale;
-      const margin = watermark.margin != null ? Number(watermark.margin) : Math.round(canvas.width * 0.03);
+      const margin = watermark.margin != null ? Number(watermark.margin) : Math.round(contentRect.width * 0.03);
 
       let x, y;
       switch (watermark.position || 'right-bottom') {
         case 'left-top':
-          x = margin; y = margin;
+          x = contentRect.x + margin; y = contentRect.y + margin;
           break;
         case 'right-top':
-          x = canvas.width - wmWidth - margin; y = margin;
+          x = contentRect.x + contentRect.width - wmWidth - margin; y = contentRect.y + margin;
           break;
         case 'left-bottom':
-          x = margin; y = canvas.height - wmHeight - margin;
+          x = contentRect.x + margin; y = contentRect.y + contentRect.height - wmHeight - margin;
           break;
         case 'center':
-          x = (canvas.width - wmWidth) / 2; y = (canvas.height - wmHeight) / 2;
+          x = contentRect.x + (contentRect.width - wmWidth) / 2; y = contentRect.y + (contentRect.height - wmHeight) / 2;
           break;
         case 'right-bottom':
         default:
-          x = canvas.width - wmWidth - margin; y = canvas.height - wmHeight - margin;
+          x = contentRect.x + contentRect.width - wmWidth - margin; y = contentRect.y + contentRect.height - wmHeight - margin;
           break;
       }
 
@@ -1096,7 +1126,7 @@ const FileUpload = {
         this.setProcessingOverlay(
           this.translate('Resizing image: {name} ({preset})', { name, preset: preset.key })
         );
-      });
+      }, { watermark: this.applyWatermarkOnUpload });
 
       file.loaded = true;
       this.bytes += file.bytes;
@@ -1216,7 +1246,7 @@ const FileUpload = {
       const src = type ? (type.data || type.url) : null;
       if (!src) return;
 
-      this.editor = { file, imgBitmap: null, rotate: 0, flipX: false, flipY: false, cropMode: false, crop: null, dragging: false, cropDrag: null, cropAnchor: null, scale: 1, hasWatermark: !!(type && type.watermarked) };
+      this.editor = { file, imgBitmap: null, rotate: 0, flipX: false, flipY: false, cropMode: false, crop: null, dragging: false, cropDrag: null, cropAnchor: null, scale: 1, hasWatermark: !!(type && type.watermarked), applyWatermark: false };
 
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -1506,7 +1536,7 @@ const FileUpload = {
           this.setProcessingOverlay(
             this.translate('Resizing image: {name} ({preset})', { name, preset: preset.key })
           );
-        });
+        }, { watermark: this.editor.applyWatermark });
         file.loaded = true;
         this.bytes += file.bytes;
 
