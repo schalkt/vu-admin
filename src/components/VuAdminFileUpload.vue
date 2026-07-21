@@ -465,6 +465,10 @@
           </div>
         </div>
 
+        <div v-if="editor.hasWatermark" class="alert alert-warning py-1 px-2 mb-0 rounded-0 small text-center" role="alert">
+          <i class="bi bi-exclamation-triangle me-1"></i>{{ translate('This image has a watermark applied. Rotating or cropping may distort or cut off the watermark.') }}
+        </div>
+
         <div class="vsa-editor-canvas-area d-flex align-items-center justify-content-center flex-grow-1">
           <canvas ref="editorCanvas"
                   :style="{ cursor: editor.cropMode ? 'crosshair' : 'default' }"
@@ -960,14 +964,23 @@ const FileUpload = {
 
         }
 
+        if (preset.watermark && preset.watermark.url) {
+          await this.applyWatermark(ctx, canvas, preset.watermark);
+        }
+
         file.types[preset.key] = {
           width: canvas.width,
           height: canvas.height,
           ratio: this.calculateAspectRatio(canvas.width, canvas.height),
           extension: preset.extension ? preset.extension : this.getExtensionByMimeType(file.type),
           quality: preset.quality ? preset.quality : 0.9,
-          crop: preset.crop ? preset.crop : null
+          crop: preset.crop ? preset.crop : null,
+          watermarked: !!(preset.watermark && preset.watermark.url)
         };
+
+        if (file.types[preset.key].watermarked) {
+          file.hasWatermark = true;
+        }
 
         file.types[preset.key].slug =
           slugify(this.titleText(file)) +
@@ -1015,6 +1028,60 @@ const FileUpload = {
 
     },
 
+    loadWatermarkImage(url) {
+      if (!this._watermarkCache) {
+        this._watermarkCache = {};
+      }
+      if (!this._watermarkCache[url]) {
+        this._watermarkCache[url] = new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = () => {
+            console.error('[vu-admin] Could not load watermark image:', url);
+            resolve(null);
+          };
+          img.src = url;
+        });
+      }
+      return this._watermarkCache[url];
+    },
+
+    async applyWatermark(ctx, canvas, watermark) {
+      const img = await this.loadWatermarkImage(watermark.url);
+      if (!img) return;
+
+      const targetWidth = watermark.width ? Number(watermark.width) : img.naturalWidth;
+      const scale = targetWidth / img.naturalWidth;
+      const wmWidth = targetWidth;
+      const wmHeight = img.naturalHeight * scale;
+      const margin = watermark.margin != null ? Number(watermark.margin) : Math.round(canvas.width * 0.03);
+
+      let x, y;
+      switch (watermark.position || 'right-bottom') {
+        case 'left-top':
+          x = margin; y = margin;
+          break;
+        case 'right-top':
+          x = canvas.width - wmWidth - margin; y = margin;
+          break;
+        case 'left-bottom':
+          x = margin; y = canvas.height - wmHeight - margin;
+          break;
+        case 'center':
+          x = (canvas.width - wmWidth) / 2; y = (canvas.height - wmHeight) / 2;
+          break;
+        case 'right-bottom':
+        default:
+          x = canvas.width - wmWidth - margin; y = canvas.height - wmHeight - margin;
+          break;
+      }
+
+      const prevAlpha = ctx.globalAlpha;
+      ctx.globalAlpha = watermark.opacity != null ? Number(watermark.opacity) : 1;
+      ctx.drawImage(img, x, y, wmWidth, wmHeight);
+      ctx.globalAlpha = prevAlpha;
+    },
 
     async resizeImage(file) {
       if (this.isSvgFile(file)) {
@@ -1149,7 +1216,7 @@ const FileUpload = {
       const src = type ? (type.data || type.url) : null;
       if (!src) return;
 
-      this.editor = { file, imgBitmap: null, rotate: 0, flipX: false, flipY: false, cropMode: false, crop: null, dragging: false, cropDrag: null, cropAnchor: null, scale: 1 };
+      this.editor = { file, imgBitmap: null, rotate: 0, flipX: false, flipY: false, cropMode: false, crop: null, dragging: false, cropDrag: null, cropAnchor: null, scale: 1, hasWatermark: !!(type && type.watermarked) };
 
       const img = new Image();
       img.crossOrigin = 'anonymous';

@@ -926,7 +926,14 @@ window.VuEntities.product = (preset) => {
 									width: 1920,
 									height: 1080,
 									extension: "webp",
-									quality: 0.9
+									quality: 0.9,
+									watermark: {
+										url: "https://avatars.githubusercontent.com/u/4790264?v=4&size=64",
+										position: "right-bottom",
+										opacity: 0.5,
+										margin: 10,
+										width: 64
+									}
 								},
 								small: {
 									width: 400,
@@ -934,11 +941,25 @@ window.VuEntities.product = (preset) => {
 									extension: "webp",
 									quality: 0.75,
 									crop: 'contain',
+									watermark: {
+										url: "https://avatars.githubusercontent.com/u/4790264?v=4&size=64",
+										position: "right-bottom",
+										opacity: 0.5,
+										margin: 6,
+										width: 32
+									}
 								},
 								tiny: {
 									width: 160,
 									height: 100,
 									crop: 'contain',
+									watermark: {
+										url: "https://avatars.githubusercontent.com/u/4790264?v=4&size=64",
+										position: "right-bottom",
+										opacity: 0.5,
+										margin: 3,
+										width: 20
+									},
 									extension: "webp",
 									quality: 0.7
 								},
