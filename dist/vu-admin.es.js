@@ -25901,7 +25901,7 @@ function Jz(t, s, c, l, u, d) {
 					class: "btn btn-secondary w-100 me-2 text-nowrap",
 					disabled: t.loading
 				}, [s[23] ||= a("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), o(" " + x(t.settings.submit.login), 1)], 8, Rz)) : r("", !0),
-				t.auth.panel == "login" ? (_(), i("button", {
+				t.auth.panel == "login" && t.settings.registrationEnabled !== !1 ? (_(), i("button", {
 					key: 1,
 					type: "button",
 					class: "btn btn-warning w-100 me-2 text-nowrap",
@@ -25966,7 +25966,8 @@ var Xz = {
 		return {
 			theme: "light",
 			auth: {},
-			settings: {}
+			settings: {},
+			registrationEnabled: !0
 		};
 	},
 	watch: { modelValue(e, t) {
@@ -25997,7 +25998,7 @@ var Xz = {
 		}
 	},
 	created() {
-		window.VuSettings && window.VuSettings.button && (this.theme = window.VuSettings.theme ? window.VuSettings.theme : "light", window.VuSettings.button[this.panel] && (this.settings = window.VuSettings.button[this.panel]));
+		window.VuSettings && window.VuSettings.button && (this.theme = window.VuSettings.theme ? window.VuSettings.theme : "light", window.VuSettings.button[this.panel] && (this.settings = window.VuSettings.button[this.panel])), window.VuSettings && window.VuSettings.auth && window.VuSettings.auth.registrationEnabled === !1 && (this.registrationEnabled = !1);
 	},
 	mounted() {}
 }, Zz = ["data-bs-theme"], Qz = {
@@ -26011,7 +26012,7 @@ var Xz = {
 	class: "d-inline-block"
 }, aB = ["innerHTML"];
 function oB(t, n, o, s, c, l) {
-	return !t.auth.user && t.panel != "login" || t.panel == "login" ? (_(), i("div", {
+	return (t.panel != "registration" || t.registrationEnabled) && (!t.auth.user && t.panel != "login" || t.panel == "login") ? (_(), i("div", {
 		key: 0,
 		class: "vua-user-button d-inline-block",
 		"data-bs-theme": [t.theme]

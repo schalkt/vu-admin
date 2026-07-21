@@ -1,6 +1,6 @@
 <template>
 
-    <div v-if="(!auth.user && panel != 'login') || panel == 'login'" class="vua-user-button d-inline-block" :data-bs-theme="[theme]">
+    <div v-if="(panel != 'registration' || registrationEnabled) && ((!auth.user && panel != 'login') || panel == 'login')" class="vua-user-button d-inline-block" :data-bs-theme="[theme]">
         <div v-if="auth.user" class="dropdown">
             <button class="dropdown-toggle" :class="[settings.class]" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <span v-html="getValueOrFunction(settings.label)"></span>
@@ -52,6 +52,7 @@ const VuUserButton = {
             theme: "light",
             auth: {},
             settings: {},
+            registrationEnabled: true,
         }
     },
     watch: {
@@ -135,6 +136,10 @@ const VuUserButton = {
             if (window.VuSettings.button[this.panel]) {
                 this.settings = window.VuSettings.button[this.panel];
             }
+        }
+
+        if (window.VuSettings && window.VuSettings.auth && window.VuSettings.auth.registrationEnabled === false) {
+            this.registrationEnabled = false;
         }
     },
 

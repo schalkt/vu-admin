@@ -83,6 +83,7 @@ window.VuSettings = {
     },
     auth: {
         debug: true,
+        registrationEnabled: true,
         captcha: {
             url: '/api/auth/captcha',
             panels: ['login', 'registration', 'forgot'],

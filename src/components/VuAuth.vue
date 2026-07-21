@@ -204,7 +204,7 @@
                                 class="btn btn-secondary w-100 me-2 text-nowrap" :disabled="loading">
                                 <i class="bi bi-arrow-left-square mx-1"></i> {{ settings.submit.login }}
                             </button>
-                            <button v-if="auth.panel == 'login'" type="button" class="btn btn-warning w-100 me-2 text-nowrap" @click.stop="toggleNewRegistration"
+                            <button v-if="auth.panel == 'login' && settings.registrationEnabled !== false" type="button" class="btn btn-warning w-100 me-2 text-nowrap" @click.stop="toggleNewRegistration"
                                 :disabled="loading">
                                 <i class="bi bi-person-plus mx-1"></i> {{ settings.submit.registration }}
                             </button>
