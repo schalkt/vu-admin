@@ -1077,15 +1077,42 @@ const FileUpload = {
       return this._watermarkCache[url];
     },
 
+    resolveWatermarkSize(sizeSpec, contentRect, img) {
+      const aspect = img.naturalWidth / img.naturalHeight;
+      const match = typeof sizeSpec === 'string' ? sizeSpec.trim().match(/^([wh])(\d+(?:\.\d+)?)$/i) : null;
+
+      if (match) {
+        const axis = match[1].toLowerCase();
+        const percent = Number(match[2]) / 100;
+
+        if (axis === 'h') {
+          const wmHeight = contentRect.height * percent;
+          return { wmWidth: wmHeight * aspect, wmHeight };
+        }
+
+        const wmWidth = contentRect.width * percent;
+        return { wmWidth, wmHeight: wmWidth / aspect };
+      }
+
+      const wmWidth = sizeSpec ? Number(sizeSpec) : img.naturalWidth;
+      return { wmWidth, wmHeight: wmWidth / aspect };
+    },
+
     async applyWatermark(ctx, contentRect, watermark) {
       const img = await this.loadWatermarkImage(watermark.url);
       if (!img) return;
 
-      const targetWidth = watermark.width ? Number(watermark.width) : img.naturalWidth;
-      const scale = targetWidth / img.naturalWidth;
-      const wmWidth = targetWidth;
-      const wmHeight = img.naturalHeight * scale;
+      let { wmWidth, wmHeight } = this.resolveWatermarkSize(watermark.width, contentRect, img);
       const margin = watermark.margin != null ? Number(watermark.margin) : Math.round(contentRect.width * 0.03);
+
+      // Ha a vízjel a margóval együtt kilógna a kép tényleges területéről, arányosan kicsinyítjük, hogy elférjen
+      const maxWidth = Math.max(0, contentRect.width - margin * 2);
+      const maxHeight = Math.max(0, contentRect.height - margin * 2);
+      const overflowScale = Math.min(1, wmWidth ? maxWidth / wmWidth : 1, wmHeight ? maxHeight / wmHeight : 1);
+      if (overflowScale < 1) {
+        wmWidth *= overflowScale;
+        wmHeight *= overflowScale;
+      }
 
       let x, y;
       switch (watermark.position || 'right-bottom') {
