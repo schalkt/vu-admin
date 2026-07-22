@@ -521,6 +521,7 @@ const fileType = {
     "jpeg": "image/jpeg",
     "png": "image/png",
     "webp": "image/webp",
+    "avif": "image/avif",
     "gif": "image/gif",
     "svg": "image/svg+xml"
   },
@@ -654,6 +655,18 @@ const FileUpload = {
 
     },
 
+    isExtensionAllowed(file) {
+
+      if (!this.params.accept || !this.params.accept.length) {
+        return true;
+      }
+
+      const ext = this.extensionByFilename(file.name).toLowerCase();
+      const allowed = this.params.accept.map(e => e.toLowerCase());
+
+      return allowed.indexOf(ext) >= 0;
+
+    },
 
     setDefaults(file) {
 
@@ -785,6 +798,10 @@ const FileUpload = {
         file.isUnknown = true;
       }
 
+      if (file.isUnknown) {
+        throw new Error('Unsupported file type: ' + (file.original.mime || file.original.extension));
+      }
+
       if (file.isVideo || file.isImage && !this.params.presets.default) {
         this.params.presets.default = {
           width: 1920,
@@ -839,6 +856,13 @@ const FileUpload = {
         this.setProcessingOverlay(this.translate('Processing files...'));
 
         for (let file of event.target.files) {
+
+          if (!this.isExtensionAllowed(file)) {
+            this.uploadErrors.push(
+              this.translate('File "{name}" has a disallowed extension. Allowed extensions: {ext}', { name: file.name, ext: this.params.accept.join(', ') })
+            );
+            continue;
+          }
 
           this.count++;
 
