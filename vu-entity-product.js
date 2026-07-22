@@ -908,7 +908,7 @@ window.VuEntities.product = (preset) => {
 							limit: 10,
 							colclass: 'col-6',
 							text: 'Click or drop here to upload',
-							accept: ["png", "jpg", "jpeg", "webp", "svg"],
+							accept: ["png", "jpg", "jpeg", "webp", "svg", "avif"],
 							thumbnail: 'small',
 							// download: 'default',
 							editor: false,
