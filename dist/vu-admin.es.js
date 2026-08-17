@@ -19562,40 +19562,40 @@ var hA = /*#__PURE__*/ $D(Gk, [["render", mA]]), gA = {
 			let i = r.watermark !== !1, a = document.createElement("canvas"), o = a.getContext("2d"), s = !!t.videoWidth, c, l;
 			s ? (c = t.videoWidth, l = t.videoHeight) : (c = t.width, l = t.height), e.original.width = c, e.original.height = l, e.original.ratio = this.calculateAspectRatio(c, l);
 			for (let r in this.params.presets) {
-				let s = this.params.presets[r];
-				s.key = r, s.width = s.width ? s.width : 1920;
-				let u = s.width, d = s.height == null ? null : s.height, f;
-				if (s.crop === "cover") {
-					let e = Math.max(u / c, d / l), n = c * e, r = l * e, i = (n - u) / 2, s = (r - d) / 2;
-					a.width = u, a.height = d, o.drawImage(t, -i, -s, n, r), f = {
+				let s = c, u = l, d = this.params.presets[r];
+				d.key = r, d.width = d.width ? d.width : 1920;
+				let f = d.width, p = d.height == null ? null : d.height, m;
+				if (d.crop === "cover") {
+					let e = Math.max(f / s, p / u), n = s * e, r = u * e, i = (n - f) / 2, c = (r - p) / 2;
+					a.width = f, a.height = p, o.drawImage(t, -i, -c, n, r), m = {
 						x: 0,
 						y: 0,
 						width: a.width,
 						height: a.height
 					};
-				} else if (s.crop === "contain") {
-					let e = Math.min(u / c, d / l), n = c * e, r = l * e, i = (u - n) / 2, s = (d - r) / 2;
-					a.width = u, a.height = d, o.clearRect(0, 0, u, d), o.drawImage(t, i, s, n, r), f = {
+				} else if (d.crop === "contain") {
+					let e = Math.min(f / s, p / u), n = s * e, r = u * e, i = (f - n) / 2, c = (p - r) / 2;
+					a.width = f, a.height = p, o.clearRect(0, 0, f, p), o.drawImage(t, i, c, n, r), m = {
 						x: i,
-						y: s,
+						y: c,
 						width: n,
 						height: r
 					};
-				} else c > u && (l = Math.round(u / c * l), c = u), d != null && l > d && (c = Math.round(d / l * c), l = d), a.width = c, a.height = l, o.drawImage(t, 0, 0, c, l), f = {
+				} else s > f && (u = Math.round(f / s * u), s = f), p != null && u > p && (s = Math.round(p / u * s), u = p), a.width = s, a.height = u, o.drawImage(t, 0, 0, s, u), m = {
 					x: 0,
 					y: 0,
 					width: a.width,
 					height: a.height
 				};
-				i && s.watermark && s.watermark.url && await this.applyWatermark(o, f, s.watermark), e.types[s.key] = {
+				i && d.watermark && d.watermark.url && await this.applyWatermark(o, m, d.watermark), e.types[d.key] = {
 					width: a.width,
 					height: a.height,
 					ratio: this.calculateAspectRatio(a.width, a.height),
-					extension: s.extension ? s.extension : this.getExtensionByMimeType(e.type),
-					quality: s.quality ? s.quality : .9,
-					crop: s.crop ? s.crop : null,
-					watermarked: !!(s.watermark && s.watermark.url)
-				}, e.types[s.key].watermarked && (e.hasWatermark = !0), e.types[s.key].slug = Xc(this.titleText(e)) + "-" + a.width + "x" + a.height + "-" + e.uid, e.types[s.key].mime = this.getMimeTypeByExtension(e.types[s.key].extension), e.types[s.key].data = a.toDataURL(e.types[s.key].mime, e.types[s.key].quality), e.types[s.key].blob = await this.getBlob(a, e.types[s.key].mime, e.types[s.key].quality), e.types[s.key].blob && (e.types[s.key].bytes = e.types[s.key].blob.size), e.types[s.key].bytes && (e.bytes += e.types[s.key].bytes), n && n(s, e);
+					extension: d.extension ? d.extension : this.getExtensionByMimeType(d.convert || e.type),
+					quality: d.quality ? d.quality : .9,
+					crop: d.crop ? d.crop : null,
+					watermarked: !!(d.watermark && d.watermark.url)
+				}, e.types[d.key].watermarked && (e.hasWatermark = !0), e.types[d.key].slug = Xc(this.titleText(e)) + "-" + a.width + "x" + a.height + "-" + e.uid, e.types[d.key].mime = d.convert || this.getMimeTypeByExtension(e.types[d.key].extension), e.types[d.key].data = a.toDataURL(e.types[d.key].mime, e.types[d.key].quality), e.types[d.key].blob = await this.getBlob(a, e.types[d.key].mime, e.types[d.key].quality), e.types[d.key].blob && (e.types[d.key].bytes = e.types[d.key].blob.size), e.types[d.key].bytes && (e.bytes += e.types[d.key].bytes), n && n(d, e);
 			}
 		},
 		getBlob(e, t, n) {

@@ -939,21 +939,24 @@ const FileUpload = {
       const ctx = canvas.getContext("2d");
 
       let isVideo = source.videoWidth ? true : false;
-      let width, height;
+      let originalWidth, originalHeight;
 
       if (isVideo) {
-        width = source.videoWidth;
-        height = source.videoHeight;
+        originalWidth = source.videoWidth;
+        originalHeight = source.videoHeight;
       } else {
-        width = source.width;
-        height = source.height;
+        originalWidth = source.width;
+        originalHeight = source.height;
       }
 
-      file.original.width = width;
-      file.original.height = height;
-      file.original.ratio = this.calculateAspectRatio(width, height);
+      file.original.width = originalWidth;
+      file.original.height = originalHeight;
+      file.original.ratio = this.calculateAspectRatio(originalWidth, originalHeight);
 
       for (let key in this.params.presets) {
+        // Reset to original dimensions for each preset (avoid shrink cascading)
+        let width = originalWidth;
+        let height = originalHeight;
 
         let preset = this.params.presets[key];
         preset.key = key;
@@ -1026,7 +1029,9 @@ const FileUpload = {
           width: canvas.width,
           height: canvas.height,
           ratio: this.calculateAspectRatio(canvas.width, canvas.height),
-          extension: preset.extension ? preset.extension : this.getExtensionByMimeType(file.type),
+          extension: preset.extension
+            ? preset.extension
+            : this.getExtensionByMimeType(preset.convert || file.type),
           quality: preset.quality ? preset.quality : 0.9,
           crop: preset.crop ? preset.crop : null,
           watermarked: !!(preset.watermark && preset.watermark.url)
@@ -1045,7 +1050,8 @@ const FileUpload = {
           "-" +
           file.uid;
 
-        file.types[preset.key].mime = this.getMimeTypeByExtension(file.types[preset.key].extension);
+        file.types[preset.key].mime =
+          preset.convert || this.getMimeTypeByExtension(file.types[preset.key].extension);
 
         file.types[preset.key].data = canvas.toDataURL(
           file.types[preset.key].mime,
