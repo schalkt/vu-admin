@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
-import { version } from './package.json'
+import { version } from './package.json' with { type: 'json' };
 import { createMockMiddleware } from './mock/middleware.js';
 
 const useMock = process.env.VITE_MOCK !== 'false';
@@ -79,7 +79,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/index.js'),
+      entry: path.resolve(import.meta.dirname, 'src/index.js'),
       name: 'VuAdmin',
       fileName: (format) => `vu-admin.${format}.js`
     },
