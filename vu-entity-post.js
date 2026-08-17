@@ -43,6 +43,43 @@ window.VuEntities.post = (preset) => {
 			}
 		},
 		{
+			name: 'tags',
+			title: 'Tags',
+			template: (value, item) => {
+				if (!Array.isArray(value) || !value.length) return '';
+				return value.map(tag => `<span class="badge text-bg-light border me-1">${tag}</span>`).join('');
+			},
+			filter: {
+				type: 'select',
+				dropdown: true,
+				multiple: true,
+				default_operator: 'in',
+				options: [
+					{ value: 'american' },
+					{ value: 'art' },
+					{ value: 'childhood' },
+					{ value: 'city' },
+					{ value: 'crime' },
+					{ value: 'drama' },
+					{ value: 'fiction' },
+					{ value: 'food' },
+					{ value: 'french' },
+					{ value: 'history' },
+					{ value: 'life' },
+					{ value: 'mystery' },
+					{ value: 'nature' },
+					{ value: 'night' },
+					{ value: 'philosophy' },
+					{ value: 'poetry' },
+					{ value: 'relationships' },
+					{ value: 'science' },
+					{ value: 'technology' },
+					{ value: 'time' },
+					{ value: 'travel' },
+				],
+			},
+		},
+		{
 			name: 'userId',
 			title: 'User',
 			relation: {
@@ -239,6 +276,9 @@ window.VuEntities.post = (preset) => {
 	};
 
 	let form = {
+		default: {
+			tags: [],
+		},
 		control: {
 			class: 'text-end',
 			buttons: [
@@ -391,6 +431,37 @@ window.VuEntities.post = (preset) => {
 						name: 'title',
 						label: 'Title',
 						required: true,
+					},
+					{
+						type: 'dropdown',
+						name: 'tags',
+						label: 'Tags',
+						dropdown: {
+							label: 'Select tags',
+						},
+						options: [
+							{ value: 'american' },
+							{ value: 'art' },
+							{ value: 'childhood' },
+							{ value: 'city' },
+							{ value: 'crime' },
+							{ value: 'drama' },
+							{ value: 'fiction' },
+							{ value: 'food' },
+							{ value: 'french' },
+							{ value: 'history' },
+							{ value: 'life' },
+							{ value: 'mystery' },
+							{ value: 'nature' },
+							{ value: 'night' },
+							{ value: 'philosophy' },
+							{ value: 'poetry' },
+							{ value: 'relationships' },
+							{ value: 'science' },
+							{ value: 'technology' },
+							{ value: 'time' },
+							{ value: 'travel' },
+						],
 					},
 
 					{

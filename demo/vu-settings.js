@@ -37,7 +37,7 @@ window.VuSettings = {
 				let fullName = [self.auth.user.firstName, self.auth.user.lastName].join(' ');
 				let img = `<img class='img-fluid rounded me-2' width='22' src='${self.auth.user.image}' />`;
 
-				return img + fullName;
+				return img + `<span class='d-none d-md-inline'>${fullName}</span>`;
 
 			}
 

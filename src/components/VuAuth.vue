@@ -992,5 +992,26 @@ export { VuAuth };
 
     }
 
+    @media (max-width: 575.98px) {
+        .modal .modal-dialog {
+            width: 100%;
+            max-width: 100%;
+            height: 100%;
+            max-height: 100%;
+            margin: 0;
+        }
+
+        .modal .modal-content {
+            height: 100%;
+            max-height: 100%;
+            border-radius: 0;
+        }
+
+        .modal-header {
+            flex-wrap: wrap;
+            row-gap: 0.5rem;
+        }
+    }
+
 }
 </style>

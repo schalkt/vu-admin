@@ -55,7 +55,7 @@
                 })
                 : getButtonIconClassByAction(button.action),
             ]"></i>
-            {{ translate(button.title) }}
+            <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
           </button>
 
           <div class="dropdown d-inline-block" v-if="button.action === 'TABLE_COLUMNS'">
@@ -73,9 +73,9 @@
                     })
                     : getButtonIconClassByAction(button.action),
                 ]"></i>
-                {{ translate(button.title) }}
-                <span v-if="countHiddenColumns()">
-                  ( {{ countHiddenColumns() }} {{ translate('hidden') }} )
+                <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
+                <span class="badge text-bg-secondary ms-1" v-if="countHiddenColumns()">
+                  {{ countHiddenColumns() }}
                 </span>
               </span>
             </button>
@@ -110,7 +110,7 @@
                       table: this,
                     })
                     : getButtonIconClassByAction(button.action),
-                ]"></i> {{ translate(button.title) }}
+                ]"></i> <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
               </span>
             </button>
             <ul class="dropdown-menu">
@@ -126,9 +126,18 @@
             </ul>
           </div>
         </span>
+
+        <button type="button" class="btn btn-outline-secondary d-md-none vua-mobile-filter-btn" @click="openMobileFilters()"
+          v-if="filterableColumns().length || sortableColumns().length || (config.pagination.limits && config.pagination.limits.length)">
+          <i class="bi bi-funnel"></i>
+          <span class="d-none d-md-inline">{{ translate('Filter / Sort') }}</span>
+          <span class="badge text-bg-secondary ms-1" v-if="countActiveFilters() + countActiveSort() > 0">
+            {{ countActiveFilters() + countActiveSort() }}
+          </span>
+        </button>
       </div>
 
-      <table v-if="settings.table" class="table vua-table mb-0" :class="[settings.table.class]">
+      <table v-if="settings.table" class="table vua-table vua-table-responsive mb-0" :class="[settings.table.class]">
         <thead>
           <tr class="vua-table-header">
             <th class="" v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :key="column" :width="column.width"
@@ -187,173 +196,8 @@
                 </span>
               </div>
 
-              <div v-if="column.filter && column.filter.type == 'text'" class="input-group input-group-sm my-1">
-                <input type="text" :class="{
-                  'fixed': column.filter.fixed,
-                }" class="form-control form-control-sm" v-model="column.filter.value" @keyup.enter="reloadTable()" />
-
-                <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" :disabled="column.filter.value == null" :class="{
-                  'opacity-25': column.filter.value == null,
-                }" @click="
-                  column.filter.value = undefined;
-                reloadTable();
-                ">
-                  <i class="bi bi-x"></i>
-                </button>
-              </div>
-
-              <div v-if="column.filter && column.filter.type == 'number'" class="input-group input-group-sm my-1">
-                <select v-if="column.filter.operators == true" v-model="column.filter.operator" :disabled="column.filter.fixed" @change="reloadTable()"
-                  class="form-select form-select-sm pe-0">
-                  <option value="=">{{ translate('=') }}</option>
-                  <option value=">">{{ translate('>') }}</option>
-                  <option value=">=">{{ translate('>=') }}</option>
-                  <option value="<">{{ translate('<') }}</option>
-                  <option value="<=">{{ translate('<=') }}</option>
-                </select>
-
-                <select v-if="
-                  column.filter.operators && column.filter.operators.length > 0
-                " v-model="column.filter.operator" :disabled="column.filter.fixed" @change="reloadTable()" class="form-select form-select-sm pe-0">
-                  <option v-for="operator in column.filter.operators" :key="operator" :value="operator.value">
-                    {{ operator.label }}
-                  </option>
-                </select>
-
-                <input type="number" class="form-control" v-model="column.filter.value" :disabled="column.filter.fixed" :min="column.filter.min" :max="column.filter.max" :class="{
-                  'fixed': column.filter.fixed,
-                }" @change="reloadTable()" @keyup.enter="reloadTable()" />
-
-                <button v-if="!column.filter.fixed && column.filter.buttonx && column.filter.buttonx != false" class="btn btn-outline-secondary"
-                  :disabled="column.filter.value == null" :class="{
-                    'opacity-25': column.filter.value == null,
-                  }" @click="
-                    column.filter.value = undefined;
-                  reloadTable();
-                  ">
-                  <i class="bi bi-x"></i>
-                </button>
-              </div>
-
-              <div v-if="column.filter && column.filter.type == 'select'">
-
-                <div class="dropdown" v-if="column.filter.dropdown">
-                  <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ column.filter.multiple ? (column.filter.value.length + " selected") : (column.filter.value ? column.filter.value : 'not selected') }}
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li>
-                      <span v-for="option in column.filter.options" :key="option" class="dropdown-item cursor-pointer"
-                        :class="{ 'selected': (column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value) }"
-                        @click="dropdownSelectToggleOne(column.filter, option)">
-                        <i v-if="(column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value)" class="bi bi-check-square"></i>
-                        <i v-else class="bi bi-square"></i>
-                        {{ translate(option.label ? option.label : option.value) }}
-                      </span>
-                    </li>
-                    <li v-if="column.filter.multiple">
-                      <hr class="dropdown-divider">
-                    </li>
-                    <li v-if="column.filter.multiple">
-                      <span class="dropdown-item cursor-pointer" @click="dropdownSelectAll(column.filter.value, column.filter.options)">
-                        {{ translate('Select all') }}
-                      </span>
-                    </li>
-                    <li v-if="column.filter.multiple">
-                      <span class="dropdown-item cursor-pointer" @click="dropdownSelectClear(column.filter.value)">
-                        {{ translate('Unselect all') }}
-                      </span>
-                    </li>
-                    <li v-if="column.filter.multiple">
-                      <span class="dropdown-item cursor-pointer" @click="dropdownSelectInvert(column.filter.value, column.filter.options)">
-                        {{ translate('Invert all') }}
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div v-else class="input-group input-group-sm my-1">
-
-                  <select v-model="column.filter.value" @change="reloadTable()" :multiple="column.filter.multiple" class="form-select form-select-sm pe-0">
-                    <option v-for="option in column.filter.options" :key="option" :value="option.value">
-                      {{ translate(option.label ? option.label : option.value) }}
-                    </option>
-                  </select>
-
-                  <button class="btn btn-outline-secondary" v-if="column.filter.buttonx && column.filter.buttonx != false" :disabled="column.filter.value == null" :class="{
-                    'opacity-25': column.filter.value == null,
-                  }" @click="
-                    column.filter.value = undefined;
-                  reloadTable();
-                  ">
-                    <i class="bi bi-x"></i>
-                  </button>
-
-                </div>
-
-              </div>
-
-              <div v-if="
-                column.filter &&
-                (column.filter.type == 'datetime-local' ||
-                  column.filter.type == 'date')
-              " class="input-group input-group-sm my-1">
-                <select v-if="column.filter.operators == true" v-model="column.filter.operator" @change="reloadTable()" class="form-select form-select-sm pe-0">
-                  <option value="=">{{ translate('=') }}</option>
-                  <option value=">">{{ translate('>') }}</option>
-                  <option value=">=">{{ translate('>=') }}</option>
-                  <option value="<">{{ translate('<') }}</option>
-                  <option value="<=">{{ translate('<=') }}</option>
-                </select>
-
-                <select v-if="
-                  column.filter.operators && column.filter.operators.length > 0
-                " v-model="column.filter.operator" @change="reloadTable()" class="form-select form-select-sm pe-0">
-                  <option v-for="operator in column.filter.operators" :key="operator" :value="operator.value">
-                    {{ translate(operator.label) }}
-                  </option>
-                </select>
-
-                <input :type="column.filter.type" :class="{
-                  'fixed': column.filter.fixed,
-                }" class="form-control form-control-sm" v-model="column.filter.value" @change="reloadTable()" @keyup.enter="reloadTable()" />
-
-                <button class="btn btn-outline-secondary" :disabled="!column.filter.value" :class="{
-                  'opacity-25': !column.filter.value,
-                }" @click="
-                  column.filter.value = undefined;
-                reloadTable();
-                ">
-                  <i class="bi bi-x"></i>
-                </button>
-              </div>
-
-              <span v-if="column.filter && column.filter.buttons" :class="getValueOrFunction(column.filter.buttons, {
-                column: column,
-              })
-                ">
-                <span v-for="button in column.filter.buttons" :key="button.action">
-                  <button type="button" :disabled="button.disabled !== undefined ? getValueOrFunction(button.disabled) : null" :class="[
-                    button.class
-                      ? button.class
-                      : getButtonClassByAction(button.action),
-                  ]" @click="tableAction(button, {
-                    items: items,
-                    $event: $event
-                  })">
-                    <i :class="[
-                      button.icon !== undefined
-                        ? getValueOrFunction(button.icon, {
-                          button: button,
-                          column: column,
-                          table: this,
-                        })
-                        : getButtonIconClassByAction(button.action),
-                    ]"></i>
-                    {{ translate(button.title) }}
-                  </button>
-                </span>
-              </span>
+              <VuAdminTableFilterField v-if="column.filter" :column="column" :settings="settings" :items="items" :table="this" :reload-table="reloadTable" :table-action="tableAction">
+              </VuAdminTableFilterField>
             </th>
           </tr>
         </thead>
@@ -485,10 +329,10 @@
               <td :class="[settings.table.details.class]" :colspan="settings.table.columns.length">
                 <div class="m-0" v-for="field in settings.table.details.fields" :key="field">
                   <div class="row g-3 align-items-center">
-                    <div class="col text-end" :class="[field.class]">
+                    <div class="col-12 col-md text-md-end" :class="[field.class]">
                       <label class="col-form-label">{{ field.label }}</label>
                     </div>
-                    <div class="col" :class="[field.input.class]">
+                    <div class="col-12 col-md" :class="[field.input.class]">
                       <input :type="field.input.type" v-if="['select', 'textarea'].indexOf(field.input.type) < 0" class="form-control form-control-sm" v-model="item[field.name]"
                         @change="
                           onRowInputChange(item[field.name], field, item, index)
@@ -602,6 +446,65 @@
       </div>
     </div>
 
+    <div v-cloak class="modal shadow vua-mobile-filter-modal" :id="mobileFilterModalId" tabindex="-1">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content" v-if="authAndSettings()">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ translate('Filter / Sort') }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
+            <template v-if="filterableColumns().length">
+              <h6 class="text-secondary text-uppercase small mb-2">{{ translate('Filters') }}</h6>
+              <div class="mb-3" v-for="column in filterableColumns()" :key="'filter_' + column.name">
+                <label class="form-label small fw-bold mb-1">
+                  {{ column.title ? translate(column.title) : translate(column.name) }}
+                </label>
+                <VuAdminTableFilterField :column="column" :settings="settings" :items="items" :table="this" :reload-table="reloadTable" :table-action="tableAction">
+                </VuAdminTableFilterField>
+              </div>
+            </template>
+
+            <template v-if="sortableColumns().length">
+              <h6 class="text-secondary text-uppercase small mb-2">{{ translate('Sort') }}</h6>
+              <div class="list-group mb-4">
+                <button type="button" v-for="column in sortableColumns()" :key="'sort_' + column.name"
+                  class="list-group-item list-group-item-action d-flex align-items-center justify-content-between" @click="sortTable(column)">
+                  <span v-html="(column.header && column.header.title !== undefined) ? translate(column.header.title) : (column.title ? translate(column.title) : translate(column.name))">
+                  </span>
+                  <span class="badge text-bg-light p-badge" v-if="config.order[column.name]" :class="{ 'opacity-50': config.order[column.name].fixed }">
+                    <i v-if="config.order[column.name].dir === 'ASC'" class="bi bi-arrow-down"></i>
+                    <i v-if="config.order[column.name].dir === 'DESC'" class="bi bi-arrow-up"></i>
+                    {{ config.order[column.name].idx + 1 }}
+                  </span>
+                </button>
+              </div>
+            </template>
+
+            <template v-if="config.pagination.limits && config.pagination.limits.length">
+              <h6 class="text-secondary text-uppercase small mb-2">{{ translate('Rows per page') }}</h6>
+              <div class="btn-group flex-wrap mb-2" role="group">
+                <button type="button" v-for="limit in config.pagination.limits" :key="'limit_' + limit"
+                  class="btn btn-sm" :class="config.pagination.limit == limit ? 'btn-secondary' : 'btn-outline-secondary'" @click="setPageLimit(limit)">
+                  {{ limit }}
+                </button>
+              </div>
+            </template>
+
+          </div>
+          <div class="modal-footer d-flex justify-content-between">
+            <button type="button" class="btn btn-outline-secondary" @click="resetFilter(true); resetOrder(true);">
+              <i class="bi bi-x-circle"></i> {{ translate('Reset') }}
+            </button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="applyMobileFilters()">
+              <i class="bi bi-check-lg"></i> {{ translate('Apply') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -646,6 +549,7 @@ import {
 } from "./buttonActions";
 import VuAdminForm from "./VuAdminForm.vue";
 import VuAdminTablePagination from "./VuAdminTablePagination.vue";
+import VuAdminTableFilterField from "./VuAdminTableFilterField.vue";
 
 const eventBus = mitt();
 
@@ -665,6 +569,7 @@ export default {
   components: {
     VuAdminForm,
     VuAdminTablePagination,
+    VuAdminTableFilterField,
   },
   data() {
     return {
@@ -705,6 +610,9 @@ export default {
       modalId: null,
       modalElement: null,
       modalWindow: null,
+      mobileFilterModalId: null,
+      mobileFilterModalElement: null,
+      mobileFilterModalWindow: null,
       messages: {
         table: [],
         form: [],
@@ -748,12 +656,16 @@ export default {
 
     this.formId = "form_" + this.settings.entity + "_" + uid;
     this.modalId = "modal_" + this.settings.entity + "_" + uid;
+    this.mobileFilterModalId = "modal_filters_" + this.settings.entity + "_" + uid;
 
   },
   mounted() {
 
     this.modalElement = document.getElementById(this.modalId);
     this.modalWindow = new Modal(this.modalElement);
+
+    this.mobileFilterModalElement = document.getElementById(this.mobileFilterModalId);
+    this.mobileFilterModalWindow = new Modal(this.mobileFilterModalElement);
 
     this.modalElement.addEventListener('hidden.bs.modal', event => {
       this.settings.form.visible = false;
@@ -915,6 +827,42 @@ export default {
       return this.settings.table.columns.filter(
         (column) => column.filter && !column.hidden
       ).length;
+    },
+
+    filterableColumns() {
+      return this.settings.table.columns.filter(
+        (column) => column.filter && !column.hidden
+      );
+    },
+
+    sortableColumns() {
+      return this.settings.table.columns.filter(
+        (column) => !column.hidden && this.isSortable(column)
+      );
+    },
+
+    countActiveFilters() {
+      return this.settings.table.columns.filter((column) => {
+        if (!column.filter || column.filter.value === undefined || column.filter.value === null) {
+          return false;
+        }
+        if (Array.isArray(column.filter.value)) {
+          return column.filter.value.length > 0;
+        }
+        return column.filter.value !== '';
+      }).length;
+    },
+
+    countActiveSort() {
+      return Object.keys(this.config.order).length;
+    },
+
+    openMobileFilters() {
+      this.mobileFilterModalWindow.show();
+    },
+
+    applyMobileFilters() {
+      this.reloadTable();
     },
 
     resetTable() {
@@ -2672,8 +2620,20 @@ export default {
 
   }
 
-  /* Mobil stílusok */
-  @media screen and (max-width: 600px) {
+  .vua-table-title > .d-flex {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+
+  .vua-table-control {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* Mobil stílusok: táblázat -> kártya nézet */
+  @media (max-width: 767.98px) {
     .vua-table-responsive {
       border: 0;
     }
@@ -2682,28 +2642,73 @@ export default {
       display: none;
     }
 
-    .vua-table-responsive tr {
-      margin-bottom: 20px;
+    .vua-table-responsive tbody,
+    .vua-table-responsive tfoot {
       display: block;
-      border-bottom: 2px solid #ddd;
+    }
+
+    .vua-table-responsive tr {
+      display: block;
+      margin-bottom: 0.75rem;
+      padding: 0.75rem;
+      border: 1px solid var(--bs-border-color);
+      border-radius: var(--bs-border-radius, 0.5rem);
+      background-color: var(--bs-body-bg);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
     .vua-table-responsive td {
       display: block;
-      text-align: right;
-      border-bottom: 1px dotted #ccc;
-      position: relative;
-      padding-left: 50%;
+      width: 100% !important;
+      text-align: left;
+      border: 0;
+      border-bottom: 1px solid var(--bs-border-color-translucent, var(--bs-border-color));
+      padding: 0.4rem 0;
     }
 
-    .table-responsive td::before {
-      content: attr(data-label);
-      position: absolute;
-      left: 0;
-      width: 40%;
-      padding-left: 5px;
-      font-weight: lighter;
-      text-align: left;
+    .vua-table-responsive td:first-child {
+      padding-top: 0;
+    }
+
+    .vua-table-responsive td:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .vua-table-responsive td::before {
+      content: attr(data-label) ": ";
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: var(--bs-secondary-color, var(--bs-secondary));
+      margin-right: 0.15rem;
+    }
+
+    .vua-table-responsive .vua-table-bulk {
+      border-width: 2px;
+    }
+  }
+
+  /* Mobil modal: teljes képernyős szerkesztő/szűrő ablak */
+  @media (max-width: 575.98px) {
+    .modal .modal-dialog {
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      max-height: 100%;
+      margin: 0;
+    }
+
+    .modal .modal-content {
+      height: 100%;
+      max-height: 100%;
+      border-radius: 0;
+    }
+
+    .modal-header {
+      flex-wrap: wrap;
+      row-gap: 0.5rem;
     }
   }
 }
