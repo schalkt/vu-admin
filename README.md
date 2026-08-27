@@ -406,8 +406,19 @@ form: {
 // Dropdown (multi-select stored as array)
 {
   type: 'dropdown', name: 'roles', label: 'Roles',
-  dropdown: { label: 'Add role', class: 'btn btn-sm btn-outline-secondary' },
-  list:     { class: 'badge bg-secondary me-1 cursor-pointer' },
+  dropdown: {
+    // string, or function for dynamic button text (receives { field, item })
+    label: ({ item, field }) => {
+      const n = Array.isArray(item[field.name]) ? item[field.name].length : 0;
+      return n > 0 ? `Add role (${n})` : 'Add role';
+    },
+    class: 'btn btn-sm btn-outline-secondary',
+  },
+  list: {
+    class: 'badge bg-secondary me-1 cursor-pointer',
+    // hidden: true,           // hide selected-value chips under the button
+    // wrapperClass: 'd-none', // alternative: hide via CSS class
+  },
   options: [ { value: 'admin', label: 'Admin' }, … ],
 }
 

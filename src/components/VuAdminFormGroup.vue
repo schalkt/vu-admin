@@ -83,7 +83,7 @@
             <div v-cloak v-if="field.type == 'dropdown' && item[field.name]">
               <div class="dropdown d-inline-block">
                 <button class="btn dropdown-toggle" :class="[field.dropdown ? field.dropdown.class : '']" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                  <span>{{ translate(field.dropdown ? field.dropdown.label : 'Select') }}</span>
+                  <span>{{ translate(getValueOrFunction(field.dropdown && field.dropdown.label !== undefined ? field.dropdown.label : 'Select', { field: field, item: item })) }}</span>
                 </button>
                 <ul class="dropdown-menu">
                   <li>
@@ -114,7 +114,7 @@
                   </li>
                 </ul>
               </div>
-              <span v-if="item[field.name].length" :class="[field.list && field.list.wrapperClass ? field.list.wrapperClass : 'd-block mt-1']">
+              <span v-if="item[field.name].length && !(field.list && field.list.hidden)" :class="[field.list && field.list.wrapperClass ? field.list.wrapperClass : 'd-block mt-1']">
                 <span class="cursor-pointer" :class="[field.list ? field.list.class : '']" v-for="el in item[field.name]" :key="el" @click="dropdownSelectToggleOne(field, item[field.name], el)">
                   {{ translate(el) }} <i class="bi bi-x"></i>
                 </span>

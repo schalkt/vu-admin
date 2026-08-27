@@ -19948,6 +19948,7 @@ var ij = /*#__PURE__*/ HO(PA, [["render", rj]]), aj = {
 	image: {
 		jpg: "image/jpeg",
 		jpeg: "image/jpeg",
+		jfif: "image/jpeg",
 		png: "image/png",
 		webp: "image/webp",
 		avif: "image/avif",
@@ -21814,7 +21815,10 @@ function gP(t, s, c, l, u, d) {
 			"data-bs-auto-close": "outside",
 			"data-bs-toggle": "dropdown",
 			"aria-expanded": "false"
-		}, [a("span", null, x(t.translate(c.dropdown ? c.dropdown.label : "Select")), 1)], 2), a("ul", eP, [
+		}, [a("span", null, x(t.translate(t.getValueOrFunction(c.dropdown && c.dropdown.label !== void 0 ? c.dropdown.label : "Select", {
+			field: c,
+			item: t.item
+		}))), 1)], 2), a("ul", eP, [
 			a("li", null, [(_(!0), i(e, null, y(c.options, (e) => (_(), i("span", {
 				key: e,
 				class: m(["dropdown-item cursor-pointer", { selected: t.item[c.name].indexOf(e.value) >= 0 }]),
@@ -21833,7 +21837,7 @@ function gP(t, s, c, l, u, d) {
 				class: "dropdown-item cursor-pointer",
 				onClick: (e) => t.dropdownSelectInvert(t.item[c.name], c.options)
 			}, x(t.translate("Invert all")), 9, oP)])
-		])]), t.item[c.name].length ? (_(), i("span", {
+		])]), t.item[c.name].length && !(c.list && c.list.hidden) ? (_(), i("span", {
 			key: 0,
 			class: m([c.list && c.list.wrapperClass ? c.list.wrapperClass : "d-block mt-1"])
 		}, [(_(!0), i(e, null, y(t.item[c.name], (e) => (_(), i("span", {

@@ -135,6 +135,7 @@ const UPLOAD_MIME = {
   '.png':  'image/png',
   '.jpg':  'image/jpeg',
   '.jpeg': 'image/jpeg',
+  '.jfif': 'image/jpeg',
   '.webp': 'image/webp',
   '.gif':  'image/gif',
   '.pdf':  'application/pdf',
