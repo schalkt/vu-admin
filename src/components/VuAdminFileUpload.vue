@@ -93,11 +93,18 @@
 
                       <span v-if="!file.isDocument && file.types && file.types[params.thumbnail]" class="mx-0">
 
-                        <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url">
+                        <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url"
+                          :class="{ 'vsa-thumb-editable': file.isImage && !isSvgFile(file) }"
+                          :title="file.isImage && !isSvgFile(file) ? translate('Szerkesztés') : null"
+                          @click="onThumbnailClick(file, $event)">
                           <img height="32" width="auto" class="transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
                         </a>
 
-                        <img v-else height="32" width="auto" class="transparent-background" :src="file.types[params.thumbnail].data" :alt="file.name" />
+                        <img v-else height="32" width="auto" class="transparent-background"
+                          :class="{ 'vsa-thumb-editable': file.isImage && !isSvgFile(file) }"
+                          :src="file.types[params.thumbnail].data" :alt="file.name"
+                          :title="file.isImage && !isSvgFile(file) ? translate('Szerkesztés') : null"
+                          @click="onThumbnailClick(file, $event)" />
 
                       </span>
 
@@ -234,11 +241,18 @@
               <div v-if="file.types && file.types[params.thumbnail]"
                 class="vsa-image-frame mb-auto border border-bottom-0 p-1 text-center w-100 h-100 d-flex justify-content-center align-items-center">
 
-                <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url">
+                <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url"
+                  :class="{ 'vsa-thumb-editable': file.isImage && !isSvgFile(file) }"
+                  :title="file.isImage && !isSvgFile(file) ? translate('Szerkesztés') : null"
+                  @click="onThumbnailClick(file, $event)">
                   <img class="img-fluid transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
                 </a>
 
-                <img v-else class="img-fluid transparent-background" :src="file.types[params.thumbnail].data" :alt="file.name" />
+                <img v-else class="img-fluid transparent-background"
+                  :class="{ 'vsa-thumb-editable': file.isImage && !isSvgFile(file) }"
+                  :src="file.types[params.thumbnail].data" :alt="file.name"
+                  :title="file.isImage && !isSvgFile(file) ? translate('Szerkesztés') : null"
+                  @click="onThumbnailClick(file, $event)" />
 
               </div>
 
@@ -462,6 +476,21 @@
             <i class="bi bi-x"></i>
           </button>
 
+          <span class="text-secondary mx-1">|</span>
+
+          <button type="button" class="btn btn-sm" :class="editor.blurMode ? 'btn-warning' : 'btn-outline-light'" @click="editorToggleBlur" title="Elhomályosítás (B)">
+            <i class="bi bi-eye-slash"></i>
+            <span v-if="editor.blurMode" class="ms-1 small">Rajzolj négyzetet</span>
+          </button>
+
+          <template v-if="editor.blurMode">
+            <div class="d-flex align-items-center text-light gap-1 ms-1">
+              <i class="bi bi-droplet-half"></i>
+              <input type="range" class="form-range" min="2" max="60" step="1" v-model.number="blurRadius" @input="saveBlurRadius" style="width: 120px;" title="Elmosás erőssége">
+              <small class="text-nowrap">{{ blurRadius }}px</small>
+            </div>
+          </template>
+
           <template v-if="hasWatermarkPresets()">
             <span class="text-secondary mx-1">|</span>
 
@@ -485,7 +514,8 @@
 
         <div class="vsa-editor-canvas-area d-flex align-items-center justify-content-center flex-grow-1">
           <canvas ref="editorCanvas"
-                  :style="{ cursor: editor.cropMode ? 'crosshair' : 'default' }"
+                  class="vsa-editor-canvas"
+                  :style="{ cursor: (editor.cropMode || editor.blurMode) ? 'crosshair' : 'default' }"
                   @mousedown.prevent="editorMouseDown">
           </canvas>
         </div>
@@ -573,6 +603,7 @@ const FileUpload = {
       isPasteZoneFocused: false,
       uploadErrors: [],
       applyWatermarkOnUpload: true,
+      blurRadius: 20,
     };
   },
   components: {
@@ -583,6 +614,15 @@ const FileUpload = {
     this.uploadId = "image_upload_" + uid;
     this.params = this.field.params;
     this.activeLanguage = this.hasLanguages() ? this.params.languages[0] : null;
+
+    try {
+      const savedBlurRadius = parseInt(localStorage.getItem('vsa_editor_blur_radius'), 10);
+      if (!isNaN(savedBlurRadius) && savedBlurRadius > 0) {
+        this.blurRadius = savedBlurRadius;
+      }
+    } catch (err) {
+      // localStorage unavailable (e.g. private mode) - fall back to default
+    }
   },
   mounted() {
 
@@ -593,10 +633,12 @@ const FileUpload = {
     }
 
     document.addEventListener("paste", this.handlePaste);
+    document.addEventListener("keydown", this.editorKeyDown);
 
   },
   beforeUnmount() {
     document.removeEventListener("paste", this.handlePaste);
+    document.removeEventListener("keydown", this.editorKeyDown);
     this.setProcessingOverlay(null);
   },
   watch: {
@@ -1296,6 +1338,20 @@ const FileUpload = {
       this.dragOverIndex = null;
     },
 
+    onThumbnailClick(file, event) {
+      if (!file.isImage || this.isSvgFile(file)) {
+        return;
+      }
+      if (event && (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0)) {
+        return;
+      }
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      this.openEditor(file);
+    },
+
     openEditor(file) {
       if (this.isSvgFile(file)) {
         return;
@@ -1304,7 +1360,7 @@ const FileUpload = {
       const src = type ? (type.data || type.url) : null;
       if (!src) return;
 
-      this.editor = { file, imgBitmap: null, rotate: 0, flipX: false, flipY: false, cropMode: false, crop: null, dragging: false, cropDrag: null, cropAnchor: null, scale: 1, hasWatermark: !!(type && type.watermarked), applyWatermark: false };
+      this.editor = { file, imgBitmap: null, rotate: 0, flipX: false, flipY: false, cropMode: false, crop: null, dragging: false, cropDrag: null, cropAnchor: null, scale: 1, hasWatermark: !!(type && type.watermarked), applyWatermark: false, blurMode: false, blurDrag: null };
 
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -1329,6 +1385,26 @@ const FileUpload = {
       img.src = src;
     },
 
+    editorLogicalSize(img, rotate = 0) {
+      const isRotated90 = rotate % 180 !== 0;
+      return {
+        width: isRotated90 ? img.height : img.width,
+        height: isRotated90 ? img.width : img.height,
+      };
+    },
+
+    editorDisplayToSourceRect(rect, sourceWidth, sourceHeight, displayWidth, displayHeight) {
+      const scaleX = sourceWidth / displayWidth;
+      const scaleY = sourceHeight / displayHeight;
+
+      const bx = Math.max(0, Math.round(Math.min(rect.x1, rect.x2) * scaleX));
+      const by = Math.max(0, Math.round(Math.min(rect.y1, rect.y2) * scaleY));
+      const bw = Math.min(sourceWidth - bx, Math.max(1, Math.round(Math.abs(rect.x2 - rect.x1) * scaleX)));
+      const bh = Math.min(sourceHeight - by, Math.max(1, Math.round(Math.abs(rect.y2 - rect.y1) * scaleY)));
+
+      return { bx, by, bw, bh };
+    },
+
     editorDraw(skipOverlay = false) {
       const canvas = this.$refs.editorCanvas;
       if (!canvas || !this.editor.imgBitmap) return;
@@ -1344,8 +1420,14 @@ const FileUpload = {
       const scale = Math.min(maxW / logW, maxH / logH, 1);
       this.editor.scale = scale;
 
-      canvas.width = Math.round(logW * scale);
-      canvas.height = Math.round(logH * scale);
+      const newW = Math.round(logW * scale);
+      const newH = Math.round(logH * scale);
+      if (canvas.width !== newW || canvas.height !== newH) {
+        canvas.width = newW;
+        canvas.height = newH;
+      }
+      this.editor.displayWidth = canvas.width;
+      this.editor.displayHeight = canvas.height;
 
       const ctx = canvas.getContext('2d');
       ctx.save();
@@ -1386,6 +1468,21 @@ const FileUpload = {
         [[cx, cy], [cx + cw, cy], [cx, cy + ch], [cx + cw, cy + ch]].forEach(([hx, hy]) => {
           ctx.fillRect(hx - hs / 2, hy - hs / 2, hs, hs);
         });
+      }
+
+      if (!skipOverlay && this.editor.blurMode && this.editor.blurDrag) {
+        const { x1, y1, x2, y2 } = this.editor.blurDrag;
+        const bx = Math.min(x1, x2), by = Math.min(y1, y2);
+        const bw = Math.abs(x2 - x1), bh = Math.abs(y2 - y1);
+
+        ctx.fillStyle = 'rgba(13, 202, 240, 0.2)';
+        ctx.fillRect(bx, by, bw, bh);
+
+        ctx.strokeStyle = 'rgba(13, 202, 240, 0.9)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 3]);
+        ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, bh - 1);
+        ctx.setLineDash([]);
       }
     },
 
@@ -1428,6 +1525,13 @@ const FileUpload = {
     },
 
     editorMouseDown(event) {
+      if (this.editor.blurMode) {
+        const { x, y } = this.editorCanvasCoords(event);
+        this.editor.dragging = true;
+        this.editor.blurDrag = { x1: x, y1: y, x2: x, y2: y };
+        return;
+      }
+
       if (!this.editor.cropMode) return;
       const { x, y } = this.editorCanvasCoords(event);
       const handle = this.editorHitCropHandle(x, y);
@@ -1457,9 +1561,21 @@ const FileUpload = {
     },
 
     editorMouseMove(event) {
-      if (!this.editor.cropMode) return;
       const canvas = this.$refs.editorCanvas;
       if (!canvas) return;
+
+      if (this.editor.blurMode) {
+        canvas.style.cursor = 'crosshair';
+        if (this.editor.dragging && this.editor.blurDrag) {
+          const { x, y } = this.editorCanvasCoords(event);
+          this.editor.blurDrag.x2 = x;
+          this.editor.blurDrag.y2 = y;
+          this.editorDraw();
+        }
+        return;
+      }
+
+      if (!this.editor.cropMode) return;
 
       const { x, y } = this.editorCanvasCoords(event);
 
@@ -1488,9 +1604,19 @@ const FileUpload = {
     },
 
     editorMouseUp() {
+      if (this.editor.blurMode && this.editor.dragging && this.hasValidCrop(this.editor.blurDrag)) {
+        const canvas = this.$refs.editorCanvas;
+        const blurRect = { ...this.editor.blurDrag };
+        const displayWidth = canvas?.width || this.editor.displayWidth;
+        const displayHeight = canvas?.height || this.editor.displayHeight;
+        this.editor.blurDrag = null;
+        this.applyBlurRegion(blurRect, displayWidth, displayHeight);
+      }
+
       this.editor.dragging = false;
       this.editor.cropDrag = null;
       this.editor.cropAnchor = null;
+      this.editor.blurDrag = null;
     },
 
     editorRotate(deg) {
@@ -1513,6 +1639,10 @@ const FileUpload = {
     editorToggleCrop() {
       this.editor.cropMode = !this.editor.cropMode;
       if (!this.editor.cropMode) this.editor.crop = null;
+      if (this.editor.cropMode) {
+        this.editor.blurMode = false;
+        this.editor.blurDrag = null;
+      }
       this.editorDraw();
     },
 
@@ -1524,15 +1654,112 @@ const FileUpload = {
       this.editorToggleCrop();
     },
 
+    editorToggleBlur() {
+      this.editor.blurMode = !this.editor.blurMode;
+      if (this.editor.blurMode) {
+        this.editor.cropMode = false;
+        this.editor.crop = null;
+      }
+      this.editor.blurDrag = null;
+      this.editorDraw();
+    },
+
+    editorKeyDown(event) {
+      if (!this.editor?.file) {
+        return;
+      }
+      if (event.ctrlKey || event.metaKey || event.altKey) {
+        return;
+      }
+      const tag = event.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || event.target?.isContentEditable) {
+        return;
+      }
+      if (event.key.toLowerCase() !== 'b') {
+        return;
+      }
+      event.preventDefault();
+      this.editorToggleBlur();
+    },
+
+    saveBlurRadius() {
+      try {
+        localStorage.setItem('vsa_editor_blur_radius', String(this.blurRadius));
+      } catch (err) {
+        // localStorage unavailable (e.g. private mode) - ignore
+      }
+    },
+
+    async applyBlurRegion(rect, displayWidth, displayHeight) {
+      if (!this.hasValidCrop(rect)) return;
+
+      this.editorDraw(true);
+
+      const displayCanvas = this.$refs.editorCanvas;
+      if (!displayCanvas) return;
+
+      const dw = displayWidth || displayCanvas.width;
+      const dh = displayHeight || displayCanvas.height;
+      if (!dw || !dh) return;
+
+      const dx = Math.max(0, Math.round(Math.min(rect.x1, rect.x2)));
+      const dy = Math.max(0, Math.round(Math.min(rect.y1, rect.y2)));
+      const patchW = Math.max(1, Math.min(dw - dx, Math.round(Math.abs(rect.x2 - rect.x1))));
+      const patchH = Math.max(1, Math.min(dh - dy, Math.round(Math.abs(rect.y2 - rect.y1))));
+
+      const img = this.editor.imgBitmap;
+      const { width: tw, height: th } = this.editorLogicalSize(img, this.editor.rotate);
+      const scaleX = tw / dw;
+      const scaleY = th / dh;
+      const blurPx = Math.max(1, Math.round((this.blurRadius || 20) * Math.max(scaleX, scaleY)));
+      const pad = Math.ceil(blurPx * 2);
+
+      const patch = document.createElement('canvas');
+      patch.width = patchW + pad * 2;
+      patch.height = patchH + pad * 2;
+      patch.getContext('2d').drawImage(
+        displayCanvas,
+        dx, dy, patchW, patchH,
+        pad, pad, patchW, patchH
+      );
+
+      const blurred = document.createElement('canvas');
+      blurred.width = patch.width;
+      blurred.height = patch.height;
+      const bctx = blurred.getContext('2d');
+      bctx.filter = `blur(${blurPx}px)`;
+      bctx.drawImage(patch, 0, 0);
+
+      displayCanvas.getContext('2d').drawImage(
+        blurred,
+        pad, pad, patchW, patchH,
+        dx, dy, patchW, patchH
+      );
+
+      const sourceCanvas = document.createElement('canvas');
+      sourceCanvas.width = tw;
+      sourceCanvas.height = th;
+      sourceCanvas.getContext('2d').drawImage(
+        displayCanvas,
+        0, 0, dw, dh,
+        0, 0, tw, th
+      );
+
+      this.editor.imgBitmap = await createImageBitmap(sourceCanvas);
+      this.editor.rotate = 0;
+      this.editor.flipX = false;
+      this.editor.flipY = false;
+      this.$nextTick(() => this.editorDraw());
+    },
+
     editorRenderSource() {
       const img = this.editor.imgBitmap;
       if (!img) return null;
 
       const { rotate, flipX, flipY, crop } = this.editor;
-      const scale = this.editor.scale || 1;
-      const isRotated90 = rotate % 180 !== 0;
-      const tw = isRotated90 ? img.height : img.width;
-      const th = isRotated90 ? img.width : img.height;
+      const { width: tw, height: th } = this.editorLogicalSize(img, rotate);
+      const displayWidth = this.editor.displayWidth || this.$refs.editorCanvas?.width;
+      const displayHeight = this.editor.displayHeight || this.$refs.editorCanvas?.height;
 
       const transformCanvas = document.createElement('canvas');
       transformCanvas.width = tw;
@@ -1543,14 +1770,17 @@ const FileUpload = {
       ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
       ctx.drawImage(img, -img.width / 2, -img.height / 2);
 
-      if (!this.hasValidCrop(crop)) {
+      if (!this.hasValidCrop(crop) || !displayWidth || !displayHeight) {
         return transformCanvas;
       }
 
-      const cx = Math.max(0, Math.round(Math.min(crop.x1, crop.x2) / scale));
-      const cy = Math.max(0, Math.round(Math.min(crop.y1, crop.y2) / scale));
-      const cw = Math.min(tw - cx, Math.max(1, Math.round(Math.abs(crop.x2 - crop.x1) / scale)));
-      const ch = Math.min(th - cy, Math.max(1, Math.round(Math.abs(crop.y2 - crop.y1) / scale)));
+      const { bx: cx, by: cy, bw: cw, bh: ch } = this.editorDisplayToSourceRect(
+        crop,
+        tw,
+        th,
+        displayWidth,
+        displayHeight
+      );
       const cropCanvas = document.createElement('canvas');
       cropCanvas.width = cw;
       cropCanvas.height = ch;
@@ -1917,6 +2147,10 @@ export default FileUpload;
 
     .vsa-file-actions-menu {
       min-width: 14rem;
+    }
+
+    .vsa-thumb-editable {
+      cursor: pointer;
     }
 
     .vsa-image-container {
