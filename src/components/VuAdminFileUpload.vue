@@ -448,7 +448,10 @@
            @mouseup="editorMouseUp"
            @mouseleave="editorMouseUp">
 
-        <div class="vsa-editor-toolbar d-flex align-items-center flex-wrap gap-1 p-2 bg-dark border-bottom border-secondary">
+        <div class="vsa-editor-toolbar d-flex align-items-center flex-wrap gap-1 p-2 bg-dark border-bottom border-secondary"
+             @mousedown.stop
+             @mousemove.stop
+             @mouseup.stop>
 
           <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(-90)" title="Forgatás balra 90°">
             <i class="bi bi-arrow-counterclockwise"></i>
@@ -486,8 +489,19 @@
           <template v-if="editor.blurMode">
             <div class="d-flex align-items-center text-light gap-1 ms-1">
               <i class="bi bi-droplet-half"></i>
-              <input type="range" class="form-range" min="2" max="60" step="1" v-model.number="blurRadius" @input="saveBlurRadius" style="width: 120px;" title="Elmosás erőssége">
-              <small class="text-nowrap">{{ blurRadius }}px</small>
+              <div class="input-group input-group-sm vsa-blur-input">
+                <button type="button" class="btn btn-outline-light" @click="adjustBlurRadius(-5)" title="-5 px">−</button>
+                <input type="number"
+                       class="form-control text-center"
+                       min="2"
+                       max="120"
+                       step="1"
+                       v-model.number="blurRadius"
+                       @change="clampBlurRadius()"
+                       title="Elmosás erőssége (forráskép px)">
+                <span class="input-group-text">px</span>
+                <button type="button" class="btn btn-outline-light" @click="adjustBlurRadius(5)" title="+5 px">+</button>
+              </div>
             </div>
           </template>
 
@@ -617,8 +631,8 @@ const FileUpload = {
 
     try {
       const savedBlurRadius = parseInt(localStorage.getItem('vsa_editor_blur_radius'), 10);
-      if (!isNaN(savedBlurRadius) && savedBlurRadius > 0) {
-        this.blurRadius = savedBlurRadius;
+      if (!isNaN(savedBlurRadius) && savedBlurRadius >= 2) {
+        this.blurRadius = Math.min(savedBlurRadius, 120);
       }
     } catch (err) {
       // localStorage unavailable (e.g. private mode) - fall back to default
@@ -1690,6 +1704,17 @@ const FileUpload = {
       }
     },
 
+    clampBlurRadius(value) {
+      const n = value !== undefined ? value : this.blurRadius;
+      const parsed = parseInt(n, 10);
+      this.blurRadius = isNaN(parsed) ? 20 : Math.max(2, Math.min(120, parsed));
+      this.saveBlurRadius();
+    },
+
+    adjustBlurRadius(delta) {
+      this.clampBlurRadius((this.blurRadius || 20) + delta);
+    },
+
     async applyBlurRegion(rect, displayWidth, displayHeight) {
       if (!this.hasValidCrop(rect)) return;
 
@@ -1711,28 +1736,56 @@ const FileUpload = {
       const { width: tw, height: th } = this.editorLogicalSize(img, this.editor.rotate);
       const scaleX = tw / dw;
       const scaleY = th / dh;
-      const blurPx = Math.max(1, Math.round((this.blurRadius || 20) * Math.max(scaleX, scaleY)));
-      const pad = Math.ceil(blurPx * 2);
 
-      const patch = document.createElement('canvas');
-      patch.width = patchW + pad * 2;
-      patch.height = patchH + pad * 2;
-      patch.getContext('2d').drawImage(
+      // Slider = forráskép px; a pozícióhoz display canvason dolgozunk (WYSIWYG)
+      const blurPx = Math.max(1, this.blurRadius || 20);
+      const padDisplay = Math.ceil(Math.max(blurPx / scaleX, blurPx / scaleY) * 3);
+      const sx = Math.max(0, dx - padDisplay);
+      const sy = Math.max(0, dy - padDisplay);
+      const ex = Math.min(dw, dx + patchW + padDisplay);
+      const ey = Math.min(dh, dy + patchH + padDisplay);
+      const sw = ex - sx;
+      const sh = ey - sy;
+
+      const displayPatch = document.createElement('canvas');
+      displayPatch.width = sw;
+      displayPatch.height = sh;
+      displayPatch.getContext('2d').drawImage(
         displayCanvas,
-        dx, dy, patchW, patchH,
-        pad, pad, patchW, patchH
+        sx, sy, sw, sh,
+        0, 0, sw, sh
+      );
+
+      const sourcePatchW = Math.max(1, Math.round(sw * scaleX));
+      const sourcePatchH = Math.max(1, Math.round(sh * scaleY));
+      const sourcePatch = document.createElement('canvas');
+      sourcePatch.width = sourcePatchW;
+      sourcePatch.height = sourcePatchH;
+      sourcePatch.getContext('2d').drawImage(
+        displayPatch,
+        0, 0, sw, sh,
+        0, 0, sourcePatchW, sourcePatchH
       );
 
       const blurred = document.createElement('canvas');
-      blurred.width = patch.width;
-      blurred.height = patch.height;
+      blurred.width = sourcePatchW;
+      blurred.height = sourcePatchH;
       const bctx = blurred.getContext('2d');
       bctx.filter = `blur(${blurPx}px)`;
-      bctx.drawImage(patch, 0, 0);
+      bctx.drawImage(sourcePatch, 0, 0);
+
+      const blurredDisplay = document.createElement('canvas');
+      blurredDisplay.width = sw;
+      blurredDisplay.height = sh;
+      blurredDisplay.getContext('2d').drawImage(
+        blurred,
+        0, 0, sourcePatchW, sourcePatchH,
+        0, 0, sw, sh
+      );
 
       displayCanvas.getContext('2d').drawImage(
-        blurred,
-        pad, pad, patchW, patchH,
+        blurredDisplay,
+        dx - sx, dy - sy, patchW, patchH,
         dx, dy, patchW, patchH
       );
 
@@ -2111,6 +2164,27 @@ export default FileUpload;
 
     .vsa-editor-toolbar {
       flex-shrink: 0;
+
+      .vsa-blur-input {
+        width: auto;
+
+        input[type="number"] {
+          width: 3.5rem;
+          -moz-appearance: textfield;
+
+          &::-webkit-outer-spin-button,
+          &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+        }
+
+        .input-group-text {
+          font-size: 0.75rem;
+          padding-left: 0.35rem;
+          padding-right: 0.35rem;
+        }
+      }
     }
 
     .vsa-editor-canvas-area {
