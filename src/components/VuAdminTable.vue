@@ -1460,21 +1460,15 @@ export default {
 
         if (column.relation.ids && column.relation.ids.length) {
 
-          let type = typeof column.relation.ids[0] === "string" ? "text" : "number";
-          let values =
-            type === "string"
-              ? "'" + column.relation.ids.join("','") + "'"
-              : column.relation.ids.join(",");
-
           filter[column.relation.foreign] = {
             type: "array",
-            value: values,
+            value: column.relation.ids,
             operator: "IN",
           };
 
         }
 
-        searchParams.filter = JSON.stringify(filter);
+        searchParams.filter = filter;
 
         executeFunctions(searchParams, {
           column: column,

@@ -242,11 +242,15 @@ export function prepareFetchUrl(method, api, id, urlParams) {
     if (urlParams) {
 
         if (urlParams.filter) {
-            queryParams.filter = JSON.stringify(urlParams.filter);
+            queryParams.filter = typeof urlParams.filter === 'string'
+                ? urlParams.filter
+                : JSON.stringify(urlParams.filter);
         }
 
         if (urlParams.order) {
-            queryParams.order = JSON.stringify(urlParams.order);
+            queryParams.order = typeof urlParams.order === 'string'
+                ? urlParams.order
+                : JSON.stringify(urlParams.order);
         }
 
         haveParams = Object.keys(queryParams).length;
