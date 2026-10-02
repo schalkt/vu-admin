@@ -4,7 +4,7 @@
 
     <div class="row g-1 d-flex align-items-center justify-content-between mb-1" v-for="(elements, elindex) in value" :key="elindex">
 
-      <div class="col-10">
+      <div class="col">
         <div class="row g-1 d-flex align-items-center justify-content-between">
 
           <div v-for="(elementValue, elementKey) in elements" :key="elementKey" :class="field.elements[elementKey].class || 'col'">
@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <div class="col-2 text-nowrap text-end">
+      <div :class="[addButton.wrapperClass, 'text-nowrap text-end']">
 
         <button v-if="field.sortable" type="button" class="btn btn-sm btn-outline-secondary p-1 me-1" @click="arrayItemMoveUp(value, elindex)">
           <i class="bi bi-arrow-up"></i>
@@ -55,7 +55,7 @@
 
     <div class="row g-1 d-flex align-items-center justify-content-between">
 
-      <div class="col-10">
+      <div class="col">
         <div class="row g-1 d-flex align-items-center justify-content-between">
           <div v-for="element in field.elements" :key="element" :class="element.class || 'col'">
 
@@ -83,9 +83,10 @@
         </div>
       </div>
 
-      <div class="col-2">
-        <button type="button" class="btn btn-sm btn-outline-primary my-1 w-100" @click="arrayAddNewItem(field, item)">
-          <i class="bi bi-plus"></i>
+      <div :class="addButton.wrapperClass">
+        <button type="button" :class="addButton.class" @click="arrayAddNewItem(field, item)">
+          <i v-if="addButton.icon" :class="addButton.icon"></i>
+          <span v-if="addButton.label" v-html="getValueOrFunction(addButton.label, item)"></span>
         </button>
       </div>
 
@@ -126,6 +127,16 @@ const VuAdminFormList = {
     //   this.$emit('update:modelValue', []);    
     // }
 
+  },
+  computed: {
+    addButton() {
+      return Object.assign({
+        class: 'btn btn-sm btn-outline-primary my-1 w-100',
+        icon: 'bi bi-plus',
+        wrapperClass: 'col-2',
+        label: null,
+      }, this.field.addButton || {});
+    },
   },
   watch: {
     modelValue(newValue) {

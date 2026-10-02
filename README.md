@@ -429,6 +429,13 @@ form: {
     href: { type: 'text',   class: 'col-md-8', prefix: 'URL' },
     name: { type: 'text',   class: 'col-md-4', prefix: 'Label' },
   },
+  // optional "add to list" button (defaults shown)
+  addButton: {
+    class: 'btn btn-sm btn-outline-primary my-1 w-100',
+    icon: 'bi bi-plus',   // null → no icon
+    wrapperClass: 'col-2', // column of the button (and of the row actions); fields fill the rest
+    label: null,          // string (HTML allowed) or (item, settings, self) => string
+  },
 }
 
 // HTML editor (TipTap; field.tiptap: { placeholder, imageSourceFields?: ['images'] })

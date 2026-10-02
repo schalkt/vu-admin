@@ -715,6 +715,12 @@ window.VuEntities.product = (preset) => {
 						name: 'links',
 						label: 'Linkek',
 						sortable: true,
+						addButton: {
+							class: 'btn btn-sm btn-primary my-1 w-100',
+							icon: 'bi bi-plus me-1',
+							label: 'Hozzáadás',
+							wrapperClass: 'col-3',
+						},
 						elements: {
 							href: {
 								type: 'url',
@@ -733,6 +739,12 @@ window.VuEntities.product = (preset) => {
 						name: 'websites',
 						label: 'Websites',
 						sortable: true,
+						addButton: {
+							class: 'btn btn-sm btn-outline-success my-1 w-100',
+							icon: null,
+							label: 'Add',
+							wrapperClass: 'col-3',
+						},
 						elements: {
 							href: {
 								type: 'select',
@@ -768,6 +780,12 @@ window.VuEntities.product = (preset) => {
 						name: 'owners',
 						label: 'Owners',
 						sortable: true,
+						addButton: {
+							class: 'btn btn-sm btn-outline-secondary my-1 w-100',
+							icon: 'bi bi-person-plus me-1',
+							label: (item) => `Add (${(item.owners || []).length})`,
+							wrapperClass: 'col-3',
+						},
 						elements: {
 							owner: {
 								type: 'select',
