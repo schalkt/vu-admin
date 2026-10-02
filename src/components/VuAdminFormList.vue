@@ -2,22 +2,6 @@
 
   <div>
 
-    <div class="row g-1 d-flex align-items-center justify-content-between mb-1">
-
-      <div class="col-10">
-        <div class="row g-1 d-flex align-items-center justify-content-between">
-          <div v-for="element in field.elements" :key="element" :class="element.class || 'col'">
-            <small>
-              {{ element.placeholder ? element.placeholder : (element.prefix ? element.prefix : '') }}
-            </small>
-          </div>
-        </div>
-      </div>
-      <div class="col-2 text-nowrap text-end">
-      </div>
-
-    </div>
-
     <div class="row g-1 d-flex align-items-center justify-content-between mb-1" v-for="(elements, elindex) in value" :key="elindex">
 
       <div class="col-10">
@@ -29,11 +13,19 @@
 
             <div v-else class="input-group input-group-sm">
 
+              <span v-if="field.elements[elementKey].prefix" class="input-group-text">
+                {{ field.elements[elementKey].prefix }}
+              </span>
+
               <VuAdminFormSelect v-if="field.elements[elementKey].type == 'select' && value[elindex][elementKey]" v-model="value[elindex][elementKey]"
                 :field="field.elements[elementKey]" :item="item" :settings="settings" :formId="formId" :optionValue="'object'"></VuAdminFormSelect>
 
               <input v-else :type="field.elements[elementKey].type" :required="field.elements[elementKey].required"
-                :placeholder="field.elements[elementKey].placeholder || elementKey" class="form-control" v-model="value[elindex][elementKey]">
+                :placeholder="field.elements[elementKey].placeholder || ''" class="form-control" v-model="value[elindex][elementKey]">
+
+              <span v-if="field.elements[elementKey].suffix" class="input-group-text">
+                {{ field.elements[elementKey].suffix }}
+              </span>
 
             </div>
 
@@ -76,7 +68,7 @@
               <VuAdminFormSelect v-if="element.type == 'select' && (!element.relation || (element.relation && element.relation.items))" v-model="element.value" :field="Object.assign({}, element, { required: false })"
                 :item="item" :settings="settings" :formId="formId" :optionValue="'object'"></VuAdminFormSelect>
 
-              <input v-else :type="element.type" :placeholder="element.placeholder || element.name" class="form-control form-control-sm" v-model="element.value">
+              <input v-else :type="element.type" :placeholder="element.placeholder || ''" class="form-control form-control-sm" v-model="element.value">
 
               <span v-if="element.suffix" class="input-group-text">
                 {{ element.suffix }}
@@ -112,6 +104,9 @@ import {
 import VuAdminFormSelect from "./VuAdminFormSelect.vue";
 
 const VuAdminFormList = {
+  inject: {
+    handleFormErrors: { default: null },
+  },
   props: {
     modelValue: Array,
     field: Object,
@@ -180,32 +175,44 @@ const VuAdminFormList = {
 
     arrayAddNewItem(field, item) {
 
-      // if (!item[field.name] || typeof item[field.name] !== "object") {
-      //   item[field.name] = [];
-      // }
+      if (typeof field.validateAdd === "function") {
+        const message = field.validateAdd(field.elements);
+        if (message) {
+          if (this.handleFormErrors) {
+            this.handleFormErrors(message);
+          }
+          return;
+        }
+      }
 
+      const validated = typeof field.validateAdd === "function";
       let push = {};
 
       for (let elementKey in field.elements) {
-        
+
         let element = Object.assign({}, field.elements[elementKey]);
-        let value = element.value ? element.value : null;
-        
-        if (value !== undefined && value !== null) {          
-          push[elementKey] = value;          
+        let raw = element.value;
+        let value = raw != null && String(raw).trim() !== "" ? raw : null;
+
+        if (value !== undefined && value !== null) {
+          push[elementKey] = typeof value === "string" ? value.trim() : value;
+        } else if (validated) {
+          push[elementKey] = "";
         } else {
+          if (this.handleFormErrors) {
+            this.handleFormErrors("Fill in every field before adding a row.");
+          }
           return;
         }
-        
-      }      
-      
+
+      }
+
       this.value.push(push);
       this.$emit('update:modelValue', this.value);
 
-      for (let elementKey in field.elements) {                
-        field.elements[elementKey].value = null;                
-      } 
-
+      for (let elementKey in field.elements) {
+        field.elements[elementKey].value = null;
+      }
 
     },
 
