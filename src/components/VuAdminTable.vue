@@ -47,14 +47,12 @@
             items: items,
             $event: $event
           })">
-            <i :class="[
-              button.icon !== undefined
+            <i :class="buttonIconClass(button.icon !== undefined
                 ? getValueOrFunction(button.icon, {
                   button: button,
                   table: this,
                 })
-                : getButtonIconClassByAction(button.action),
-            ]"></i>
+                : getButtonIconClassByAction(button.action))"></i>
             <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
           </button>
 
@@ -65,14 +63,12 @@
                 : getButtonClassByAction(button.action),
             ]" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
               <span v-cloak v-show="settings.table.columns.length > 0" class="mx-1">
-                <i :class="[
-                  button.icon !== undefined
+                <i :class="buttonIconClass(button.icon !== undefined
                     ? getValueOrFunction(button.icon, {
                       button: button,
                       table: this,
                     })
-                    : getButtonIconClassByAction(button.action),
-                ]"></i>
+                    : getButtonIconClassByAction(button.action))"></i>
                 <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
                 <span class="badge text-bg-secondary ms-1" v-if="countHiddenColumns()">
                   {{ countHiddenColumns() }}
@@ -103,14 +99,12 @@
           <div class="dropdown d-inline-block" v-cloak v-if="button.dropdowns">
             <button type="button" :class="[button.class]" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
               <span class="mx-1">
-                <i :class="[
-                  button.icon !== undefined
+                <i :class="buttonIconClass(button.icon !== undefined
                     ? getValueOrFunction(button.icon, {
                       button: button,
                       table: this,
                     })
-                    : getButtonIconClassByAction(button.action),
-                ]"></i> <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
+                    : getButtonIconClassByAction(button.action))"></i> <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
               </span>
             </button>
             <ul class="dropdown-menu">
@@ -119,7 +113,7 @@
                   items: items,
                   $event: $event
                 })">
-                  <i v-if="dropdown.icon" :class="[dropdown.icon]"></i>
+                  <i v-if="dropdown.icon" :class="buttonIconClass(dropdown.icon)"></i>
                   {{ translate(dropdown.title) }}
                 </span>
               </li>
@@ -129,7 +123,7 @@
 
         <button type="button" class="btn btn-outline-secondary d-md-none vua-mobile-filter-btn" @click="openMobileFilters()"
           v-if="filterableColumns().length || sortableColumns().length || (config.pagination.limits && config.pagination.limits.length)">
-          <i class="bi bi-funnel"></i>
+          <i class="bi bi-funnel me-1"></i>
           <span class="d-none d-md-inline">{{ translate('Filter / Sort') }}</span>
           <span class="badge text-bg-secondary ms-1" v-if="countActiveFilters() + countActiveSort() > 0">
             {{ countActiveFilters() + countActiveSort() }}
@@ -171,15 +165,13 @@
                     items: items,
                     $event: $event
                   })">
-                  <i :class="[
-                    button.icon !== undefined
+                  <i :class="buttonIconClass(button.icon !== undefined
                       ? getValueOrFunction(button.icon, {
                         button: button,
                         column: column,
                         table: this,
                       })
-                      : getButtonIconClassByAction(button.action),
-                  ]"></i>
+                      : getButtonIconClassByAction(button.action))"></i>
                   {{ translate(button.title) }}
                 </button>
               </span>
@@ -303,16 +295,14 @@
                       index: index,
                       $event: $event
                     })">
-                      <i v-if="button.icon !== null" :class="[
-                        button.icon !== undefined
+                      <i v-if="button.icon !== null" :class="buttonIconClass(button.icon !== undefined
                           ? getValueOrFunction(button.icon, {
                             button: button,
                             column: column,
                             item: item,
                             table: this,
                           })
-                          : getButtonIconClassByAction(button.action),
-                      ]"></i>
+                          : getButtonIconClassByAction(button.action))"></i>
 
                       <span v-if="button.template" v-html="tableCellTemplate(button.template, item, index, column)
                         "></span>
@@ -409,15 +399,13 @@
                     " @click="
                       tableBulkAction(button.action, bulkitem, column, $event)
                       ">
-                    <i v-if="button.icon !== null" :class="[
-                      button.icon !== undefined
+                    <i v-if="button.icon !== null" :class="buttonIconClass(button.icon !== undefined
                         ? getValueOrFunction(button.icon, {
                           button: button,
                           column: column,
                           table: this,
                         })
-                        : getButtonIconClassByAction(button.action),
-                    ]"></i>
+                        : getButtonIconClassByAction(button.action))"></i>
 
                     <span v-if="button.template" v-html="tableCellTemplate(button.template, bulkitem, null, column)
                       "></span>
@@ -495,10 +483,10 @@
           </div>
           <div class="modal-footer d-flex justify-content-between">
             <button type="button" class="btn btn-outline-secondary" @click="resetFilter(true); resetOrder(true);">
-              <i class="bi bi-x-circle"></i> {{ translate('Reset') }}
+              <i class="bi bi-x-circle me-1"></i> {{ translate('Reset') }}
             </button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="applyMobileFilters()">
-              <i class="bi bi-check-lg"></i> {{ translate('Apply') }}
+              <i class="bi bi-check-lg me-1"></i> {{ translate('Apply') }}
             </button>
           </div>
         </div>
@@ -546,6 +534,7 @@ import {
 import {
   getButtonClassByAction as resolveButtonClass,
   getButtonIconClassByAction as resolveButtonIcon,
+  withButtonIconMe1,
 } from "./buttonActions";
 import VuAdminForm from "./VuAdminForm.vue";
 import VuAdminTablePagination from "./VuAdminTablePagination.vue";
@@ -1029,6 +1018,10 @@ export default {
 
     getButtonIconClassByAction(action) {
       return resolveButtonIcon(action);
+    },
+
+    buttonIconClass(icon) {
+      return withButtonIconMe1(icon);
     },
 
     tableCellValue(path, item, index, column) {

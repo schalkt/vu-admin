@@ -29,33 +29,56 @@ export function getButtonClassByAction(action) {
   }
 }
 
+/** Ensure form/table button icons always have Bootstrap me-1 spacing. */
+export function withButtonIconMe1(iconClass) {
+  if (iconClass == null || iconClass === false) return iconClass;
+  if (typeof iconClass !== 'string') return iconClass;
+  const trimmed = iconClass.trim();
+  if (!trimmed) return trimmed;
+  if (/\bme-\d+\b/.test(trimmed)) {
+    return trimmed.replace(/\bme-\d+\b/g, 'me-1');
+  }
+  return `${trimmed} me-1`;
+}
+
 export function getButtonIconClassByAction(action) {
+  let icon;
   switch (action) {
     case 'TABLE_RESET_ORDERS':
     case 'TABLE_RESET_FILTERS':
-      return 'bi bi-x';
+      icon = 'bi bi-x';
+      break;
     case 'TABLE_CLOSE_DETAILS':
-      return 'bi bi-chevron-compact-up';
+      icon = 'bi bi-chevron-compact-up';
+      break;
     case 'TABLE_ROW_EDIT':
-      return 'bi bi-pencil-square';
+      icon = 'bi bi-pencil-square';
+      break;
     case 'FORM_SUBMIT':
     case 'TABLE_ROW_SAVE':
     case 'TABLE_BULK_SAVE':
-      return 'bi bi-save';
+      icon = 'bi bi-save';
+      break;
     case 'FORM_DELETE':
     case 'TABLE_ROW_DELETE':
     case 'TABLE_BULK_DELETE':
-      return 'bi bi-trash';
+      icon = 'bi bi-trash';
+      break;
     case 'TABLE_ROW_DETAIL':
-      return 'bi bi-chevron-compact-down';
+      icon = 'bi bi-chevron-compact-down';
+      break;
     case 'FORM_RELOAD':
     case 'TABLE_RELOAD':
-      return 'bi bi-arrow-clockwise';
+      icon = 'bi bi-arrow-clockwise';
+      break;
     case 'TABLE_COLUMNS':
-      return 'bi bi-table';
+      icon = 'bi bi-table';
+      break;
     case 'TABLE_EXPORT':
-      return 'bi bi-download';
+      icon = 'bi bi-download';
+      break;
     default:
-      return 'bi bi-question';
+      icon = 'bi bi-question';
   }
+  return withButtonIconMe1(icon);
 }

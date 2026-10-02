@@ -86,15 +86,13 @@
               form: this,
               $event: $event
             })">
-            <i :class="[
-              button.icon !== undefined
+            <i :class="buttonIconClass(button.icon !== undefined
                 ? getValueOrFunction(button.icon, {
                   button: button,
                   item: item,
                   form: this,
                 })
-                : getButtonIconClassByAction(button.action),
-            ]"></i>
+                : getButtonIconClassByAction(button.action))"></i>
             {{ translate(button.title) }}
           </button>
 
@@ -102,14 +100,12 @@
             <button type="button" :class="[button.class]" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
               :disabled="saveProgress?.active">
               <span class="mx-1">
-                <i :class="[
-                  button.icon !== undefined
+                <i :class="buttonIconClass(button.icon !== undefined
                     ? getValueOrFunction(button.icon, {
                       button: button,
                       table: this,
                     })
-                    : getButtonIconClassByAction(button.action),
-                ]"></i> {{ translate(button.title) }}
+                    : getButtonIconClassByAction(button.action))"></i> {{ translate(button.title) }}
               </span>
             </button>
             <ul class="dropdown-menu px-2">
@@ -120,7 +116,7 @@
                   form: this,
                   $event: $event
                 })">
-                  <i v-if="dropdown.icon" :class="[dropdown.icon]"></i>
+                  <i v-if="dropdown.icon" :class="buttonIconClass(dropdown.icon)"></i>
                   {{ translate(dropdown.title) }}
                 </span>
               </li>
@@ -165,6 +161,7 @@ import {
 import {
   getButtonClassByAction as resolveButtonClass,
   getButtonIconClassByAction as resolveButtonIcon,
+  withButtonIconMe1,
 } from "./buttonActions";
 import VuAdminFormGroup from "./VuAdminFormGroup.vue";
 
@@ -298,6 +295,10 @@ const VuAdminForm = {
 
     getButtonIconClassByAction(action) {
       return resolveButtonIcon(action);
+    },
+
+    buttonIconClass(icon) {
+      return withButtonIconMe1(icon);
     },
 
     formWait(block) {

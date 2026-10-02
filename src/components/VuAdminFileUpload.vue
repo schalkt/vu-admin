@@ -39,7 +39,7 @@
 
       <div v-if="uploadErrors && uploadErrors.length" class="alert alert-danger alert-dismissible py-2 px-3 mb-2" role="alert">
         <div v-for="(message, index) in uploadErrors" :key="index" class="small">{{ message }}</div>
-        <button type="button" class="btn-close" :aria-label="translate('Bezárás')" @click="uploadErrors = []"></button>
+        <button type="button" class="btn-close" :aria-label="translate('Close')" @click="uploadErrors = []"></button>
       </div>
 
       <div class="row g-2 mb-1" v-if="files && files.length">
@@ -59,7 +59,7 @@
 
                     <div class="input-group border">
 
-                      <span class="cursor-move p-1 px-2 border-end d-flex align-items-center" title="Húzd a sorrendezéshez">
+                      <span class="cursor-move p-1 px-2 border-end d-flex align-items-center" title="Drag to reorder">
                         <i class="bi bi-grip-vertical text-muted"></i>
                       </span>
 
@@ -83,7 +83,7 @@
 
                       <button v-if="hasLanguages()" type="button"
                         class="btn btn-sm btn-outline-secondary border-top-0 border-bottom-0 rounded-0 fw-bold text-uppercase px-2"
-                        style="min-width: 2.75rem;" @click="cycleLanguage()" :title="translate('Nyelv váltása')">
+                        style="min-width: 2.75rem;" @click="cycleLanguage()" :title="translate('Switch language')">
                         {{ activeLanguage }}
                       </button>
 
@@ -95,7 +95,7 @@
 
                         <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url"
                           :class="{ 'vsa-thumb-editable': file.isImage && !isSvgFile(file) }"
-                          :title="file.isImage && !isSvgFile(file) ? translate('Szerkesztés') : null"
+                          :title="file.isImage && !isSvgFile(file) ? translate('Edit') : null"
                           @click="onThumbnailClick(file, $event)">
                           <img height="32" width="auto" class="transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
                         </a>
@@ -103,7 +103,7 @@
                         <img v-else height="32" width="auto" class="transparent-background"
                           :class="{ 'vsa-thumb-editable': file.isImage && !isSvgFile(file) }"
                           :src="file.types[params.thumbnail].data" :alt="file.name"
-                          :title="file.isImage && !isSvgFile(file) ? translate('Szerkesztés') : null"
+                          :title="file.isImage && !isSvgFile(file) ? translate('Edit') : null"
                           @click="onThumbnailClick(file, $event)" />
 
                       </span>
@@ -153,11 +153,11 @@
                         <ul class="dropdown-menu vsa-file-actions-menu">
                           <li class="px-2 pt-2 pb-0">
                             <div class="d-flex gap-1">
-                              <button v-if="file.isImage && !isSvgFile(file)" type="button" class="btn btn-sm btn-outline-secondary flex-fill" @click="openEditor(file)" :title="translate('Szerkesztés')">
-                                <i class="bi bi-pencil me-1"></i>{{ translate('Szerkesztés') }}
+                              <button v-if="file.isImage && !isSvgFile(file)" type="button" class="btn btn-sm btn-outline-secondary flex-fill" @click="openEditor(file)" :title="translate('Edit')">
+                                <i class="bi bi-pencil me-1"></i>{{ translate('Edit') }}
                               </button>
-                              <button type="button" class="btn btn-sm btn-outline-danger flex-fill" @click="remove(index)" :title="translate('Törlés')">
-                                <i class="bi bi-x-circle me-1"></i>{{ translate('Törlés') }}
+                              <button type="button" class="btn btn-sm btn-outline-danger flex-fill" @click="remove(index)" :title="translate('Delete')">
+                                <i class="bi bi-x-circle me-1"></i>{{ translate('Delete') }}
                               </button>
                             </div>
                           </li>
@@ -243,7 +243,7 @@
 
                 <a v-if="file.types.default.url" target="_blank" :href="file.types.default.url"
                   :class="{ 'vsa-thumb-editable': file.isImage && !isSvgFile(file) }"
-                  :title="file.isImage && !isSvgFile(file) ? translate('Szerkesztés') : null"
+                  :title="file.isImage && !isSvgFile(file) ? translate('Edit') : null"
                   @click="onThumbnailClick(file, $event)">
                   <img class="img-fluid transparent-background" :src="file.types[params.thumbnail].url" :alt="file.name" />
                 </a>
@@ -251,7 +251,7 @@
                 <img v-else class="img-fluid transparent-background"
                   :class="{ 'vsa-thumb-editable': file.isImage && !isSvgFile(file) }"
                   :src="file.types[params.thumbnail].data" :alt="file.name"
-                  :title="file.isImage && !isSvgFile(file) ? translate('Szerkesztés') : null"
+                  :title="file.isImage && !isSvgFile(file) ? translate('Edit') : null"
                   @click="onThumbnailClick(file, $event)" />
 
               </div>
@@ -262,7 +262,7 @@
 
               <div v-if="hasLanguages()" class="input-group">
                 <button type="button" class="btn btn-sm btn-outline-secondary rounded-0 fw-bold text-uppercase px-2"
-                  @click="cycleLanguage()" :title="translate('Nyelv váltása')">
+                  @click="cycleLanguage()" :title="translate('Switch language')">
                   {{ activeLanguage }}
                 </button>
                 <input required="text" class="form-control rounded-0 border-bottom-0 py-1 px-2 fw-light" :value="fileTitle(file)"
@@ -272,7 +272,7 @@
 
               <div class="w-100 mb-2 d-flex justify-content-around align-items-center">
 
-                <span class="cursor-move p-1 px-2 border border-end-0 h-100 d-flex align-items-center" title="Húzd a sorrendezéshez">
+                <span class="cursor-move p-1 px-2 border border-end-0 h-100 d-flex align-items-center" title="Drag to reorder">
                   <i class="bi bi-grip-vertical text-muted"></i>
                 </span>
 
@@ -325,11 +325,11 @@
                   <ul class="dropdown-menu vsa-file-actions-menu">
                     <li class="px-2 pt-2 pb-0">
                       <div class="d-flex gap-1">
-                        <button v-if="file.isImage && !isSvgFile(file)" type="button" class="btn btn-sm btn-outline-secondary flex-fill" @click="openEditor(file)" :title="translate('Szerkesztés')">
-                          <i class="bi bi-pencil me-1"></i>{{ translate('Szerkesztés') }}
+                        <button v-if="file.isImage && !isSvgFile(file)" type="button" class="btn btn-sm btn-outline-secondary flex-fill" @click="openEditor(file)" :title="translate('Edit')">
+                          <i class="bi bi-pencil me-1"></i>{{ translate('Edit') }}
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger flex-fill" @click="remove(index)" :title="translate('Törlés')">
-                          <i class="bi bi-x-circle me-1"></i>{{ translate('Törlés') }}
+                        <button type="button" class="btn btn-sm btn-outline-danger flex-fill" @click="remove(index)" :title="translate('Delete')">
+                          <i class="bi bi-x-circle me-1"></i>{{ translate('Delete') }}
                         </button>
                       </div>
                     </li>
@@ -408,12 +408,12 @@
                  :class="{ 'vsa-paste-zone-active': isPasteZoneFocused }"
                  @focus="isPasteZoneFocused = true"
                  @blur="isPasteZoneFocused = false">
-              <i class="bi bi-clipboard me-1"></i>{{ translate('Vágólapról beillesztéshez, kattints ide és nyomj Ctrl+V-t') }}
+              <i class="bi bi-clipboard me-1"></i>{{ translate('To paste from clipboard, click here and press Ctrl+V') }}
             </div>
 
             <div v-if="hasWatermarkPresets()" class="form-check form-switch d-inline-flex align-items-center mt-1">
               <input class="form-check-input" type="checkbox" role="switch" :id="uploadId + '_watermark'" v-model="applyWatermarkOnUpload">
-              <label class="form-check-label ms-1" :for="uploadId + '_watermark'">{{ translate('Vízjel hozzáadása feltöltéskor') }}</label>
+              <label class="form-check-label ms-1" :for="uploadId + '_watermark'">{{ translate('Add watermark on upload') }}</label>
             </div>
 
             <div v-if="0 && params.presets">
@@ -453,37 +453,37 @@
              @mousemove.stop
              @mouseup.stop>
 
-          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(-90)" title="Forgatás balra 90°">
+          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(-90)" title="Rotate left 90°">
             <i class="bi bi-arrow-counterclockwise"></i>
           </button>
-          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(90)" title="Forgatás jobbra 90°">
+          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(90)" title="Rotate right 90°">
             <i class="bi bi-arrow-clockwise"></i>
           </button>
 
           <span class="text-secondary mx-1">|</span>
 
-          <button type="button" class="btn btn-sm" :class="editor.flipX ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('x')" title="Vízszintes tükrözés">
+          <button type="button" class="btn btn-sm" :class="editor.flipX ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('x')" title="Flip horizontal">
             <i class="bi bi-symmetry-vertical"></i>
           </button>
-          <button type="button" class="btn btn-sm" :class="editor.flipY ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('y')" title="Függőleges tükrözés">
+          <button type="button" class="btn btn-sm" :class="editor.flipY ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('y')" title="Flip vertical">
             <i class="bi bi-symmetry-horizontal"></i>
           </button>
 
           <span class="text-secondary mx-1">|</span>
 
-          <button type="button" class="btn btn-sm" :class="editor.cropMode ? 'btn-warning' : 'btn-outline-light'" @click="editorCropButtonClick" title="Vágás">
+          <button type="button" class="btn btn-sm" :class="editor.cropMode ? 'btn-warning' : 'btn-outline-light'" @click="editorCropButtonClick" title="Crop">
             <i class="bi bi-crop"></i>
-            <span v-if="editor.cropMode" class="ms-1 small">{{ editor.crop ? 'Terület kivágása' : 'Rajzolj területet' }}</span>
+            <span v-if="editor.cropMode" class="ms-1 small">{{ editor.crop ? 'Apply crop' : 'Draw a crop area' }}</span>
           </button>
-          <button v-if="editor.cropMode && editor.crop" type="button" class="btn btn-sm btn-outline-warning" @click="editor.crop = null; editorDraw()" title="Vágás törlése">
+          <button v-if="editor.cropMode && editor.crop" type="button" class="btn btn-sm btn-outline-warning" @click="editor.crop = null; editorDraw()" title="Clear crop">
             <i class="bi bi-x"></i>
           </button>
 
           <span class="text-secondary mx-1">|</span>
 
-          <button type="button" class="btn btn-sm" :class="editor.blurMode ? 'btn-warning' : 'btn-outline-light'" @click="editorToggleBlur" title="Elhomályosítás (B)">
+          <button type="button" class="btn btn-sm" :class="editor.blurMode ? 'btn-warning' : 'btn-outline-light'" @click="editorToggleBlur" title="Blur (B)">
             <i class="bi bi-eye-slash"></i>
-            <span v-if="editor.blurMode" class="ms-1 small">Rajzolj négyzetet</span>
+            <span v-if="editor.blurMode" class="ms-1 small">Draw a rectangle</span>
           </button>
 
           <template v-if="editor.blurMode">
@@ -498,7 +498,7 @@
                        step="1"
                        v-model.number="blurRadius"
                        @change="clampBlurRadius()"
-                       title="Elmosás erőssége (forráskép px)">
+                       title="Blur strength (source px)">
                 <span class="input-group-text">px</span>
                 <button type="button" class="btn btn-outline-light" @click="adjustBlurRadius(5)" title="+5 px">+</button>
               </div>
@@ -510,14 +510,14 @@
 
             <div class="form-check form-switch d-inline-flex align-items-center text-light">
               <input class="form-check-input" type="checkbox" role="switch" id="editor_apply_watermark" v-model="editor.applyWatermark">
-              <label class="form-check-label ms-1" for="editor_apply_watermark">{{ translate('Vízjel hozzáadása mentéskor') }}</label>
+              <label class="form-check-label ms-1" for="editor_apply_watermark">{{ translate('Add watermark on save') }}</label>
             </div>
           </template>
 
           <div class="ms-auto d-flex gap-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary text-light border-secondary" @click="editorClose">Mégse</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary text-light border-secondary" @click="editorClose">Cancel</button>
             <button type="button" class="btn btn-sm btn-primary" @click="editorApply">
-              <i class="bi bi-check2 me-1"></i>Alkalmaz
+              <i class="bi bi-check2 me-1"></i>Apply
             </button>
           </div>
         </div>

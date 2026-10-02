@@ -72,7 +72,7 @@ const VuAdmin = {
         // must be function and called once for update entity settings
         // example prepare options for selects, (settings) => {},
         init: null,
-        language: document.documentElement ? document.documentElement.lang : 'hu',
+        language: document.documentElement ? document.documentElement.lang : 'en',
 
         api: {
           auth: {},
