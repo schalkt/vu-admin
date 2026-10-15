@@ -845,11 +845,28 @@ const FileUpload = {
         extension: this.extensionByFilename(file.name)
       };
 
-      if (Object.values(fileType.video).indexOf(file.original.mime) >= 0) {
+      // Some OS/browser combos report empty or generic MIME (e.g. application/octet-stream)
+      // for valid downloads — fall back to extension mapping.
+      const ext = (file.original.extension || '').toLowerCase();
+      let isVideo = Object.values(fileType.video).indexOf(file.original.mime) >= 0;
+      let isImage = Object.values(fileType.image).indexOf(file.original.mime) >= 0;
+      let isDocument = Object.values(fileType.document).indexOf(file.original.mime) >= 0;
+
+      if (!isVideo && !isImage && !isDocument) {
+        const mapped = fileType.image[ext] || fileType.video[ext] || fileType.document[ext];
+        if (mapped) {
+          file.original.mime = mapped;
+          isImage = !!fileType.image[ext];
+          isVideo = !!fileType.video[ext];
+          isDocument = !!fileType.document[ext];
+        }
+      }
+
+      if (isVideo) {
         file.isVideo = true;
-      } else if (Object.values(fileType.image).indexOf(file.original.mime) >= 0) {
+      } else if (isImage) {
         file.isImage = true;
-      } else if (Object.values(fileType.document).indexOf(file.original.mime) >= 0) {
+      } else if (isDocument) {
         file.isDocument = true;
       } else {
         file.isUnknown = true;
@@ -1283,7 +1300,8 @@ const FileUpload = {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (event) => {
-          resolve(new Blob([event.target.result], { type: file.mime }));
+          const mime = file.original?.mime || file.type || file.mime || '';
+          resolve(new Blob([event.target.result], { type: mime }));
         };
         reader.readAsArrayBuffer(file);
       });

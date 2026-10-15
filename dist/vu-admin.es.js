@@ -20082,13 +20082,19 @@ var vj = /*#__PURE__*/ nk(JA, [["render", _j]]), yj = {
 				e.title = {};
 				for (let n of this.params.languages) e.title[n] = n === this.primaryLanguage() ? t : "";
 			} else e.title = t;
-			if (e.uid = qc(9999999).toString(32) + Date.now().toString(32), e.slug = Zc(this.titleText(e)), e.timestamp = Math.round(Date.now() / 1e3), e.original = {
+			e.uid = qc(9999999).toString(32) + Date.now().toString(32), e.slug = Zc(this.titleText(e)), e.timestamp = Math.round(Date.now() / 1e3), e.original = {
 				bytes: e.size,
 				mime: e.type,
 				name: e.name,
 				modified: e.lastModified,
 				extension: this.extensionByFilename(e.name)
-			}, Object.values(yj.video).indexOf(e.original.mime) >= 0 ? e.isVideo = !0 : Object.values(yj.image).indexOf(e.original.mime) >= 0 ? e.isImage = !0 : Object.values(yj.document).indexOf(e.original.mime) >= 0 ? e.isDocument = !0 : e.isUnknown = !0, e.isUnknown) throw Error("Unsupported file type: " + (e.original.mime || e.original.extension));
+			};
+			let n = (e.original.extension || "").toLowerCase(), r = Object.values(yj.video).indexOf(e.original.mime) >= 0, i = Object.values(yj.image).indexOf(e.original.mime) >= 0, a = Object.values(yj.document).indexOf(e.original.mime) >= 0;
+			if (!r && !i && !a) {
+				let t = yj.image[n] || yj.video[n] || yj.document[n];
+				t && (e.original.mime = t, i = !!yj.image[n], r = !!yj.video[n], a = !!yj.document[n]);
+			}
+			if (r ? e.isVideo = !0 : i ? e.isImage = !0 : a ? e.isDocument = !0 : e.isUnknown = !0, e.isUnknown) throw Error("Unsupported file type: " + (e.original.mime || e.original.extension));
 			(e.isVideo || e.isImage && !this.params.presets.default) && (this.params.presets.default = {
 				width: 1920,
 				height: 1920,
@@ -20297,7 +20303,8 @@ var vj = /*#__PURE__*/ nk(JA, [["render", _j]]), yj = {
 			return new Promise((t) => {
 				let n = new FileReader();
 				n.onload = (n) => {
-					t(new Blob([n.target.result], { type: e.mime }));
+					let r = e.original?.mime || e.type || e.mime || "";
+					t(new Blob([n.target.result], { type: r }));
 				}, n.readAsArrayBuffer(e);
 			});
 		},
