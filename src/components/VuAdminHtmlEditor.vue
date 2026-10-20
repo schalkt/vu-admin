@@ -411,17 +411,51 @@
             <div class="col-12 col-md-4">
               <label class="form-label small text-secondary mb-0">{{ translate('Aspect ratio') }}</label>
               <select v-model="videoForm.ratio" class="form-select form-select-sm">
-                <option v-for="r in videoRatios" :key="'vr-' + r" :value="r">{{ r.replace('x', ':') }} ({{ translate('responsive') }})</option>
-                <option value="">{{ translate('Fixed size') }}</option>
+                <option value="auto">{{ translate('Auto') }}{{ videoForm.ratio === 'auto' && videoForm.url.trim() ? ' (' + videoRatioLabel(videoEffectiveRatio) + ')' : '' }}</option>
+                <optgroup v-for="g in videoRatioGroups" :key="'vrg-' + g.orientation" :label="translate(g.label)">
+                  <option v-for="r in g.options" :key="'vr-' + r.value" :value="r.value">{{ videoRatioLabel(r.value) }}</option>
+                </optgroup>
+                <option value="">{{ translate('Fixed size (no ratio)') }}</option>
               </select>
             </div>
-            <div class="col-6 col-md-3">
-              <label class="form-label small text-secondary mb-0">{{ translate('Width (px)') }}</label>
-              <input v-model="videoForm.width" type="number" min="1" class="form-control form-control-sm" :placeholder="translate('auto')" />
+            <div class="col-6 col-md-4">
+              <label class="form-label small text-secondary mb-0">{{ videoEffectiveRatio ? translate('Max. width') : translate('Width') }}</label>
+              <div class="input-group input-group-sm">
+                <input v-model="videoForm.width" type="number" min="1" step="any" class="form-control" :placeholder="translate('auto')" />
+                <select v-model="videoForm.widthUnit" class="form-select tiptap-unit-select">
+                  <option v-for="u in videoSizeUnits.width" :key="'vwu-' + u" :value="u">{{ u }}</option>
+                </select>
+              </div>
             </div>
-            <div class="col-6 col-md-3">
-              <label class="form-label small text-secondary mb-0">{{ translate('Height (px)') }}</label>
-              <input v-model="videoForm.height" type="number" min="1" class="form-control form-control-sm" :placeholder="translate('auto')" />
+            <div class="col-6 col-md-4">
+              <label class="form-label small text-secondary mb-0">{{ videoEffectiveRatio ? translate('Max. height') : translate('Height') }}</label>
+              <div class="input-group input-group-sm">
+                <input v-model="videoForm.height" type="number" min="1" step="any" class="form-control" :placeholder="translate('auto')" />
+                <select v-model="videoForm.heightUnit" class="form-select tiptap-unit-select">
+                  <option v-for="u in videoSizeUnits.height" :key="'vhu-' + u" :value="u">{{ u }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="d-flex flex-wrap gap-1 align-items-center">
+                <span class="small text-secondary me-1">{{ translate('Size presets') }}:</span>
+                <button
+                  v-for="sp in videoSizePresets"
+                  :key="'vsp-' + sp.label"
+                  type="button"
+                  class="btn btn-sm"
+                  :class="videoSizePresetActive(sp) ? 'btn-primary' : 'btn-outline-secondary'"
+                  :title="sp.hint ? translate(sp.hint) : null"
+                  @click="applyVideoSizePreset(sp)"
+                >
+                  {{ translate(sp.label) }}
+                </button>
+              </div>
+              <div class="form-text mt-1">
+                {{ videoEffectiveRatio
+                  ? translate('px = fixed, % = of content width, vw / vh = of screen width / height. With both set, the smaller one wins, the ratio is kept and the video never overflows the content.')
+                  : translate('Fixed size: the iframe gets exactly the given width and height (never wider than the content).') }}
+              </div>
             </div>
             <div class="col-12 col-md-8">
               <label class="form-label small text-secondary mb-0">{{ translate('Title') }}</label>
@@ -437,11 +471,14 @@
 
           <div v-if="videoResolvedSrc" class="border-top pt-3 mt-3">
             <div class="small text-secondary font-monospace text-truncate mb-2" :title="videoResolvedSrc">{{ videoResolvedSrc }}</div>
-            <div class="tiptap-video-preview" :class="videoForm.ratio ? 'ratio ratio-' + videoForm.ratio : ''">
+            <div
+              class="tiptap-video-preview"
+              :class="videoEffectiveRatio ? 'ratio ' + videoRatioClass(videoEffectiveRatio) : ''"
+              :style="videoPreviewStyle.wrapper"
+            >
               <iframe
                 :src="videoResolvedSrc"
-                :width="videoForm.ratio ? null : videoAttrsFromForm().width"
-                :height="videoForm.ratio ? null : videoAttrsFromForm().height"
+                :style="videoPreviewStyle.iframe"
                 frameborder="0"
                 loading="lazy"
                 referrerpolicy="strict-origin-when-cross-origin"
@@ -512,9 +549,45 @@ import {
   bootstrapImgUtilityClasses,
   bootstrapAlertVariants,
 } from "../tiptap/bootstrapEditorExtensions.js";
-import { VideoEmbed, defaultVideoEmbedHosts, videoEmbedRatios, resolveVideoEmbedSrc } from "../tiptap/videoEmbedExtension.js";
+import {
+  VideoEmbed,
+  defaultVideoEmbedHosts,
+  videoEmbedRatioOptions,
+  resolveVideoEmbedSrc,
+  detectVideoRatio,
+  videoRatioWrapperStyle,
+  videoFixedSizeStyle,
+  videoSizeUnits,
+  normalizeVideoSize,
+  splitVideoSize,
+  ratioClassName,
+} from "../tiptap/videoEmbedExtension.js";
 
-const EMPTY_VIDEO_FORM = () => ({ url: "", width: "", height: "", ratio: "16x9", allowfullscreen: true, title: "" });
+/** ratio: "auto" (forrásból felismerve: Shorts/Reel → 9:16, egyébként 16:9) | arány érték | "" (fix méret) */
+const EMPTY_VIDEO_FORM = () => ({
+  url: "",
+  width: "",
+  widthUnit: "px",
+  height: "",
+  heightUnit: "px",
+  ratio: "auto",
+  allowfullscreen: true,
+  title: "",
+});
+
+/** Gyors méretek: a "Fit screen" laptopon és fekvő mobilon is teljesen látszik (100% széles, ≤ 85vh magas). */
+const VIDEO_SIZE_PRESETS = [
+  { label: "Full width", width: "100%", height: null },
+  { label: "Fit screen", width: "100%", height: "85vh", hint: "Full width, but at most 85% of the screen height (landscape phone, laptop)" },
+  { label: "Half width", width: "50%", height: null },
+  { label: "No size", width: null, height: null },
+];
+
+const VIDEO_RATIO_GROUPS = [
+  { orientation: "landscape", label: "Landscape" },
+  { orientation: "square", label: "Square" },
+  { orientation: "portrait", label: "Portrait" },
+];
 
 function normalizeHtmlOutput(html) {
   const trimmed = (html || "").trim();
@@ -594,7 +667,12 @@ const HtmlEditor = {
       editingVideoPos: null,
       selectedVideoPos: null,
       videoForm: EMPTY_VIDEO_FORM(),
-      videoRatios: videoEmbedRatios,
+      videoSizeUnits,
+      videoSizePresets: VIDEO_SIZE_PRESETS,
+      videoRatioGroups: VIDEO_RATIO_GROUPS.map((g) => ({
+        ...g,
+        options: videoEmbedRatioOptions.filter((r) => r.orientation === g.orientation),
+      })),
       textColorVariants: bootstrapTextColorVariants,
       bgVariants: bootstrapBgVariants,
       marginClasses: bootstrapMarginClasses,
@@ -621,6 +699,17 @@ const HtmlEditor = {
     },
     videoResolvedSrc() {
       return resolveVideoEmbedSrc(this.videoForm.url, this.videoAllowedHosts);
+    },
+    /** Ténylegesen használt arány ("auto" feloldva), vagy null fix méretnél. */
+    videoEffectiveRatio() {
+      const r = this.videoForm.ratio;
+      if (r === "auto") return detectVideoRatio(this.videoForm.url);
+      return r || null;
+    },
+    videoPreviewStyle() {
+      const a = this.videoAttrsFromForm();
+      if (!this.videoEffectiveRatio) return { wrapper: null, iframe: videoFixedSizeStyle(a.width, a.height) };
+      return { wrapper: videoRatioWrapperStyle(this.videoEffectiveRatio, a.width, a.height), iframe: null };
     },
     customToolbarButtons() {
       const b = this.tiptapOptions && this.tiptapOptions.toolbarButtons;
@@ -1153,8 +1242,7 @@ const HtmlEditor = {
         const a = node.attrs;
         this.videoForm = {
           url: a.src || "",
-          width: a.width != null ? String(a.width) : "",
-          height: a.height != null ? String(a.height) : "",
+          ...this.videoSizeToForm(a.width, a.height),
           ratio: a.ratio || "",
           allowfullscreen: !!a.allowfullscreen,
           title: a.title || "",
@@ -1166,6 +1254,29 @@ const HtmlEditor = {
         if (el && typeof el.focus === "function") el.focus();
       });
     },
+    /** "85vh" → { height: "85", heightUnit: "vh" } (űrlap mezők). */
+    videoSizeToForm(width, height) {
+      const w = splitVideoSize(width, "width");
+      const h = splitVideoSize(height, "height");
+      return { width: w.value, widthUnit: w.unit, height: h.value, heightUnit: h.unit };
+    },
+    applyVideoSizePreset(preset) {
+      this.videoForm = { ...this.videoForm, ...this.videoSizeToForm(preset.width, preset.height) };
+    },
+    videoSizePresetActive(preset) {
+      const a = this.videoAttrsFromForm();
+      return a.width === normalizeVideoSize(preset.width, "width") && a.height === normalizeVideoSize(preset.height, "height");
+    },
+    videoRatioClass(ratio) {
+      return ratioClassName(ratio);
+    },
+    /** "9x16" → "9:16 · álló (telefon)" */
+    videoRatioLabel(ratio) {
+      const opt = videoEmbedRatioOptions.find((r) => r.value === ratio);
+      if (!opt) return String(ratio || "").replace("x", ":");
+      const kind = this.translate(opt.phone ? "portrait phone" : opt.orientation);
+      return `${opt.label} · ${kind}`;
+    },
     closeVideoModal() {
       this.videoModalOpen = false;
       this.videoModalMode = "insert";
@@ -1173,14 +1284,15 @@ const HtmlEditor = {
       this.videoForm = EMPTY_VIDEO_FORM();
     },
     videoAttrsFromForm() {
-      const w = parseInt(String(this.videoForm.width).trim(), 10);
-      const h = parseInt(String(this.videoForm.height).trim(), 10);
+      const f = this.videoForm;
+      const w = normalizeVideoSize(f.width === "" ? null : `${f.width}${f.widthUnit}`, "width");
+      const h = normalizeVideoSize(f.height === "" ? null : `${f.height}${f.heightUnit}`, "height");
       const title = String(this.videoForm.title || "").trim();
       return {
         src: this.videoResolvedSrc,
-        width: Number.isFinite(w) && w > 0 ? w : null,
-        height: Number.isFinite(h) && h > 0 ? h : null,
-        ratio: this.videoForm.ratio || null,
+        width: w,
+        height: h,
+        ratio: this.videoEffectiveRatio,
         allowfullscreen: !!this.videoForm.allowfullscreen,
         title: title || null,
       };
@@ -1392,6 +1504,10 @@ export default HtmlEditor;
       &.tiptap-html-modal-wide {
         max-width: min(960px, 100vw - 2rem);
       }
+    }
+
+    .tiptap-unit-select {
+      flex: 0 0 4.5rem;
     }
 
     .tiptap-video-preview {

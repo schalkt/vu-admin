@@ -447,6 +447,9 @@ form: {
   tiptap: {
     placeholder: 'Content…',
     // ▶ toolbar button: YouTube / Vimeo / Facebook page URL or <iframe> embed code → <div class="ratio ratio-16x9"><iframe …></div>
+    // aspect ratio: Auto (Shorts/Reel → 9:16, else 16:9), landscape 21:9/16:9/4:3, square 1:1, portrait 4:5/3:4/9:16/9:19.5 (phone), or fixed size;
+    // with a ratio, width OR height alone is enough (wrapper gets max-width, the other side follows the ratio)
+    // sizes: width px | % | vw | vh, height px | vh | vw; both set → max-width: min(W, H × ratio), e.g. 100% × 85vh ("Fit screen")
     // false → disabled; allowedHosts replaces the default whitelist (only https iframe src on these hosts is kept)
     video: { allowedHosts: ['www.youtube.com', 'www.youtube-nocookie.com', 'player.vimeo.com', 'www.facebook.com'] },
     // extra TipTap extensions: array → appended; function → (defaults, { editor }) => final list
