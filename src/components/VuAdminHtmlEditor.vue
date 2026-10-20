@@ -263,6 +263,19 @@
       </div>
       <span class="btn-group btn-group-sm">
         <button type="button" class="btn btn-sm btn-outline-secondary" :title="selectedImagePos !== null ? translate('Edit image') : translate('Insert image')" @click="openImageModalFromToolbar">🖼</button>
+        <button v-if="videoEnabled" type="button" class="btn btn-sm btn-outline-secondary" :class="{ active: selectedVideoPos !== null }" :title="selectedVideoPos !== null ? translate('Edit video') : translate('Insert video')" @click="openVideoModalFromToolbar">▶</button>
+      </span>
+      <span v-if="customToolbarButtons.length" class="btn-group btn-group-sm">
+        <button
+          v-for="(b, i) in customToolbarButtons"
+          :key="'ctb-' + i"
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          :class="[b.class, { active: typeof b.isActive === 'function' && b.isActive(editor) }]"
+          :title="b.title ? translate(b.title) : null"
+          @click="runCustomToolbarButton(b)"
+          v-html="b.label"
+        ></button>
       </span>
       <span class="btn-group btn-group-sm">
         <button type="button" class="btn btn-sm btn-outline-secondary font-monospace small" :title="translate('HTML source')" @click="openHtmlSourceModal">HTML</button>
@@ -372,6 +385,81 @@
       </div>
     </div>
 
+    <div v-if="videoModalOpen" class="tiptap-modal-overlay" @click.self="closeVideoModal">
+      <div class="tiptap-modal-content" @click.stop>
+        <div class="tiptap-modal-header">
+          <h5 class="mb-0">{{ videoModalMode === 'edit' ? translate('Edit video') : translate('Insert video') }}</h5>
+          <button type="button" class="btn-close" :aria-label="translate('Close')" @click="closeVideoModal"></button>
+        </div>
+        <div class="tiptap-modal-body">
+          <label class="form-label small text-secondary mb-0">{{ translate('Video URL or embed code') }}</label>
+          <textarea
+            ref="videoUrlInput"
+            v-model="videoForm.url"
+            class="form-control form-control-sm font-monospace"
+            rows="2"
+            spellcheck="false"
+            placeholder="https://www.youtube.com/watch?v=… / https://vimeo.com/… / https://www.facebook.com/…/videos/…"
+            @keydown.enter.exact.prevent="confirmVideoModal"
+          ></textarea>
+          <div class="form-text">{{ translate('Supported: YouTube, Vimeo, Facebook') }}</div>
+          <div v-if="videoForm.url.trim() && !videoResolvedSrc" class="text-danger small mt-1">
+            {{ translate('Unsupported or untrusted video URL.') }}
+          </div>
+
+          <div class="row g-2 mt-1">
+            <div class="col-12 col-md-4">
+              <label class="form-label small text-secondary mb-0">{{ translate('Aspect ratio') }}</label>
+              <select v-model="videoForm.ratio" class="form-select form-select-sm">
+                <option v-for="r in videoRatios" :key="'vr-' + r" :value="r">{{ r.replace('x', ':') }} ({{ translate('responsive') }})</option>
+                <option value="">{{ translate('Fixed size') }}</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label small text-secondary mb-0">{{ translate('Width (px)') }}</label>
+              <input v-model="videoForm.width" type="number" min="1" class="form-control form-control-sm" :placeholder="translate('auto')" />
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label small text-secondary mb-0">{{ translate('Height (px)') }}</label>
+              <input v-model="videoForm.height" type="number" min="1" class="form-control form-control-sm" :placeholder="translate('auto')" />
+            </div>
+            <div class="col-12 col-md-8">
+              <label class="form-label small text-secondary mb-0">{{ translate('Title') }}</label>
+              <input v-model="videoForm.title" type="text" class="form-control form-control-sm" :placeholder="translate('Accessible title of the video')" />
+            </div>
+            <div class="col-12 col-md-4 d-flex align-items-end">
+              <div class="form-check mb-1">
+                <input id="tiptap-video-fs" v-model="videoForm.allowfullscreen" class="form-check-input" type="checkbox" />
+                <label class="form-check-label small" for="tiptap-video-fs">{{ translate('Allow fullscreen') }}</label>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="videoResolvedSrc" class="border-top pt-3 mt-3">
+            <div class="small text-secondary font-monospace text-truncate mb-2" :title="videoResolvedSrc">{{ videoResolvedSrc }}</div>
+            <div class="tiptap-video-preview" :class="videoForm.ratio ? 'ratio ratio-' + videoForm.ratio : ''">
+              <iframe
+                :src="videoResolvedSrc"
+                :width="videoForm.ratio ? null : videoAttrsFromForm().width"
+                :height="videoForm.ratio ? null : videoAttrsFromForm().height"
+                frameborder="0"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="tiptap-modal-footer">
+          <button v-if="videoModalMode === 'edit'" type="button" class="btn btn-outline-danger me-auto" @click="deleteVideoFromModal">{{ translate('Delete video') }}</button>
+          <button type="button" class="btn btn-secondary" @click="closeVideoModal">{{ translate('Cancel') }}</button>
+          <button type="button" class="btn btn-primary" :disabled="!videoResolvedSrc" @click="confirmVideoModal">
+            {{ videoModalMode === 'edit' ? translate('Save') : translate('Insert') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div v-if="htmlSourceModalOpen" class="tiptap-modal-overlay" @click.self="closeHtmlSourceModal">
       <div class="tiptap-modal-content tiptap-html-modal-wide" @click.stop>
         <div class="tiptap-modal-header">
@@ -424,6 +512,9 @@ import {
   bootstrapImgUtilityClasses,
   bootstrapAlertVariants,
 } from "../tiptap/bootstrapEditorExtensions.js";
+import { VideoEmbed, defaultVideoEmbedHosts, videoEmbedRatios, resolveVideoEmbedSrc } from "../tiptap/videoEmbedExtension.js";
+
+const EMPTY_VIDEO_FORM = () => ({ url: "", width: "", height: "", ratio: "16x9", allowfullscreen: true, title: "" });
 
 function normalizeHtmlOutput(html) {
   const trimmed = (html || "").trim();
@@ -464,7 +555,12 @@ const HtmlEditor = {
   inheritAttrs: false,
   props: {
     modelValue: [String, null],
-    /** vu-entity: `field.tiptap` — placeholder, imageSourceFields?: string[] */
+    /**
+     * vu-entity: `field.tiptap` — placeholder, imageSourceFields?: string[],
+     * video?: false | { allowedHosts?: string[] },
+     * extensions?: Extension[] | (defaults, { editor: vm }) => Extension[],
+     * toolbarButtons?: Array<{ label, title?, class?, run(editor), isActive?(editor) }>
+     */
     tiptapOptions: { type: Object, default: () => ({}) },
     formItem: { type: Object, default: null },
     /** Form `settings` (translate, language) — toolbar/modal strings use the same `translate()` as other vu-admin components. */
@@ -492,6 +588,13 @@ const HtmlEditor = {
       },
       htmlSourceModalOpen: false,
       htmlSourceText: "",
+      videoModalOpen: false,
+      /** insert | edit */
+      videoModalMode: "insert",
+      editingVideoPos: null,
+      selectedVideoPos: null,
+      videoForm: EMPTY_VIDEO_FORM(),
+      videoRatios: videoEmbedRatios,
       textColorVariants: bootstrapTextColorVariants,
       bgVariants: bootstrapBgVariants,
       marginClasses: bootstrapMarginClasses,
@@ -507,6 +610,21 @@ const HtmlEditor = {
     },
     placeholderText() {
       return (this.tiptapOptions && this.tiptapOptions.placeholder) || "";
+    },
+    videoEnabled() {
+      return !(this.tiptapOptions && this.tiptapOptions.video === false);
+    },
+    videoAllowedHosts() {
+      const v = this.tiptapOptions && this.tiptapOptions.video;
+      const hosts = v && typeof v === "object" && Array.isArray(v.allowedHosts) ? v.allowedHosts : defaultVideoEmbedHosts;
+      return hosts.map((h) => String(h).toLowerCase());
+    },
+    videoResolvedSrc() {
+      return resolveVideoEmbedSrc(this.videoForm.url, this.videoAllowedHosts);
+    },
+    customToolbarButtons() {
+      const b = this.tiptapOptions && this.tiptapOptions.toolbarButtons;
+      return Array.isArray(b) ? b.filter((x) => x && typeof x.run === "function") : [];
     },
     imageSourceFieldFilter() {
       const f = this.tiptapOptions && this.tiptapOptions.imageSourceFields;
@@ -840,6 +958,22 @@ const HtmlEditor = {
       if (pos !== this.selectedImagePos) {
         this.selectedImagePos = pos;
       }
+      const sel = this.editor.state.selection;
+      const videoPos = sel instanceof NodeSelection && sel.node.type.name === "videoEmbed" ? sel.from : null;
+      if (videoPos !== this.selectedVideoPos) {
+        this.selectedVideoPos = videoPos;
+      }
+    },
+    /** Kattintott DOM elem → videoEmbed node pozíció (node view wrapperen keresztül), vagy null. */
+    videoPosFromEvent(view, event) {
+      const t = event.target;
+      if (!view.editable || !(t instanceof Element)) return null;
+      const wrap = t.closest(".tiptap-video-embed");
+      if (!wrap || !view.dom.contains(wrap)) return null;
+      const pos = view.posAtDOM(wrap, 0);
+      if (pos == null || pos < 0) return null;
+      const node = view.state.doc.nodeAt(pos);
+      return node && node.type.name === "videoEmbed" ? pos : null;
     },
     applyImageAttrsAt(pos) {
       if (!this.editor || pos == null) return;
@@ -900,6 +1034,9 @@ const HtmlEditor = {
           allowBase64: true,
         }),
       ];
+      if (this.videoEnabled) {
+        extensions.push(VideoEmbed.configure({ allowedHosts: this.videoAllowedHosts }));
+      }
       if (this.placeholderText) {
         extensions.push(
           Placeholder.configure({
@@ -911,7 +1048,7 @@ const HtmlEditor = {
       }
       this.editor = new Editor({
         content,
-        extensions,
+        extensions: this.resolveExtensions(extensions),
         editorProps: {
           attributes: {
             class: "tiptap-editor form-control",
@@ -919,6 +1056,12 @@ const HtmlEditor = {
           },
           handleDOMEvents: {
             click: (view, event) => {
+              const videoPos = this.videoPosFromEvent(view, event);
+              if (videoPos != null) {
+                view.dispatch(view.state.tr.setSelection(NodeSelection.create(view.state.doc, videoPos)));
+                view.focus();
+                return true;
+              }
               const t = event.target;
               if (!view.editable || !(t instanceof Element) || t.tagName !== "IMG") {
                 return false;
@@ -934,6 +1077,13 @@ const HtmlEditor = {
               return true;
             },
             dblclick: (view, event) => {
+              const videoPos = this.videoPosFromEvent(view, event);
+              if (videoPos != null) {
+                view.dispatch(view.state.tr.setSelection(NodeSelection.create(view.state.doc, videoPos)));
+                view.focus();
+                this.openVideoModal("edit", videoPos);
+                return true;
+              }
               const t = event.target;
               if (!view.editable || !(t instanceof Element) || t.tagName !== "IMG") {
                 return false;
@@ -965,11 +1115,97 @@ const HtmlEditor = {
         },
       });
     },
+    /** `tiptapOptions.extensions`: tömb → hozzáfűzés; függvény → (alap bővítmények, ctx) => végleges lista. */
+    resolveExtensions(defaults) {
+      const extra = this.tiptapOptions && this.tiptapOptions.extensions;
+      if (typeof extra === "function") {
+        const out = extra(defaults, { editor: this });
+        return Array.isArray(out) ? out : defaults;
+      }
+      if (Array.isArray(extra) && extra.length) {
+        return [...defaults, ...extra.filter(Boolean)];
+      }
+      return defaults;
+    },
+    runCustomToolbarButton(button) {
+      if (!this.editor) return;
+      button.run(this.editor, this);
+    },
+    openVideoModalFromToolbar() {
+      if (this.selectedVideoPos !== null) {
+        this.openVideoModal("edit", this.selectedVideoPos);
+      } else {
+        this.openVideoModal("insert");
+      }
+    },
+    openVideoModal(mode, docPos) {
+      if (this.htmlSourceModalOpen) this.closeHtmlSourceModal();
+      if (this.imageModalOpen) this.closeImageModal();
+      this.videoModalMode = mode === "edit" ? "edit" : "insert";
+      this.editingVideoPos = this.videoModalMode === "edit" && docPos != null ? docPos : null;
+      this.videoForm = EMPTY_VIDEO_FORM();
+      if (this.videoModalMode === "edit" && this.editingVideoPos != null && this.editor) {
+        const node = this.editor.state.doc.nodeAt(this.editingVideoPos);
+        if (!node || node.type.name !== "videoEmbed") {
+          this.closeVideoModal();
+          return;
+        }
+        const a = node.attrs;
+        this.videoForm = {
+          url: a.src || "",
+          width: a.width != null ? String(a.width) : "",
+          height: a.height != null ? String(a.height) : "",
+          ratio: a.ratio || "",
+          allowfullscreen: !!a.allowfullscreen,
+          title: a.title || "",
+        };
+      }
+      this.videoModalOpen = true;
+      this.$nextTick(() => {
+        const el = this.$refs.videoUrlInput;
+        if (el && typeof el.focus === "function") el.focus();
+      });
+    },
+    closeVideoModal() {
+      this.videoModalOpen = false;
+      this.videoModalMode = "insert";
+      this.editingVideoPos = null;
+      this.videoForm = EMPTY_VIDEO_FORM();
+    },
+    videoAttrsFromForm() {
+      const w = parseInt(String(this.videoForm.width).trim(), 10);
+      const h = parseInt(String(this.videoForm.height).trim(), 10);
+      const title = String(this.videoForm.title || "").trim();
+      return {
+        src: this.videoResolvedSrc,
+        width: Number.isFinite(w) && w > 0 ? w : null,
+        height: Number.isFinite(h) && h > 0 ? h : null,
+        ratio: this.videoForm.ratio || null,
+        allowfullscreen: !!this.videoForm.allowfullscreen,
+        title: title || null,
+      };
+    },
+    confirmVideoModal() {
+      if (!this.editor || !this.videoResolvedSrc) return;
+      const attrs = this.videoAttrsFromForm();
+      if (this.videoModalMode === "edit" && this.editingVideoPos != null) {
+        this.editor.chain().focus().setNodeSelection(this.editingVideoPos).updateAttributes("videoEmbed", attrs).run();
+      } else {
+        this.editor.chain().focus().setVideoEmbed(attrs).run();
+      }
+      this.closeVideoModal();
+    },
+    deleteVideoFromModal() {
+      if (!this.editor || this.editingVideoPos == null) return;
+      this.editor.chain().focus().setNodeSelection(this.editingVideoPos).deleteSelection().run();
+      this.closeVideoModal();
+    },
     recreateEditor() {
       const html = this.editor ? this.editor.getHTML() : this.modelValue || "";
       this.editor?.destroy();
       this.editor = null;
       this.selectedImagePos = null;
+      this.selectedVideoPos = null;
       this.imageEditForm = { alt: "", width: "", height: "", imgClass: "" };
       this.$nextTick(() => {
         this.createEditor(normalizeHtmlOutput(html));
@@ -1158,6 +1394,17 @@ export default HtmlEditor;
       }
     }
 
+    .tiptap-video-preview {
+      max-width: 100%;
+      overflow: hidden;
+      background: var(--bs-tertiary-bg);
+
+      iframe {
+        border: 0;
+        max-width: 100%;
+      }
+    }
+
     .tiptap-html-source {
       min-height: 14rem;
       font-size: 0.8125rem;
@@ -1211,6 +1458,22 @@ export default HtmlEditor;
         img.ProseMirror-selectednode {
           outline: 2px solid var(--bs-primary);
           outline-offset: 2px;
+        }
+
+        .tiptap-video-embed {
+          margin: 0.5rem 0;
+          cursor: pointer;
+
+          // szerkesztőben a lejátszó ne nyelje el a kattintást (kijelölés / dupla katt → szerkesztés)
+          iframe {
+            pointer-events: none;
+            border: 0;
+          }
+
+          &.ProseMirror-selectednode {
+            outline: 2px solid var(--bs-primary);
+            outline-offset: 2px;
+          }
         }
       }
 

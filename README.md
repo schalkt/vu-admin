@@ -441,6 +441,23 @@ form: {
 // HTML editor (TipTap; field.tiptap: { placeholder, imageSourceFields?: ['images'] })
 { type: 'html',   name: 'body',   label: 'Content' }
 
+// HTML editor with video embed + project-level extensions
+{
+  type: 'html', name: 'body', label: 'Content',
+  tiptap: {
+    placeholder: 'Content…',
+    // ▶ toolbar button: YouTube / Vimeo / Facebook page URL or <iframe> embed code → <div class="ratio ratio-16x9"><iframe …></div>
+    // false → disabled; allowedHosts replaces the default whitelist (only https iframe src on these hosts is kept)
+    video: { allowedHosts: ['www.youtube.com', 'www.youtube-nocookie.com', 'player.vimeo.com', 'www.facebook.com'] },
+    // extra TipTap extensions: array → appended; function → (defaults, { editor }) => final list
+    extensions: [MyExtension],
+    // extra toolbar buttons for the extra extensions (label may be HTML)
+    toolbarButtons: [
+      { label: '<i class="bi bi-star"></i>', title: 'My action', run: (editor) => editor.chain().focus().myCommand().run(), isActive: (editor) => editor.isActive('myNode') },
+    ],
+  },
+}
+
 // File / image upload — see "File upload" section below
 {
   type: 'upload', name: 'images', label: 'Images',
