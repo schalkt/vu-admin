@@ -1252,17 +1252,33 @@ export default {
       let haveFilter = false;
 
       for (let column of this.settings.table.columns) {
-        if (column.filter && column.filter.value !== undefined) {
-          haveFilter = true;
-
-          filter[column.name] = {
-            type: column.filter.type,
-            value: column.filter.onchange
-              ? column.filter.onchange(column.filter)
-              : column.filter.value,
-            operator: column.filter.operator,
-          };
+        if (!column.filter) {
+          continue;
         }
+
+        const value = column.filter.value;
+
+        if (value === undefined || value === null) {
+          continue;
+        }
+
+        if (Array.isArray(value) && value.length === 0) {
+          continue;
+        }
+
+        if (value === '') {
+          continue;
+        }
+
+        haveFilter = true;
+
+        filter[column.name] = {
+          type: column.filter.type,
+          value: column.filter.onchange
+            ? column.filter.onchange(column.filter)
+            : column.filter.value,
+          operator: column.filter.operator,
+        };
       }
 
       return haveFilter ? filter : null;
@@ -2182,6 +2198,9 @@ export default {
       let value = option.value;
 
       if (filter.multiple) {
+        if (!Array.isArray(filter.value)) {
+          filter.value = [];
+        }
         arrayToggleOne(filter.value, value);
       } else {
         filter.value = filter.value === value ? null : value;

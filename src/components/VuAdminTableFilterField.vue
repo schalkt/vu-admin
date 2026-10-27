@@ -52,14 +52,14 @@
 
       <div class="dropdown" v-if="column.filter.dropdown">
         <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-          {{ column.filter.multiple ? (column.filter.value.length + " selected") : (column.filter.value ? column.filter.value : 'not selected') }}
+          {{ column.filter.multiple ? ((column.filter.value || []).length + " selected") : (column.filter.value ? column.filter.value : 'not selected') }}
         </button>
         <ul class="dropdown-menu">
           <li>
             <span v-for="option in column.filter.options" :key="option" class="dropdown-item cursor-pointer"
-              :class="{ 'selected': (column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value) }"
+              :class="{ 'selected': (column.filter.multiple ? (column.filter.value || []).indexOf(option.value) >= 0 : column.filter.value === option.value) }"
               @click="dropdownSelectToggleOne(column.filter, option)">
-              <i v-if="(column.filter.multiple ? column.filter.value.indexOf(option.value) >= 0 : column.filter.value === option.value)" class="bi bi-check-square"></i>
+              <i v-if="(column.filter.multiple ? (column.filter.value || []).indexOf(option.value) >= 0 : column.filter.value === option.value)" class="bi bi-check-square"></i>
               <i v-else class="bi bi-square"></i>
               {{ translate(option.label ? option.label : option.value) }}
             </span>
@@ -216,6 +216,9 @@ export default {
       let value = option.value;
 
       if (filter.multiple) {
+        if (!Array.isArray(filter.value)) {
+          filter.value = [];
+        }
         arrayToggleOne(filter.value, value);
       } else {
         filter.value = filter.value === value ? null : value;

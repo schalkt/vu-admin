@@ -7,24 +7,25 @@
       <div class="col">
         <div class="row g-1 d-flex align-items-center justify-content-between">
 
-          <div v-for="(elementValue, elementKey) in elements" :key="elementKey" :class="field.elements[elementKey].class || 'col'">
+          <div v-for="(elementDef, elementKey) in field.elements" :key="elementKey" :class="elementDef.class || 'col'">
 
-            <span v-if="field.elements[elementKey].template" v-html="getValueOrFunction(field.elements[elementKey].template, value[elindex])"></span>
+            <span v-if="elementDef.template" v-html="getValueOrFunction(elementDef.template, value[elindex])"></span>
 
             <div v-else class="input-group input-group-sm">
 
-              <span v-if="field.elements[elementKey].prefix" class="input-group-text">
-                {{ field.elements[elementKey].prefix }}
+              <span v-if="elementDef.prefix" class="input-group-text">
+                {{ elementDef.prefix }}
               </span>
 
-              <VuAdminFormSelect v-if="field.elements[elementKey].type == 'select' && value[elindex][elementKey]" v-model="value[elindex][elementKey]"
-                :field="field.elements[elementKey]" :item="item" :settings="settings" :formId="formId" :optionValue="'object'"></VuAdminFormSelect>
+              <VuAdminFormSelect v-if="elementDef.type == 'select' && (!elementDef.relation || elementDef.relation.items)"
+                v-model="value[elindex][elementKey]"
+                :field="elementDef" :item="item" :settings="settings" :formId="formId" :optionValue="'object'"></VuAdminFormSelect>
 
-              <input v-else :type="field.elements[elementKey].type" :required="field.elements[elementKey].required"
-                :placeholder="field.elements[elementKey].placeholder || ''" class="form-control" v-model="value[elindex][elementKey]">
+              <input v-else :type="elementDef.type" :required="elementDef.required"
+                :placeholder="elementDef.placeholder || ''" class="form-control" v-model="value[elindex][elementKey]">
 
-              <span v-if="field.elements[elementKey].suffix" class="input-group-text">
-                {{ field.elements[elementKey].suffix }}
+              <span v-if="elementDef.suffix" class="input-group-text">
+                {{ elementDef.suffix }}
               </span>
 
             </div>
@@ -39,7 +40,7 @@
           <i class="bi bi-arrow-up"></i>
         </button>
 
-        <button v-if="field.sortable" type="button" class="btn btn-sm btn-outline-secondary p-1 me-1" @click="arrayItemMoveDown(value, elindex + 1)">
+        <button v-if="field.sortable" type="button" class="btn btn-sm btn-outline-secondary p-1 me-1" @click="arrayItemMoveDown(value, elindex)">
           <i class="bi bi-arrow-down"></i>
         </button>
 
@@ -139,14 +140,15 @@ const VuAdminFormList = {
     },
   },
   watch: {
-    modelValue(newValue) {
+    modelValue: {
+      immediate: true,
+      handler(newValue) {
+        this.value = newValue;
 
-      this.value = newValue;
-
-      if (!this.value || typeof this.value !== "object") {
-        this.value = [];
-      }
-
+        if (!this.value || typeof this.value !== "object") {
+          this.value = [];
+        }
+      },
     },
   },
   methods: {
