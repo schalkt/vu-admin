@@ -26219,5 +26219,85 @@ function aH(t, n, o, s, c, l) {
 		class: m([t.settings.icon])
 	}, null, 2)) : r("", !0), a("span", { innerHTML: t.getValueOrFunction(t.settings.label) }, null, 8, iH)], 2)]))], 8, XV)) : r("", !0);
 }
-var oH = /*#__PURE__*/ Jk(YV, [["render", aH]]);
-export { DB as VuAdmin, JV as VuAuth, oH as VuUserButton };
+var oH = /*#__PURE__*/ Jk(YV, [["render", aH]]), sH = {
+	name: "VuAdminNav",
+	props: {
+		modelValue: Object,
+		menu: {
+			type: String,
+			default: "admin"
+		},
+		url: {
+			type: String,
+			default: ""
+		}
+	},
+	data() {
+		return {
+			auth: {},
+			payload: null,
+			loaded: !1
+		};
+	},
+	computed: {
+		navUrl() {
+			return this.url ? this.url : typeof window < "u" && window.__VU_ADMIN_NAV_URL__ ? window.__VU_ADMIN_NAV_URL__ : (typeof window < "u" && window.__VU_ADMIN_PREFIX__ || "/szerk") + "/api/navs";
+		},
+		menuClass() {
+			return this.payload && this.payload.class ? this.payload.class : "";
+		},
+		visibleItems() {
+			return (this.payload && Array.isArray(this.payload.items) ? this.payload.items : []).filter((e) => !e.disabled);
+		}
+	},
+	watch: { modelValue: {
+		handler(e) {
+			this.auth = e || {}, this.auth.success ? this.load() : (this.payload = null, this.loaded = !1);
+		},
+		deep: !0,
+		immediate: !0
+	} },
+	methods: {
+		visibleChildren(e) {
+			return (Array.isArray(e.items) ? e.items.filter((e) => !e.disabled) : []).slice().sort((e, t) => String(e.name || "").localeCompare(String(t.name || "")));
+		},
+		async load() {
+			if (this.loaded || !this.auth || !this.auth.success) return;
+			let e = Yc("GET", { options: { headers: {} } }, {}, this.auth);
+			try {
+				let t = await fetch(this.navUrl, e);
+				if (!t.ok) return;
+				let n = await t.json();
+				this.payload = n[this.menu] || { items: [] }, this.loaded = !0;
+			} catch {
+				this.payload = { items: [] };
+			}
+		}
+	}
+}, cH = {
+	key: 0,
+	class: "nav-item dropdown"
+}, lH = ["innerHTML"], uH = { class: "dropdown-menu" }, dH = ["target", "href"], fH = ["innerHTML"], pH = {
+	key: 1,
+	class: "nav-item"
+}, mH = ["target", "href"], hH = ["innerHTML"];
+function gH(t, n, s, c, l, u) {
+	return t.auth && t.auth.success && t.visibleItems.length ? (_(), i("ul", {
+		key: 0,
+		class: m(["navbar-nav me-auto mb-2 mb-lg-0", t.menuClass])
+	}, [(_(!0), i(e, null, y(t.visibleItems, (n, r) => (_(), i(e, { key: r }, [n.items && n.items.length ? (_(), i("li", cH, [a("button", {
+		class: m(["btn dropdown-toggle", n.class]),
+		type: "button",
+		"data-bs-toggle": "dropdown"
+	}, [a("span", { innerHTML: n.icon }, null, 8, lH), a("span", null, x(n.name), 1)], 2), a("ul", uH, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, t) => (_(), i("li", { key: t }, [a("a", {
+		class: m(["dropdown-item", e.class]),
+		target: e.target || "",
+		href: e.href
+	}, [a("span", { innerHTML: e.icon }, null, 8, fH), o(" " + x(e.name), 1)], 10, dH)]))), 128))])])) : (_(), i("li", pH, [a("a", {
+		class: m(["nav-link scrollto", n.class]),
+		target: n.target || "",
+		href: n.href
+	}, [a("span", { innerHTML: n.icon }, null, 8, hH), o(" " + x(n.name), 1)], 10, mH)]))], 64))), 128))], 2)) : r("", !0);
+}
+var _H = /*#__PURE__*/ Jk(sH, [["render", gH]]);
+export { DB as VuAdmin, _H as VuAdminNav, JV as VuAuth, oH as VuUserButton };

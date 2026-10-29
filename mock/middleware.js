@@ -43,6 +43,23 @@ function verifyCaptcha(answers, token) {
   return signCaptcha(list, b) === token || signCaptcha(list, b - 1) === token;
 }
 
+// --- Access token (HS256 JWT, 1 óra lejárat) ---
+const JWT_SECRET = process.env.JWT_SECRET || 'vu-admin-dev-jwt-secret-change-in-prod';
+
+function createAccessToken(user) {
+  const now = Math.floor(Date.now() / 1000);
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const payload = Buffer.from(JSON.stringify({
+    sub: String(user.id),
+    email: user.email,
+    iat: now,
+    exp: now + 3600,
+    jti: crypto.randomBytes(8).toString('hex'),
+  })).toString('base64url');
+  const signature = crypto.createHmac('sha256', JWT_SECRET).update(header + '.' + payload).digest('base64url');
+  return `${header}.${payload}.${signature}`;
+}
+
 // --- 2FA session store (in-memory, TTL 5 min) ---
 const twoFaStore = new Map();
 
@@ -335,7 +352,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
         return send(res, { twofa: user.twofa, twofaSession: session }, 202, delay);
       }
       const { password: _, ...safeUser } = user;
-      return send(res, { ...safeUser, accessToken: 'mock-token-' + user.id }, 200, delay);
+      return send(res, { ...safeUser, accessToken: createAccessToken(user) }, 200, delay);
     }
 
     if (action === 'register' && req.method === 'POST') {
@@ -371,7 +388,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       const { password: _, ...safeUser } = users[0] || {};
       return send(res, {
         ...safeUser,
-        accessToken: 'mock-token-' + (safeUser.id || 1),
+        accessToken: createAccessToken({ id: 1, ...safeUser }),
         message: 'Sikeres aktiválás!',
       }, 200, delay);
     }
@@ -386,7 +403,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       const user = users.find(u => u.id === entry.userId);
       if (!user) return send(res, { message: 'Felhasználó nem található' }, 404, delay);
       const { password: _, ...safeUser } = user;
-      return send(res, { ...safeUser, accessToken: 'mock-token-' + user.id }, 200, delay);
+      return send(res, { ...safeUser, accessToken: createAccessToken(user) }, 200, delay);
     }
 
     if (action === 'twofa-resend' && req.method === 'POST') {
@@ -400,6 +417,32 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     }
 
     next();
+  });
+
+  // --- Navigáció: GET /api/navs (VuAdminNav) ---
+  server.middlewares.use('/api/navs', (req, res, next) => {
+    if (req.method !== 'GET') return next();
+    return send(res, {
+      admin: {
+        class: '',
+        items: [
+          { name: 'Vezérlőpult', href: '#', icon: '<i class="bi bi-speedometer2 me-1"></i>' },
+          {
+            name: 'Tartalom',
+            icon: '<i class="bi bi-file-earmark-text me-1"></i>',
+            items: [
+              { name: 'Termékek', href: '#product', icon: '<i class="bi bi-box-seam me-1"></i>' },
+              { name: 'Bejegyzések', href: '#post', icon: '<i class="bi bi-newspaper me-1"></i>' },
+              { name: 'Teendők', href: '#todos', icon: '<i class="bi bi-check2-square me-1"></i>' },
+              { name: 'Rejtett menüpont', href: '#', disabled: true },
+            ],
+          },
+          { name: 'Felhasználók', href: '#user', icon: '<i class="bi bi-people me-1"></i>' },
+          { name: 'Dokumentáció', href: 'https://github.com', target: '_blank', icon: '<i class="bi bi-box-arrow-up-right me-1"></i>' },
+          { name: 'Letiltott', href: '#', disabled: true },
+        ],
+      },
+    }, 200, delay);
   });
 
   // --- Entity CRUD: /api/{entity}[/{id}] ---

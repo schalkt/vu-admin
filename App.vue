@@ -1,7 +1,8 @@
 <template>
   <div class="container-fluid">
 
-    <header class="sticky-top text-end p-2 border shadow bg-light">
+    <header class="sticky-top navbar navbar-expand p-2 border shadow bg-light">
+      <vu-admin-nav v-model="auth" :url="'/api/navs'"></vu-admin-nav>
       <vu-user-button v-model="auth" :panel="'registration'"></vu-user-button>
       <vu-user-button v-model="auth" :panel="'login'"></vu-user-button>
     </header>
@@ -35,6 +36,7 @@
 import { VuAdmin } from "./src/components/VuAdmin.vue";
 import { VuAuth } from "./src/components/VuAuth.vue";
 import { VuUserButton } from "./src/components/VuUserButton.vue";
+import { VuAdminNav } from "./src/components/VuAdminNav.vue";
 
 export default {
   data() {
@@ -48,7 +50,8 @@ export default {
   components: {
     VuAdmin,
     VuAuth,
-    VuUserButton,    
+    VuUserButton,
+    VuAdminNav,
   }
 };
 </script>

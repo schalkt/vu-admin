@@ -1,6 +1,7 @@
 import VuAdmin from './components/VuAdmin.vue';
 import VuAuth from './components/VuAuth.vue';
 import VuUserButton from './components/VuUserButton.vue';
+import VuAdminNav from './components/VuAdminNav.vue';
 
-export { VuAdmin, VuAuth, VuUserButton };
+export { VuAdmin, VuAuth, VuUserButton, VuAdminNav };
 
