@@ -7,7 +7,91 @@ window.VuEntities = window.VuEntities || {};
 
 window.VuEntities.products = (preset) => {
 
-	const { escapeHtml, safeUrl } = window.VuAdminHelpers;
+	const { escapeHtml, safeUrl, getLanguage } = window.VuAdminHelpers;
+
+	// entity dictionary (config.translate): vu-admin translates the config texts with it
+	const translations = {
+		hu: {
+			'Products (showcase)': 'Termékek (bemutató)',
+			Image: 'Kép',
+			'Product <small class="text-muted fw-light">(search)</small>': 'Termék <small class="text-muted fw-light">(keresés)</small>',
+			Brand: 'Márka',
+			Category: 'Kategória',
+			Tags: 'Címkék',
+			Rating: 'Értékelés',
+			Stock: 'Készlet',
+			Price: 'Ár',
+			Availability: 'Elérhetőség',
+			Updated: 'Frissítve',
+			'In stock': 'Raktáron',
+			'Low stock': 'Kevés készlet',
+			'Out of stock': 'Nincs készleten',
+			'New product': 'Új termék',
+			'CSV export': 'CSV export',
+			'Clear filters': 'Szűrők törlése',
+			'Clear sorting': 'Rendezés törlése',
+			'Close details': 'Részletek bezárása',
+			'Selected count': 'Kijelöltek száma',
+			Description: 'Leírás',
+			Warranty: 'Garancia',
+			'Copy as new': 'Másolás újként',
+			'<strong>Basic</strong> data': '<strong>Alap</strong> adatok',
+			'Product name': 'Terméknév',
+			'Read-only field': 'Csak olvasható mező',
+			Discount: 'Kedvezmény',
+			pcs: 'db',
+			'Available from': 'Elérhető ettől',
+			'Featured product': 'Kiemelt termék',
+			Links: 'Linkek',
+			Name: 'Név',
+			'Description and media': 'Leírás és média',
+			'Description (HTML editor with video embed)': 'Leírás (HTML szerkesztő videó beágyazással)',
+			'Product description — bold, heading, list, link, image, video…': 'Termékleírás — félkövér, címsor, lista, link, kép, videó…',
+			'Gallery (inline JSON, no upload URL)': 'Galéria (inline JSON, feltöltési URL nélkül)',
+			'Click or drop images here': 'Kattints vagy húzd ide a képeket',
+			Public: 'Nyilvános',
+			Hidden: 'Rejtett',
+			// category labels (label(slug))
+			Beauty: 'Szépségápolás',
+			Fragrances: 'Illatok',
+			Furniture: 'Bútorok',
+			Groceries: 'Élelmiszerek',
+			'Home decoration': 'Lakásdekoráció',
+			'Kitchen accessories': 'Konyhai kiegészítők',
+			Laptops: 'Laptopok',
+			'Mens shirts': 'Férfi ingek',
+			'Mens shoes': 'Férfi cipők',
+			'Mobile accessories': 'Mobil kiegészítők',
+			Smartphones: 'Okostelefonok',
+			Sunglasses: 'Napszemüvegek',
+			Tablets: 'Tabletek',
+			Tops: 'Felsők',
+			Vehicle: 'Járművek',
+			'Womens bags': 'Női táskák',
+			'Womens dresses': 'Női ruhák',
+			'Womens jewellery': 'Női ékszerek',
+			'Womens watches': 'Női órák',
+			'Mens watches': 'Férfi órák',
+			Motorcycle: 'Motorok',
+			'Skin care': 'Bőrápolás',
+			'Sports accessories': 'Sportkiegészítők',
+			'Womens shoes': 'Női cipők',
+			// texts built by functions (t())
+			'Custom action: {title} (#{id})': 'Egyedi művelet: {title} (#{id})',
+			'{count} selected rows': '{count} kijelölt sor',
+			Reviews: 'Vélemények',
+			None: 'Nincs',
+			'Tags ({count})': 'Címkék ({count})',
+			'Add tag': 'Címke hozzáadása',
+			'Add ({count})': 'Hozzáadás ({count})',
+			'No image': 'Nincs kép',
+		},
+	};
+
+	// texts returned by functions (templates, labels, messages) are not translated by vu-admin, and
+	// window.VuAdminHelpers.translate() does not see the entity dictionary → own lookup first
+	const t = (key, vars = {}) => ((translations[getLanguage()] || {})[key] || window.VuAdminHelpers.translate(key))
+		.replace(/\{(\w+)\}/g, (match, name) => vars[name] !== undefined ? vars[name] : '');
 
 	const BASE_URL = 'https://dummyjson.com/products';
 
@@ -171,7 +255,7 @@ window.VuEntities.products = (preset) => {
 				default_operator: 'in',
 				options: categories.map((slug) => ({ value: slug, label: label(slug) })),
 			},
-			template: (category) => '<span class="badge text-bg-light border">' + escapeHtml(label(category || '')) + '</span>',
+			template: (category) => '<span class="badge text-bg-light border">' + escapeHtml(t(label(category || ''))) + '</span>',
 		},
 		{
 			name: 'tags',
@@ -315,7 +399,7 @@ window.VuEntities.products = (preset) => {
 				{
 					// custom action: own function, writes to the table's message bar
 					action: (item, params, self) => {
-						self.addTableMessage('Custom action: ' + item.title + ' (#' + item.id + ')', 3000, 'info');
+						self.addTableMessage(t('Custom action: {title} (#{id})', { title: item.title, id: item.id }), 3000, 'info');
 					},
 					class: 'btn btn-sm btn-outline-info',
 					icon: 'bi bi-lightning',
@@ -400,7 +484,7 @@ window.VuEntities.products = (preset) => {
 							class: 'dropdown-item cursor-pointer',
 							icon: 'bi bi-check2-square',
 							action: (item, params, self) => {
-								self.addTableMessage(self.selected.length + ' selected rows', 2500, 'secondary');
+								self.addTableMessage(t('{count} selected rows', { count: self.selected.length }), 2500, 'secondary');
 							},
 						},
 					],
@@ -437,7 +521,7 @@ window.VuEntities.products = (preset) => {
 					'<li><span class="text-warning">' + '★'.repeat(Math.round(review.rating || 0)) + '</span> ' +
 					escapeHtml(review.comment) + ' <small class="text-muted">— ' + escapeHtml(review.reviewerName) + '</small></li>'
 				).join('');
-				return '<div class="small p-2"><strong>Reviews</strong><ul class="mb-0">' + (reviews || '<li class="text-muted">None</li>') + '</ul></div>';
+				return '<div class="small p-2"><strong>' + t('Reviews') + '</strong><ul class="mb-0">' + (reviews || '<li class="text-muted">' + t('None') + '</li>') + '</ul></div>';
 			},
 		},
 		exports: {
@@ -460,7 +544,7 @@ window.VuEntities.products = (preset) => {
 
 	const form = {
 		class: 'm-2',
-		title: (item) => item.id ? escapeHtml(item.title) + ' <small class="text-muted">#' + escapeHtml(item.id) + '</small>' : 'New product',
+		title: (item) => item.id ? escapeHtml(item.title) + ' <small class="text-muted">#' + escapeHtml(item.id) + '</small>' : t('New product'),
 		default: {
 			title: 'New product',
 			category: 'beauty',
@@ -597,7 +681,7 @@ window.VuEntities.products = (preset) => {
 						max: 5,
 						step: 0.01,
 						class: 'col-md-6',
-						label: (params) => 'Rating <small class="text-muted">(' + params.field.min + '–' + params.field.max + ')</small>',
+						label: (params) => t('Rating') + ' <small class="text-muted">(' + params.field.min + '–' + params.field.max + ')</small>',
 					},
 					{
 						type: 'date',
@@ -613,7 +697,7 @@ window.VuEntities.products = (preset) => {
 						dropdown: {
 							label: ({ item, field }) => {
 								const count = Array.isArray(item[field.name]) ? item[field.name].length : 0;
-								return count ? 'Tags (' + count + ')' : 'Add tag';
+								return count ? t('Tags ({count})', { count }) : t('Add tag');
 							},
 							class: 'btn btn-sm btn-outline-secondary',
 						},
@@ -648,7 +732,7 @@ window.VuEntities.products = (preset) => {
 						addButton: {
 							class: 'btn btn-sm btn-outline-primary my-1 w-100',
 							icon: 'bi bi-plus me-1',
-							label: (item) => 'Add (' + (item.links || []).length + ')',
+							label: (item) => t('Add ({count})', { count: (item.links || []).length }),
 							wrapperClass: 'col-3',
 						},
 						elements: {
@@ -671,7 +755,7 @@ window.VuEntities.products = (preset) => {
 							const url = escapeHtml(safeUrl(item[field.name]));
 							return url
 								? '<img src="' + url + '" height="120" class="rounded border shadow-sm">'
-								: '<span class="text-muted">No image</span>';
+								: '<span class="text-muted">' + t('No image') + '</span>';
 						},
 					},
 					{
@@ -719,6 +803,7 @@ window.VuEntities.products = (preset) => {
 	return {
 		pkey: 'id',
 		debug: false,
+		translate: translations,
 		api: api,
 		events: events,
 		table: table,

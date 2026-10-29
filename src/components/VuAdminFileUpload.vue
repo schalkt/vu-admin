@@ -18,20 +18,20 @@
         <div class="row g-1">
           <div class="col-md-6">
             <button type="button" class="btn btn-sm btn-outline-danger mt-1 w-100" @click="editfile = null">
-              Close
+              {{ translate('Close') }}
             </button>
           </div>
           <div class="col-md-6">
             <button type="button" class="btn btn-sm btn-outline-danger mt-1 w-100" @click="remove(index)">
-              Remove
+              {{ translate('Remove') }}
             </button>
           </div>
           <div class="col-md-6">
             <button v-if="type && !type.url" type="button" class="btn btn-sm btn-outline-light mt-1 w-100" @click="download(index, params)">
-              Download
+              {{ translate('Download') }}
             </button>
             <a v-if="type && type.url" type="button" class="btn btn-sm btn-outline-light mt-1 w-100" :href="type.url">
-              Download
+              {{ translate('Download') }}
             </a>
           </div>
         </div>
@@ -224,7 +224,7 @@
                   </a>
 
                   <button v-if="file.video && !file.uploaded" type="button" class="btn btn-sm btn-outline-warning mx-1" @click="seekRandom(file)">
-                    Seek
+                    {{ translate('Seek') }}
                   </button>
 
                   <button v-if="params.editor" type="button" class="btn btn-sm btn-outline-warning mx-1" @click="editfile = file">

@@ -1,5 +1,31 @@
 
 window.VuSettings = {
+	// project dictionary: nav item names (navs.json), auth modal and user menu texts
+	translate: {
+		hu: {
+			Products: 'Termékek',
+			Carts: 'Kosarak',
+			Features: 'Funkciók',
+			'Table: filter, sort, columns': 'Táblázat: szűrés, rendezés, oszlopok',
+			'Form: field types, upload': 'Űrlap: mezőtípusok, feltöltés',
+			'Relation, dark theme': 'Kapcsolat, sötét téma',
+			'Hidden (disabled) menu item': 'Rejtett (letiltott) menüpont',
+			Disabled: 'Letiltva',
+			'Forgot password': 'Elfelejtett jelszó',
+			Activation: 'Aktiválás',
+			Username: 'Felhasználónév',
+			'Enter your username': 'Add meg a felhasználóneved',
+			Password: 'Jelszó',
+			'Enter your password': 'Add meg a jelszavad',
+			'Use at least 1 lowercase letter, 1 uppercase letter and 1 digit. Minimum 4 characters.':
+				'Használj legalább 1 kisbetűt, 1 nagybetűt és 1 számjegyet. Legalább 4 karakter.',
+			'Password again': 'Jelszó újra',
+			'Repeat your password': 'Ismételd meg a jelszavad',
+			"I accept the <a href='/terms.pdf'>Terms and Conditions</a>": "Elfogadom az <a href='/terms.pdf'>Általános Szerződési Feltételeket</a>",
+			"I accept the <a href='/privacy-policy.pdf'>Privacy Policy</a>": "Elfogadom az <a href='/privacy-policy.pdf'>Adatkezelési tájékoztatót</a>",
+			'Subscribe to the newsletter': 'Feliratkozom a hírlevélre',
+		},
+	},
 	button: {
 		registration: {
 			class: 'btn btn-warning me-2',
@@ -36,7 +62,7 @@ window.VuSettings = {
 			label: (params, settings, self) => {
 
 				if (!self.auth || !self.auth.user) {
-					return 'Sign in';
+					return window.VuAdminHelpers.translate('Sign in');
 				}
 
 				const { escapeHtml, safeUrl } = window.VuAdminHelpers;
@@ -98,7 +124,7 @@ window.VuSettings = {
 		_help: '<strong>Help</strong><br>Below...',
 		accepts: [{
 			label: () => {
-				return `I accept the <a href='/terms.pdf'>Terms and Conditions</a>`
+				return window.VuAdminHelpers.translate("I accept the <a href='/terms.pdf'>Terms and Conditions</a>")
 			},
 			panels: ['registration'],
 			required: true,
@@ -106,7 +132,7 @@ window.VuSettings = {
 		},
 		{
 			label: () => {
-				return `I accept the <a href='/privacy-policy.pdf'>Privacy Policy</a>`
+				return window.VuAdminHelpers.translate("I accept the <a href='/privacy-policy.pdf'>Privacy Policy</a>")
 			},
 			panels: ['registration'],
 			required: true,

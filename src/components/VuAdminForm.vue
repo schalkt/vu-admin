@@ -729,6 +729,12 @@ export default VuAdminForm;
 
 <style lang="scss" >
 .vu-admin {
+  // Bootstrap sets `color` only on body: without this, a dark-themed form inherits the light body text color
+  // (e.g. the form group titles were dark on dark)
+  form.form[data-bs-theme] {
+    color: var(--bs-body-color);
+  }
+
   [data-bs-theme="dark"] .modal-header.bg-body .btn-outline-dark {
     --bs-btn-color: var(--bs-body-color);
     --bs-btn-border-color: var(--bs-border-color);

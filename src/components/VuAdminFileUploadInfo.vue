@@ -4,29 +4,29 @@
       <thead>
         <tr>
           <td class="text-muted">
-            type
+            {{ translate('type') }}
           </td>
           <td class="text-muted text-center">
-            resolution
+            {{ translate('resolution') }}
           </td>
           <td class="text-muted text-center">
-            ratio
+            {{ translate('ratio') }}
           </td>
           <td class="text-muted text-end">
-            size
+            {{ translate('size') }}
           </td>
           <td class="text-muted text-end">
-            extension
+            {{ translate('extension') }}
           </td>
           <td class="text-muted">
-            crop
+            {{ translate('crop') }}
           </td>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>
-            original
+            {{ translate('original') }}
           </td>
           <td class="text-nowrap text-center">
             {{ file.original.width }} x {{ file.original.height }}

@@ -134,7 +134,7 @@
               </div>
 
               <button type="button" class="btn btn-sm btn-secondary" @click="insertAddress(field.name)">
-                Add
+                {{ translate('Add') }}
               </button>
             </span>
 

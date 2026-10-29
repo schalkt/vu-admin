@@ -687,7 +687,7 @@ const HtmlEditor = {
       return this.imageModalMode === "edit" ? this.translate("Edit image") : this.translate("Insert image");
     },
     placeholderText() {
-      return (this.tiptapOptions && this.tiptapOptions.placeholder) || "";
+      return this.tiptapOptions && this.tiptapOptions.placeholder ? this.translate(this.tiptapOptions.placeholder) : "";
     },
     videoEnabled() {
       return !(this.tiptapOptions && this.tiptapOptions.video === false);

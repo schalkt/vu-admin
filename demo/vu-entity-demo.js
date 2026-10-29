@@ -1,6 +1,40 @@
 // templates that build HTML must escape every data value (XSS);
 // the helpers come from dist/vu-admin.umd.js (window.VuAdminHelpers)
-const { escapeHtml, safeUrl } = window.VuAdminHelpers;
+const { escapeHtml, safeUrl, getLanguage } = window.VuAdminHelpers;
+
+// entity dictionary (config.translate): vu-admin translates the config texts with it
+const cartsTranslations = {
+	hu: {
+		Carts: 'Kosarak',
+		Thumb: 'Kép',
+		User: 'Felhasználó',
+		Products: 'Termékek',
+		Items: 'Tételek',
+		Qty: 'Db',
+		Discount: 'Kedvezmény',
+		Total: 'Összesen',
+		View: 'Megtekintés',
+		'Cart details': 'Kosár adatai',
+		'Cart ID': 'Kosár ID',
+		'User ID': 'Felhasználó ID',
+		'Unique products': 'Egyedi termékek',
+		'Total quantity': 'Összes mennyiség',
+		'Original total (USD)': 'Eredeti összeg (USD)',
+		'Discounted total (USD)': 'Kedvezményes összeg (USD)',
+		'Discounted total': 'Kedvezményes összeg',
+		'Products in cart': 'Termékek a kosárban',
+		// texts built by functions (cartsT())
+		'Cart #{id}': 'Kosár #{id}',
+		'No products': 'Nincs termék',
+		Product: 'Termék',
+		Price: 'Ár',
+	},
+};
+
+// texts returned by functions are not translated by vu-admin, and
+// window.VuAdminHelpers.translate() does not see the entity dictionary → own lookup first
+const cartsT = (key, vars = {}) => ((cartsTranslations[getLanguage()] || {})[key] || window.VuAdminHelpers.translate(key))
+	.replace(/\{(\w+)\}/g, (match, name) => vars[name] !== undefined ? vars[name] : '');
 
 let api = {
 	url: 'https://dummyjson.com/carts',
@@ -227,7 +261,7 @@ let columns = [
 ];
 
 let form = {
-	title: (item) => 'Cart #' + escapeHtml(item.id),
+	title: (item) => cartsT('Cart #{id}', { id: escapeHtml(item.id) }),
 	control: {
 		class: 'text-end',
 		buttons: [
@@ -298,7 +332,7 @@ let form = {
 
 						const products = item[field.name];
 
-						if (!products || !products.length) return '<em class="text-muted">No products</em>';
+						if (!products || !products.length) return '<em class="text-muted">' + cartsT('No products') + '</em>';
 
 						const rows = products.map(p => {
 							const thumb = p.thumbnail
@@ -321,10 +355,10 @@ let form = {
 						return '<table class="table table-sm table-hover mb-0">' +
 							'<thead><tr>' +
 							'<th></th>' +
-							'<th>Product</th>' +
-							'<th class="text-center">Qty</th>' +
-							'<th class="text-end">Price</th>' +
-							'<th class="text-end">Total</th>' +
+							'<th>' + cartsT('Product') + '</th>' +
+							'<th class="text-center">' + cartsT('Qty') + '</th>' +
+							'<th class="text-end">' + cartsT('Price') + '</th>' +
+							'<th class="text-end">' + cartsT('Total') + '</th>' +
 							'</tr></thead>' +
 							'<tbody>' + rows.join('') + '</tbody>' +
 							'</table>';
@@ -346,6 +380,7 @@ Object.assign(window.VuEntities, {
 			events: events,
 			relations: relations,
 			theme: 'dark',
+			translate: cartsTranslations,
 			table: {
 				title: 'Carts',
 				class: 'table-hover table-responsive table-sm',

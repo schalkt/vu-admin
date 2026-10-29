@@ -14,7 +14,7 @@
             <div v-else class="input-group input-group-sm">
 
               <span v-if="elementDef.prefix" class="input-group-text">
-                {{ elementDef.prefix }}
+                {{ translate(elementDef.prefix) }}
               </span>
 
               <VuAdminFormSelect v-if="elementDef.type == 'select' && (!elementDef.relation || elementDef.relation.items)"
@@ -25,7 +25,7 @@
                 :placeholder="translate(elementDef.placeholder || '')" class="form-control" v-model="value[elindex][elementKey]">
 
               <span v-if="elementDef.suffix" class="input-group-text">
-                {{ elementDef.suffix }}
+                {{ translate(elementDef.suffix) }}
               </span>
 
             </div>
@@ -63,7 +63,7 @@
             <div class="input-group input-group-sm">
 
               <span v-if="element.prefix" class="input-group-text">
-                {{ element.prefix }}
+                {{ translate(element.prefix) }}
               </span>
 
               <VuAdminFormSelect v-if="element.type == 'select' && (!element.relation || (element.relation && element.relation.items))" v-model="element.value" :field="Object.assign({}, element, { required: false })"
@@ -72,7 +72,7 @@
               <input v-else :type="element.type" :placeholder="translate(element.placeholder || '')" class="form-control form-control-sm" v-model="element.value">
 
               <span v-if="element.suffix" class="input-group-text">
-                {{ element.suffix }}
+                {{ translate(element.suffix) }}
               </span>
 
             </div>

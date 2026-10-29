@@ -2919,6 +2919,9 @@ var Nc = "vu-language", Pc = "vu-language-change", Fc = [{
 	More: "Továbbiak",
 	New: "Új",
 	Reload: "Újratöltés",
+	Add: "Hozzáadás",
+	Remove: "Eltávolítás",
+	Download: "Letöltés",
 	Reset: "Alaphelyzet",
 	Save: "Mentés",
 	"Save and close": "Mentés és bezárás",
@@ -2978,6 +2981,14 @@ var Nc = "vu-language", Pc = "vu-language-change", Fc = [{
 	"uploaded filename": "feltöltött fájlnév",
 	"uploading filename": "feltöltés alatti fájlnév",
 	"uploaded at": "feltöltve ekkor",
+	Seek: "Képkocka váltás",
+	type: "típus",
+	resolution: "felbontás",
+	ratio: "arány",
+	size: "méret",
+	extension: "kiterjesztés",
+	crop: "vágás",
+	original: "eredeti",
 	"Are you sure you want to remove?": "Biztosan eltávolítod?",
 	"Are you sure you want to remove all?": "Biztosan eltávolítod az összeset?",
 	"Switch language": "Nyelv váltása",
@@ -19568,7 +19579,7 @@ var CA = {
 			return this.imageModalMode === "edit" ? this.translate("Edit image") : this.translate("Insert image");
 		},
 		placeholderText() {
-			return this.tiptapOptions && this.tiptapOptions.placeholder || "";
+			return this.tiptapOptions && this.tiptapOptions.placeholder ? this.translate(this.tiptapOptions.placeholder) : "";
 		},
 		videoEnabled() {
 			return !(this.tiptapOptions && this.tiptapOptions.video === !1);
@@ -20884,38 +20895,38 @@ var $M = /*#__PURE__*/ gA(CA, [["render", QM]]), eN = {
 }, tN = {
 	key: 0,
 	class: "table table-sm w-100 vsa-file-info"
-}, nN = { class: "text-nowrap text-center" }, rN = { class: "text-center" }, iN = { class: "text-nowrap text-end" }, aN = ["innerHTML"], oN = { class: "text-end" }, sN = [
+}, nN = { class: "text-muted" }, rN = { class: "text-muted text-center" }, iN = { class: "text-muted text-center" }, aN = { class: "text-muted text-end" }, oN = { class: "text-muted text-end" }, sN = { class: "text-muted" }, cN = { class: "text-nowrap text-center" }, lN = { class: "text-center" }, uN = { class: "text-nowrap text-end" }, dN = ["innerHTML"], fN = { class: "text-end" }, pN = [
 	"onMouseenter",
 	"onClick",
 	"onKeydown"
-], cN = { class: "text-nowrap text-center" }, lN = { class: "text-center" }, uN = { class: "text-end" }, dN = ["innerHTML"], fN = { class: "text-end" }, pN = {
+], mN = { class: "text-nowrap text-center" }, hN = { class: "text-center" }, gN = { class: "text-end" }, _N = ["innerHTML"], vN = { class: "text-end" }, yN = {
 	key: 0,
 	class: "fw-normal bg-light text-dark p-0 px-1 shadow-sm"
-}, mN = { colspan: "3" }, hN = { class: "text-end" }, gN = ["innerHTML"], _N = { class: "d-flex justify-content-between text-nowrap" }, vN = { class: "text-muted fw-light me-3" }, yN = { class: "d-flex justify-content-between text-nowrap" }, bN = { class: "text-muted fw-light me-3" }, xN = {
+}, bN = { colspan: "3" }, xN = { class: "text-end" }, SN = ["innerHTML"], CN = { class: "d-flex justify-content-between text-nowrap" }, wN = { class: "text-muted fw-light me-3" }, TN = { class: "d-flex justify-content-between text-nowrap" }, EN = { class: "text-muted fw-light me-3" }, DN = {
 	key: 1,
 	class: "d-flex justify-content-between"
-}, SN = { class: "text-muted fw-light me-3" }, CN = ["src", "alt"], wN = {
+}, ON = { class: "text-muted fw-light me-3" }, kN = ["src", "alt"], AN = {
 	key: 0,
 	class: "d-block text-center text-muted mt-1"
 };
-function TN(s, c, l, u, d, f) {
+function jN(s, c, l, u, d, f) {
 	return _(), i("div", null, [
 		s.file ? (_(), i("table", tN, [
-			c[5] ||= a("thead", null, [a("tr", null, [
-				a("td", { class: "text-muted" }, " type "),
-				a("td", { class: "text-muted text-center" }, " resolution "),
-				a("td", { class: "text-muted text-center" }, " ratio "),
-				a("td", { class: "text-muted text-end" }, " size "),
-				a("td", { class: "text-muted text-end" }, " extension "),
-				a("td", { class: "text-muted" }, " crop ")
-			])], -1),
+			a("thead", null, [a("tr", null, [
+				a("td", nN, x(s.translate("type")), 1),
+				a("td", rN, x(s.translate("resolution")), 1),
+				a("td", iN, x(s.translate("ratio")), 1),
+				a("td", aN, x(s.translate("size")), 1),
+				a("td", oN, x(s.translate("extension")), 1),
+				a("td", sN, x(s.translate("crop")), 1)
+			])]),
 			a("tbody", null, [a("tr", null, [
-				c[2] ||= a("td", null, " original ", -1),
-				a("td", nN, x(s.file.original.width) + " x " + x(s.file.original.height), 1),
-				a("td", rN, x(s.file.original.ratio), 1),
-				a("td", iN, [a("span", { innerHTML: s.roundFileSize(s.file.original.bytes, !0) }, null, 8, aN)]),
-				a("td", oN, x(s.file.original.extension), 1),
-				c[3] ||= a("td", null, null, -1)
+				a("td", null, x(s.translate("original")), 1),
+				a("td", cN, x(s.file.original.width) + " x " + x(s.file.original.height), 1),
+				a("td", lN, x(s.file.original.ratio), 1),
+				a("td", uN, [a("span", { innerHTML: s.roundFileSize(s.file.original.bytes, !0) }, null, 8, dN)]),
+				a("td", fN, x(s.file.original.extension), 1),
+				c[2] ||= a("td", null, null, -1)
 			]), (_(!0), i(e, null, y(s.file.types, (t, n) => (_(), i("tr", { key: n }, [
 				a("td", null, [s.getTypeImageUrl(t) ? (_(), i("span", {
 					key: 0,
@@ -20927,34 +20938,34 @@ function TN(s, c, l, u, d, f) {
 					onMouseleave: c[1] ||= (...e) => s.hidePreview && s.hidePreview(...e),
 					onClick: O((e) => s.openTypeImage(t), ["prevent"]),
 					onKeydown: ne(O((e) => s.openTypeImage(t), ["prevent"]), ["enter"])
-				}, x(n), 41, sN)) : (_(), i(e, { key: 1 }, [o(x(n), 1)], 64))]),
-				a("td", cN, x(t.width) + " x " + x(t.height), 1),
-				a("td", lN, x(t.ratio), 1),
-				a("td", uN, [a("span", {
+				}, x(n), 41, pN)) : (_(), i(e, { key: 1 }, [o(x(n), 1)], 64))]),
+				a("td", mN, x(t.width) + " x " + x(t.height), 1),
+				a("td", hN, x(t.ratio), 1),
+				a("td", gN, [a("span", {
 					class: m(["text-nowrap", { "text-danger": t.bytes > s.file.original.bytes }]),
 					innerHTML: s.roundFileSize(t.bytes, !0)
-				}, null, 10, dN)]),
-				a("td", fN, x(t.extension), 1),
-				a("td", null, [t.crop ? (_(), i("small", pN, x(t.crop), 1)) : r("", !0)])
+				}, null, 10, _N)]),
+				a("td", vN, x(t.extension), 1),
+				a("td", null, [t.crop ? (_(), i("small", yN, x(t.crop), 1)) : r("", !0)])
 			]))), 128))]),
 			a("tfoot", null, [a("tr", null, [
-				a("td", mN, x(s.translate(s.file.uploaded ? "uploaded" : "uploading")), 1),
-				a("td", hN, [a("span", {
+				a("td", bN, x(s.translate(s.file.uploaded ? "uploaded" : "uploading")), 1),
+				a("td", xN, [a("span", {
 					class: "text-nowrap",
 					innerHTML: s.roundFileSize(s.file.bytes, !0)
-				}, null, 8, gN)]),
-				c[4] ||= a("td", { colspan: "2" }, null, -1)
+				}, null, 8, SN)]),
+				c[3] ||= a("td", { colspan: "2" }, null, -1)
 			])])
 		])) : r("", !0),
-		a("small", _N, [a("span", vN, x(s.translate("original filename")), 1), o(" " + x(s.file.original.name), 1)]),
-		a("small", yN, [
-			a("span", bN, x(s.translate(s.file.uploaded ? "uploaded filename" : "uploading filename")), 1),
-			c[6] ||= o(),
+		a("small", CN, [a("span", wN, x(s.translate("original filename")), 1), o(" " + x(s.file.original.name), 1)]),
+		a("small", TN, [
+			a("span", EN, x(s.translate(s.file.uploaded ? "uploaded filename" : "uploading filename")), 1),
+			c[4] ||= o(),
 			a("span", null, x(s.file.slug), 1)
 		]),
-		s.file.uploaded ? (_(), i("small", xN, [
-			a("span", SN, x(s.translate("uploaded at")), 1),
-			c[7] ||= o(),
+		s.file.uploaded ? (_(), i("small", DN, [
+			a("span", ON, x(s.translate("uploaded at")), 1),
+			c[5] ||= o(),
 			a("span", null, x(s.dateFormat(s.file.timestamp * 1e3)), 1)
 		])) : r("", !0),
 		(_(), n(t, { to: "body" }, [s.preview.src ? (_(), i("div", {
@@ -20967,10 +20978,10 @@ function TN(s, c, l, u, d, f) {
 		}, [a("img", {
 			src: s.preview.src,
 			alt: s.preview.label
-		}, null, 8, CN), s.preview.label ? (_(), i("small", wN, x(s.preview.label), 1)) : r("", !0)], 4)) : r("", !0)]))
+		}, null, 8, kN), s.preview.label ? (_(), i("small", AN, x(s.preview.label), 1)) : r("", !0)], 4)) : r("", !0)]))
 	]);
 }
-var EN = /*#__PURE__*/ gA(eN, [["render", TN]]), DN = {
+var MN = /*#__PURE__*/ gA(eN, [["render", jN]]), NN = {
 	image: {
 		jpg: "image/jpeg",
 		jpeg: "image/jpeg",
@@ -20999,7 +21010,7 @@ var EN = /*#__PURE__*/ gA(eN, [["render", TN]]), DN = {
 		pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 		rtf: "application/rtf"
 	}
-}, ON = {
+}, PN = {
 	props: {
 		modelValue: Array,
 		field: Object,
@@ -21025,7 +21036,7 @@ var EN = /*#__PURE__*/ gA(eN, [["render", TN]]), DN = {
 			blurRadius: 20
 		};
 	},
-	components: { VuAdminFileUploadInfo: EN },
+	components: { VuAdminFileUploadInfo: MN },
 	created() {
 		let e = ol(1e5);
 		this.uploadId = "image_upload_" + e, this.params = this.field.params, this.activeLanguage = this.hasLanguages() ? this.params.languages[0] : null;
@@ -21059,8 +21070,8 @@ var EN = /*#__PURE__*/ gA(eN, [["render", TN]]), DN = {
 		},
 		getAcceptMimeTypes(e) {
 			let t = [];
-			for (let n in DN) if (DN.hasOwnProperty(n)) {
-				let r = DN[n];
+			for (let n in NN) if (NN.hasOwnProperty(n)) {
+				let r = NN[n];
 				e.forEach((e) => {
 					r[e] && t.push(r[e]);
 				});
@@ -21123,10 +21134,10 @@ var EN = /*#__PURE__*/ gA(eN, [["render", TN]]), DN = {
 				modified: e.lastModified,
 				extension: this.extensionByFilename(e.name)
 			};
-			let n = (e.original.extension || "").toLowerCase(), r = Object.values(DN.video).indexOf(e.original.mime) >= 0, i = Object.values(DN.image).indexOf(e.original.mime) >= 0, a = Object.values(DN.document).indexOf(e.original.mime) >= 0;
+			let n = (e.original.extension || "").toLowerCase(), r = Object.values(NN.video).indexOf(e.original.mime) >= 0, i = Object.values(NN.image).indexOf(e.original.mime) >= 0, a = Object.values(NN.document).indexOf(e.original.mime) >= 0;
 			if (!r && !i && !a) {
-				let t = DN.image[n] || DN.video[n] || DN.document[n];
-				t && (e.original.mime = t, i = !!DN.image[n], r = !!DN.video[n], a = !!DN.document[n]);
+				let t = NN.image[n] || NN.video[n] || NN.document[n];
+				t && (e.original.mime = t, i = !!NN.image[n], r = !!NN.video[n], a = !!NN.document[n]);
 			}
 			if (r ? e.isVideo = !0 : i ? e.isImage = !0 : a ? e.isDocument = !0 : e.isUnknown = !0, e.isUnknown) throw Error("Unsupported file type: " + (e.original.mime || e.original.extension));
 			(e.isVideo || e.isImage && !this.params.presets.default) && (this.params.presets.default = {
@@ -21701,15 +21712,15 @@ var EN = /*#__PURE__*/ gA(eN, [["render", TN]]), DN = {
 			});
 		},
 		getMimeTypeByExtension(e) {
-			for (let t in DN) if (DN.hasOwnProperty(t)) {
-				let n = DN[t];
+			for (let t in NN) if (NN.hasOwnProperty(t)) {
+				let n = NN[t];
 				if (n[e]) return n[e];
 			}
 			return null;
 		},
 		getExtensionByMimeType(e) {
-			for (let t in DN) if (DN.hasOwnProperty(t)) {
-				let n = DN[t];
+			for (let t in NN) if (NN.hasOwnProperty(t)) {
+				let n = NN[t];
 				for (let t in n) if (n[t] === e) return t;
 			}
 			return null;
@@ -21763,183 +21774,183 @@ var EN = /*#__PURE__*/ gA(eN, [["render", TN]]), DN = {
 			n.length && (e.preventDefault(), this.handleFileChange({ target: { files: n } }));
 		}
 	}
-}, kN = { class: "" }, AN = {
+}, FN = { class: "" }, IN = {
 	key: 0,
 	class: "vsa-image-editor p-2 text-center"
-}, jN = { class: "row" }, MN = { class: "badge bg-dark text-light fw-light mx-1 text-uppercase" }, NN = { class: "badge bg-dark text-light fw-light mx-1" }, PN = { class: "badge bg-dark text-light fw-light mx-1" }, FN = ["src"], IN = { class: "row g-1" }, LN = { class: "col-md-6" }, RN = { class: "col-md-6" }, zN = { class: "col-md-6" }, BN = ["href"], VN = {
+}, LN = { class: "row" }, RN = { class: "badge bg-dark text-light fw-light mx-1 text-uppercase" }, zN = { class: "badge bg-dark text-light fw-light mx-1" }, BN = { class: "badge bg-dark text-light fw-light mx-1" }, VN = ["src"], HN = { class: "row g-1" }, UN = { class: "col-md-6" }, WN = { class: "col-md-6" }, GN = { class: "col-md-6" }, KN = ["href"], qN = {
 	key: 1,
 	class: "alert alert-danger alert-dismissible py-2 px-3 mb-2",
 	role: "alert"
-}, HN = ["aria-label"], UN = {
+}, JN = ["aria-label"], YN = {
 	key: 2,
 	class: "row g-2 mb-1"
-}, WN = { key: 0 }, GN = { class: "table table-sm table-responsive table-borderless" }, KN = [
+}, XN = { key: 0 }, ZN = { class: "table table-sm table-responsive table-borderless" }, QN = [
 	"onDragstart",
 	"onDragover",
 	"onDrop"
-], qN = { class: "align-middle px-0" }, JN = { class: "input-group border" }, YN = ["title"], XN = [
+], $N = { class: "align-middle px-0" }, eP = { class: "input-group border" }, tP = ["title"], nP = [
 	"max",
 	"value",
 	"onChange"
-], ZN = {
+], rP = {
 	key: 0,
 	class: "fs-5 mx-2"
-}, QN = {
+}, iP = {
 	key: 1,
 	class: "fs-5 mx-2"
-}, $N = {
+}, aP = {
 	key: 2,
 	class: "fs-5 mx-2"
-}, eP = ["title"], tP = ["value", "onInput"], nP = {
+}, oP = ["title"], sP = ["value", "onInput"], cP = {
 	key: 4,
 	class: "mx-0"
-}, rP = [
+}, lP = [
 	"href",
 	"title",
 	"onClick"
-], iP = ["src", "alt"], aP = [
+], uP = ["src", "alt"], dP = [
 	"src",
 	"alt",
 	"title",
 	"onClick"
-], oP = {
+], fP = {
 	key: 5,
 	class: "dropdown rounded-bottom"
-}, sP = {
+}, pP = {
 	class: "btn btn-sm border border-start-1 border-top-0 border-bottom-0 rounded-0 h-100 w-100",
 	type: "button",
 	"data-bs-auto-close": "outside",
 	"data-bs-toggle": "dropdown",
 	"aria-expanded": "false"
-}, cP = { class: "text-nowrap" }, lP = { class: "dropdown-menu" }, uP = ["onClick"], dP = {
+}, mP = { class: "text-nowrap" }, hP = { class: "dropdown-menu" }, gP = ["onClick"], _P = {
 	key: 0,
 	class: "bi bi-check-square"
-}, fP = {
+}, vP = {
 	key: 1,
 	class: "bi bi-square"
-}, pP = ["onClick"], mP = ["onClick"], hP = ["onClick"], gP = { class: "dropdown" }, _P = { class: "dropdown-menu vsa-file-actions-menu" }, vP = { class: "px-2 pt-2 pb-0" }, yP = { class: "d-flex gap-1" }, bP = ["onClick", "title"], xP = ["onClick", "title"], SP = { class: "p-2 pt-0" }, CP = { class: "fw-light" }, wP = [
+}, yP = ["onClick"], bP = ["onClick"], xP = ["onClick"], SP = { class: "dropdown" }, CP = { class: "dropdown-menu vsa-file-actions-menu" }, wP = { class: "px-2 pt-2 pb-0" }, TP = { class: "d-flex gap-1" }, EP = ["onClick", "title"], DP = ["onClick", "title"], OP = { class: "p-2 pt-0" }, kP = { class: "fw-light" }, AP = [
 	"onDragstart",
 	"onDragover",
 	"onDrop"
-], TP = {
+], jP = {
 	key: 0,
 	class: "w-100 h-100 d-flex align-items-center flex-column"
-}, EP = {
+}, MP = {
 	key: 1,
 	class: "vsa-image-frame mb-auto border border-bottom-0 p-1 text-center w-100 h-100 d-flex justify-content-center align-items-center"
-}, DP = [
+}, NP = [
 	"href",
 	"title",
 	"onClick"
-], OP = ["src", "alt"], kP = [
+], PP = ["src", "alt"], FP = [
 	"src",
 	"alt",
 	"title",
 	"onClick"
-], AP = {
+], IP = {
 	key: 2,
 	class: "display-3 w-100 h-100 text-center mb-auto d-flex align-items-center justify-content-center"
-}, jP = {
+}, LP = {
 	key: 3,
 	class: "input-group"
-}, MP = ["title"], NP = ["value", "onInput"], PP = ["onUpdate:modelValue", "onInput"], FP = { class: "w-100 mb-2 d-flex justify-content-around align-items-center" }, IP = ["title"], LP = [
+}, RP = ["title"], zP = ["value", "onInput"], BP = ["onUpdate:modelValue", "onInput"], VP = { class: "w-100 mb-2 d-flex justify-content-around align-items-center" }, HP = ["title"], UP = [
 	"max",
 	"value",
 	"onChange"
-], RP = {
+], WP = {
 	key: 0,
 	class: "dropdown border border-end-0 h-100 w-100"
-}, zP = {
+}, GP = {
 	class: "btn btn-sm rounded-0 h-100 w-100",
 	type: "button",
 	"data-bs-auto-close": "outside",
 	"data-bs-toggle": "dropdown",
 	"aria-expanded": "false"
-}, BP = { class: "text-nowrap" }, VP = { class: "dropdown-menu" }, HP = ["onClick"], UP = {
+}, KP = { class: "text-nowrap" }, qP = { class: "dropdown-menu" }, JP = ["onClick"], YP = {
 	key: 0,
 	class: "bi bi-check-square"
-}, WP = {
+}, XP = {
 	key: 1,
 	class: "bi bi-square"
-}, GP = ["onClick"], KP = ["onClick"], qP = ["onClick"], JP = { class: "dropdown border h-100 w-100" }, YP = { class: "dropdown-menu vsa-file-actions-menu" }, XP = { class: "px-2 pt-2 pb-0" }, ZP = { class: "d-flex gap-1" }, QP = ["onClick", "title"], $P = ["onClick", "title"], eF = { class: "p-2 pt-0" }, tF = { class: "fw-light" }, nF = {
+}, ZP = ["onClick"], QP = ["onClick"], $P = ["onClick"], eF = { class: "dropdown border h-100 w-100" }, tF = { class: "dropdown-menu vsa-file-actions-menu" }, nF = { class: "px-2 pt-2 pb-0" }, rF = { class: "d-flex gap-1" }, iF = ["onClick", "title"], aF = ["onClick", "title"], oF = { class: "p-2 pt-0" }, sF = { class: "fw-light" }, cF = {
 	key: 1,
 	class: "w-100 h-100 vsa-image-loading d-flex align-items-center justify-content-center"
-}, rF = { class: "row g-1" }, iF = { class: "col-12 d-flex align-items-center justify-content-center" }, aF = ["for"], oF = { key: 0 }, sF = { key: 0 }, cF = { class: "" }, lF = { class: "" }, uF = {
+}, lF = { class: "row g-1" }, uF = { class: "col-12 d-flex align-items-center justify-content-center" }, dF = ["for"], fF = { key: 0 }, pF = { key: 0 }, mF = { class: "" }, hF = { class: "" }, gF = {
 	key: 1,
 	class: "fs-6"
-}, dF = {
+}, _F = {
 	key: 0,
 	class: "bi bi-list-ol"
-}, fF = {
+}, vF = {
 	key: 1,
 	class: "bi bi-grid"
-}, pF = ["disabled"], mF = { class: "col-12 text-center" }, hF = { key: 0 }, gF = { class: "text-secondary" }, _F = {
+}, yF = ["disabled"], bF = { class: "col-12 text-center" }, xF = { key: 0 }, SF = { class: "text-secondary" }, CF = {
 	key: 2,
 	class: "form-check form-switch d-inline-flex align-items-center mt-1"
-}, vF = ["id"], yF = ["for"], bF = ["id", "accept"], xF = ["title"], SF = ["title"], CF = ["title"], wF = ["title"], TF = ["title"], EF = {
+}, wF = ["id"], TF = ["for"], EF = ["id", "accept"], DF = ["title"], OF = ["title"], kF = ["title"], AF = ["title"], jF = ["title"], MF = {
 	key: 0,
 	class: "ms-1 small"
-}, DF = ["title"], OF = ["title"], kF = {
+}, NF = ["title"], PF = ["title"], FF = {
 	key: 0,
 	class: "ms-1 small"
-}, AF = {
+}, IF = {
 	key: 1,
 	class: "d-flex align-items-center text-light gap-1 ms-1"
-}, jF = { class: "input-group input-group-sm vsa-blur-input" }, MF = ["title"], NF = { class: "form-check form-switch d-inline-flex align-items-center text-light" }, PF = {
+}, LF = { class: "input-group input-group-sm vsa-blur-input" }, RF = ["title"], zF = { class: "form-check form-switch d-inline-flex align-items-center text-light" }, BF = {
 	class: "form-check-label ms-1",
 	for: "editor_apply_watermark"
-}, FF = { class: "ms-auto d-flex gap-2" }, IF = {
+}, VF = { class: "ms-auto d-flex gap-2" }, HF = {
 	key: 0,
 	class: "alert alert-warning py-1 px-2 mb-0 rounded-0 small text-center",
 	role: "alert"
-}, LF = { class: "vsa-editor-canvas-area d-flex align-items-center justify-content-center flex-grow-1" };
-function RF(t, n, c, l, u, d) {
+}, UF = { class: "vsa-editor-canvas-area d-flex align-items-center justify-content-center flex-grow-1" };
+function WF(t, n, c, l, u, d) {
 	let f = b("VuAdminFileUploadInfo");
-	return _(), i("div", kN, [a("div", { class: m(["vsa-upload", { wait: t.wait }]) }, [
-		t.editfile && t.editfile.presets ? (_(), i("div", AN, [
-			a("div", jN, [(_(!0), i(e, null, y(t.editfile.types, (e, n) => (_(), i("div", {
+	return _(), i("div", FN, [a("div", { class: m(["vsa-upload", { wait: t.wait }]) }, [
+		t.editfile && t.editfile.presets ? (_(), i("div", IN, [
+			a("div", LN, [(_(!0), i(e, null, y(t.editfile.types, (e, n) => (_(), i("div", {
 				class: "col-md-3",
 				key: n
 			}, [
-				a("span", MN, x(e.extension), 1),
-				a("span", NN, x(e.width) + " x " + x(e.height), 1),
-				a("span", PN, "~" + x(t.roundFileSize(e.bytes)), 1),
+				a("span", RN, x(e.extension), 1),
+				a("span", zN, x(e.width) + " x " + x(e.height), 1),
+				a("span", BN, "~" + x(t.roundFileSize(e.bytes)), 1),
 				e ? (_(), i("img", {
 					key: 0,
 					class: "img-thumbnail rounded",
 					src: e.url ? e.url : e.data
-				}, null, 8, FN)) : r("", !0)
+				}, null, 8, VN)) : r("", !0)
 			]))), 128))]),
 			D(a("input", {
 				type: "text",
 				class: "form-control form-control-sm w-100 mt-1",
 				"onUpdate:modelValue": n[0] ||= (e) => t.editfile.title = e
 			}, null, 512), [[E, t.editfile.title]]),
-			a("div", IN, [
-				a("div", LN, [a("button", {
+			a("div", HN, [
+				a("div", UN, [a("button", {
 					type: "button",
 					class: "btn btn-sm btn-outline-danger mt-1 w-100",
 					onClick: n[1] ||= (e) => t.editfile = null
-				}, " Close ")]),
-				a("div", RN, [a("button", {
+				}, x(t.translate("Close")), 1)]),
+				a("div", WN, [a("button", {
 					type: "button",
 					class: "btn btn-sm btn-outline-danger mt-1 w-100",
 					onClick: n[2] ||= (e) => t.remove(t.index)
-				}, " Remove ")]),
-				a("div", zN, [t.type && !t.type.url ? (_(), i("button", {
+				}, x(t.translate("Remove")), 1)]),
+				a("div", GN, [t.type && !t.type.url ? (_(), i("button", {
 					key: 0,
 					type: "button",
 					class: "btn btn-sm btn-outline-light mt-1 w-100",
 					onClick: n[3] ||= (e) => t.download(t.index, t.params)
-				}, " Download ")) : r("", !0), t.type && t.type.url ? (_(), i("a", {
+				}, x(t.translate("Download")), 1)) : r("", !0), t.type && t.type.url ? (_(), i("a", {
 					key: 1,
 					type: "button",
 					class: "btn btn-sm btn-outline-light mt-1 w-100",
 					href: t.type.url
-				}, " Download ", 8, BN)) : r("", !0)])
+				}, x(t.translate("Download")), 9, KN)) : r("", !0)])
 			])
 		])) : r("", !0),
-		t.uploadErrors && t.uploadErrors.length ? (_(), i("div", VN, [(_(!0), i(e, null, y(t.uploadErrors, (e, t) => (_(), i("div", {
+		t.uploadErrors && t.uploadErrors.length ? (_(), i("div", qN, [(_(!0), i(e, null, y(t.uploadErrors, (e, t) => (_(), i("div", {
 			key: t,
 			class: "small"
 		}, x(e), 1))), 128)), a("button", {
@@ -21947,8 +21958,8 @@ function RF(t, n, c, l, u, d) {
 			class: "btn-close",
 			"aria-label": t.translate("Close"),
 			onClick: n[4] ||= (e) => t.uploadErrors = []
-		}, null, 8, HN)])) : r("", !0),
-		t.files && t.files.length ? (_(), i("div", UN, [t.params.ui === "list" ? (_(), i("div", WN, [a("table", GN, [a("tbody", null, [(_(!0), i(e, null, y(t.files, (c, l) => (_(), i("tr", {
+		}, null, 8, JN)])) : r("", !0),
+		t.files && t.files.length ? (_(), i("div", YN, [t.params.ui === "list" ? (_(), i("div", XN, [a("table", ZN, [a("tbody", null, [(_(!0), i(e, null, y(t.files, (c, l) => (_(), i("tr", {
 			key: l,
 			draggable: "true",
 			onDragstart: (e) => t.itemDragStart(l),
@@ -21959,11 +21970,11 @@ function RF(t, n, c, l, u, d) {
 				"opacity-50": t.dragIndex === l,
 				"table-primary": t.dragOverIndex === l && t.dragIndex !== l
 			})
-		}, [a("td", qN, [a("div", JN, [
+		}, [a("td", $N, [a("div", eP, [
 			a("span", {
 				class: "cursor-move p-1 px-2 border-end d-flex align-items-center",
 				title: t.translate("Drag to reorder")
-			}, [...n[44] ||= [a("i", { class: "bi bi-grip-vertical text-muted" }, null, -1)]], 8, YN),
+			}, [...n[44] ||= [a("i", { class: "bi bi-grip-vertical text-muted" }, null, -1)]], 8, tP),
 			a("input", {
 				type: "number",
 				min: "1",
@@ -21976,8 +21987,8 @@ function RF(t, n, c, l, u, d) {
 					width: "3rem",
 					"-moz-appearance": "textfield"
 				}
-			}, null, 40, XN),
-			c.isDocument ? (_(), i("span", ZN, [a("i", { class: m(["bi bi-filetype-" + c.types.default.extension]) }, null, 2)])) : c.isImage ? (_(), i("span", QN, [...n[45] ||= [a("i", { class: "bi bi-file-image" }, null, -1)]])) : c.isVideo ? (_(), i("span", $N, [...n[46] ||= [a("i", { class: "bi bi-file-play" }, null, -1)]])) : r("", !0),
+			}, null, 40, nP),
+			c.isDocument ? (_(), i("span", rP, [a("i", { class: m(["bi bi-filetype-" + c.types.default.extension]) }, null, 2)])) : c.isImage ? (_(), i("span", iP, [...n[45] ||= [a("i", { class: "bi bi-file-image" }, null, -1)]])) : c.isVideo ? (_(), i("span", aP, [...n[46] ||= [a("i", { class: "bi bi-file-play" }, null, -1)]])) : r("", !0),
 			t.hasLanguages() ? (_(), i("button", {
 				key: 3,
 				type: "button",
@@ -21985,7 +21996,7 @@ function RF(t, n, c, l, u, d) {
 				style: { "min-width": "2.75rem" },
 				onClick: n[6] ||= (e) => t.cycleLanguage(),
 				title: t.translate("Switch language")
-			}, x(t.activeLanguage), 9, eP)) : r("", !0),
+			}, x(t.activeLanguage), 9, oP)) : r("", !0),
 			a("input", {
 				required: "text",
 				class: "form-control py-1 px-2 border-top-0 border-bottom-0 border-start-1 fw-light",
@@ -21994,8 +22005,8 @@ function RF(t, n, c, l, u, d) {
 					t.setFileTitle(c, e.target.value), t.slug(c);
 				},
 				onKeydown: n[7] ||= ne(O(() => {}, ["prevent"]), ["enter"])
-			}, null, 40, tP),
-			!c.isDocument && c.types && c.types[t.params.thumbnail] ? (_(), i("span", nP, [c.types.default.url ? (_(), i("a", {
+			}, null, 40, sP),
+			!c.isDocument && c.types && c.types[t.params.thumbnail] ? (_(), i("span", cP, [c.types.default.url ? (_(), i("a", {
 				key: 0,
 				target: "_blank",
 				href: c.types.default.url,
@@ -22008,7 +22019,7 @@ function RF(t, n, c, l, u, d) {
 				class: "transparent-background",
 				src: c.types[t.params.thumbnail].url,
 				alt: c.name
-			}, null, 8, iP)], 10, rP)) : (_(), i("img", {
+			}, null, 8, uP)], 10, lP)) : (_(), i("img", {
 				key: 1,
 				height: "32",
 				width: "auto",
@@ -22017,52 +22028,52 @@ function RF(t, n, c, l, u, d) {
 				alt: c.name,
 				title: c.isImage && !t.isSvgFile(c) ? t.translate("Edit") : null,
 				onClick: (e) => t.onThumbnailClick(c, e)
-			}, null, 10, aP))])) : r("", !0),
-			t.params.tags ? (_(), i("div", oP, [a("button", sP, [a("span", cP, [n[47] ||= a("i", { class: "bi bi-tag" }, null, -1), o(" " + x(c.tags ? c.tags.length : 0), 1)])]), a("ul", lP, [
+			}, null, 10, dP))])) : r("", !0),
+			t.params.tags ? (_(), i("div", fP, [a("button", pP, [a("span", mP, [n[47] ||= a("i", { class: "bi bi-tag" }, null, -1), o(" " + x(c.tags ? c.tags.length : 0), 1)])]), a("ul", hP, [
 				a("li", null, [(_(!0), i(e, null, y(t.params.tags, (e) => (_(), i("span", {
 					key: e,
 					class: "dropdown-item cursor-pointer",
 					onClick: (n) => t.dropdownSelectToggleOne(c.tags, e.value)
-				}, [c.tags && c.tags.indexOf(e.value) >= 0 ? (_(), i("i", dP)) : (_(), i("i", fP)), o(" " + x(t.translate(e.label ? e.label : e.value)), 1)], 8, uP))), 128))]),
+				}, [c.tags && c.tags.indexOf(e.value) >= 0 ? (_(), i("i", _P)) : (_(), i("i", vP)), o(" " + x(t.translate(e.label ? e.label : e.value)), 1)], 8, gP))), 128))]),
 				n[48] ||= a("li", null, [a("hr", { class: "dropdown-divider" })], -1),
 				a("li", null, [a("span", {
 					class: "dropdown-item cursor-pointer",
 					onClick: (e) => t.dropdownSelectAll(c.tags, t.params.tags)
-				}, x(t.translate("Select all")), 9, pP)]),
+				}, x(t.translate("Select all")), 9, yP)]),
 				a("li", null, [a("span", {
 					class: "dropdown-item cursor-pointer",
 					onClick: (e) => t.dropdownSelectClear(c.tags)
-				}, x(t.translate("Unselect all")), 9, mP)]),
+				}, x(t.translate("Unselect all")), 9, bP)]),
 				a("li", null, [a("span", {
 					class: "dropdown-item cursor-pointer",
 					onClick: (e) => t.dropdownSelectInvert(c.tags, t.params.tags)
-				}, x(t.translate("Invert all")), 9, hP)])
+				}, x(t.translate("Invert all")), 9, xP)])
 			])])) : r("", !0),
-			a("div", gP, [n[52] ||= a("button", {
+			a("div", SP, [n[52] ||= a("button", {
 				class: "btn btn-sm _dropdown-toggle border border-start-1 border-top-0 border-bottom-0 border-end-0 rounded-0 h-100",
 				type: "button",
 				"data-bs-toggle": "dropdown",
 				"aria-expanded": "false"
-			}, [a("i", { class: "bi bi-list" })], -1), a("ul", _P, [
-				a("li", vP, [a("div", yP, [c.isImage && !t.isSvgFile(c) ? (_(), i("button", {
+			}, [a("i", { class: "bi bi-list" })], -1), a("ul", CP, [
+				a("li", wP, [a("div", TP, [c.isImage && !t.isSvgFile(c) ? (_(), i("button", {
 					key: 0,
 					type: "button",
 					class: "btn btn-sm btn-outline-secondary flex-fill",
 					onClick: (e) => t.openEditor(c),
 					title: t.translate("Edit")
-				}, [n[49] ||= a("i", { class: "bi bi-pencil me-1" }, null, -1), o(x(t.translate("Edit")), 1)], 8, bP)) : r("", !0), a("button", {
+				}, [n[49] ||= a("i", { class: "bi bi-pencil me-1" }, null, -1), o(x(t.translate("Edit")), 1)], 8, EP)) : r("", !0), a("button", {
 					type: "button",
 					class: "btn btn-sm btn-outline-danger flex-fill",
 					onClick: (e) => t.remove(l),
 					title: t.translate("Delete")
-				}, [n[50] ||= a("i", { class: "bi bi-x-circle me-1" }, null, -1), o(x(t.translate("Delete")), 1)], 8, xP)])]),
+				}, [n[50] ||= a("i", { class: "bi bi-x-circle me-1" }, null, -1), o(x(t.translate("Delete")), 1)], 8, DP)])]),
 				n[51] ||= a("li", null, [a("hr", { class: "dropdown-divider my-2" })], -1),
-				a("li", SP, [a("small", CP, [s(f, {
+				a("li", OP, [a("small", kP, [s(f, {
 					file: c,
 					translate: t.translate
 				}, null, 8, ["file", "translate"])])])
 			])])
-		])])], 42, KN))), 128))])])])) : (_(!0), i(e, { key: 1 }, y(t.files, (c, l) => (_(), i("div", {
+		])])], 42, QN))), 128))])])])) : (_(!0), i(e, { key: 1 }, y(t.files, (c, l) => (_(), i("div", {
 			class: m([t.params.colclass ? t.params.colclass : "col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"]),
 			key: l,
 			draggable: "true",
@@ -22073,9 +22084,9 @@ function RF(t, n, c, l, u, d) {
 		}, [a("div", { class: m(["vsa-image-container h-100 position-relative", {
 			"opacity-50": t.dragIndex === l,
 			"vsa-drag-over": t.dragOverIndex === l && t.dragIndex !== l
-		}]) }, [c.loaded ? (_(), i("div", TP, [
+		}]) }, [c.loaded ? (_(), i("div", jP, [
 			r("", !0),
-			c.types && c.types[t.params.thumbnail] ? (_(), i("div", EP, [c.types.default.url ? (_(), i("a", {
+			c.types && c.types[t.params.thumbnail] ? (_(), i("div", MP, [c.types.default.url ? (_(), i("a", {
 				key: 0,
 				target: "_blank",
 				href: c.types.default.url,
@@ -22086,21 +22097,21 @@ function RF(t, n, c, l, u, d) {
 				class: "img-fluid transparent-background",
 				src: c.types[t.params.thumbnail].url,
 				alt: c.name
-			}, null, 8, OP)], 10, DP)) : (_(), i("img", {
+			}, null, 8, PP)], 10, NP)) : (_(), i("img", {
 				key: 1,
 				class: m(["img-fluid transparent-background", { "vsa-thumb-editable": c.isImage && !t.isSvgFile(c) }]),
 				src: c.types[t.params.thumbnail].data,
 				alt: c.name,
 				title: c.isImage && !t.isSvgFile(c) ? t.translate("Edit") : null,
 				onClick: (e) => t.onThumbnailClick(c, e)
-			}, null, 10, kP))])) : r("", !0),
-			c.isDocument ? (_(), i("div", AP, [a("i", { class: m(["bi bi-filetype-" + c.types.default.extension]) }, null, 2)])) : r("", !0),
-			t.hasLanguages() ? (_(), i("div", jP, [a("button", {
+			}, null, 10, FP))])) : r("", !0),
+			c.isDocument ? (_(), i("div", IP, [a("i", { class: m(["bi bi-filetype-" + c.types.default.extension]) }, null, 2)])) : r("", !0),
+			t.hasLanguages() ? (_(), i("div", LP, [a("button", {
 				type: "button",
 				class: "btn btn-sm btn-outline-secondary rounded-0 fw-bold text-uppercase px-2",
 				onClick: n[9] ||= (e) => t.cycleLanguage(),
 				title: t.translate("Switch language")
-			}, x(t.activeLanguage), 9, MP), a("input", {
+			}, x(t.activeLanguage), 9, RP), a("input", {
 				required: "text",
 				class: "form-control rounded-0 border-bottom-0 py-1 px-2 fw-light",
 				value: t.fileTitle(c),
@@ -22108,19 +22119,19 @@ function RF(t, n, c, l, u, d) {
 					t.setFileTitle(c, e.target.value), t.slug(c);
 				},
 				onKeydown: n[10] ||= ne(O(() => {}, ["prevent"]), ["enter"])
-			}, null, 40, NP)])) : D((_(), i("input", {
+			}, null, 40, zP)])) : D((_(), i("input", {
 				key: 4,
 				required: "text",
 				class: "form-control rounded-0 border-bottom-0 py-1 px-2 fw-light",
 				"onUpdate:modelValue": (e) => c.title = e,
 				onInput: (e) => t.slug(c),
 				onKeydown: n[11] ||= ne(O(() => {}, ["prevent"]), ["enter"])
-			}, null, 40, PP)), [[E, c.title]]),
-			a("div", FP, [
+			}, null, 40, BP)), [[E, c.title]]),
+			a("div", VP, [
 				a("span", {
 					class: "cursor-move p-1 px-2 border border-end-0 h-100 d-flex align-items-center",
 					title: t.translate("Drag to reorder")
-				}, [...n[56] ||= [a("i", { class: "bi bi-grip-vertical text-muted" }, null, -1)]], 8, IP),
+				}, [...n[56] ||= [a("i", { class: "bi bi-grip-vertical text-muted" }, null, -1)]], 8, HP),
 				a("input", {
 					type: "number",
 					min: "1",
@@ -22133,54 +22144,54 @@ function RF(t, n, c, l, u, d) {
 						width: "3.5rem",
 						"-moz-appearance": "textfield"
 					}
-				}, null, 40, LP),
-				t.params.tags ? (_(), i("div", RP, [a("button", zP, [a("span", BP, [n[57] ||= a("i", { class: "bi bi-tag" }, null, -1), o(" " + x(c.tags ? c.tags.length : 0), 1)])]), a("ul", VP, [
+				}, null, 40, UP),
+				t.params.tags ? (_(), i("div", WP, [a("button", GP, [a("span", KP, [n[57] ||= a("i", { class: "bi bi-tag" }, null, -1), o(" " + x(c.tags ? c.tags.length : 0), 1)])]), a("ul", qP, [
 					a("li", null, [(_(!0), i(e, null, y(t.params.tags, (e) => (_(), i("span", {
 						key: e,
 						class: "dropdown-item cursor-pointer",
 						onClick: (n) => t.dropdownSelectToggleOne(c.tags, e.value)
-					}, [c.tags && c.tags.indexOf(e.value) >= 0 ? (_(), i("i", UP)) : (_(), i("i", WP)), o(" " + x(t.translate(e.label ? e.label : e.value)), 1)], 8, HP))), 128))]),
+					}, [c.tags && c.tags.indexOf(e.value) >= 0 ? (_(), i("i", YP)) : (_(), i("i", XP)), o(" " + x(t.translate(e.label ? e.label : e.value)), 1)], 8, JP))), 128))]),
 					n[58] ||= a("li", null, [a("hr", { class: "dropdown-divider" })], -1),
 					a("li", null, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: (e) => t.dropdownSelectAll(c.tags, t.params.tags)
-					}, x(t.translate("Select all")), 9, GP)]),
+					}, x(t.translate("Select all")), 9, ZP)]),
 					a("li", null, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: (e) => t.dropdownSelectClear(c.tags)
-					}, x(t.translate("Unselect all")), 9, KP)]),
+					}, x(t.translate("Unselect all")), 9, QP)]),
 					a("li", null, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: (e) => t.dropdownSelectInvert(c.tags, t.params.tags)
-					}, x(t.translate("Invert all")), 9, qP)])
+					}, x(t.translate("Invert all")), 9, $P)])
 				])])) : r("", !0),
-				a("div", JP, [n[62] ||= a("button", {
+				a("div", eF, [n[62] ||= a("button", {
 					class: "btn btn-sm rounded-0 h-100 _dropdown-toggle w-100",
 					type: "button",
 					"data-bs-toggle": "dropdown",
 					"aria-expanded": "false"
-				}, [a("i", { class: "bi bi-list" })], -1), a("ul", YP, [
-					a("li", XP, [a("div", ZP, [c.isImage && !t.isSvgFile(c) ? (_(), i("button", {
+				}, [a("i", { class: "bi bi-list" })], -1), a("ul", tF, [
+					a("li", nF, [a("div", rF, [c.isImage && !t.isSvgFile(c) ? (_(), i("button", {
 						key: 0,
 						type: "button",
 						class: "btn btn-sm btn-outline-secondary flex-fill",
 						onClick: (e) => t.openEditor(c),
 						title: t.translate("Edit")
-					}, [n[59] ||= a("i", { class: "bi bi-pencil me-1" }, null, -1), o(x(t.translate("Edit")), 1)], 8, QP)) : r("", !0), a("button", {
+					}, [n[59] ||= a("i", { class: "bi bi-pencil me-1" }, null, -1), o(x(t.translate("Edit")), 1)], 8, iF)) : r("", !0), a("button", {
 						type: "button",
 						class: "btn btn-sm btn-outline-danger flex-fill",
 						onClick: (e) => t.remove(l),
 						title: t.translate("Delete")
-					}, [n[60] ||= a("i", { class: "bi bi-x-circle me-1" }, null, -1), o(x(t.translate("Delete")), 1)], 8, $P)])]),
+					}, [n[60] ||= a("i", { class: "bi bi-x-circle me-1" }, null, -1), o(x(t.translate("Delete")), 1)], 8, aF)])]),
 					n[61] ||= a("li", null, [a("hr", { class: "dropdown-divider my-2" })], -1),
-					a("li", eF, [a("small", tF, [s(f, {
+					a("li", oF, [a("small", sF, [s(f, {
 						file: c,
 						translate: t.translate
 					}, null, 8, ["file", "translate"])])])
 				])])
 			])
-		])) : (_(), i("div", nF, [...n[63] ||= [a("span", null, null, -1)]]))], 2)], 42, wP))), 128))])) : r("", !0),
-		a("div", rF, [a("div", iF, [
+		])) : (_(), i("div", cF, [...n[63] ||= [a("span", null, null, -1)]]))], 2)], 42, AP))), 128))])) : r("", !0),
+		a("div", lF, [a("div", uF, [
 			a("label", {
 				for: t.uploadId,
 				class: m([
@@ -22191,30 +22202,30 @@ function RF(t, n, c, l, u, d) {
 				onDragover: n[14] ||= O(() => {}, ["prevent"]),
 				onDragenter: n[15] ||= O(() => {}, ["prevent"]),
 				onDrop: n[16] ||= O((...e) => t.handleDrop && t.handleDrop(...e), ["prevent"])
-			}, [t.files && t.params.limit > t.files.length ? (_(), i("span", oF, [
+			}, [t.files && t.params.limit > t.files.length ? (_(), i("span", fF, [
 				n[67] ||= a("i", { class: "bi bi-upload me-2" }, null, -1),
 				o(" " + x(t.translate(t.params.text)) + " ", 1),
-				t.params.limit ? (_(), i("small", sF, [
+				t.params.limit ? (_(), i("small", pF, [
 					n[64] ||= o(" ( ", -1),
-					a("strong", cF, x(t.files.length), 1),
+					a("strong", mF, x(t.files.length), 1),
 					n[65] ||= o(" / ", -1),
-					a("span", lF, x(t.params.limit), 1),
+					a("span", hF, x(t.params.limit), 1),
 					n[66] ||= o(" ) ", -1)
 				])) : r("", !0)
-			])) : (_(), i("span", uF, [n[68] ||= a("i", { class: "bi bi-exclamation-circle" }, null, -1), o(" " + x(t.translate("You've reached the upload limit")), 1)]))], 42, aF),
+			])) : (_(), i("span", gF, [n[68] ||= a("i", { class: "bi bi-exclamation-circle" }, null, -1), o(" " + x(t.translate("You've reached the upload limit")), 1)]))], 42, dF),
 			a("button", {
 				type: "button",
 				class: "btn btn-outline-primary ms-1",
 				onClick: n[17] ||= (e) => t.toggleView()
-			}, [t.params.ui == "list" ? r("", !0) : (_(), i("i", dF)), t.params.ui == "list" ? (_(), i("i", fF)) : r("", !0)]),
+			}, [t.params.ui == "list" ? r("", !0) : (_(), i("i", _F)), t.params.ui == "list" ? (_(), i("i", vF)) : r("", !0)]),
 			a("button", {
 				disabled: !t.files.length,
 				type: "button",
 				class: "btn btn-outline-danger ms-1",
 				onClick: n[18] ||= (e) => t.resetConfirm()
-			}, [...n[69] ||= [a("i", { class: "bi bi-trash" }, null, -1)]], 8, pF)
-		]), a("div", mF, [a("small", null, [
-			t.params.accept ? (_(), i("div", hF, [a("span", gF, x(t.translate("accept only")), 1), (_(!0), i(e, null, y(t.params.accept, (e) => (_(), i("strong", {
+			}, [...n[69] ||= [a("i", { class: "bi bi-trash" }, null, -1)]], 8, yF)
+		]), a("div", bF, [a("small", null, [
+			t.params.accept ? (_(), i("div", xF, [a("span", SF, x(t.translate("accept only")), 1), (_(!0), i(e, null, y(t.params.accept, (e) => (_(), i("strong", {
 				class: "ms-1 text-muted",
 				key: e
 			}, x(e), 1))), 128))])) : r("", !0),
@@ -22225,16 +22236,16 @@ function RF(t, n, c, l, u, d) {
 				onFocus: n[19] ||= (e) => t.isPasteZoneFocused = !0,
 				onBlur: n[20] ||= (e) => t.isPasteZoneFocused = !1
 			}, [n[70] ||= a("i", { class: "bi bi-clipboard me-1" }, null, -1), o(x(t.translate("To paste from clipboard, click here and press Ctrl+V")), 1)], 34)) : r("", !0),
-			t.hasWatermarkPresets() ? (_(), i("div", _F, [D(a("input", {
+			t.hasWatermarkPresets() ? (_(), i("div", CF, [D(a("input", {
 				class: "form-check-input",
 				type: "checkbox",
 				role: "switch",
 				id: t.uploadId + "_watermark",
 				"onUpdate:modelValue": n[21] ||= (e) => t.applyWatermarkOnUpload = e
-			}, null, 8, vF), [[C, t.applyWatermarkOnUpload]]), a("label", {
+			}, null, 8, wF), [[C, t.applyWatermarkOnUpload]]), a("label", {
 				class: "form-check-label ms-1",
 				for: t.uploadId + "_watermark"
-			}, x(t.translate("Add watermark on upload")), 9, yF)])) : r("", !0),
+			}, x(t.translate("Add watermark on upload")), 9, TF)])) : r("", !0),
 			r("", !0)
 		])])]),
 		t.uploadId ? (_(), i("input", {
@@ -22249,7 +22260,7 @@ function RF(t, n, c, l, u, d) {
 			type: "file",
 			accept: t.getAcceptMimeTypes(t.params.accept),
 			onChange: n[22] ||= (...e) => t.handleFileChange && t.handleFileChange(...e)
-		}, null, 40, bF)) : r("", !0),
+		}, null, 40, EF)) : r("", !0),
 		t.editor.file ? (_(), i("div", {
 			key: 4,
 			class: "vsa-editor-overlay",
@@ -22268,33 +22279,33 @@ function RF(t, n, c, l, u, d) {
 					class: "btn btn-sm btn-outline-light",
 					onClick: n[23] ||= (e) => t.editorRotate(-90),
 					title: t.translate("Rotate left 90°")
-				}, [...n[72] ||= [a("i", { class: "bi bi-arrow-counterclockwise" }, null, -1)]], 8, xF),
+				}, [...n[72] ||= [a("i", { class: "bi bi-arrow-counterclockwise" }, null, -1)]], 8, DF),
 				a("button", {
 					type: "button",
 					class: "btn btn-sm btn-outline-light",
 					onClick: n[24] ||= (e) => t.editorRotate(90),
 					title: t.translate("Rotate right 90°")
-				}, [...n[73] ||= [a("i", { class: "bi bi-arrow-clockwise" }, null, -1)]], 8, SF),
+				}, [...n[73] ||= [a("i", { class: "bi bi-arrow-clockwise" }, null, -1)]], 8, OF),
 				n[83] ||= a("span", { class: "text-secondary mx-1" }, "|", -1),
 				a("button", {
 					type: "button",
 					class: m(["btn btn-sm", t.editor.flipX ? "btn-light" : "btn-outline-light"]),
 					onClick: n[25] ||= (e) => t.editorFlip("x"),
 					title: t.translate("Flip horizontal")
-				}, [...n[74] ||= [a("i", { class: "bi bi-symmetry-vertical" }, null, -1)]], 10, CF),
+				}, [...n[74] ||= [a("i", { class: "bi bi-symmetry-vertical" }, null, -1)]], 10, kF),
 				a("button", {
 					type: "button",
 					class: m(["btn btn-sm", t.editor.flipY ? "btn-light" : "btn-outline-light"]),
 					onClick: n[26] ||= (e) => t.editorFlip("y"),
 					title: t.translate("Flip vertical")
-				}, [...n[75] ||= [a("i", { class: "bi bi-symmetry-horizontal" }, null, -1)]], 10, wF),
+				}, [...n[75] ||= [a("i", { class: "bi bi-symmetry-horizontal" }, null, -1)]], 10, AF),
 				n[84] ||= a("span", { class: "text-secondary mx-1" }, "|", -1),
 				a("button", {
 					type: "button",
 					class: m(["btn btn-sm", t.editor.cropMode ? "btn-warning" : "btn-outline-light"]),
 					onClick: n[27] ||= (...e) => t.editorCropButtonClick && t.editorCropButtonClick(...e),
 					title: t.translate("Crop")
-				}, [n[76] ||= a("i", { class: "bi bi-crop" }, null, -1), t.editor.cropMode ? (_(), i("span", EF, x(t.translate(t.editor.crop ? "Apply crop" : "Draw a crop area")), 1)) : r("", !0)], 10, TF),
+				}, [n[76] ||= a("i", { class: "bi bi-crop" }, null, -1), t.editor.cropMode ? (_(), i("span", MF, x(t.translate(t.editor.crop ? "Apply crop" : "Draw a crop area")), 1)) : r("", !0)], 10, jF),
 				t.editor.cropMode && t.editor.crop ? (_(), i("button", {
 					key: 0,
 					type: "button",
@@ -22303,15 +22314,15 @@ function RF(t, n, c, l, u, d) {
 						t.editor.crop = null, t.editorDraw();
 					},
 					title: t.translate("Clear crop")
-				}, [...n[77] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 8, DF)) : r("", !0),
+				}, [...n[77] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 8, NF)) : r("", !0),
 				n[85] ||= a("span", { class: "text-secondary mx-1" }, "|", -1),
 				a("button", {
 					type: "button",
 					class: m(["btn btn-sm", t.editor.blurMode ? "btn-warning" : "btn-outline-light"]),
 					onClick: n[29] ||= (...e) => t.editorToggleBlur && t.editorToggleBlur(...e),
 					title: t.translate("Blur (B)")
-				}, [n[78] ||= a("i", { class: "bi bi-eye-slash" }, null, -1), t.editor.blurMode ? (_(), i("span", kF, x(t.translate("Draw a rectangle")), 1)) : r("", !0)], 10, OF),
-				t.editor.blurMode ? (_(), i("div", AF, [n[80] ||= a("i", { class: "bi bi-droplet-half" }, null, -1), a("div", jF, [
+				}, [n[78] ||= a("i", { class: "bi bi-eye-slash" }, null, -1), t.editor.blurMode ? (_(), i("span", FF, x(t.translate("Draw a rectangle")), 1)) : r("", !0)], 10, PF),
+				t.editor.blurMode ? (_(), i("div", IF, [n[80] ||= a("i", { class: "bi bi-droplet-half" }, null, -1), a("div", LF, [
 					a("button", {
 						type: "button",
 						class: "btn btn-outline-light",
@@ -22327,7 +22338,7 @@ function RF(t, n, c, l, u, d) {
 						"onUpdate:modelValue": n[31] ||= (e) => t.blurRadius = e,
 						onChange: n[32] ||= (e) => t.clampBlurRadius(),
 						title: t.translate("Blur strength (source px)")
-					}, null, 40, MF), [[
+					}, null, 40, RF), [[
 						E,
 						t.blurRadius,
 						void 0,
@@ -22341,14 +22352,14 @@ function RF(t, n, c, l, u, d) {
 						title: "+5 px"
 					}, "+")
 				])])) : r("", !0),
-				t.hasWatermarkPresets() ? (_(), i(e, { key: 2 }, [n[81] ||= a("span", { class: "text-secondary mx-1" }, "|", -1), a("div", NF, [D(a("input", {
+				t.hasWatermarkPresets() ? (_(), i(e, { key: 2 }, [n[81] ||= a("span", { class: "text-secondary mx-1" }, "|", -1), a("div", zF, [D(a("input", {
 					class: "form-check-input",
 					type: "checkbox",
 					role: "switch",
 					id: "editor_apply_watermark",
 					"onUpdate:modelValue": n[34] ||= (e) => t.editor.applyWatermark = e
-				}, null, 512), [[C, t.editor.applyWatermark]]), a("label", PF, x(t.translate("Add watermark on save")), 1)])], 64)) : r("", !0),
-				a("div", FF, [a("button", {
+				}, null, 512), [[C, t.editor.applyWatermark]]), a("label", BF, x(t.translate("Add watermark on save")), 1)])], 64)) : r("", !0),
+				a("div", VF, [a("button", {
 					type: "button",
 					class: "btn btn-sm btn-outline-secondary text-light border-secondary",
 					onClick: n[35] ||= (...e) => t.editorClose && t.editorClose(...e)
@@ -22358,8 +22369,8 @@ function RF(t, n, c, l, u, d) {
 					onClick: n[36] ||= (...e) => t.editorApply && t.editorApply(...e)
 				}, [n[82] ||= a("i", { class: "bi bi-check2 me-1" }, null, -1), o(x(t.translate("Apply")), 1)])])
 			], 32),
-			t.editor.hasWatermark ? (_(), i("div", IF, [n[86] ||= a("i", { class: "bi bi-exclamation-triangle me-1" }, null, -1), o(x(t.translate("This image has a watermark applied. Rotating or cropping may distort or cut off the watermark.")), 1)])) : r("", !0),
-			a("div", LF, [a("canvas", {
+			t.editor.hasWatermark ? (_(), i("div", HF, [n[86] ||= a("i", { class: "bi bi-exclamation-triangle me-1" }, null, -1), o(x(t.translate("This image has a watermark applied. Rotating or cropping may distort or cut off the watermark.")), 1)])) : r("", !0),
+			a("div", UF, [a("canvas", {
 				ref: "editorCanvas",
 				class: "vsa-editor-canvas",
 				style: h({ cursor: t.editor.cropMode || t.editor.blurMode ? "crosshair" : "default" }),
@@ -22368,7 +22379,7 @@ function RF(t, n, c, l, u, d) {
 		], 32)) : r("", !0)
 	], 2)]);
 }
-var zF = /*#__PURE__*/ gA(ON, [["render", RF]]), BF = {
+var GF = /*#__PURE__*/ gA(PN, [["render", WF]]), KF = {
 	inject: { handleFormErrors: { default: null } },
 	props: {
 		modelValue: String | Object | Number,
@@ -22421,14 +22432,14 @@ var zF = /*#__PURE__*/ gA(ON, [["render", RF]]), BF = {
 		}
 	},
 	components: {}
-}, VF = [
+}, qF = [
 	"name",
 	"id",
 	"disabled",
 	"readonly",
 	"required"
-], HF = ["value"];
-function UF(t, n, r, a, o, s) {
+], JF = ["value"];
+function YF(t, n, r, a, o, s) {
 	return D((_(), i("select", {
 		class: m(["form-select", t.getValueOrFunction(t.field.inputclass ? t.field.inputclass : "", {
 			field: t.field,
@@ -22449,9 +22460,9 @@ function UF(t, n, r, a, o, s) {
 		})),
 		key: e,
 		value: e.value
-	}, x(t.translate(e.label ? e.label : e.value)), 11, HF))), 128))], 42, VF)), [[T, t.newitem]]);
+	}, x(t.translate(e.label ? e.label : e.value)), 11, JF))), 128))], 42, qF)), [[T, t.newitem]]);
 }
-var WF = /*#__PURE__*/ gA(BF, [["render", UF]]), GF = {
+var XF = /*#__PURE__*/ gA(KF, [["render", YF]]), ZF = {
 	inject: { handleFormErrors: { default: null } },
 	props: {
 		modelValue: Array,
@@ -22520,46 +22531,46 @@ var WF = /*#__PURE__*/ gA(BF, [["render", UF]]), GF = {
 			wl(e, t);
 		}
 	},
-	components: { VuAdminFormSelect: WF }
-}, KF = { class: "col" }, qF = { class: "row g-1 d-flex align-items-center justify-content-between" }, JF = ["innerHTML"], YF = {
+	components: { VuAdminFormSelect: XF }
+}, QF = { class: "col" }, $F = { class: "row g-1 d-flex align-items-center justify-content-between" }, eI = ["innerHTML"], tI = {
 	key: 1,
 	class: "input-group input-group-sm"
-}, XF = {
+}, nI = {
 	key: 0,
 	class: "input-group-text"
-}, ZF = [
+}, rI = [
 	"type",
 	"required",
 	"placeholder",
 	"onUpdate:modelValue"
-], QF = {
+], iI = {
 	key: 3,
 	class: "input-group-text"
-}, $F = ["onClick"], eI = ["onClick"], tI = ["onClick"], nI = { key: 0 }, rI = { class: "row g-1 d-flex align-items-center justify-content-between" }, iI = { class: "col" }, aI = { class: "row g-1 d-flex align-items-center justify-content-between" }, oI = { class: "input-group input-group-sm" }, sI = {
+}, aI = ["onClick"], oI = ["onClick"], sI = ["onClick"], cI = { key: 0 }, lI = { class: "row g-1 d-flex align-items-center justify-content-between" }, uI = { class: "col" }, dI = { class: "row g-1 d-flex align-items-center justify-content-between" }, fI = { class: "input-group input-group-sm" }, pI = {
 	key: 0,
 	class: "input-group-text"
-}, cI = [
+}, mI = [
 	"type",
 	"placeholder",
 	"onUpdate:modelValue"
-], lI = {
+], hI = {
 	key: 3,
 	class: "input-group-text"
-}, uI = ["innerHTML"];
-function dI(t, o, s, c, l, u) {
+}, gI = ["innerHTML"];
+function _I(t, o, s, c, l, u) {
 	let d = b("VuAdminFormSelect");
 	return _(), i("div", null, [
 		(_(!0), i(e, null, y(t.value, (s, c) => (_(), i("div", {
 			class: "row g-1 d-flex align-items-center justify-content-between mb-1",
 			key: c
-		}, [a("div", KF, [a("div", qF, [(_(!0), i(e, null, y(t.field.elements, (e, a) => (_(), i("div", {
+		}, [a("div", QF, [a("div", $F, [(_(!0), i(e, null, y(t.field.elements, (e, a) => (_(), i("div", {
 			key: a,
 			class: m(e.class || "col")
 		}, [e.template ? (_(), i("span", {
 			key: 0,
 			innerHTML: t.getValueOrFunction(e.template, t.value[c])
-		}, null, 8, JF)) : (_(), i("div", YF, [
-			e.prefix ? (_(), i("span", XF, x(e.prefix), 1)) : r("", !0),
+		}, null, 8, eI)) : (_(), i("div", tI, [
+			e.prefix ? (_(), i("span", nI, x(t.translate(e.prefix)), 1)) : r("", !0),
 			e.type == "select" && (!e.relation || e.relation.items) ? (_(), n(d, {
 				key: 1,
 				modelValue: t.value[c][a],
@@ -22583,33 +22594,33 @@ function dI(t, o, s, c, l, u) {
 				placeholder: t.translate(e.placeholder || ""),
 				class: "form-control",
 				"onUpdate:modelValue": (e) => t.value[c][a] = e
-			}, null, 8, ZF)), [[w, t.value[c][a]]]),
-			e.suffix ? (_(), i("span", QF, x(e.suffix), 1)) : r("", !0)
+			}, null, 8, rI)), [[w, t.value[c][a]]]),
+			e.suffix ? (_(), i("span", iI, x(t.translate(e.suffix)), 1)) : r("", !0)
 		]))], 2))), 128))])]), a("div", { class: m([t.addButton.wrapperClass, "text-nowrap text-end"]) }, [
 			t.field.sortable ? (_(), i("button", {
 				key: 0,
 				type: "button",
 				class: "btn btn-sm btn-outline-secondary p-1 me-1",
 				onClick: (e) => t.arrayItemMoveUp(t.value, c)
-			}, [...o[1] ||= [a("i", { class: "bi bi-arrow-up" }, null, -1)]], 8, $F)) : r("", !0),
+			}, [...o[1] ||= [a("i", { class: "bi bi-arrow-up" }, null, -1)]], 8, aI)) : r("", !0),
 			t.field.sortable ? (_(), i("button", {
 				key: 1,
 				type: "button",
 				class: "btn btn-sm btn-outline-secondary p-1 me-1",
 				onClick: (e) => t.arrayItemMoveDown(t.value, c)
-			}, [...o[2] ||= [a("i", { class: "bi bi-arrow-down" }, null, -1)]], 8, eI)) : r("", !0),
+			}, [...o[2] ||= [a("i", { class: "bi bi-arrow-down" }, null, -1)]], 8, oI)) : r("", !0),
 			a("button", {
 				type: "button",
 				class: "btn btn-sm btn-outline-danger p-1 me-1",
 				onClick: (e) => t.arrayRemoveItem(t.value, c)
-			}, [...o[3] ||= [a("i", { class: "bi bi-trash" }, null, -1)]], 8, tI)
+			}, [...o[3] ||= [a("i", { class: "bi bi-trash" }, null, -1)]], 8, sI)
 		], 2)]))), 128)),
-		t.item[t.field.name] && t.item[t.field.name].length ? (_(), i("hr", nI)) : r("", !0),
-		a("div", rI, [a("div", iI, [a("div", aI, [(_(!0), i(e, null, y(t.field.elements, (e) => (_(), i("div", {
+		t.item[t.field.name] && t.item[t.field.name].length ? (_(), i("hr", cI)) : r("", !0),
+		a("div", lI, [a("div", uI, [a("div", dI, [(_(!0), i(e, null, y(t.field.elements, (e) => (_(), i("div", {
 			key: e,
 			class: m(e.class || "col")
-		}, [a("div", oI, [
-			e.prefix ? (_(), i("span", sI, x(e.prefix), 1)) : r("", !0),
+		}, [a("div", fI, [
+			e.prefix ? (_(), i("span", pI, x(t.translate(e.prefix)), 1)) : r("", !0),
 			e.type == "select" && (!e.relation || e.relation && e.relation.items) ? (_(), n(d, {
 				key: 1,
 				modelValue: e.value,
@@ -22632,8 +22643,8 @@ function dI(t, o, s, c, l, u) {
 				placeholder: t.translate(e.placeholder || ""),
 				class: "form-control form-control-sm",
 				"onUpdate:modelValue": (t) => e.value = t
-			}, null, 8, cI)), [[w, e.value]]),
-			e.suffix ? (_(), i("span", lI, x(e.suffix), 1)) : r("", !0)
+			}, null, 8, mI)), [[w, e.value]]),
+			e.suffix ? (_(), i("span", hI, x(t.translate(e.suffix)), 1)) : r("", !0)
 		]), r("", !0)], 2))), 128))])]), a("div", { class: m(t.addButton.wrapperClass) }, [a("button", {
 			type: "button",
 			class: m(t.addButton.class),
@@ -22644,11 +22655,11 @@ function dI(t, o, s, c, l, u) {
 		}, null, 2)) : r("", !0), t.addButton.label ? (_(), i("span", {
 			key: 1,
 			innerHTML: t.translate(t.getValueOrFunction(t.addButton.label, t.item))
-		}, null, 8, uI)) : r("", !0)], 2)], 2)])
+		}, null, 8, gI)) : r("", !0)], 2)], 2)])
 	]);
 }
 // src/components/VuAdminFormGroup.vue
-var fI = {
+var vI = {
 	props: {
 		modelValue: Object,
 		group: Object,
@@ -22728,20 +22739,20 @@ var fI = {
 	},
 	components: {
 		HtmlEditor: $M,
-		FileUpload: zF,
-		VuAdminFormSelect: WF,
-		VuAdminFormList: /* @__PURE__ */ gA(GF, [["render", dI]])
+		FileUpload: GF,
+		VuAdminFormSelect: XF,
+		VuAdminFormList: /* @__PURE__ */ gA(ZF, [["render", _I]])
 	}
-}, pI = { class: "row m-1" }, mI = ["innerHTML"], hI = {
+}, yI = { class: "row m-1" }, bI = ["innerHTML"], xI = {
 	key: 1,
 	class: "row"
-}, gI = { class: "form-group pb-3" }, _I = { key: 0 }, vI = {
+}, SI = { class: "form-group pb-3" }, CI = { key: 0 }, wI = {
 	key: 0,
 	class: "badge text-secondary fw-light"
-}, yI = ["for", "innerHTML"], bI = {
+}, TI = ["for", "innerHTML"], EI = {
 	key: 1,
 	class: "input-group"
-}, xI = ["innerHTML"], SI = [
+}, DI = ["innerHTML"], OI = [
 	"name",
 	"id",
 	"onUpdate:modelValue",
@@ -22751,7 +22762,7 @@ var fI = {
 	"disabled",
 	"readonly",
 	"required"
-], CI = [
+], kI = [
 	"name",
 	"id",
 	"onUpdate:modelValue",
@@ -22762,7 +22773,7 @@ var fI = {
 	"disabled",
 	"readonly",
 	"required"
-], wI = [
+], AI = [
 	"type",
 	"name",
 	"id",
@@ -22772,10 +22783,10 @@ var fI = {
 	"disabled",
 	"readonly",
 	"required"
-], TI = {
+], jI = {
 	key: 4,
 	class: "form-check"
-}, EI = [
+}, MI = [
 	"name",
 	"id",
 	"true-value",
@@ -22784,7 +22795,7 @@ var fI = {
 	"disabled",
 	"readonly",
 	"required"
-], DI = ["for"], OI = [
+], NI = ["for"], PI = [
 	"name",
 	"id",
 	"onUpdate:modelValue",
@@ -22794,7 +22805,7 @@ var fI = {
 	"readonly",
 	"disabled",
 	"required"
-], kI = [
+], FI = [
 	"name",
 	"id",
 	"onUpdate:modelValue",
@@ -22805,41 +22816,41 @@ var fI = {
 	"disabled",
 	"readonly",
 	"required"
-], AI = ["innerHTML"], jI = { key: 5 }, MI = { class: "dropdown d-inline-block" }, NI = { class: "dropdown-menu" }, PI = ["onClick"], FI = {
+], II = ["innerHTML"], LI = { key: 5 }, RI = { class: "dropdown d-inline-block" }, zI = { class: "dropdown-menu" }, BI = ["onClick"], VI = {
 	key: 0,
 	class: "bi bi-check-square"
-}, II = {
+}, HI = {
 	key: 1,
 	class: "bi bi-square"
-}, LI = ["onClick"], RI = ["onClick"], zI = ["onClick"], BI = ["onClick"], VI = { key: 6 }, HI = { key: 0 }, UI = ["for"], WI = [
+}, UI = ["onClick"], WI = ["onClick"], GI = ["onClick"], KI = ["onClick"], qI = { key: 6 }, JI = { key: 0 }, YI = ["for"], XI = [
 	"name",
 	"id",
 	"onUpdate:modelValue"
-], GI = ["onClick"], KI = ["innerHTML"], qI = {
+], ZI = ["onClick"], QI = ["innerHTML"], $I = {
 	key: 8,
 	class: "p-1"
-}, JI = ["innerHTML"];
-function YI(t, s, c, l, u, d) {
+}, eL = ["innerHTML"];
+function tL(t, s, c, l, u, d) {
 	let f = b("VuAdminFormSelect"), p = b("HtmlEditor"), h = b("FileUpload"), g = b("VuAdminFormList");
-	return _(), i("div", pI, [(_(!0), i(e, null, y(t.settings.form.groups, (c) => (_(), i("div", {
+	return _(), i("div", yI, [(_(!0), i(e, null, y(t.settings.form.groups, (c) => (_(), i("div", {
 		key: c,
 		class: m([c.class ? c.class : "col-md-12"])
 	}, [c.title ? (_(), i("h2", {
 		key: 0,
 		class: "form-row-title mb-4 fw-lighter",
 		innerHTML: c.title ? t.translate(c.title) : ""
-	}, null, 8, mI)) : r("", !0), t.item && c.fields ? (_(), i("div", hI, [(_(!0), i(e, null, y(c.fields, (c) => (_(), i("div", {
+	}, null, 8, bI)) : r("", !0), t.item && c.fields ? (_(), i("div", xI, [(_(!0), i(e, null, y(c.fields, (c) => (_(), i("div", {
 		class: m([t.getValueOrFunction(c.class ? c.class : "col-md-12"), "input_type_" + c.type]),
 		key: c
-	}, [a("div", gI, [
-		c.label ? (_(), i("span", _I, [[
+	}, [a("div", SI, [
+		c.label ? (_(), i("span", CI, [[
 			"html",
 			"image",
 			"upload"
 		].indexOf(c.type) >= 0 ? (_(), i("label", {
 			key: 0,
 			class: m([{ required: c.required }, "form-label text-secondary mb-1"])
-		}, [o(x(t.translate(c.label ? c.label : c.name)) + " ", 1), c.maxlength ? (_(), i("span", vI, x(t.item[c.name] ? t.item[c.name].length : 0) + " / " + x(c.maxlength), 1)) : r("", !0)], 2)) : (_(), i("label", {
+		}, [o(x(t.translate(c.label ? c.label : c.name)) + " ", 1), c.maxlength ? (_(), i("span", wI, x(t.item[c.name] ? t.item[c.name].length : 0) + " / " + x(c.maxlength), 1)) : r("", !0)], 2)) : (_(), i("label", {
 			key: 1,
 			class: m([{ required: c.required }, "form-label text-secondary mb-1"]),
 			for: t.formId + "_" + c.name,
@@ -22847,14 +22858,14 @@ function YI(t, s, c, l, u, d) {
 				field: c,
 				item: t.item
 			}))
-		}, null, 10, yI))])) : r("", !0),
+		}, null, 10, TI))])) : r("", !0),
 		[
 			"html",
 			"image",
 			"list",
 			"addresses",
 			"template"
-		].indexOf(c.type) < 0 ? (_(), i("div", bI, [
+		].indexOf(c.type) < 0 ? (_(), i("div", EI, [
 			c.prefix ? (_(), i("span", {
 				key: 0,
 				class: "input-group-text",
@@ -22862,7 +22873,7 @@ function YI(t, s, c, l, u, d) {
 					field: c,
 					item: t.item
 				}))
-			}, null, 8, xI)) : r("", !0),
+			}, null, 8, DI)) : r("", !0),
 			c.type == "text" ? D((_(), i("input", {
 				key: 1,
 				class: m(["form-control", t.getValueOrFunction(c.inputclass ? c.inputclass : "", {
@@ -22879,7 +22890,7 @@ function YI(t, s, c, l, u, d) {
 				disabled: c.disabled,
 				readonly: c.readonly,
 				required: c.required
-			}, null, 10, SI)), [[E, t.item[c.name]]]) : r("", !0),
+			}, null, 10, OI)), [[E, t.item[c.name]]]) : r("", !0),
 			c.type == "number" ? D((_(), i("input", {
 				key: 2,
 				class: m(["form-control", t.getValueOrFunction(c.inputclass ? c.inputclass : "", {
@@ -22897,7 +22908,7 @@ function YI(t, s, c, l, u, d) {
 				disabled: c.disabled,
 				readonly: c.readonly,
 				required: c.required
-			}, null, 10, CI)), [[E, t.item[c.name]]]) : r("", !0),
+			}, null, 10, kI)), [[E, t.item[c.name]]]) : r("", !0),
 			[
 				"date",
 				"datetime",
@@ -22917,8 +22928,8 @@ function YI(t, s, c, l, u, d) {
 				disabled: c.disabled,
 				readonly: c.readonly,
 				required: c.required
-			}, null, 10, wI)), [[w, t.item[c.name]]]) : r("", !0),
-			c.type == "checkbox" ? (_(), i("div", TI, [D(a("input", {
+			}, null, 10, AI)), [[w, t.item[c.name]]]) : r("", !0),
+			c.type == "checkbox" ? (_(), i("div", jI, [D(a("input", {
 				class: m(["form-check-input", t.getValueOrFunction(c.inputclass ? c.inputclass : "", {
 					field: c,
 					item: t.item
@@ -22932,10 +22943,10 @@ function YI(t, s, c, l, u, d) {
 				disabled: c.disabled,
 				readonly: c.readonly,
 				required: c.required
-			}, null, 10, EI), [[C, t.item[c.name]]]), a("label", {
+			}, null, 10, MI), [[C, t.item[c.name]]]), a("label", {
 				class: "form-check-label cursor-pointer",
 				for: t.formId + "_" + c.name
-			}, x(t.translate(c.checkbox)), 9, DI)])) : r("", !0),
+			}, x(t.translate(c.checkbox)), 9, NI)])) : r("", !0),
 			c.type == "email" ? D((_(), i("input", {
 				key: 5,
 				autocomplete: "on",
@@ -22953,7 +22964,7 @@ function YI(t, s, c, l, u, d) {
 				readonly: c.readonly,
 				disabled: c.disabled,
 				required: c.required
-			}, null, 10, OI)), [[E, t.item[c.name]]]) : r("", !0),
+			}, null, 10, PI)), [[E, t.item[c.name]]]) : r("", !0),
 			c.type == "select" && (!c.relation || c.relation && c.relation.items) ? (_(), n(f, {
 				key: 6,
 				modelValue: t.item[c.name],
@@ -22988,7 +22999,7 @@ function YI(t, s, c, l, u, d) {
 				disabled: c.disabled,
 				readonly: c.readonly,
 				required: c.required
-			}, "              ", 10, kI)), [[E, t.item[c.name]]]) : r("", !0),
+			}, "              ", 10, FI)), [[E, t.item[c.name]]]) : r("", !0),
 			c.suffix ? (_(), i("span", {
 				key: 8,
 				class: "input-group-text",
@@ -22996,7 +23007,7 @@ function YI(t, s, c, l, u, d) {
 					field: c,
 					item: t.item
 				}))
-			}, null, 8, AI)) : r("", !0)
+			}, null, 8, II)) : r("", !0)
 		])) : r("", !0),
 		c.type == "html" ? (_(), n(p, {
 			key: 2,
@@ -23040,7 +23051,7 @@ function YI(t, s, c, l, u, d) {
 			"settings",
 			"formId"
 		])) : r("", !0),
-		c.type == "dropdown" && t.item[c.name] ? (_(), i("div", jI, [a("div", MI, [a("button", {
+		c.type == "dropdown" && t.item[c.name] ? (_(), i("div", LI, [a("div", RI, [a("button", {
 			class: m(["btn dropdown-toggle", [c.dropdown ? c.dropdown.class : ""]]),
 			type: "button",
 			"data-bs-auto-close": "outside",
@@ -23049,25 +23060,25 @@ function YI(t, s, c, l, u, d) {
 		}, [a("span", null, x(t.translate(t.getValueOrFunction(c.dropdown && c.dropdown.label !== void 0 ? c.dropdown.label : "Select", {
 			field: c,
 			item: t.item
-		}))), 1)], 2), a("ul", NI, [
+		}))), 1)], 2), a("ul", zI, [
 			a("li", null, [(_(!0), i(e, null, y(c.options, (e) => (_(), i("span", {
 				key: e,
 				class: m(["dropdown-item cursor-pointer", { selected: t.item[c.name].indexOf(e.value) >= 0 }]),
 				onClick: (n) => t.dropdownSelectToggleOne(c, t.item[c.name], e)
-			}, [t.item[c.name].indexOf(e.value) >= 0 ? (_(), i("i", FI)) : (_(), i("i", II)), o(" " + x(t.translate(e.label ? e.label : e.value)), 1)], 10, PI))), 128))]),
+			}, [t.item[c.name].indexOf(e.value) >= 0 ? (_(), i("i", VI)) : (_(), i("i", HI)), o(" " + x(t.translate(e.label ? e.label : e.value)), 1)], 10, BI))), 128))]),
 			s[0] ||= a("li", null, [a("hr", { class: "dropdown-divider" })], -1),
 			a("li", null, [a("span", {
 				class: "dropdown-item cursor-pointer",
 				onClick: (e) => t.dropdownSelectAll(t.item[c.name], c.options)
-			}, x(t.translate("Select all")), 9, LI)]),
+			}, x(t.translate("Select all")), 9, UI)]),
 			a("li", null, [a("span", {
 				class: "dropdown-item cursor-pointer",
 				onClick: (e) => t.dropdownSelectClear(t.item[c.name])
-			}, x(t.translate("Unselect all")), 9, RI)]),
+			}, x(t.translate("Unselect all")), 9, WI)]),
 			a("li", null, [a("span", {
 				class: "dropdown-item cursor-pointer",
 				onClick: (e) => t.dropdownSelectInvert(t.item[c.name], c.options)
-			}, x(t.translate("Invert all")), 9, zI)])
+			}, x(t.translate("Invert all")), 9, GI)])
 		])]), t.item[c.name].length && !(c.list && c.list.hidden) ? (_(), i("span", {
 			key: 0,
 			class: m([c.list && c.list.wrapperClass ? c.list.wrapperClass : "d-block mt-1"])
@@ -23075,43 +23086,43 @@ function YI(t, s, c, l, u, d) {
 			class: m(["cursor-pointer", [c.list ? c.list.class : ""]]),
 			key: e,
 			onClick: (n) => t.dropdownSelectToggleOne(c, t.item[c.name], e)
-		}, [o(x(t.translate(e)) + " ", 1), s[1] ||= a("i", { class: "bi bi-x" }, null, -1)], 10, BI))), 128))], 2)) : r("", !0)])) : r("", !0),
-		c.type == "addresses" ? (_(), i("span", VI, [t.item[c.name] ? (_(), i("div", HI, [(_(!0), i(e, null, y(t.item[c.name], (e) => (_(), i("div", { key: e }, [
+		}, [o(x(t.translate(e)) + " ", 1), s[1] ||= a("i", { class: "bi bi-x" }, null, -1)], 10, KI))), 128))], 2)) : r("", !0)])) : r("", !0),
+		c.type == "addresses" ? (_(), i("span", qI, [t.item[c.name] ? (_(), i("div", JI, [(_(!0), i(e, null, y(t.item[c.name], (e) => (_(), i("div", { key: e }, [
 			o(x(e) + " ", 1),
 			a("label", {
 				class: "form-label text-secondary mb-1",
 				for: t.formId + "_" + c.name
-			}, x(t.translate(c.label)), 9, UI),
+			}, x(t.translate(c.label)), 9, YI),
 			D(a("input", {
 				class: "form-control",
 				type: "text",
 				name: c.name,
 				id: t.formId + "_" + c.name,
 				"onUpdate:modelValue": (t) => e.country = t
-			}, null, 8, WI), [[E, e.country]])
+			}, null, 8, XI), [[E, e.country]])
 		]))), 128))])) : r("", !0), a("button", {
 			type: "button",
 			class: "btn btn-sm btn-secondary",
 			onClick: (e) => t.insertAddress(c.name)
-		}, " Add ", 8, GI)])) : r("", !0),
+		}, x(t.translate("Add")), 9, ZI)])) : r("", !0),
 		c.type == "template" ? (_(), i("div", {
 			key: 7,
 			innerHTML: t.getValueOrFunction(c.template, {
 				field: c,
 				item: t.item
 			})
-		}, null, 8, KI)) : r("", !0),
-		c.description ? (_(), i("div", qI, [a("small", null, [a("i", {
+		}, null, 8, QI)) : r("", !0),
+		c.description ? (_(), i("div", $I, [a("small", null, [a("i", {
 			class: "text-muted",
 			innerHTML: t.translate(t.getValueOrFunction(c.description, {
 				field: c,
 				item: t.item
 			}))
-		}, null, 8, JI)])])) : r("", !0)
+		}, null, 8, eL)])])) : r("", !0)
 	])], 2))), 128))])) : r("", !0)], 2))), 128))]);
 }
 // src/components/VuAdminForm.vue
-var XI = {
+var nL = {
 	props: {
 		modelValue: Object,
 		modalWindow: Object,
@@ -23345,62 +23356,62 @@ var XI = {
 			}
 		}
 	},
-	components: { VuAdminFormGroup: /* @__PURE__ */ gA(fI, [["render", YI]]) }
-}, ZI = ["id", "data-bs-theme"], QI = {
+	components: { VuAdminFormGroup: /* @__PURE__ */ gA(vI, [["render", tL]]) }
+}, rL = ["id", "data-bs-theme"], iL = {
 	key: 0,
 	class: "vua-overlay-panel text-center px-4 py-3"
-}, $I = {
+}, aL = {
 	class: "spinner-border text-primary mb-3",
 	role: "status"
-}, eL = { class: "visually-hidden" }, tL = { class: "vua-overlay-message" }, nL = {
+}, oL = { class: "visually-hidden" }, sL = { class: "vua-overlay-message" }, cL = {
 	key: 0,
 	class: "vua-overlay-preset text-muted small mt-2"
-}, rL = { class: "badge bg-secondary-subtle text-secondary-emphasis text-uppercase" }, iL = {
+}, lL = { class: "badge bg-secondary-subtle text-secondary-emphasis text-uppercase" }, uL = {
 	key: 0,
 	class: "ms-2"
-}, aL = {
+}, dL = {
 	key: 1,
 	class: "ms-1 text-uppercase"
-}, oL = {
+}, fL = {
 	key: 1,
 	class: "progress mt-3 mx-auto",
 	style: {
 		width: "240px",
 		height: "8px"
 	}
-}, sL = ["aria-valuenow", "aria-valuemax"], cL = { class: "modal-header" }, lL = {
+}, pL = ["aria-valuenow", "aria-valuemax"], mL = { class: "modal-header" }, hL = {
 	key: 0,
 	class: "modal-title"
-}, uL = ["innerHTML"], dL = { key: 1 }, fL = { key: 2 }, pL = {
+}, gL = ["innerHTML"], _L = { key: 1 }, vL = { key: 2 }, yL = {
 	key: 3,
 	class: "rounded border ms-2 px-2 py-0 fs-6"
-}, mL = {
+}, bL = {
 	key: 1,
 	class: "d-inline-block ms-3 mt-1"
-}, hL = {
+}, xL = {
 	key: 2,
 	class: "spinner-border spinner-border-sm mx-2",
 	role: "status"
-}, gL = { class: "visually-hidden" }, _L = ["aria-label", "disabled"], vL = {
+}, SL = { class: "visually-hidden" }, CL = ["aria-label", "disabled"], wL = {
 	key: 0,
 	class: "modal-header bg-body sticky-top"
-}, yL = {
+}, TL = {
 	key: 0,
 	class: "d-inline-block m-1"
-}, bL = { class: "dropdown d-inline-block" }, xL = ["innerHTML"], SL = { class: "dropdown-menu text-start" }, CL = { class: "me-2 text-muted" }, wL = ["disabled", "onClick"], TL = {
+}, EL = { class: "dropdown d-inline-block" }, DL = ["innerHTML"], OL = { class: "dropdown-menu text-start" }, kL = { class: "me-2 text-muted" }, AL = ["disabled", "onClick"], jL = {
 	key: 1,
 	class: "dropdown d-inline-block"
-}, EL = ["disabled"], DL = { class: "mx-1" }, OL = { class: "dropdown-menu px-2" }, kL = ["onClick"], AL = {
+}, ML = ["disabled"], NL = { class: "mx-1" }, PL = { class: "dropdown-menu px-2" }, FL = ["onClick"], IL = {
 	key: 1,
 	class: "modal-body custom-scroll"
-}, jL = {
+}, LL = {
 	key: 2,
 	class: "modal-footer d-flex justify-content-between"
-}, ML = {
+}, RL = {
 	key: 3,
 	class: "bg-light text-dark"
 };
-function NL(t, s, c, l, u, d) {
+function zL(t, s, c, l, u, d) {
 	let f = b("VuAdminFormGroup");
 	return t.item ? (_(), i("form", {
 		key: 0,
@@ -23413,53 +23424,53 @@ function NL(t, s, c, l, u, d) {
 		a("div", { class: m(["vua-overlay", {
 			blocked: !!t.overlayCenterMessage,
 			immediate: !!t.overlayCenterMessage
-		}]) }, [t.overlayCenterMessage ? (_(), i("div", QI, [
-			a("div", $I, [a("span", eL, x(t.translate("Loading...")), 1)]),
-			a("div", tL, x(t.overlayCenterMessage), 1),
-			t.saveProgress?.uploadTypeKey ? (_(), i("div", nL, [
-				a("span", rL, x(t.saveProgress.uploadTypeKey), 1),
-				t.saveProgress.uploadPresetSize ? (_(), i("span", iL, x(t.saveProgress.uploadPresetSize), 1)) : r("", !0),
-				t.saveProgress.uploadExtension ? (_(), i("span", aL, "." + x(t.saveProgress.uploadExtension), 1)) : r("", !0)
+		}]) }, [t.overlayCenterMessage ? (_(), i("div", iL, [
+			a("div", aL, [a("span", oL, x(t.translate("Loading...")), 1)]),
+			a("div", sL, x(t.overlayCenterMessage), 1),
+			t.saveProgress?.uploadTypeKey ? (_(), i("div", cL, [
+				a("span", lL, x(t.saveProgress.uploadTypeKey), 1),
+				t.saveProgress.uploadPresetSize ? (_(), i("span", uL, x(t.saveProgress.uploadPresetSize), 1)) : r("", !0),
+				t.saveProgress.uploadExtension ? (_(), i("span", dL, "." + x(t.saveProgress.uploadExtension), 1)) : r("", !0)
 			])) : r("", !0),
-			t.overlayShowUploadProgress ? (_(), i("div", oL, [a("div", {
+			t.overlayShowUploadProgress ? (_(), i("div", fL, [a("div", {
 				class: "progress-bar progress-bar-striped progress-bar-animated",
 				role: "progressbar",
 				style: h({ width: t.saveProgressPercent + "%" }),
 				"aria-valuenow": t.saveProgress.uploadCurrent,
 				"aria-valuemin": 0,
 				"aria-valuemax": t.saveProgress.uploadTotal
-			}, null, 12, sL)])) : r("", !0)
+			}, null, 12, pL)])) : r("", !0)
 		])) : r("", !0)], 2),
-		a("div", cL, [
-			t.loaded ? (_(), i("h5", lL, [
+		a("div", mL, [
+			t.loaded ? (_(), i("h5", hL, [
 				t.settings.form.title && typeof t.settings.form.title == "function" ? (_(), i("span", {
 					key: 0,
 					innerHTML: t.settings.form.title(t.item, t.settings)
-				}, null, 8, uL)) : r("", !0),
-				t.settings.form.title && typeof t.settings.form.title == "string" ? (_(), i("span", dL, x(t.translate(t.settings.form.title)), 1)) : r("", !0),
-				t.settings.form.title ? r("", !0) : (_(), i("span", fL, x(t.translate("Edit")), 1)),
-				t.item[t.settings.pkey] ? (_(), i("small", pL, [s[2] ||= a("span", { class: "text-muted fw-light" }, "id", -1), o(" " + x(t.item[t.settings.pkey]), 1)])) : r("", !0)
+				}, null, 8, gL)) : r("", !0),
+				t.settings.form.title && typeof t.settings.form.title == "string" ? (_(), i("span", _L, x(t.translate(t.settings.form.title)), 1)) : r("", !0),
+				t.settings.form.title ? r("", !0) : (_(), i("span", vL, x(t.translate("Edit")), 1)),
+				t.item[t.settings.pkey] ? (_(), i("small", yL, [s[2] ||= a("span", { class: "text-muted fw-light" }, "id", -1), o(" " + x(t.item[t.settings.pkey]), 1)])) : r("", !0)
 			])) : r("", !0),
-			t.message.form ? (_(), i("span", mL, [a("span", { class: m(["text-" + t.message.form.priority]) }, [s[3] ||= a("i", { class: "bi bi-envelope-fill me-2" }, null, -1), a("span", null, x(t.message.form.msg), 1)], 2)])) : r("", !0),
-			t.ui.wait.form && !t.overlayCenterMessage ? (_(), i("span", hL, [a("span", gL, x(t.translate("Loading...")), 1)])) : r("", !0),
+			t.message.form ? (_(), i("span", bL, [a("span", { class: m(["text-" + t.message.form.priority]) }, [s[3] ||= a("i", { class: "bi bi-envelope-fill me-2" }, null, -1), a("span", null, x(t.message.form.msg), 1)], 2)])) : r("", !0),
+			t.ui.wait.form && !t.overlayCenterMessage ? (_(), i("span", xL, [a("span", SL, x(t.translate("Loading...")), 1)])) : r("", !0),
 			a("button", {
 				type: "button",
 				class: "btn-close",
 				"data-bs-dismiss": "modal",
 				"aria-label": t.translate("Close"),
 				disabled: t.saveProgress?.active && t.saveProgress?.warnLeave
-			}, null, 8, _L)
+			}, null, 8, CL)
 		]),
-		t.item ? (_(), i("div", vL, [t.settings.form.control ? (_(), i("div", {
+		t.item ? (_(), i("div", wL, [t.settings.form.control ? (_(), i("div", {
 			key: 0,
 			class: m(["w-100", t.settings.form.control.class == null ? "d-flex justify-content-center" : t.settings.form.control.class])
-		}, [t.messages.form.length ? (_(), i("span", yL, [a("div", bL, [a("button", {
+		}, [t.messages.form.length ? (_(), i("span", TL, [a("div", EL, [a("button", {
 			class: m(["btn btn-sm dropdown-toggle", ["btn-" + t.messages.form[0].priority]]),
 			type: "button",
 			"data-bs-toggle": "dropdown",
 			"aria-expanded": "false",
 			innerHTML: t.messages.form.length + " " + (t.messages.form.length > 1 ? t.translate("messages") : t.translate("message"))
-		}, null, 10, xL), a("ul", SL, [(_(!0), i(e, null, y(t.messages.form, (e) => (_(), i("li", { key: e }, [a("span", { class: m(["dropdown-item disabled", ["text-" + e.priority]]) }, [a("small", CL, x(e.datetime), 1), a("span", null, x(e.msg), 1)], 2)]))), 128))])])])) : r("", !0), (_(!0), i(e, null, y(t.settings.form.control.buttons, (n) => (_(), i("span", { key: n.action }, [n.dropdowns ? r("", !0) : (_(), i("button", {
+		}, null, 10, DL), a("ul", OL, [(_(!0), i(e, null, y(t.messages.form, (e) => (_(), i("li", { key: e }, [a("span", { class: m(["dropdown-item disabled", ["text-" + e.priority]]) }, [a("small", kL, x(e.datetime), 1), a("span", null, x(e.msg), 1)], 2)]))), 128))])])])) : r("", !0), (_(!0), i(e, null, y(t.settings.form.control.buttons, (n) => (_(), i("span", { key: n.action }, [n.dropdowns ? r("", !0) : (_(), i("button", {
 			key: 0,
 			type: "button",
 			disabled: t.saveProgress?.active || n.disabled !== void 0 && t.getValueOrFunction(n.disabled, {
@@ -23478,17 +23489,17 @@ function NL(t, s, c, l, u, d) {
 			button: n,
 			item: t.item,
 			form: this
-		}))) }, null, 2), o(" " + x(t.translate(n.title)), 1)], 10, wL)), n.dropdowns ? (_(), i("div", TL, [a("button", {
+		}))) }, null, 2), o(" " + x(t.translate(n.title)), 1)], 10, AL)), n.dropdowns ? (_(), i("div", jL, [a("button", {
 			type: "button",
 			class: m([[n.class], "dropdown-toggle"]),
 			"data-bs-toggle": "dropdown",
 			"data-bs-auto-close": "outside",
 			"aria-expanded": "false",
 			disabled: t.saveProgress?.active
-		}, [a("span", DL, [a("i", { class: m(t.buttonIconClass(n.icon === void 0 ? t.getButtonIconClassByAction(n.action) : t.getValueOrFunction(n.icon, {
+		}, [a("span", NL, [a("i", { class: m(t.buttonIconClass(n.icon === void 0 ? t.getButtonIconClassByAction(n.action) : t.getValueOrFunction(n.icon, {
 			button: n,
 			table: this
-		}))) }, null, 2), o(" " + x(t.translate(n.title)), 1)])], 10, EL), a("ul", OL, [(_(!0), i(e, null, y(n.dropdowns, (e) => (_(), i("li", { key: e }, [a("span", {
+		}))) }, null, 2), o(" " + x(t.translate(n.title)), 1)])], 10, ML), a("ul", PL, [(_(!0), i(e, null, y(n.dropdowns, (e) => (_(), i("li", { key: e }, [a("span", {
 			class: m([e.class ? e.class : ""]),
 			onClick: (r) => t.formAction(e, {
 				button: n,
@@ -23499,8 +23510,8 @@ function NL(t, s, c, l, u, d) {
 		}, [e.icon ? (_(), i("i", {
 			key: 0,
 			class: m(t.buttonIconClass(e.icon))
-		}, null, 2)) : r("", !0), o(" " + x(t.translate(e.title)), 1)], 10, kL)]))), 128))])])) : r("", !0)]))), 128))], 2)) : r("", !0)])) : r("", !0),
-		t.settings.form ? (_(), i("div", AL, [t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
+		}, null, 2)) : r("", !0), o(" " + x(t.translate(e.title)), 1)], 10, FL)]))), 128))])])) : r("", !0)]))), 128))], 2)) : r("", !0)])) : r("", !0),
+		t.settings.form ? (_(), i("div", IL, [t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
 			key: 0,
 			modelValue: t.item,
 			"onUpdate:modelValue": s[0] ||= (e) => t.item = e,
@@ -23511,11 +23522,11 @@ function NL(t, s, c, l, u, d) {
 			"formid",
 			"settings"
 		])) : r("", !0)])) : r("", !0),
-		t.item ? (_(), i("div", jL)) : r("", !0),
-		t.settings.debug > 1 ? (_(), i("pre", ML, "        " + x(t.item) + "\n    ", 1)) : r("", !0)
-	], 42, ZI)) : r("", !0);
+		t.item ? (_(), i("div", LL)) : r("", !0),
+		t.settings.debug > 1 ? (_(), i("pre", RL, "        " + x(t.item) + "\n    ", 1)) : r("", !0)
+	], 42, rL)) : r("", !0);
 }
-var PL = /*#__PURE__*/ gA(XI, [["render", NL]]), FL = {
+var BL = /*#__PURE__*/ gA(nL, [["render", zL]]), VL = {
 	name: "VuAdminTablePagination",
 	emits: [
 		"setPage",
@@ -23568,47 +23579,47 @@ var PL = /*#__PURE__*/ gA(XI, [["render", NL]]), FL = {
 		}
 	},
 	components: {}
-}, IL = ["aria-label"], LL = { class: "d-flex align-items-center" }, RL = { class: "mx-1 small" }, zL = { key: 0 }, BL = {
+}, HL = ["aria-label"], UL = { class: "d-flex align-items-center" }, WL = { class: "mx-1 small" }, GL = { key: 0 }, KL = {
 	key: 0,
 	class: "dropdown d-none d-md-inline-block m-1"
-}, VL = {
+}, qL = {
 	type: "button",
 	class: "btn btn-sm btn-secondary dropdown-toggle",
 	"data-bs-toggle": "dropdown",
 	"aria-expanded": "false"
-}, HL = { class: "ms-1" }, UL = { class: "dropdown-menu text-end" }, WL = ["onClick"], GL = { class: "ms-2" }, KL = {
+}, JL = { class: "ms-1" }, YL = { class: "dropdown-menu text-end" }, XL = ["onClick"], ZL = { class: "ms-2" }, QL = {
 	key: 0,
 	class: "bi bi-check-circle-fill ms-2"
-}, qL = {
+}, $L = {
 	key: 1,
 	class: "bi bi-circle ms-2"
-}, JL = {
+}, eR = {
 	class: "spinner-border spinner-border-sm mx-2",
 	role: "status"
-}, YL = { class: "visually-hidden" }, XL = { class: "pagination pagination-sm m-1" }, ZL = { class: "page-item" }, QL = ["aria-label"], $L = ["innerHTML"], eR = { class: "page-item" }, tR = ["aria-label"], nR = ["innerHTML"], rR = ["onClick"], iR = { class: "page-item" }, aR = ["aria-label"], oR = ["innerHTML"], sR = {
+}, tR = { class: "visually-hidden" }, nR = { class: "pagination pagination-sm m-1" }, rR = { class: "page-item" }, iR = ["aria-label"], aR = ["innerHTML"], oR = { class: "page-item" }, sR = ["aria-label"], cR = ["innerHTML"], lR = ["onClick"], uR = { class: "page-item" }, dR = ["aria-label"], fR = ["innerHTML"], pR = {
 	key: 0,
 	class: "page-item"
-}, cR = ["aria-label"], lR = ["innerHTML"];
-function uR(t, n, o, s, c, l) {
+}, mR = ["aria-label"], hR = ["innerHTML"];
+function gR(t, n, o, s, c, l) {
 	return o.config.pagination.hidden ? r("", !0) : (_(), i("nav", {
 		key: 0,
 		"aria-label": l.translate("Page navigation"),
 		class: "mt-2 d-flex flex-wrap align-items-center justify-content-between gap-2"
-	}, [a("div", LL, [
-		D(a("span", RL, [a("strong", null, x(o.config.pagination.from) + "-" + x(o.config.pagination.to), 1), o.config.pagination.total ? (_(), i("span", zL, " / " + x(o.config.pagination.total), 1)) : r("", !0)], 512), [[ee, o.config.pagination.from > 0]]),
-		o.config.pagination.limits ? (_(), i("div", BL, [a("button", VL, [a("strong", null, x(o.config.pagination.limit), 1), a("small", HL, x(l.translate("row")) + "/" + x(l.translate("page")), 1)]), a("ul", UL, [a("li", null, [(_(!0), i(e, null, y(o.config.pagination.limits, (e) => (_(), i("span", {
+	}, [a("div", UL, [
+		D(a("span", WL, [a("strong", null, x(o.config.pagination.from) + "-" + x(o.config.pagination.to), 1), o.config.pagination.total ? (_(), i("span", GL, " / " + x(o.config.pagination.total), 1)) : r("", !0)], 512), [[ee, o.config.pagination.from > 0]]),
+		o.config.pagination.limits ? (_(), i("div", KL, [a("button", qL, [a("strong", null, x(o.config.pagination.limit), 1), a("small", JL, x(l.translate("row")) + "/" + x(l.translate("page")), 1)]), a("ul", YL, [a("li", null, [(_(!0), i(e, null, y(o.config.pagination.limits, (e) => (_(), i("span", {
 			class: m(["dropdown-item cursor-pointer", { selected: o.config.pagination.limit == e }]),
 			key: e,
 			onClick: (t) => l.setPageLimit(e)
 		}, [
 			a("strong", null, x(e), 1),
-			a("small", GL, x(l.translate("row")) + "/" + x(l.translate("page")), 1),
-			o.config.pagination.limit == e ? (_(), i("i", KL)) : r("", !0),
-			o.config.pagination.limit == e ? r("", !0) : (_(), i("i", qL))
-		], 10, WL))), 128))])])])) : r("", !0),
-		D(a("div", JL, [a("span", YL, x(l.translate("Loading...")), 1)], 512), [[ee, o.ui && o.ui.wait.table]])
-	]), a("ul", XL, [
-		a("li", ZL, [a("a", {
+			a("small", ZL, x(l.translate("row")) + "/" + x(l.translate("page")), 1),
+			o.config.pagination.limit == e ? (_(), i("i", QL)) : r("", !0),
+			o.config.pagination.limit == e ? r("", !0) : (_(), i("i", $L))
+		], 10, XL))), 128))])])])) : r("", !0),
+		D(a("div", eR, [a("span", tR, x(l.translate("Loading...")), 1)], 512), [[ee, o.ui && o.ui.wait.table]])
+	]), a("ul", nR, [
+		a("li", rR, [a("a", {
 			class: m(["page-link cursor-pointer", { disabled: l.firstDisabled() }]),
 			onClick: n[0] ||= (e) => l.setPage(1),
 			"aria-label": l.translate("First")
@@ -23616,11 +23627,11 @@ function uR(t, n, o, s, c, l) {
 			"aria-hidden": "true",
 			class: "d-none d-md-inline",
 			innerHTML: l.translate("First")
-		}, null, 8, $L), n[4] ||= a("i", {
+		}, null, 8, aR), n[4] ||= a("i", {
 			"aria-hidden": "true",
 			class: "bi bi-chevron-double-left d-md-none"
-		}, null, -1)], 10, QL)]),
-		a("li", eR, [a("a", {
+		}, null, -1)], 10, iR)]),
+		a("li", oR, [a("a", {
 			class: m(["page-link cursor-pointer", { disabled: l.prevDisabled() }]),
 			onClick: n[1] ||= (e) => l.setPage(o.config.pagination.page - 1),
 			"aria-label": l.translate("Prev")
@@ -23628,10 +23639,10 @@ function uR(t, n, o, s, c, l) {
 			"aria-hidden": "true",
 			class: "d-none d-md-inline",
 			innerHTML: l.translate("Prev")
-		}, null, 8, nR), n[5] ||= a("i", {
+		}, null, 8, cR), n[5] ||= a("i", {
 			"aria-hidden": "true",
 			class: "bi bi-chevron-left d-md-none"
-		}, null, -1)], 10, tR)]),
+		}, null, -1)], 10, sR)]),
 		(_(!0), i(e, null, y(l.visiblePageNumbers(), (e) => (_(), i("li", {
 			key: e,
 			class: "page-item"
@@ -23641,8 +23652,8 @@ function uR(t, n, o, s, c, l) {
 				current: e == o.config.pagination.page
 			}]),
 			onClick: (t) => l.setPage(e)
-		}, x(e), 11, rR)]))), 128)),
-		a("li", iR, [a("a", {
+		}, x(e), 11, lR)]))), 128)),
+		a("li", uR, [a("a", {
 			class: m(["page-link cursor-pointer", { disabled: l.nextDisabled() }]),
 			onClick: n[2] ||= (e) => l.setPage(o.config.pagination.page + 1),
 			"aria-label": l.translate("Next")
@@ -23650,11 +23661,11 @@ function uR(t, n, o, s, c, l) {
 			"aria-hidden": "true",
 			class: "d-none d-md-inline",
 			innerHTML: l.translate("Next")
-		}, null, 8, oR), n[6] ||= a("i", {
+		}, null, 8, fR), n[6] ||= a("i", {
 			"aria-hidden": "true",
 			class: "bi bi-chevron-right d-md-none"
-		}, null, -1)], 10, aR)]),
-		o.config.pagination.total ? (_(), i("li", sR, [a("a", {
+		}, null, -1)], 10, dR)]),
+		o.config.pagination.total ? (_(), i("li", pR, [a("a", {
 			class: m(["page-link cursor-pointer", { disabled: l.lastDisabled() }]),
 			onClick: n[3] ||= (e) => l.setPage(o.config.pagination.pages),
 			"aria-label": l.translate("Last")
@@ -23662,13 +23673,13 @@ function uR(t, n, o, s, c, l) {
 			"aria-hidden": "true",
 			class: "d-none d-md-inline",
 			innerHTML: l.translate("Last")
-		}, null, 8, lR), n[7] ||= a("i", {
+		}, null, 8, hR), n[7] ||= a("i", {
 			"aria-hidden": "true",
 			class: "bi bi-chevron-double-right d-md-none"
-		}, null, -1)], 10, cR)])) : r("", !0)
-	])], 8, IL));
+		}, null, -1)], 10, mR)])) : r("", !0)
+	])], 8, HL));
 }
-var dR = /*#__PURE__*/ gA(FL, [["render", uR]]), fR = {
+var _R = /*#__PURE__*/ gA(VL, [["render", gR]]), vR = {
 	name: "VuAdminTableFilterField",
 	props: {
 		column: Object,
@@ -23711,41 +23722,41 @@ var dR = /*#__PURE__*/ gA(FL, [["render", uR]]), fR = {
 			typeof e == "object" ? Sl(e) : e.value = null, this.reloadTable();
 		}
 	}
-}, pR = {
+}, yR = {
 	key: 0,
 	class: "input-group input-group-sm my-1"
-}, mR = ["disabled"], hR = {
+}, bR = ["disabled"], xR = {
 	key: 1,
 	class: "input-group input-group-sm my-1"
-}, gR = ["disabled"], _R = { value: "=" }, vR = { value: ">" }, yR = { value: ">=" }, bR = { value: "<" }, xR = { value: "<=" }, SR = ["disabled"], CR = ["value"], wR = [
+}, SR = ["disabled"], CR = { value: "=" }, wR = { value: ">" }, TR = { value: ">=" }, ER = { value: "<" }, DR = { value: "<=" }, OR = ["disabled"], kR = ["value"], AR = [
 	"disabled",
 	"min",
 	"max"
-], TR = ["disabled"], ER = { key: 2 }, DR = {
+], jR = ["disabled"], MR = { key: 2 }, NR = {
 	key: 0,
 	class: "dropdown"
-}, OR = {
+}, PR = {
 	class: "btn btn-sm btn-secondary dropdown-toggle my-1",
 	type: "button",
 	"data-bs-auto-close": "outside",
 	"data-bs-toggle": "dropdown",
 	"aria-expanded": "false"
-}, kR = { class: "dropdown-menu" }, AR = ["onClick"], jR = {
+}, FR = { class: "dropdown-menu" }, IR = ["onClick"], LR = {
 	key: 0,
 	class: "bi bi-check-square"
-}, MR = {
+}, RR = {
 	key: 1,
 	class: "bi bi-square"
-}, NR = { key: 0 }, PR = { key: 1 }, FR = { key: 2 }, IR = { key: 3 }, LR = {
+}, zR = { key: 0 }, BR = { key: 1 }, VR = { key: 2 }, HR = { key: 3 }, UR = {
 	key: 1,
 	class: "input-group input-group-sm my-1"
-}, RR = ["multiple"], zR = ["value"], BR = ["disabled"], VR = {
+}, WR = ["multiple"], GR = ["value"], KR = ["disabled"], qR = {
 	key: 3,
 	class: "input-group input-group-sm my-1"
-}, HR = { value: "=" }, UR = { value: ">" }, WR = { value: ">=" }, GR = { value: "<" }, KR = { value: "<=" }, qR = ["value"], JR = ["type"], YR = ["disabled"], XR = ["disabled", "onClick"];
-function ZR(t, n, s, c, l, u) {
+}, JR = { value: "=" }, YR = { value: ">" }, XR = { value: ">=" }, ZR = { value: "<" }, QR = { value: "<=" }, $R = ["value"], ez = ["type"], tz = ["disabled"], nz = ["disabled", "onClick"];
+function rz(t, n, s, c, l, u) {
 	return _(), i("div", null, [
-		s.column.filter && s.column.filter.type == "text" ? (_(), i("div", pR, [D(a("input", {
+		s.column.filter && s.column.filter.type == "text" ? (_(), i("div", yR, [D(a("input", {
 			type: "text",
 			class: m([{ fixed: s.column.filter.fixed }, "form-control form-control-sm"]),
 			"onUpdate:modelValue": n[0] ||= (e) => s.column.filter.value = e,
@@ -23757,8 +23768,8 @@ function ZR(t, n, s, c, l, u) {
 			onClick: n[2] ||= (e) => {
 				s.column.filter.value = void 0, s.reloadTable();
 			}
-		}, [...n[25] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, mR)) : r("", !0)])) : r("", !0),
-		s.column.filter && s.column.filter.type == "number" ? (_(), i("div", hR, [
+		}, [...n[25] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, bR)) : r("", !0)])) : r("", !0),
+		s.column.filter && s.column.filter.type == "number" ? (_(), i("div", xR, [
 			s.column.filter.operators == 1 ? D((_(), i("select", {
 				key: 0,
 				"onUpdate:modelValue": n[3] ||= (e) => s.column.filter.operator = e,
@@ -23766,12 +23777,12 @@ function ZR(t, n, s, c, l, u) {
 				onChange: n[4] ||= (e) => s.reloadTable(),
 				class: "form-select form-select-sm pe-0"
 			}, [
-				a("option", _R, x(u.translate("=")), 1),
-				a("option", vR, x(u.translate(">")), 1),
-				a("option", yR, x(u.translate(">=")), 1),
-				a("option", bR, x(u.translate("<")), 1),
-				a("option", xR, x(u.translate("<=")), 1)
-			], 40, gR)), [[T, s.column.filter.operator]]) : r("", !0),
+				a("option", CR, x(u.translate("=")), 1),
+				a("option", wR, x(u.translate(">")), 1),
+				a("option", TR, x(u.translate(">=")), 1),
+				a("option", ER, x(u.translate("<")), 1),
+				a("option", DR, x(u.translate("<=")), 1)
+			], 40, SR)), [[T, s.column.filter.operator]]) : r("", !0),
 			s.column.filter.operators && s.column.filter.operators.length > 0 ? D((_(), i("select", {
 				key: 1,
 				"onUpdate:modelValue": n[5] ||= (e) => s.column.filter.operator = e,
@@ -23781,7 +23792,7 @@ function ZR(t, n, s, c, l, u) {
 			}, [(_(!0), i(e, null, y(s.column.filter.operators, (e) => (_(), i("option", {
 				key: e,
 				value: e.value
-			}, x(u.translate(e.label)), 9, CR))), 128))], 40, SR)), [[T, s.column.filter.operator]]) : r("", !0),
+			}, x(u.translate(e.label)), 9, kR))), 128))], 40, OR)), [[T, s.column.filter.operator]]) : r("", !0),
 			D(a("input", {
 				type: "number",
 				class: m(["form-control", { fixed: s.column.filter.fixed }]),
@@ -23791,7 +23802,7 @@ function ZR(t, n, s, c, l, u) {
 				max: s.column.filter.max,
 				onChange: n[8] ||= (e) => s.reloadTable(),
 				onKeyup: n[9] ||= ne((e) => s.reloadTable(), ["enter"])
-			}, null, 42, wR), [[E, s.column.filter.value]]),
+			}, null, 42, AR), [[E, s.column.filter.value]]),
 			!s.column.filter.fixed && s.column.filter.buttonx && s.column.filter.buttonx != 0 ? (_(), i("button", {
 				key: 2,
 				class: m(["btn btn-outline-secondary", { "opacity-25": s.column.filter.value == null }]),
@@ -23799,28 +23810,28 @@ function ZR(t, n, s, c, l, u) {
 				onClick: n[10] ||= (e) => {
 					s.column.filter.value = void 0, s.reloadTable();
 				}
-			}, [...n[26] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, TR)) : r("", !0)
+			}, [...n[26] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, jR)) : r("", !0)
 		])) : r("", !0),
-		s.column.filter && s.column.filter.type == "select" ? (_(), i("div", ER, [s.column.filter.dropdown ? (_(), i("div", DR, [a("button", OR, x(u.dropdownButtonLabel(s.column.filter)), 1), a("ul", kR, [
+		s.column.filter && s.column.filter.type == "select" ? (_(), i("div", MR, [s.column.filter.dropdown ? (_(), i("div", NR, [a("button", PR, x(u.dropdownButtonLabel(s.column.filter)), 1), a("ul", FR, [
 			a("li", null, [(_(!0), i(e, null, y(s.column.filter.options, (e) => (_(), i("span", {
 				key: e,
 				class: m(["dropdown-item cursor-pointer", { selected: s.column.filter.multiple ? (s.column.filter.value || []).indexOf(e.value) >= 0 : s.column.filter.value === e.value }]),
 				onClick: (t) => u.dropdownSelectToggleOne(s.column.filter, e)
-			}, [(s.column.filter.multiple ? (s.column.filter.value || []).indexOf(e.value) >= 0 : s.column.filter.value === e.value) ? (_(), i("i", jR)) : (_(), i("i", MR)), o(" " + x(u.translate(e.label ? e.label : e.value)), 1)], 10, AR))), 128))]),
-			s.column.filter.multiple ? (_(), i("li", NR, [...n[27] ||= [a("hr", { class: "dropdown-divider" }, null, -1)]])) : r("", !0),
-			s.column.filter.multiple ? (_(), i("li", PR, [a("span", {
+			}, [(s.column.filter.multiple ? (s.column.filter.value || []).indexOf(e.value) >= 0 : s.column.filter.value === e.value) ? (_(), i("i", LR)) : (_(), i("i", RR)), o(" " + x(u.translate(e.label ? e.label : e.value)), 1)], 10, IR))), 128))]),
+			s.column.filter.multiple ? (_(), i("li", zR, [...n[27] ||= [a("hr", { class: "dropdown-divider" }, null, -1)]])) : r("", !0),
+			s.column.filter.multiple ? (_(), i("li", BR, [a("span", {
 				class: "dropdown-item cursor-pointer",
 				onClick: n[11] ||= (e) => u.dropdownSelectAll(s.column.filter.value, s.column.filter.options)
 			}, x(u.translate("Select all")), 1)])) : r("", !0),
-			s.column.filter.multiple ? (_(), i("li", FR, [a("span", {
+			s.column.filter.multiple ? (_(), i("li", VR, [a("span", {
 				class: "dropdown-item cursor-pointer",
 				onClick: n[12] ||= (e) => u.dropdownSelectClear(s.column.filter.value)
 			}, x(u.translate("Unselect all")), 1)])) : r("", !0),
-			s.column.filter.multiple ? (_(), i("li", IR, [a("span", {
+			s.column.filter.multiple ? (_(), i("li", HR, [a("span", {
 				class: "dropdown-item cursor-pointer",
 				onClick: n[13] ||= (e) => u.dropdownSelectInvert(s.column.filter.value, s.column.filter.options)
 			}, x(u.translate("Invert all")), 1)])) : r("", !0)
-		])])) : (_(), i("div", LR, [D(a("select", {
+		])])) : (_(), i("div", UR, [D(a("select", {
 			"onUpdate:modelValue": n[14] ||= (e) => s.column.filter.value = e,
 			onChange: n[15] ||= (e) => s.reloadTable(),
 			multiple: s.column.filter.multiple,
@@ -23828,26 +23839,26 @@ function ZR(t, n, s, c, l, u) {
 		}, [(_(!0), i(e, null, y(s.column.filter.options, (e) => (_(), i("option", {
 			key: e,
 			value: e.value
-		}, x(u.translate(e.label ? e.label : e.value)), 9, zR))), 128))], 40, RR), [[T, s.column.filter.value]]), s.column.filter.buttonx && s.column.filter.buttonx != 0 ? (_(), i("button", {
+		}, x(u.translate(e.label ? e.label : e.value)), 9, GR))), 128))], 40, WR), [[T, s.column.filter.value]]), s.column.filter.buttonx && s.column.filter.buttonx != 0 ? (_(), i("button", {
 			key: 0,
 			class: m(["btn btn-outline-secondary", { "opacity-25": s.column.filter.value == null }]),
 			disabled: s.column.filter.value == null,
 			onClick: n[16] ||= (e) => {
 				s.column.filter.value = void 0, s.reloadTable();
 			}
-		}, [...n[28] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, BR)) : r("", !0)]))])) : r("", !0),
-		s.column.filter && (s.column.filter.type == "datetime-local" || s.column.filter.type == "date") ? (_(), i("div", VR, [
+		}, [...n[28] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, KR)) : r("", !0)]))])) : r("", !0),
+		s.column.filter && (s.column.filter.type == "datetime-local" || s.column.filter.type == "date") ? (_(), i("div", qR, [
 			s.column.filter.operators == 1 ? D((_(), i("select", {
 				key: 0,
 				"onUpdate:modelValue": n[17] ||= (e) => s.column.filter.operator = e,
 				onChange: n[18] ||= (e) => s.reloadTable(),
 				class: "form-select form-select-sm pe-0"
 			}, [
-				a("option", HR, x(u.translate("=")), 1),
-				a("option", UR, x(u.translate(">")), 1),
-				a("option", WR, x(u.translate(">=")), 1),
-				a("option", GR, x(u.translate("<")), 1),
-				a("option", KR, x(u.translate("<=")), 1)
+				a("option", JR, x(u.translate("=")), 1),
+				a("option", YR, x(u.translate(">")), 1),
+				a("option", XR, x(u.translate(">=")), 1),
+				a("option", ZR, x(u.translate("<")), 1),
+				a("option", QR, x(u.translate("<=")), 1)
 			], 544)), [[T, s.column.filter.operator]]) : r("", !0),
 			s.column.filter.operators && s.column.filter.operators.length > 0 ? D((_(), i("select", {
 				key: 1,
@@ -23857,21 +23868,21 @@ function ZR(t, n, s, c, l, u) {
 			}, [(_(!0), i(e, null, y(s.column.filter.operators, (e) => (_(), i("option", {
 				key: e,
 				value: e.value
-			}, x(u.translate(e.label)), 9, qR))), 128))], 544)), [[T, s.column.filter.operator]]) : r("", !0),
+			}, x(u.translate(e.label)), 9, $R))), 128))], 544)), [[T, s.column.filter.operator]]) : r("", !0),
 			D(a("input", {
 				type: s.column.filter.type,
 				class: m([{ fixed: s.column.filter.fixed }, "form-control form-control-sm"]),
 				"onUpdate:modelValue": n[21] ||= (e) => s.column.filter.value = e,
 				onChange: n[22] ||= (e) => s.reloadTable(),
 				onKeyup: n[23] ||= ne((e) => s.reloadTable(), ["enter"])
-			}, null, 42, JR), [[w, s.column.filter.value]]),
+			}, null, 42, ez), [[w, s.column.filter.value]]),
 			a("button", {
 				class: m(["btn btn-outline-secondary", { "opacity-25": !s.column.filter.value }]),
 				disabled: !s.column.filter.value,
 				onClick: n[24] ||= (e) => {
 					s.column.filter.value = void 0, s.reloadTable();
 				}
-			}, [...n[29] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, YR)
+			}, [...n[29] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, tz)
 		])) : r("", !0),
 		s.column.filter && s.column.filter.buttons ? (_(), i("span", {
 			key: 4,
@@ -23888,19 +23899,19 @@ function ZR(t, n, s, c, l, u) {
 			button: e,
 			column: s.column,
 			table: s.table
-		})]) }, null, 2), o(" " + x(u.translate(e.title)), 1)], 10, XR)]))), 128))], 2)) : r("", !0)
+		})]) }, null, 2), o(" " + x(u.translate(e.title)), 1)], 10, nz)]))), 128))], 2)) : r("", !0)
 	]);
 }
-var QR = /*#__PURE__*/ gA(fR, [["render", ZR]]), $R = Mc(), ez = {
+var iz = /*#__PURE__*/ gA(vR, [["render", rz]]), az = Mc(), oz = {
 	name: "VuAdminTable",
 	props: {
 		settings: Object,
 		auth: Object
 	},
 	components: {
-		VuAdminForm: PL,
-		VuAdminTablePagination: dR,
-		VuAdminTableFilterField: QR
+		VuAdminForm: BL,
+		VuAdminTablePagination: _R,
+		VuAdminTableFilterField: iz
 	},
 	data() {
 		return {
@@ -24015,17 +24026,17 @@ var QR = /*#__PURE__*/ gA(fR, [["render", ZR]]), $R = Mc(), ez = {
 			return this.settings.initialized && this.auth && this.auth.success && this.settings && this.settings.table;
 		},
 		sendEvent(e, t, n) {
-			$R.emit(e + "-" + t, {
+			az.emit(e + "-" + t, {
 				from: this.settings.entity,
 				payload: n
 			});
 		},
 		listenEvent() {
-			if ($R.on(`EDIT-${this.settings.entity}`, (e) => {
+			if (az.on(`EDIT-${this.settings.entity}`, (e) => {
 				this.editItem(e.payload.item);
 			}), this.settings.table && this.settings.table.filterListen) {
 				let e = this.settings.table.filterListen, t = `FILTER-${this.settings.entity}`;
-				this._filterListenerRegistered ||= ($R.on(t, (t) => {
+				this._filterListenerRegistered ||= (az.on(t, (t) => {
 					if (t.from === e.entity && t.payload) {
 						let { field: e, value: n } = t.payload, r = this.settings.table.columns.find((t) => t.name === e);
 						r && r.filter && (r.filter.value = n, r.filter.operator = r.filter.default_operator || "=", this.reloadTable());
@@ -24654,130 +24665,130 @@ var QR = /*#__PURE__*/ gA(fR, [["render", ZR]]), $R = Mc(), ez = {
 			for (let n of e) if (n.convert && n.convert.out) for (let e of t) e[n.name] = n.convert.out(e[n.name], e, n);
 		}
 	}
-}, tz = ["data-bs-theme"], nz = { class: "vua-table-title" }, rz = { class: "d-flex align-items-center justify-content-between" }, iz = { class: "d-inline-block" }, az = {
+}, sz = ["data-bs-theme"], cz = { class: "vua-table-title" }, lz = { class: "d-flex align-items-center justify-content-between" }, uz = { class: "d-inline-block" }, dz = {
 	key: 0,
 	class: "card-title d-inline-block mb-2"
-}, oz = {
+}, fz = {
 	class: "spinner-border spinner-border-sm mx-2",
 	role: "status"
-}, sz = { class: "visually-hidden" }, cz = {
+}, pz = { class: "visually-hidden" }, mz = {
 	key: 0,
 	class: "d-inline-block"
-}, lz = {
+}, hz = {
 	key: 0,
 	class: "d-inline-block px-1 mx-1"
-}, uz = { class: "fw-bold" }, dz = { class: "dropdown d-inline-block" }, fz = ["innerHTML"], pz = { class: "dropdown-menu text-start" }, mz = { class: "me-2 text-muted" }, hz = { class: "fw-bold" }, gz = ["onClick"], _z = { class: "d-none d-md-inline" }, vz = {
+}, gz = { class: "fw-bold" }, _z = { class: "dropdown d-inline-block" }, vz = ["innerHTML"], yz = { class: "dropdown-menu text-start" }, bz = { class: "me-2 text-muted" }, xz = { class: "fw-bold" }, Sz = ["onClick"], Cz = { class: "d-none d-md-inline" }, wz = {
 	key: 1,
 	class: "dropdown d-inline-block"
-}, yz = { class: "mx-1" }, bz = { class: "d-none d-md-inline" }, xz = {
+}, Tz = { class: "mx-1" }, Ez = { class: "d-none d-md-inline" }, Dz = {
 	key: 0,
 	class: "badge text-bg-secondary ms-1"
-}, Sz = { class: "dropdown-menu" }, Cz = ["onClick"], wz = {
+}, Oz = { class: "dropdown-menu" }, kz = ["onClick"], Az = {
 	key: 0,
 	class: "bi bi-check-square-fill me-2"
-}, Tz = {
+}, jz = {
 	key: 1,
 	class: "bi bi-x-square me-2 text-danger"
-}, Ez = { class: "badge text-secondary fw-normal" }, Dz = { key: 0 }, Oz = { class: "badge text-bg-secondary ms-1" }, kz = {
+}, Mz = { class: "badge text-secondary fw-normal" }, Nz = { key: 0 }, Pz = { class: "badge text-bg-secondary ms-1" }, Fz = {
 	key: 2,
 	class: "dropdown d-inline-block"
-}, Az = { class: "mx-1" }, jz = { class: "d-none d-md-inline" }, Mz = { class: "dropdown-menu" }, Nz = ["onClick"], Pz = { class: "d-none d-md-inline" }, Fz = {
+}, Iz = { class: "mx-1" }, Lz = { class: "d-none d-md-inline" }, Rz = { class: "dropdown-menu" }, zz = ["onClick"], Bz = { class: "d-none d-md-inline" }, Vz = {
 	key: 0,
 	class: "badge text-bg-secondary ms-1"
-}, Iz = { class: "vua-table-header" }, Lz = ["data-collapsed", "width"], Rz = ["title", "onClick"], zz = ["onClick"], Bz = ["innerHTML"], Vz = {
+}, Hz = { class: "vua-table-header" }, Uz = ["data-collapsed", "width"], Wz = ["title", "onClick"], Gz = ["onClick"], Kz = ["innerHTML"], qz = {
 	key: 0,
 	class: "bi bi-arrow-down"
-}, Hz = {
+}, Jz = {
 	key: 1,
 	class: "bi bi-arrow-up"
-}, Uz = { key: 1 }, Wz = ["disabled", "onClick"], Gz = {
+}, Yz = { key: 1 }, Xz = ["disabled", "onClick"], Zz = {
 	key: 0,
 	class: "vua-table-filter"
-}, Kz = ["data-collapsed", "width"], qz = {
+}, Qz = ["data-collapsed", "width"], $z = {
 	key: 0,
 	class: "d-inline-block w-100 px-1"
-}, Jz = { class: "bi bi-check-all" }, Yz = { class: "bi bi-x-lg" }, Xz = { class: "align-middle" }, Zz = [
+}, eB = { class: "bi bi-check-all" }, tB = { class: "bi bi-x-lg" }, nB = { class: "align-middle" }, rB = [
 	"data-collapsed",
 	"data-label",
 	"width",
 	"onClick"
-], Qz = {
+], iB = {
 	key: 0,
 	class: "d-inline-block w-100 px-1"
-}, $z = ["innerHTML"], eB = { key: 1 }, tB = ["innerHTML"], nB = [
+}, aB = ["innerHTML"], oB = { key: 1 }, sB = ["innerHTML"], cB = [
 	"aria-label",
 	"aria-valuenow",
 	"aria-valuemax"
-], rB = { key: 0 }, iB = {
+], lB = { key: 0 }, uB = {
 	key: 4,
 	class: "input-group input-group-sm"
-}, aB = ["innerHTML"], oB = {
+}, dB = ["innerHTML"], fB = {
 	key: 1,
-	class: "input-group-text"
-}, sB = [
-	"name",
-	"onUpdate:modelValue",
-	"onChange"
-], cB = [
-	"type",
-	"onChange",
-	"onUpdate:modelValue"
-], lB = ["onChange", "onUpdate:modelValue"], uB = ["value"], dB = ["innerHTML"], fB = {
-	key: 5,
 	class: "input-group-text"
 }, pB = [
 	"name",
 	"onUpdate:modelValue",
 	"onChange"
-], mB = { key: 5 }, hB = ["disabled", "onClick"], gB = ["innerHTML"], _B = { key: 2 }, vB = { key: 0 }, yB = ["colspan"], bB = { class: "row g-3 align-items-center" }, xB = { class: "col-form-label" }, SB = [
+], mB = [
+	"type",
+	"onChange",
+	"onUpdate:modelValue"
+], hB = ["onChange", "onUpdate:modelValue"], gB = ["value"], _B = ["innerHTML"], vB = {
+	key: 5,
+	class: "input-group-text"
+}, yB = [
+	"name",
+	"onUpdate:modelValue",
+	"onChange"
+], bB = { key: 5 }, xB = ["disabled", "onClick"], SB = ["innerHTML"], CB = { key: 2 }, wB = { key: 0 }, TB = ["colspan"], EB = { class: "row g-3 align-items-center" }, DB = { class: "col-form-label" }, OB = [
 	"type",
 	"onUpdate:modelValue",
 	"onChange"
-], CB = ["onUpdate:modelValue", "onChange"], wB = ["onUpdate:modelValue", "onChange"], TB = ["value"], EB = ["innerHTML"], DB = {
+], kB = ["onUpdate:modelValue", "onChange"], AB = ["onUpdate:modelValue", "onChange"], jB = ["value"], MB = ["innerHTML"], NB = {
 	key: 0,
 	class: "bg-light text-dark"
-}, OB = {
+}, PB = {
 	key: 0,
 	class: "vua-table-bulk border-info"
-}, kB = [
+}, FB = [
 	"data-collapsed",
 	"data-label",
 	"width"
-], AB = {
+], IB = {
 	key: 0,
 	class: "d-inline-block w-100 px-1"
-}, jB = {
+}, LB = {
 	key: 1,
 	class: "input-group input-group-sm my-1"
-}, MB = [
+}, RB = [
 	"type",
 	"disabled",
 	"onChange",
 	"onUpdate:modelValue"
-], NB = [
+], zB = [
 	"disabled",
 	"onChange",
 	"onUpdate:modelValue"
-], PB = ["value"], FB = ["onClick"], IB = {
+], BB = ["value"], VB = ["onClick"], HB = {
 	key: 0,
 	class: "bi bi-square text-secondary"
-}, LB = {
+}, UB = {
 	key: 1,
 	class: "bi bi-check-square"
-}, RB = { key: 2 }, zB = ["disabled", "onClick"], BB = ["innerHTML"], VB = { key: 2 }, HB = ["id"], UB = { class: "modal-dialog modal-xl" }, WB = { class: "modal-content h-100" }, GB = ["id"], KB = { class: "modal-dialog modal-dialog-scrollable" }, qB = {
+}, WB = { key: 2 }, GB = ["disabled", "onClick"], KB = ["innerHTML"], qB = { key: 2 }, JB = ["id"], YB = { class: "modal-dialog modal-xl" }, XB = { class: "modal-content h-100" }, ZB = ["id"], QB = { class: "modal-dialog modal-dialog-scrollable" }, $B = {
 	key: 0,
 	class: "modal-content"
-}, JB = { class: "modal-header" }, YB = { class: "modal-title" }, XB = ["aria-label"], ZB = { class: "modal-body" }, QB = { class: "text-secondary text-uppercase small mb-2" }, $B = { class: "form-label small fw-bold mb-1" }, eV = { class: "text-secondary text-uppercase small mb-2" }, tV = { class: "list-group mb-4" }, nV = ["onClick"], rV = ["innerHTML"], iV = {
+}, eV = { class: "modal-header" }, tV = { class: "modal-title" }, nV = ["aria-label"], rV = { class: "modal-body" }, iV = { class: "text-secondary text-uppercase small mb-2" }, aV = { class: "form-label small fw-bold mb-1" }, oV = { class: "text-secondary text-uppercase small mb-2" }, sV = { class: "list-group mb-4" }, cV = ["onClick"], lV = ["innerHTML"], uV = {
 	key: 0,
 	class: "bi bi-arrow-down"
-}, aV = {
+}, dV = {
 	key: 1,
 	class: "bi bi-arrow-up"
-}, oV = { class: "text-secondary text-uppercase small mb-2" }, sV = {
+}, fV = { class: "text-secondary text-uppercase small mb-2" }, pV = {
 	class: "btn-group flex-wrap mb-2",
 	role: "group"
-}, cV = ["onClick"], lV = { class: "modal-footer d-flex justify-content-between" };
-function uV(t, c, l, u, d, f) {
+}, mV = ["onClick"], hV = { class: "modal-footer d-flex justify-content-between" };
+function gV(t, c, l, u, d, f) {
 	let p = b("VuAdminTableFilterField"), g = b("VuAdminTablePagination"), v = b("VuAdminForm");
 	return _(), i("div", null, [
 		f.authAndSettings() ? (_(), i("div", {
@@ -24786,13 +24797,13 @@ function uV(t, c, l, u, d, f) {
 			"data-bs-theme": [l.settings.theme]
 		}, [
 			a("div", { class: m(["vua-overlay", { blocked: d.ui.block.table }]) }, null, 2),
-			a("div", nz, [a("div", rz, [a("div", iz, [l.settings.table.title ? (_(), i("h5", az, x(f.translate(l.settings.table.title)), 1)) : r("", !0), D(a("div", oz, [a("span", sz, x(f.translate("Loading...")), 1)], 512), [[ee, d.ui.wait.table && l.settings.table.title]])]), d.messages.table.length ? (_(), i("div", cz, [d.message.table ? (_(), i("small", lz, [a("span", { class: m(["text-" + d.message.table.priority]) }, [a("span", uz, x(d.message.table.msg), 1)], 2)])) : r("", !0), a("div", dz, [a("button", {
+			a("div", cz, [a("div", lz, [a("div", uz, [l.settings.table.title ? (_(), i("h5", dz, x(f.translate(l.settings.table.title)), 1)) : r("", !0), D(a("div", fz, [a("span", pz, x(f.translate("Loading...")), 1)], 512), [[ee, d.ui.wait.table && l.settings.table.title]])]), d.messages.table.length ? (_(), i("div", mz, [d.message.table ? (_(), i("small", hz, [a("span", { class: m(["text-" + d.message.table.priority]) }, [a("span", gz, x(d.message.table.msg), 1)], 2)])) : r("", !0), a("div", _z, [a("button", {
 				class: m(["btn btn-sm dropdown-toggle", ["btn-" + d.messages.table[0].priority]]),
 				type: "button",
 				"data-bs-toggle": "dropdown",
 				"aria-expanded": "false",
 				innerHTML: d.messages.table.length + " " + (d.messages.table.length > 1 ? f.translate("messages") : f.translate("message"))
-			}, null, 10, fz), a("ul", pz, [(_(!0), i(e, null, y(d.messages.table, (e) => (_(), i("li", { key: e }, [a("span", { class: m(["dropdown-item", ["text-" + e.priority]]) }, [a("small", mz, x(e.datetime), 1), a("span", hz, x(e.msg), 1)], 2)]))), 128))])])])) : r("", !0)])]),
+			}, null, 10, vz), a("ul", yz, [(_(!0), i(e, null, y(d.messages.table, (e) => (_(), i("li", { key: e }, [a("span", { class: m(["dropdown-item", ["text-" + e.priority]]) }, [a("small", bz, x(e.datetime), 1), a("span", xz, x(e.msg), 1)], 2)]))), 128))])])])) : r("", !0)])]),
 			l.settings.table.control ? (_(), i("div", {
 				key: 0,
 				class: m(["vua-table-control", [l.settings.table.control.class]])
@@ -24808,30 +24819,30 @@ function uV(t, c, l, u, d, f) {
 				}, [a("i", { class: m(f.buttonIconClass(t.icon === void 0 ? f.getButtonIconClassByAction(t.action) : f.getValueOrFunction(t.icon, {
 					button: t,
 					table: this
-				}))) }, null, 2), a("span", _z, x(f.translate(t.title)), 1)], 10, gz)) : r("", !0),
-				t.action === "TABLE_COLUMNS" ? (_(), i("div", vz, [a("button", {
+				}))) }, null, 2), a("span", Cz, x(f.translate(t.title)), 1)], 10, Sz)) : r("", !0),
+				t.action === "TABLE_COLUMNS" ? (_(), i("div", wz, [a("button", {
 					type: "button",
 					class: m([[t.class ? t.class : f.getButtonClassByAction(t.action)], "dropdown-toggle"]),
 					"data-bs-toggle": "dropdown",
 					"data-bs-auto-close": "outside",
 					"aria-expanded": "false"
-				}, [D(a("span", yz, [
+				}, [D(a("span", Tz, [
 					a("i", { class: m(f.buttonIconClass(t.icon === void 0 ? f.getButtonIconClassByAction(t.action) : f.getValueOrFunction(t.icon, {
 						button: t,
 						table: this
 					}))) }, null, 2),
-					a("span", bz, x(f.translate(t.title)), 1),
-					f.countHiddenColumns() ? (_(), i("span", xz, x(f.countHiddenColumns()), 1)) : r("", !0)
-				], 512), [[ee, l.settings.table.columns.length > 0]])], 2), a("ul", Sz, [
+					a("span", Ez, x(f.translate(t.title)), 1),
+					f.countHiddenColumns() ? (_(), i("span", Dz, x(f.countHiddenColumns()), 1)) : r("", !0)
+				], 512), [[ee, l.settings.table.columns.length > 0]])], 2), a("ul", Oz, [
 					(_(!0), i(e, null, y(l.settings.table.columns, (e) => (_(), i("li", { key: e }, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: (t) => f.toggleColumn(e)
 					}, [
-						e.hidden ? r("", !0) : (_(), i("i", wz)),
-						e.hidden ? (_(), i("i", Tz)) : r("", !0),
+						e.hidden ? r("", !0) : (_(), i("i", Az)),
+						e.hidden ? (_(), i("i", jz)) : r("", !0),
 						o(" " + x(f.translate(e.title || e.name)) + " ", 1),
-						a("small", Ez, x(e.name), 1)
-					], 8, Cz)]))), 128)),
+						a("small", Mz, x(e.name), 1)
+					], 8, kz)]))), 128)),
 					c[10] ||= a("li", null, [a("hr", { class: "dropdown-divider" })], -1),
 					a("li", null, [a("span", {
 						class: "dropdown-item cursor-pointer",
@@ -24841,29 +24852,29 @@ function uV(t, c, l, u, d, f) {
 						class: "dropdown-item cursor-pointer",
 						onClick: c[1] ||= (e) => f.toggleColumn(!1)
 					}, x(f.translate("Hidden all")), 1)]),
-					f.countCollapsedColumns() ? (_(), i("li", Dz, [a("span", {
+					f.countCollapsedColumns() ? (_(), i("li", Nz, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: c[2] ||= (e) => f.expandAllColumns()
-					}, [o(x(f.translate("Expand all")) + " ", 1), a("span", Oz, x(f.countCollapsedColumns()), 1)])])) : r("", !0),
+					}, [o(x(f.translate("Expand all")) + " ", 1), a("span", Pz, x(f.countCollapsedColumns()), 1)])])) : r("", !0),
 					a("li", null, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: c[3] ||= (e) => f.resetColumnState()
 					}, x(f.translate("Reset")), 1)])
 				])])) : r("", !0),
-				t.dropdowns ? (_(), i("div", kz, [a("button", {
+				t.dropdowns ? (_(), i("div", Fz, [a("button", {
 					type: "button",
 					class: m([[t.class], "dropdown-toggle"]),
 					"data-bs-toggle": "dropdown",
 					"data-bs-auto-close": "outside",
 					"aria-expanded": "false"
-				}, [a("span", Az, [
+				}, [a("span", Iz, [
 					a("i", { class: m(f.buttonIconClass(t.icon === void 0 ? f.getButtonIconClassByAction(t.action) : f.getValueOrFunction(t.icon, {
 						button: t,
 						table: this
 					}))) }, null, 2),
 					c[11] ||= o(),
-					a("span", jz, x(f.translate(t.title)), 1)
-				])], 2), a("ul", Mz, [(_(!0), i(e, null, y(t.dropdowns, (e) => (_(), i("li", { key: e }, [a("span", {
+					a("span", Lz, x(f.translate(t.title)), 1)
+				])], 2), a("ul", Rz, [(_(!0), i(e, null, y(t.dropdowns, (e) => (_(), i("li", { key: e }, [a("span", {
 					class: m(["dropdown-item cursor-pointer", [e.class]]),
 					onClick: (t) => f.tableAction(e, {
 						items: d.items,
@@ -24872,7 +24883,7 @@ function uV(t, c, l, u, d, f) {
 				}, [e.icon ? (_(), i("i", {
 					key: 0,
 					class: m(f.buttonIconClass(e.icon))
-				}, null, 2)) : r("", !0), o(" " + x(f.translate(e.title)), 1)], 10, Nz)]))), 128))])])) : r("", !0)
+				}, null, 2)) : r("", !0), o(" " + x(f.translate(e.title)), 1)], 10, zz)]))), 128))])])) : r("", !0)
 			]))), 128)), f.filterableColumns().length || f.sortableColumns().length || d.config.pagination.limits && d.config.pagination.limits.length ? (_(), i("button", {
 				key: 0,
 				type: "button",
@@ -24880,14 +24891,14 @@ function uV(t, c, l, u, d, f) {
 				onClick: c[4] ||= (e) => f.openMobileFilters()
 			}, [
 				c[12] ||= a("i", { class: "bi bi-funnel me-1" }, null, -1),
-				a("span", Pz, x(f.translate("Filter / Sort")), 1),
-				f.countActiveFilters() + f.countActiveSort() > 0 ? (_(), i("span", Fz, x(f.countActiveFilters() + f.countActiveSort()), 1)) : r("", !0)
+				a("span", Bz, x(f.translate("Filter / Sort")), 1),
+				f.countActiveFilters() + f.countActiveSort() > 0 ? (_(), i("span", Vz, x(f.countActiveFilters() + f.countActiveSort()), 1)) : r("", !0)
 			])) : r("", !0)], 2)) : r("", !0),
 			l.settings.table ? (_(), i("table", {
 				key: 1,
 				class: m(["table vua-table vua-table-responsive mb-0", [l.settings.table.class]])
 			}, [
-				a("thead", null, [a("tr", Iz, [(_(!0), i(e, null, y(l.settings.table.columns, (t) => (_(), i("th", {
+				a("thead", null, [a("tr", Hz, [(_(!0), i(e, null, y(l.settings.table.columns, (t) => (_(), i("th", {
 					class: m(["", [t.header ? t.header.class : ""]]),
 					style: h([t.hidden ? "display: none" : ""]),
 					"data-collapsed": t.collapsed || null,
@@ -24900,19 +24911,19 @@ function uV(t, c, l, u, d, f) {
 						class: "btn btn-sm vua-col-toggle p-0 me-1",
 						title: f.translate(t.collapsed ? "Expand column" : "Collapse column"),
 						onClick: O((e) => f.toggleCollapseColumn(t), ["stop"])
-					}, [a("i", { class: m(["bi", t.collapsed ? "bi-arrows-expand-vertical" : "bi-arrows-collapse-vertical"]) }, null, 2)], 8, Rz)) : r("", !0),
+					}, [a("i", { class: m(["bi", t.collapsed ? "bi-arrows-expand-vertical" : "bi-arrows-collapse-vertical"]) }, null, 2)], 8, Wz)) : r("", !0),
 					a("span", {
 						class: m(["d-inline-block no-select text-nowrap", { "cursor-pointer": f.isSortable(t) }]),
 						onClick: (e) => f.sortTable(t)
-					}, [a("span", { innerHTML: t.header && t.header.title !== void 0 ? f.translate(t.header.title) : t.title ? f.translate(t.title) : f.translate(t.name) }, null, 8, Bz), d.config.order[t.name] ? (_(), i("span", {
+					}, [a("span", { innerHTML: t.header && t.header.title !== void 0 ? f.translate(t.header.title) : t.title ? f.translate(t.title) : f.translate(t.name) }, null, 8, Kz), d.config.order[t.name] ? (_(), i("span", {
 						key: 0,
 						class: m(["badge text-bg-light ms-1 p-badge", { "opacity-50": d.config.order[t.name].fixed }])
 					}, [
-						d.config.order[t.name].dir === "ASC" ? (_(), i("i", Vz)) : r("", !0),
-						d.config.order[t.name].dir === "DESC" ? (_(), i("i", Hz)) : r("", !0),
+						d.config.order[t.name].dir === "ASC" ? (_(), i("i", qz)) : r("", !0),
+						d.config.order[t.name].dir === "DESC" ? (_(), i("i", Jz)) : r("", !0),
 						o(" " + x(d.config.order[t.name].idx + 1), 1)
-					], 2)) : r("", !0)], 10, zz),
-					t.header && t.header.buttons ? (_(), i("span", Uz, [(_(!0), i(e, null, y(t.header.buttons, (e) => (_(), i("button", {
+					], 2)) : r("", !0)], 10, Gz),
+					t.header && t.header.buttons ? (_(), i("span", Yz, [(_(!0), i(e, null, y(t.header.buttons, (e) => (_(), i("button", {
 						key: e.action,
 						type: "button",
 						disabled: e.disabled === void 0 ? null : f.getValueOrFunction(e.disabled),
@@ -24925,17 +24936,17 @@ function uV(t, c, l, u, d, f) {
 						button: e,
 						column: t,
 						table: this
-					}))) }, null, 2), o(" " + x(f.translate(e.title)), 1)], 10, Wz))), 128))])) : r("", !0)
-				], 14, Lz))), 128))]), f.countFilters() ? (_(), i("tr", Gz, [(_(!0), i(e, null, y(l.settings.table.columns, (e) => (_(), i("th", {
+					}))) }, null, 2), o(" " + x(f.translate(e.title)), 1)], 10, Xz))), 128))])) : r("", !0)
+				], 14, Uz))), 128))]), f.countFilters() ? (_(), i("tr", Zz, [(_(!0), i(e, null, y(l.settings.table.columns, (e) => (_(), i("th", {
 					style: h([e.hidden ? "display: none" : ""]),
 					"data-collapsed": e.collapsed || null,
 					key: e,
 					width: e.collapsed ? null : e.width,
 					class: m([e.filter ? e.filter.class : ""])
-				}, [e.index && e.click ? (_(), i("div", qz, [a("span", {
+				}, [e.index && e.click ? (_(), i("div", $z, [a("span", {
 					class: m(["cursor-pointer badge border badge-index-toggle py-1 px-2 me-1 my-2 w-100", { active: f.haveSelectedRowInPage() }]),
 					onClick: c[5] ||= (e) => f.toggleSelectedRowInPage()
-				}, [D(a("i", Jz, null, 512), [[ee, !f.haveSelectedRowInPage()]]), D(a("i", Yz, null, 512), [[ee, f.haveSelectedRowInPage()]])], 2)])) : r("", !0), e.filter ? (_(), n(p, {
+				}, [D(a("i", eB, null, 512), [[ee, !f.haveSelectedRowInPage()]]), D(a("i", tB, null, 512), [[ee, f.haveSelectedRowInPage()]])], 2)])) : r("", !0), e.filter ? (_(), n(p, {
 					key: 1,
 					column: e,
 					settings: l.settings,
@@ -24949,8 +24960,8 @@ function uV(t, c, l, u, d, f) {
 					"items",
 					"reload-table",
 					"table-action"
-				])) : r("", !0)], 14, Kz))), 128))])) : r("", !0)]),
-				a("tbody", null, [(_(!0), i(e, null, y(this.items, (t, n) => (_(), i(e, { key: t.id }, [a("tr", Xz, [(_(!0), i(e, null, y(l.settings.table.columns, (o) => (_(), i("td", {
+				])) : r("", !0)], 14, Qz))), 128))])) : r("", !0)]),
+				a("tbody", null, [(_(!0), i(e, null, y(this.items, (t, n) => (_(), i(e, { key: t.id }, [a("tr", nB, [(_(!0), i(e, null, y(l.settings.table.columns, (o) => (_(), i("td", {
 					style: h([o.hidden ? "display: none" : ""]),
 					"data-collapsed": o.collapsed || null,
 					key: o.name,
@@ -24966,15 +24977,15 @@ function uV(t, c, l, u, d, f) {
 						$event: e
 					})
 				}, [
-					o.index ? (_(), i("div", Qz, [a("span", {
+					o.index ? (_(), i("div", iB, [a("span", {
 						class: m(["cursor-pointer badge border badge-index p-1 w-100", { selected: d.selected.indexOf(t[l.settings.pkey]) >= 0 }]),
 						innerHTML: n + 1 + (d.config.pagination.page - 1) * d.config.pagination.limit
-					}, null, 10, $z)])) : r("", !0),
-					!o.template && !o.input && !o.progressbar ? (_(), i("span", eB, x(f.tableCellValue(o.name, t, n, o)), 1)) : r("", !0),
+					}, null, 10, aB)])) : r("", !0),
+					!o.template && !o.input && !o.progressbar ? (_(), i("span", oB, x(f.tableCellValue(o.name, t, n, o)), 1)) : r("", !0),
 					o.template ? (_(), i("span", {
 						key: 2,
 						innerHTML: f.tableCellTemplate(o.template, t, n, o)
-					}, null, 8, tB)) : r("", !0),
+					}, null, 8, sB)) : r("", !0),
 					o.progressbar ? (_(), i("div", {
 						key: 3,
 						class: "progress",
@@ -24985,8 +24996,8 @@ function uV(t, c, l, u, d, f) {
 					}, [a("div", {
 						class: m(["progress-bar", [o.progressbar.class]]),
 						style: h({ width: Math.round(t[o.name] / o.progressbar.max * 100) + "%" })
-					}, [o.progressbar.value ? (_(), i("span", rB, x(t[o.name]), 1)) : r("", !0)], 6)], 8, nB)) : r("", !0),
-					o.input ? (_(), i("div", iB, [
+					}, [o.progressbar.value ? (_(), i("span", lB, x(t[o.name]), 1)) : r("", !0)], 6)], 8, cB)) : r("", !0),
+					o.input ? (_(), i("div", uB, [
 						o.input.prefix ? (_(), i("span", {
 							key: 0,
 							class: "input-group-text",
@@ -24994,14 +25005,14 @@ function uV(t, c, l, u, d, f) {
 								column: o,
 								item: t
 							})
-						}, null, 8, aB)) : r("", !0),
-						o.input.prefixcheck ? (_(), i("span", oB, [D(a("input", {
+						}, null, 8, dB)) : r("", !0),
+						o.input.prefixcheck ? (_(), i("span", fB, [D(a("input", {
 							class: "form-check p-0 m-0",
 							type: "checkbox",
 							name: o.input.prefixcheck.name,
 							"onUpdate:modelValue": (e) => t[o.input.prefixcheck.name] = e,
 							onChange: (e) => f.onRowInputChange(t[o.input.prefixcheck.name], o, t, n)
-						}, null, 40, sB), [[C, t[o.input.prefixcheck.name]]])])) : r("", !0),
+						}, null, 40, pB), [[C, t[o.input.prefixcheck.name]]])])) : r("", !0),
 						[
 							"text",
 							"number",
@@ -25016,7 +25027,7 @@ function uV(t, c, l, u, d, f) {
 							})]),
 							onChange: (e) => f.onRowInputChange(t[o.name], o, t, n),
 							"onUpdate:modelValue": (e) => t[o.name] = e
-						}, null, 42, cB)), [[w, t[o.name]]]) : r("", !0),
+						}, null, 42, mB)), [[w, t[o.name]]]) : r("", !0),
 						o.input.type == "select" ? D((_(), i("select", {
 							key: 3,
 							class: m(["form-select form-select-sm pe-0", f.getValueOrFunction(o.input.class, {
@@ -25028,7 +25039,7 @@ function uV(t, c, l, u, d, f) {
 						}, [(_(!0), i(e, null, y(o.input.options, (e) => (_(), i("option", {
 							value: e.value,
 							key: e
-						}, x(f.translate(e.label)), 9, uB))), 128))], 42, lB)), [[T, t[o.name]]]) : r("", !0),
+						}, x(f.translate(e.label)), 9, gB))), 128))], 42, hB)), [[T, t[o.name]]]) : r("", !0),
 						o.input.suffix ? (_(), i("span", {
 							key: 4,
 							class: "input-group-text",
@@ -25036,16 +25047,16 @@ function uV(t, c, l, u, d, f) {
 								column: o,
 								item: t
 							})
-						}, null, 8, dB)) : r("", !0),
-						o.input.suffixcheck ? (_(), i("span", fB, [D(a("input", {
+						}, null, 8, _B)) : r("", !0),
+						o.input.suffixcheck ? (_(), i("span", vB, [D(a("input", {
 							class: "form-check p-0 m-0",
 							type: "checkbox",
 							name: o.input.suffixcheck.name,
 							"onUpdate:modelValue": (e) => t[o.input.suffixcheck.name] = e,
 							onChange: (e) => f.onRowInputChange(t[o.input.suffixcheck.name], o, t, n)
-						}, null, 40, pB), [[C, t[o.input.suffixcheck.name]]])])) : r("", !0)
+						}, null, 40, yB), [[C, t[o.input.suffixcheck.name]]])])) : r("", !0)
 					])) : r("", !0),
-					o.buttons ? (_(), i("span", mB, [(_(!0), i(e, null, y(o.buttons, (e) => (_(), i("span", { key: e.action }, [e.hidden ? r("", !0) : (_(), i("button", {
+					o.buttons ? (_(), i("span", bB, [(_(!0), i(e, null, y(o.buttons, (e) => (_(), i("span", { key: e.action }, [e.hidden ? r("", !0) : (_(), i("button", {
 						key: 0,
 						type: "button",
 						disabled: e.disabled === void 0 ? null : f.getValueOrFunction(e.disabled),
@@ -25072,29 +25083,29 @@ function uV(t, c, l, u, d, f) {
 					}, null, 2)), e.template ? (_(), i("span", {
 						key: 1,
 						innerHTML: f.tableCellTemplate(e.template, t, n, o)
-					}, null, 8, gB)) : (_(), i("span", _B, x(f.translate(e.title)), 1))], 10, hB))]))), 128))])) : r("", !0)
-				], 14, Zz))), 128))]), l.settings.table.details && d.details.indexOf(t[l.settings.pkey]) >= 0 ? (_(), i("tr", vB, [a("td", {
+					}, null, 8, SB)) : (_(), i("span", CB, x(f.translate(e.title)), 1))], 10, xB))]))), 128))])) : r("", !0)
+				], 14, rB))), 128))]), l.settings.table.details && d.details.indexOf(t[l.settings.pkey]) >= 0 ? (_(), i("tr", wB, [a("td", {
 					class: m([l.settings.table.details.class]),
 					colspan: l.settings.table.columns.length
 				}, [
 					(_(!0), i(e, null, y(l.settings.table.details.fields, (o) => (_(), i("div", {
 						class: "m-0",
 						key: o
-					}, [a("div", bB, [a("div", { class: m(["col-12 col-md text-md-end", [o.class]]) }, [a("label", xB, x(f.translate(o.label)), 1)], 2), a("div", { class: m(["col-12 col-md", [o.input.class]]) }, [
+					}, [a("div", EB, [a("div", { class: m(["col-12 col-md text-md-end", [o.class]]) }, [a("label", DB, x(f.translate(o.label)), 1)], 2), a("div", { class: m(["col-12 col-md", [o.input.class]]) }, [
 						["select", "textarea"].indexOf(o.input.type) < 0 ? D((_(), i("input", {
 							key: 0,
 							type: o.input.type,
 							class: "form-control form-control-sm",
 							"onUpdate:modelValue": (e) => t[o.name] = e,
 							onChange: (e) => f.onRowInputChange(t[o.name], o, t, n)
-						}, null, 40, SB)), [[w, t[o.name]]]) : r("", !0),
+						}, null, 40, OB)), [[w, t[o.name]]]) : r("", !0),
 						o.input.type == "textarea" ? D((_(), i("textarea", {
 							key: 1,
 							class: "form-control form-control-sm",
 							rows: "3",
 							"onUpdate:modelValue": (e) => t[o.name] = e,
 							onChange: (e) => f.onRowInputChange(t[o.name], o, t, n)
-						}, "\r\n                    ", 40, CB)), [[E, t[o.name]]]) : r("", !0),
+						}, "\r\n                    ", 40, kB)), [[E, t[o.name]]]) : r("", !0),
 						o.input.type == "select" ? D((_(), i("select", {
 							key: 2,
 							class: "form-select form-select-sm pe-0",
@@ -25103,12 +25114,12 @@ function uV(t, c, l, u, d, f) {
 						}, [(_(!0), i(e, null, y(o.input.options, (e) => (_(), i("option", {
 							value: e.value,
 							key: e
-						}, x(f.translate(e.label)), 9, TB))), 128))], 40, wB)), [[T, t[o.name]]]) : r("", !0)
+						}, x(f.translate(e.label)), 9, jB))), 128))], 40, AB)), [[T, t[o.name]]]) : r("", !0)
 					], 2)])]))), 128)),
-					a("span", { innerHTML: l.settings.table.details.raw(t) }, null, 8, EB),
-					l.settings.debug > 1 ? (_(), i("pre", DB, "                  " + x(t) + "\n                ", 1)) : r("", !0)
-				], 10, yB)])) : r("", !0)], 64))), 128))]),
-				a("tfoot", null, [d.selected.length > 0 ? (_(), i("tr", OB, [(_(!0), i(e, null, y(l.settings.table.columns, (t) => (_(), i("td", {
+					a("span", { innerHTML: l.settings.table.details.raw(t) }, null, 8, MB),
+					l.settings.debug > 1 ? (_(), i("pre", NB, "                  " + x(t) + "\n                ", 1)) : r("", !0)
+				], 10, TB)])) : r("", !0)], 64))), 128))]),
+				a("tfoot", null, [d.selected.length > 0 ? (_(), i("tr", PB, [(_(!0), i(e, null, y(l.settings.table.columns, (t) => (_(), i("td", {
 					style: h([t.hidden ? "display: none" : ""]),
 					"data-collapsed": t.collapsed || null,
 					key: t.name,
@@ -25116,11 +25127,11 @@ function uV(t, c, l, u, d, f) {
 					width: t.collapsed ? null : t.width,
 					class: m(t.class)
 				}, [
-					t.index ? (_(), i("div", AB, [a("span", {
+					t.index ? (_(), i("div", IB, [a("span", {
 						class: "cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100",
 						onClick: c[6] ||= (e) => f.toggleSelectedAll()
 					}, x(d.selected.length), 1)])) : r("", !0),
-					t.input && t.bulk && t.bulk.enabled ? (_(), i("div", jB, [
+					t.input && t.bulk && t.bulk.enabled ? (_(), i("div", LB, [
 						[
 							"text",
 							"number",
@@ -25133,7 +25144,7 @@ function uV(t, c, l, u, d, f) {
 							disabled: d.bulkinputs.indexOf(t.name) < 0,
 							onChange: (e) => f.onBulkInputChange(d.bulkitem[t.name], d.bulkitem, t),
 							"onUpdate:modelValue": (e) => d.bulkitem[t.name] = e
-						}, null, 42, MB)), [[w, d.bulkitem[t.name]]]) : r("", !0),
+						}, null, 42, RB)), [[w, d.bulkitem[t.name]]]) : r("", !0),
 						t.input.type == "select" ? D((_(), i("select", {
 							key: 1,
 							class: m(["form-select form-select-sm pe-0", t.input.class]),
@@ -25143,13 +25154,13 @@ function uV(t, c, l, u, d, f) {
 						}, [(_(!0), i(e, null, y(t.input.options, (e) => (_(), i("option", {
 							value: e.value,
 							key: e
-						}, x(f.translate(e.label)), 9, PB))), 128))], 42, NB)), [[T, d.bulkitem[t.name]]]) : r("", !0),
+						}, x(f.translate(e.label)), 9, BB))), 128))], 42, zB)), [[T, d.bulkitem[t.name]]]) : r("", !0),
 						a("span", {
 							class: "input-group-text cursor-pointer",
 							onClick: (e) => f.ifBulkInputClick(t)
-						}, [d.bulkitem[t.name] === void 0 ? (_(), i("i", IB)) : (_(), i("i", LB))], 8, FB)
+						}, [d.bulkitem[t.name] === void 0 ? (_(), i("i", HB)) : (_(), i("i", UB))], 8, VB)
 					])) : r("", !0),
-					t.bulk ? (_(), i("span", RB, [(_(!0), i(e, null, y(t.bulk.buttons, (e) => (_(), i("span", { key: e.action }, [a("button", {
+					t.bulk ? (_(), i("span", WB, [(_(!0), i(e, null, y(t.bulk.buttons, (e) => (_(), i("span", { key: e.action }, [a("button", {
 						type: "button",
 						class: m([e.class ? e.class : f.getButtonClassByAction(e.action)]),
 						disabled: e.action === "save" && !this.bulkinputs.length,
@@ -25164,8 +25175,8 @@ function uV(t, c, l, u, d, f) {
 					}, null, 2)), e.template ? (_(), i("span", {
 						key: 1,
 						innerHTML: f.tableCellTemplate(e.template, d.bulkitem, null, t)
-					}, null, 8, BB)) : (_(), i("span", VB, x(f.translate(e.title)), 1))], 10, zB)]))), 128))])) : r("", !0)
-				], 14, kB))), 128))])) : r("", !0)])
+					}, null, 8, KB)) : (_(), i("span", qB, x(f.translate(e.title)), 1))], 10, GB)]))), 128))])) : r("", !0)
+				], 14, FB))), 128))])) : r("", !0)])
 			], 2)) : r("", !0),
 			s(g, {
 				settings: l.settings,
@@ -25182,12 +25193,12 @@ function uV(t, c, l, u, d, f) {
 				"onSetPageLimit",
 				"onTranslate"
 			])
-		], 10, tz)) : r("", !0),
+		], 10, sz)) : r("", !0),
 		a("div", {
 			class: "modal shadow",
 			id: d.modalId,
 			tabindex: "-1"
-		}, [a("div", UB, [a("div", WB, [f.authAndSettings() && l.settings.form.visible && l.settings.form.groups ? (_(), n(v, {
+		}, [a("div", YB, [a("div", XB, [f.authAndSettings() && l.settings.form.visible && l.settings.form.groups ? (_(), n(v, {
 			key: 0,
 			modelValue: d.item,
 			"onUpdate:modelValue": c[7] ||= (e) => d.item = e,
@@ -25211,23 +25222,23 @@ function uV(t, c, l, u, d, f) {
 			"reloadTable",
 			"fetchRelation",
 			"saveProgress"
-		])) : r("", !0)])])], 8, HB),
+		])) : r("", !0)])])], 8, JB),
 		a("div", {
 			class: "modal shadow vua-mobile-filter-modal",
 			id: d.mobileFilterModalId,
 			tabindex: "-1"
-		}, [a("div", KB, [f.authAndSettings() ? (_(), i("div", qB, [
-			a("div", JB, [a("h5", YB, x(f.translate("Filter / Sort")), 1), a("button", {
+		}, [a("div", QB, [f.authAndSettings() ? (_(), i("div", $B, [
+			a("div", eV, [a("h5", tV, x(f.translate("Filter / Sort")), 1), a("button", {
 				type: "button",
 				class: "btn-close",
 				"data-bs-dismiss": "modal",
 				"aria-label": f.translate("Close")
-			}, null, 8, XB)]),
-			a("div", ZB, [
-				f.filterableColumns().length ? (_(), i(e, { key: 0 }, [a("h6", QB, x(f.translate("Filters")), 1), (_(!0), i(e, null, y(f.filterableColumns(), (e) => (_(), i("div", {
+			}, null, 8, nV)]),
+			a("div", rV, [
+				f.filterableColumns().length ? (_(), i(e, { key: 0 }, [a("h6", iV, x(f.translate("Filters")), 1), (_(!0), i(e, null, y(f.filterableColumns(), (e) => (_(), i("div", {
 					class: "mb-3",
 					key: "filter_" + e.name
-				}, [a("label", $B, x(e.title ? f.translate(e.title) : f.translate(e.name)), 1), s(p, {
+				}, [a("label", aV, x(e.title ? f.translate(e.title) : f.translate(e.name)), 1), s(p, {
 					column: e,
 					settings: l.settings,
 					items: d.items,
@@ -25241,27 +25252,27 @@ function uV(t, c, l, u, d, f) {
 					"reload-table",
 					"table-action"
 				])]))), 128))], 64)) : r("", !0),
-				f.sortableColumns().length ? (_(), i(e, { key: 1 }, [a("h6", eV, x(f.translate("Sort")), 1), a("div", tV, [(_(!0), i(e, null, y(f.sortableColumns(), (e) => (_(), i("button", {
+				f.sortableColumns().length ? (_(), i(e, { key: 1 }, [a("h6", oV, x(f.translate("Sort")), 1), a("div", sV, [(_(!0), i(e, null, y(f.sortableColumns(), (e) => (_(), i("button", {
 					type: "button",
 					key: "sort_" + e.name,
 					class: "list-group-item list-group-item-action d-flex align-items-center justify-content-between",
 					onClick: (t) => f.sortTable(e)
-				}, [a("span", { innerHTML: e.header && e.header.title !== void 0 ? f.translate(e.header.title) : e.title ? f.translate(e.title) : f.translate(e.name) }, null, 8, rV), d.config.order[e.name] ? (_(), i("span", {
+				}, [a("span", { innerHTML: e.header && e.header.title !== void 0 ? f.translate(e.header.title) : e.title ? f.translate(e.title) : f.translate(e.name) }, null, 8, lV), d.config.order[e.name] ? (_(), i("span", {
 					key: 0,
 					class: m(["badge text-bg-light p-badge", { "opacity-50": d.config.order[e.name].fixed }])
 				}, [
-					d.config.order[e.name].dir === "ASC" ? (_(), i("i", iV)) : r("", !0),
-					d.config.order[e.name].dir === "DESC" ? (_(), i("i", aV)) : r("", !0),
+					d.config.order[e.name].dir === "ASC" ? (_(), i("i", uV)) : r("", !0),
+					d.config.order[e.name].dir === "DESC" ? (_(), i("i", dV)) : r("", !0),
 					o(" " + x(d.config.order[e.name].idx + 1), 1)
-				], 2)) : r("", !0)], 8, nV))), 128))])], 64)) : r("", !0),
-				d.config.pagination.limits && d.config.pagination.limits.length ? (_(), i(e, { key: 2 }, [a("h6", oV, x(f.translate("Rows per page")), 1), a("div", sV, [(_(!0), i(e, null, y(d.config.pagination.limits, (e) => (_(), i("button", {
+				], 2)) : r("", !0)], 8, cV))), 128))])], 64)) : r("", !0),
+				d.config.pagination.limits && d.config.pagination.limits.length ? (_(), i(e, { key: 2 }, [a("h6", fV, x(f.translate("Rows per page")), 1), a("div", pV, [(_(!0), i(e, null, y(d.config.pagination.limits, (e) => (_(), i("button", {
 					type: "button",
 					key: "limit_" + e,
 					class: m(["btn btn-sm", d.config.pagination.limit == e ? "btn-secondary" : "btn-outline-secondary"]),
 					onClick: (t) => f.setPageLimit(e)
-				}, x(e), 11, cV))), 128))])], 64)) : r("", !0)
+				}, x(e), 11, mV))), 128))])], 64)) : r("", !0)
 			]),
-			a("div", lV, [a("button", {
+			a("div", hV, [a("button", {
 				type: "button",
 				class: "btn btn-outline-secondary",
 				onClick: c[8] ||= (e) => {
@@ -25273,10 +25284,10 @@ function uV(t, c, l, u, d, f) {
 				"data-bs-dismiss": "modal",
 				onClick: c[9] ||= (e) => f.applyMobileFilters()
 			}, [c[14] ||= a("i", { class: "bi bi-check-lg me-1" }, null, -1), o(" " + x(f.translate("Apply")), 1)])])
-		])) : r("", !0)])], 8, GB)
+		])) : r("", !0)])], 8, ZB)
 	]);
 }
-var dV = {
+var _V = {
 	name: "VuAdmin",
 	props: {
 		entity: {
@@ -25403,20 +25414,20 @@ var dV = {
 			this.$forceUpdate();
 		}
 	},
-	components: { VuAdminTable: /* @__PURE__ */ gA(ez, [["render", uV]]) }
-}, fV = { key: 0 }, pV = ["data-bs-theme"];
-function mV(e, t, n, a, o, c) {
+	components: { VuAdminTable: /* @__PURE__ */ gA(oz, [["render", gV]]) }
+}, vV = { key: 0 }, yV = ["data-bs-theme"];
+function bV(e, t, n, a, o, c) {
 	let l = b("vu-admin-table");
-	return e.entity && e.settings ? (_(), i("div", fV, [e.auth ? (_(), i("div", {
+	return e.entity && e.settings ? (_(), i("div", vV, [e.auth ? (_(), i("div", {
 		key: 0,
 		class: "vu-admin",
 		"data-bs-theme": [e.settings.theme]
 	}, [s(l, {
 		settings: e.settings,
 		auth: e.auth
-	}, null, 8, ["settings", "auth"])], 8, pV)) : r("", !0)])) : r("", !0);
+	}, null, 8, ["settings", "auth"])], 8, yV)) : r("", !0)])) : r("", !0);
 }
-var hV = /*#__PURE__*/ gA(dV, [["render", mV]]), gV = (/* @__PURE__ */ ie(((e, t) => {
+var xV = /*#__PURE__*/ gA(_V, [["render", bV]]), SV = (/* @__PURE__ */ ie(((e, t) => {
 	(function() {
 		var e = "input is invalid type", n = typeof window == "object", r = n ? window : {};
 		r.JS_SHA512_NO_WINDOW && (n = !1);
@@ -25810,7 +25821,7 @@ var hV = /*#__PURE__*/ gA(dV, [["render", mV]]), gV = (/* @__PURE__ */ ie(((e, t
 })))();
 // src/components/VuAuth.vue
 Mc();
-var _V = {
+var CV = {
 	name: "VuAuth",
 	props: { modelValue: Object },
 	data() {
@@ -25841,7 +25852,7 @@ var _V = {
 			modalWindow: null
 		};
 	},
-	components: { VuAdminForm: PL },
+	components: { VuAdminForm: BL },
 	watch: {
 		modelValue(e, t) {
 			e != t && (this.auth = e, this.updateInputs(), this.$forceUpdate());
@@ -26075,7 +26086,7 @@ var _V = {
 		},
 		async generateHash(e, t) {
 			let n = e;
-			for (let e = 0; e < t; e++) n = (0, gV.sha512)(n);
+			for (let e = 0; e < t; e++) n = (0, SV.sha512)(n);
 			return n;
 		},
 		authUpdate() {
@@ -26138,76 +26149,76 @@ var _V = {
 	beforeUnmount() {
 		window.removeEventListener("keydown", this.handleEscapeKey), window.removeEventListener(Pc, this._onLanguageChange);
 	}
-}, vV = ["data-bs-theme"], yV = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, bV = { class: "position-absolute top-0 end-0 p-0 m-2" }, xV = {
+}, wV = ["data-bs-theme"], TV = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, EV = { class: "position-absolute top-0 end-0 p-0 m-2" }, DV = {
 	key: 0,
 	class: "spinner-border spinner-border-sm text-primary"
-}, SV = { class: "text-center mt-2 mb-4" }, CV = {
+}, OV = { class: "text-center mt-2 mb-4" }, kV = {
 	key: 0,
 	class: "mb-3"
-}, wV = {
+}, AV = {
 	for: "email",
 	class: "form-label text-primary"
-}, TV = { class: "input-group" }, EV = [
+}, jV = { class: "input-group" }, MV = [
 	"type",
 	"placeholder",
 	"disabled"
-], DV = ["innerHTML"], OV = { class: "mb-3" }, kV = {
+], NV = ["innerHTML"], PV = { class: "mb-3" }, FV = {
 	key: 0,
 	for: "password",
 	class: "form-label text-primary"
-}, AV = { class: "input-group" }, jV = [
+}, IV = { class: "input-group" }, LV = [
 	"type",
 	"placeholder",
 	"pattern",
 	"minlength",
 	"disabled"
-], MV = {
+], RV = {
 	key: 0,
 	class: "bi bi-eye"
-}, NV = {
+}, zV = {
 	key: 1,
 	class: "bi bi-eye-slash"
-}, PV = ["innerHTML"], FV = {
+}, BV = ["innerHTML"], VV = {
 	key: 0,
 	class: "mb-4"
-}, IV = {
+}, HV = {
 	for: "password_again",
 	class: "form-label text-primary"
-}, LV = ["innerHTML"], RV = { class: "input-group" }, zV = [
+}, UV = ["innerHTML"], WV = { class: "input-group" }, GV = [
 	"type",
 	"placeholder",
 	"minlength",
 	"disabled"
-], BV = {
+], KV = {
 	key: 0,
 	class: "bi bi-eye"
-}, VV = {
+}, qV = {
 	key: 1,
 	class: "bi bi-eye-slash"
-}, HV = ["innerHTML"], UV = {
+}, JV = ["innerHTML"], YV = {
 	key: 2,
 	class: "mb-3"
-}, WV = {
+}, XV = {
 	key: 0,
 	class: "text-center py-2"
-}, GV = { key: 1 }, KV = ["innerHTML"], qV = { class: "d-flex justify-content-center gap-2 flex-wrap" }, JV = ["onClick"], YV = {
+}, ZV = { key: 1 }, QV = ["innerHTML"], $V = { class: "d-flex justify-content-center gap-2 flex-wrap" }, eH = ["onClick"], tH = {
 	key: 3,
 	class: "text-danger text-center small mt-2 mb-3 fw-semibold"
-}, XV = {
+}, nH = {
 	key: 4,
 	class: "mb-3"
-}, ZV = ["innerHTML"], QV = { class: "form-label text-primary" }, $V = { class: "input-group" }, eH = ["placeholder", "disabled"], tH = { class: "text-end mt-2" }, nH = ["disabled"], rH = {
+}, rH = ["innerHTML"], iH = { class: "form-label text-primary" }, aH = { class: "input-group" }, oH = ["placeholder", "disabled"], sH = { class: "text-end mt-2" }, cH = ["disabled"], lH = {
 	key: 5,
 	class: "mb-4 text-center"
-}, iH = ["innerHTML"], aH = {
+}, uH = ["innerHTML"], dH = {
 	key: 6,
 	class: "d-flex mb-4"
-}, oH = ["innerHTML"], sH = { class: "row" }, cH = { class: "mb-3" }, lH = ["for", "innerHTML"], uH = { class: "input-group" }, dH = ["innerHTML"], fH = [
+}, fH = ["innerHTML"], pH = { class: "row" }, mH = { class: "mb-3" }, hH = ["for", "innerHTML"], gH = { class: "input-group" }, _H = ["innerHTML"], vH = [
 	"disabled",
 	"required",
 	"onUpdate:modelValue",
 	"multiple"
-], pH = ["value", "innerHTML"], mH = [
+], yH = ["value", "innerHTML"], bH = [
 	"id",
 	"name",
 	"type",
@@ -26215,29 +26226,29 @@ var _V = {
 	"placeholder",
 	"required",
 	"disabled"
-], hH = ["innerHTML"], gH = ["innerHTML"], _H = {
+], xH = ["innerHTML"], SH = ["innerHTML"], CH = {
 	key: 0,
 	class: "form-check"
-}, vH = [
+}, wH = [
 	"id",
 	"name",
 	"onUpdate:modelValue",
 	"required",
 	"disabled"
-], yH = ["for", "innerHTML"], bH = {
+], TH = ["for", "innerHTML"], EH = {
 	key: 7,
 	class: "mt-4"
-}, xH = ["innerHTML"], SH = {
+}, DH = ["innerHTML"], OH = {
 	key: 8,
 	class: "mt-3 text-center"
-}, CH = { class: "mt-4 d-flex justify-content-between" }, wH = ["disabled"], TH = ["disabled"], EH = ["disabled"], DH = {
+}, kH = { class: "mt-4 d-flex justify-content-between" }, AH = ["disabled"], jH = ["disabled"], MH = ["disabled"], NH = {
 	key: 0,
 	class: "bi bi-person-plus mx-1"
-}, OH = {
+}, PH = {
 	key: 1,
 	class: "bi bi-arrow-right-square mx-1"
-}, kH = { class: "mt-2 text-end" }, AH = ["disabled"], jH = ["id"], MH = { class: "modal-dialog modal-xl" }, NH = { class: "modal-content h-100" };
-function PH(t, s, c, l, u, d) {
+}, FH = { class: "mt-2 text-end" }, IH = ["disabled"], LH = ["id"], RH = { class: "modal-dialog modal-xl" }, zH = { class: "modal-content h-100" };
+function BH(t, s, c, l, u, d) {
 	let f = b("VuAdminForm");
 	return t.auth && t.auth.visible ? (_(), i("div", {
 		key: 0,
@@ -26246,23 +26257,23 @@ function PH(t, s, c, l, u, d) {
 	}, [a("div", {
 		class: "row d-flex justify-content-center align-items-center min-vh-100",
 		onClick: s[16] ||= O((...e) => t.close && t.close(...e), ["stop"])
-	}, [a("div", yV, [a("div", {
+	}, [a("div", TV, [a("div", {
 		class: "card shadow p-4 position-relative",
 		onClick: s[15] ||= O(() => {}, ["stop"])
 	}, [
-		a("div", bV, [t.loading ? (_(), i("i", xV)) : r("", !0), a("button", {
+		a("div", EV, [t.loading ? (_(), i("i", DV)) : r("", !0), a("button", {
 			type: "button",
 			class: "btn p-2",
 			onClick: s[0] ||= O((...e) => t.close && t.close(...e), ["stop"])
 		}, [...s[18] ||= [a("i", { class: "bi bi-x px-1 text-muted" }, null, -1)]])]),
-		a("h1", SV, x(t.translate(t.settings.title[t.auth.panel])), 1),
+		a("h1", OV, x(t.translate(t.settings.title[t.auth.panel])), 1),
 		a("form", {
 			onSubmit: s[13] ||= O((e) => t.handleSubmit(), ["prevent"]),
 			onClick: s[14] ||= O(() => {}, ["stop"])
 		}, [
-			t.auth.panel != "activation" && t.auth.panel != "password" && t.auth.panel != "twofa" ? (_(), i("div", CV, [
-				a("label", wV, x(t.translate(t.settings.username.label)), 1),
-				a("div", TV, [t.settings.username.icon ? (_(), i("span", {
+			t.auth.panel != "activation" && t.auth.panel != "password" && t.auth.panel != "twofa" ? (_(), i("div", kV, [
+				a("label", AV, x(t.translate(t.settings.username.label)), 1),
+				a("div", jV, [t.settings.username.icon ? (_(), i("span", {
 					key: 0,
 					class: m(["input-group-text", { "rounded-bottom-0": t.settings.username.help }])
 				}, [a("i", { class: m([t.settings.username.icon]) }, null, 2)], 2)) : r("", !0), D(a("input", {
@@ -26274,16 +26285,16 @@ function PH(t, s, c, l, u, d) {
 					placeholder: t.translate(t.settings.username.placeholder),
 					required: "",
 					disabled: t.loading
-				}, null, 10, EV), [[w, t.username]])]),
+				}, null, 10, MV), [[w, t.username]])]),
 				t.settings.username.help ? (_(), i("small", {
 					key: 0,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.settings.username.help)
-				}, null, 8, DV)) : r("", !0)
+				}, null, 8, NV)) : r("", !0)
 			])) : r("", !0),
-			t.auth.panel != "forgot" && t.auth.panel != "activation" && t.auth.panel != "twofa" ? (_(), i(e, { key: 1 }, [a("div", OV, [
-				t.settings.password.label ? (_(), i("label", kV, x(t.translate(t.settings.password.label)), 1)) : r("", !0),
-				a("div", AV, [
+			t.auth.panel != "forgot" && t.auth.panel != "activation" && t.auth.panel != "twofa" ? (_(), i(e, { key: 1 }, [a("div", PV, [
+				t.settings.password.label ? (_(), i("label", FV, x(t.translate(t.settings.password.label)), 1)) : r("", !0),
+				a("div", IV, [
 					t.settings.password.icon ? (_(), i("span", {
 						key: 0,
 						class: m(["input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help }])
@@ -26299,7 +26310,7 @@ function PH(t, s, c, l, u, d) {
 						minlength: t.auth.panel == "registration" ? t.settings.password.minlength : 1,
 						required: "",
 						disabled: t.loading
-					}, null, 10, jV), [[w, t.password]]),
+					}, null, 10, LV), [[w, t.password]]),
 					t.auth.panel == "registration" || t.auth.panel == "password" ? (_(), i("span", {
 						key: 1,
 						class: m(["input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help }])
@@ -26310,20 +26321,20 @@ function PH(t, s, c, l, u, d) {
 					a("span", {
 						class: m(["cursor-pointer input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help }]),
 						onClick: s[3] ||= O((e) => t.toggleType("password"), ["stop"])
-					}, [t.settings.password.type == "password" ? (_(), i("i", MV)) : (_(), i("i", NV))], 2)
+					}, [t.settings.password.type == "password" ? (_(), i("i", RV)) : (_(), i("i", zV))], 2)
 				]),
 				(t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help ? (_(), i("small", {
 					key: 1,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.settings.password.help)
-				}, null, 8, PV)) : r("", !0)
-			]), t.auth.panel === "registration" || t.auth.panel === "password" ? (_(), i("div", FV, [
-				a("label", IV, [o(x(t.translate(t.settings.password_again.label)) + " ", 1), t.password_again.length > 0 && t.password_again != t.password ? (_(), i("small", {
+				}, null, 8, BV)) : r("", !0)
+			]), t.auth.panel === "registration" || t.auth.panel === "password" ? (_(), i("div", VV, [
+				a("label", HV, [o(x(t.translate(t.settings.password_again.label)) + " ", 1), t.password_again.length > 0 && t.password_again != t.password ? (_(), i("small", {
 					key: 0,
 					class: "text-danger",
 					innerHTML: t.translate(t.settings.password_again.nomatch)
-				}, null, 8, LV)) : r("", !0)]),
-				a("div", RV, [
+				}, null, 8, UV)) : r("", !0)]),
+				a("div", WV, [
 					t.settings.password.icon ? (_(), i("span", {
 						key: 0,
 						class: m(["input-group-text", { "rounded-bottom-0": t.settings.password_again.help }])
@@ -26338,7 +26349,7 @@ function PH(t, s, c, l, u, d) {
 						minlength: t.settings.password.minlength,
 						required: "",
 						disabled: t.loading
-					}, null, 10, zV), [[w, t.password_again]]),
+					}, null, 10, GV), [[w, t.password_again]]),
 					a("span", { class: m(["input-group-text", { "rounded-bottom-0": t.settings.password_again.help }]) }, [a("small", { class: m(["", {
 						"text-success": t.password_again.length >= t.settings.password.minlength,
 						"text-danger": t.password_again.length < t.settings.password.minlength
@@ -26346,18 +26357,18 @@ function PH(t, s, c, l, u, d) {
 					a("span", {
 						class: m(["cursor-pointer input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password_again.help }]),
 						onClick: s[5] ||= O((e) => t.toggleType("password_again"), ["stop"])
-					}, [t.settings.password_again.type == "password" ? (_(), i("i", BV)) : (_(), i("i", VV))], 2)
+					}, [t.settings.password_again.type == "password" ? (_(), i("i", KV)) : (_(), i("i", qV))], 2)
 				]),
 				(t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password_again.help ? (_(), i("small", {
 					key: 0,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.settings.password_again.help)
-				}, null, 8, HV)) : r("", !0)
+				}, null, 8, JV)) : r("", !0)
 			])) : r("", !0)], 64)) : r("", !0),
-			t.captchaRequired ? (_(), i("div", UV, [t.captcha.loading ? (_(), i("div", WV, [...s[19] ||= [a("span", { class: "spinner-border spinner-border-sm text-secondary" }, null, -1)]])) : t.captcha.items.length ? (_(), i("div", GV, [a("div", {
+			t.captchaRequired ? (_(), i("div", YV, [t.captcha.loading ? (_(), i("div", XV, [...s[19] ||= [a("span", { class: "spinner-border spinner-border-sm text-secondary" }, null, -1)]])) : t.captcha.items.length ? (_(), i("div", ZV, [a("div", {
 				class: "text-center small mb-2",
 				innerHTML: t.captcha.question
-			}, null, 8, KV), a("div", qV, [(_(!0), i(e, null, y(t.captcha.items, (e) => (_(), i("button", {
+			}, null, 8, QV), a("div", $V, [(_(!0), i(e, null, y(t.captcha.items, (e) => (_(), i("button", {
 				key: e.id,
 				type: "button",
 				class: m(["btn btn-outline-secondary px-2 py-1", { "btn-primary border-primary": t.captcha.answers.includes(e.id) }]),
@@ -26370,15 +26381,15 @@ function PH(t, s, c, l, u, d) {
 					"font-size": "1.2rem",
 					display: "block"
 				}
-			}, null, 2)], 10, JV))), 128))])])) : r("", !0)])) : r("", !0),
-			t.captchaError ? (_(), i("p", YV, x(t.translate(t.settings.captcha.error)), 1)) : r("", !0),
-			t.auth.panel === "twofa" && t.settings.twofa ? (_(), i("div", XV, [
+			}, null, 2)], 10, eH))), 128))])])) : r("", !0)])) : r("", !0),
+			t.captchaError ? (_(), i("p", tH, x(t.translate(t.settings.captcha.error)), 1)) : r("", !0),
+			t.auth.panel === "twofa" && t.settings.twofa ? (_(), i("div", nH, [
 				a("p", {
 					class: "text-center small text-muted mb-3",
 					innerHTML: t.translate(t.settings.twofa.info)
-				}, null, 8, ZV),
-				a("label", QV, x(t.translate(t.settings.twofa.label)), 1),
-				a("div", $V, [s[20] ||= a("span", { class: "input-group-text" }, [a("i", { class: "bi bi-shield-lock" })], -1), D(a("input", {
+				}, null, 8, rH),
+				a("label", iH, x(t.translate(t.settings.twofa.label)), 1),
+				a("div", aH, [s[20] ||= a("span", { class: "input-group-text" }, [a("i", { class: "bi bi-shield-lock" })], -1), D(a("input", {
 					type: "text",
 					inputmode: "numeric",
 					pattern: "[0-9]{6}",
@@ -26389,13 +26400,13 @@ function PH(t, s, c, l, u, d) {
 					required: "",
 					disabled: t.loading,
 					autocomplete: "one-time-code"
-				}, null, 8, eH), [[E, t.twofaCode]])]),
-				a("div", tH, [a("button", {
+				}, null, 8, oH), [[E, t.twofaCode]])]),
+				a("div", sH, [a("button", {
 					type: "button",
 					class: "btn btn-link btn-sm p-0 text-decoration-none",
 					onClick: s[7] ||= O((...e) => t.resendTwofa && t.resendTwofa(...e), ["stop"]),
 					disabled: t.loading
-				}, [s[21] ||= a("i", { class: "bi bi-arrow-repeat me-1" }, null, -1), o(x(t.translate(t.settings.submit.resend)), 1)], 8, nH)])
+				}, [s[21] ||= a("i", { class: "bi bi-arrow-repeat me-1" }, null, -1), o(x(t.translate(t.settings.submit.resend)), 1)], 8, cH)])
 			])) : r("", !0),
 			D(a("input", {
 				type: "text",
@@ -26412,32 +26423,32 @@ function PH(t, s, c, l, u, d) {
 					opacity: "0"
 				}
 			}, null, 512), [[E, t.honeypot]]),
-			t.auth.panel == "login" && t.settings.password.forgot ? (_(), i("div", rH, [a("button", {
+			t.auth.panel == "login" && t.settings.password.forgot ? (_(), i("div", lH, [a("button", {
 				type: "button",
 				class: "btn btn-link p-0 text-decoration-none text-nowrap",
 				onClick: s[9] ||= O((...e) => t.toggleForgotPassword && t.toggleForgotPassword(...e), ["stop"]),
 				innerHTML: t.translate(t.settings.password.forgot)
-			}, null, 8, iH)])) : r("", !0),
-			t.auth.panel == "forgot" && t.settings.help && t.settings.help.forgot ? (_(), i("div", aH, [a("small", {
+			}, null, 8, uH)])) : r("", !0),
+			t.auth.panel == "forgot" && t.settings.help && t.settings.help.forgot ? (_(), i("div", dH, [a("small", {
 				class: "text-muted",
 				innerHTML: t.translate(t.settings.help.forgot)
-			}, null, 8, oH)])) : r("", !0),
-			a("div", sH, [(_(!0), i(e, null, y(t.settings.inputs, (n, o) => (_(), i(e, { key: o }, [n.panels.indexOf(t.auth.panel) >= 0 && !n.hidden ? (_(), i("div", {
+			}, null, 8, fH)])) : r("", !0),
+			a("div", pH, [(_(!0), i(e, null, y(t.settings.inputs, (n, o) => (_(), i(e, { key: o }, [n.panels.indexOf(t.auth.panel) >= 0 && !n.hidden ? (_(), i("div", {
 				key: 0,
 				class: m([n.colclass ? n.colclass : "col-md-12"])
-			}, [a("div", cH, [
+			}, [a("div", mH, [
 				n.label ? (_(), i("label", {
 					key: 0,
 					for: o,
 					class: m(["form-label text-primary", { required: n.required }]),
 					innerHTML: t.translate(t.getValueOrFunction(n.label))
-				}, null, 10, lH)) : r("", !0),
-				a("div", uH, [
+				}, null, 10, hH)) : r("", !0),
+				a("div", gH, [
 					n.prefix ? (_(), i("span", {
 						key: 0,
 						class: m(["input-group-text", { "rounded-bottom-0": n.help }]),
 						innerHTML: t.translate(t.getValueOrFunction(n.prefix))
-					}, null, 10, dH)) : r("", !0),
+					}, null, 10, _H)) : r("", !0),
 					n.type == "select" ? D((_(), i("select", {
 						key: 1,
 						class: "form-select",
@@ -26449,7 +26460,7 @@ function PH(t, s, c, l, u, d) {
 						key: e,
 						value: e.value,
 						innerHTML: t.translate(t.getValueOrFunction(e.label))
-					}, null, 8, pH))), 128))], 8, fH)), [[T, t.inputs[o]]]) : D((_(), i("input", {
+					}, null, 8, yH))), 128))], 8, vH)), [[T, t.inputs[o]]]) : D((_(), i("input", {
 						key: 2,
 						id: o,
 						name: o,
@@ -26459,20 +26470,20 @@ function PH(t, s, c, l, u, d) {
 						placeholder: t.translate(n.placeholder),
 						required: n.required,
 						disabled: t.loading
-					}, null, 10, mH)), [[w, t.inputs[o]]]),
+					}, null, 10, bH)), [[w, t.inputs[o]]]),
 					n.suffix ? (_(), i("span", {
 						key: 3,
 						class: m(["input-group-text", { "rounded-bottom-0": n.help }]),
 						innerHTML: t.translate(t.getValueOrFunction(n.suffix))
-					}, null, 10, hH)) : r("", !0)
+					}, null, 10, xH)) : r("", !0)
 				]),
 				n.help ? (_(), i("small", {
 					key: 1,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.getValueOrFunction(n.help))
-				}, null, 8, gH)) : r("", !0)
+				}, null, 8, SH)) : r("", !0)
 			])], 2)) : r("", !0)], 64))), 128))]),
-			(_(!0), i(e, null, y(t.settings.accepts, (e) => (_(), i("div", { key: e }, [e.panels.indexOf(t.auth.panel) >= 0 ? (_(), i("div", _H, [D(a("input", {
+			(_(!0), i(e, null, y(t.settings.accepts, (e) => (_(), i("div", { key: e }, [e.panels.indexOf(t.auth.panel) >= 0 ? (_(), i("div", CH, [D(a("input", {
 				type: "checkbox",
 				class: "form-check-input",
 				id: "accept_" + e.name,
@@ -26480,35 +26491,35 @@ function PH(t, s, c, l, u, d) {
 				"onUpdate:modelValue": (n) => t.accepts[e.name] = n,
 				required: e.required,
 				disabled: t.loading
-			}, null, 8, vH), [[C, t.accepts[e.name]]]), e.label ? (_(), i("label", {
+			}, null, 8, wH), [[C, t.accepts[e.name]]]), e.label ? (_(), i("label", {
 				key: 0,
 				class: "form-check-label",
 				for: "accept_" + e.name,
 				innerHTML: t.translate(t.getValueOrFunction(e.label))
-			}, null, 8, yH)) : r("", !0)])) : r("", !0)]))), 128)),
-			t.auth.panel == "registration" && t.settings.help && t.settings.help.registration ? (_(), i("div", bH, [a("div", { innerHTML: t.translate(t.getValueOrFunction(t.settings.help.registration)) }, null, 8, xH)])) : r("", !0),
-			t.auth.response.message ? (_(), i("div", SH, [a("div", {
+			}, null, 8, TH)) : r("", !0)])) : r("", !0)]))), 128)),
+			t.auth.panel == "registration" && t.settings.help && t.settings.help.registration ? (_(), i("div", EH, [a("div", { innerHTML: t.translate(t.getValueOrFunction(t.settings.help.registration)) }, null, 8, DH)])) : r("", !0),
+			t.auth.response.message ? (_(), i("div", OH, [a("div", {
 				class: m({
 					"text-danger": !t.auth.response.ok,
 					"text-success": t.auth.response.ok
 				}),
 				style: { "white-space": "pre-line" }
 			}, x(t.translate(t.auth.response.message)), 3)])) : r("", !0),
-			a("div", CH, [
+			a("div", kH, [
 				t.auth.panel != "login" && t.auth.panel != "activation" ? (_(), i("button", {
 					key: 0,
 					type: "button",
 					onClick: s[10] ||= O((...e) => t.toggleClear && t.toggleClear(...e), ["stop"]),
 					class: "btn btn-secondary w-100 me-2 text-nowrap",
 					disabled: t.loading
-				}, [s[23] ||= a("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), o(" " + x(t.translate(t.settings.submit.login)), 1)], 8, wH)) : r("", !0),
+				}, [s[23] ||= a("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), o(" " + x(t.translate(t.settings.submit.login)), 1)], 8, AH)) : r("", !0),
 				t.auth.panel == "login" && t.settings.registrationEnabled !== !1 ? (_(), i("button", {
 					key: 1,
 					type: "button",
 					class: "btn btn-warning w-100 me-2 text-nowrap",
 					onClick: s[11] ||= O((...e) => t.toggleNewRegistration && t.toggleNewRegistration(...e), ["stop"]),
 					disabled: t.loading
-				}, [s[24] ||= a("i", { class: "bi bi-person-plus mx-1" }, null, -1), o(" " + x(t.translate(t.settings.submit.registration)), 1)], 8, TH)) : r("", !0),
+				}, [s[24] ||= a("i", { class: "bi bi-person-plus mx-1" }, null, -1), o(" " + x(t.translate(t.settings.submit.registration)), 1)], 8, jH)) : r("", !0),
 				a("button", {
 					type: "submit",
 					class: m(["btn w-100 text-nowrap", {
@@ -26516,20 +26527,20 @@ function PH(t, s, c, l, u, d) {
 						"btn-warning": t.auth.panel == "registration"
 					}]),
 					disabled: t.loading
-				}, [o(x(t.translate(t.settings.submit[t.auth.panel])) + " ", 1), t.auth.panel == "registration" ? (_(), i("i", DH)) : (_(), i("i", OH))], 10, EH)
+				}, [o(x(t.translate(t.settings.submit[t.auth.panel])) + " ", 1), t.auth.panel == "registration" ? (_(), i("i", NH)) : (_(), i("i", PH))], 10, MH)
 			]),
-			a("div", kH, [a("button", {
+			a("div", FH, [a("button", {
 				type: "button",
 				onClick: s[12] ||= O((...e) => t.close && t.close(...e), ["stop"]),
 				class: "btn btn-light border w-100 me-1",
 				disabled: t.loading
-			}, [o(x(t.translate(t.settings.submit.cancel)) + " ", 1), s[25] ||= a("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, AH)])
+			}, [o(x(t.translate(t.settings.submit.cancel)) + " ", 1), s[25] ||= a("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, IH)])
 		], 32)
 	])])]), a("div", {
 		class: "modal shadow",
 		id: t.modalId,
 		tabindex: "-1"
-	}, [a("div", MH, [a("div", NH, [t.settings.form && t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
+	}, [a("div", RH, [a("div", zH, [t.settings.form && t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
 		key: 0,
 		modelValue: t.item,
 		"onUpdate:modelValue": s[17] ||= (e) => t.item = e,
@@ -26551,12 +26562,12 @@ function PH(t, s, c, l, u, d) {
 		"deleteItem",
 		"reloadTable",
 		"fetchRelation"
-	])) : r("", !0)])])], 8, jH)], 8, vV)) : r("", !0);
+	])) : r("", !0)])])], 8, LH)], 8, wV)) : r("", !0);
 }
-var FH = /*#__PURE__*/ gA(_V, [["render", PH]]);
+var VH = /*#__PURE__*/ gA(CV, [["render", BH]]);
 // src/components/VuUserButton.vue
 Mc();
-var IH = {
+var HH = {
 	name: "VuUserButton",
 	props: {
 		modelValue: Object,
@@ -26618,64 +26629,64 @@ var IH = {
 	beforeUnmount() {
 		window.removeEventListener(Pc, this._onLanguageChange);
 	}
-}, LH = ["data-bs-theme"], RH = {
+}, UH = ["data-bs-theme"], WH = {
 	key: 0,
 	class: "dropdown"
-}, zH = ["innerHTML"], BH = {
+}, GH = ["innerHTML"], KH = {
 	class: "dropdown-menu dropdown-menu-end",
 	"aria-labelledby": "userDropdown"
-}, VH = ["innerHTML"], HH = ["onClick"], UH = ["innerHTML"], WH = ["onClick", "title"], GH = ["onClick", "innerHTML"], KH = {
+}, qH = ["innerHTML"], JH = ["onClick"], YH = ["innerHTML"], XH = ["onClick", "title"], ZH = ["onClick", "innerHTML"], QH = {
 	key: 1,
 	class: "d-inline-block"
-}, qH = ["innerHTML"];
-function JH(t, n, o, s, c, l) {
+}, $H = ["innerHTML"];
+function eU(t, n, o, s, c, l) {
 	return (t.panel != "registration" || t.registrationEnabled) && (!t.auth.user && t.panel != "login" || t.panel == "login") ? (_(), i("div", {
 		key: 0,
 		class: "vua-user-button d-inline-block",
 		"data-bs-theme": [t.theme]
-	}, [t.auth.user ? (_(), i("div", RH, [a("button", {
+	}, [t.auth.user ? (_(), i("div", WH, [a("button", {
 		class: m(["dropdown-toggle", [t.settings.class]]),
 		type: "button",
 		id: "userDropdown",
 		"data-bs-toggle": "dropdown",
 		"aria-expanded": "false"
-	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, zH)], 2), a("ul", BH, [(_(!0), i(e, null, y(t.settings.dropdowns, (n) => (_(), i(e, { key: n }, [n.action == "BUTTON_ROLES" ? (_(), i("li", {
+	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, GH)], 2), a("ul", KH, [(_(!0), i(e, null, y(t.settings.dropdowns, (n) => (_(), i(e, { key: n }, [n.action == "BUTTON_ROLES" ? (_(), i("li", {
 		key: 0,
 		class: m([[n.class], "d-flex items-align-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(n.label)),
 		class: "me-2"
-	}, null, 8, VH), (_(!0), i(e, null, y(t.auth.user.roles, (e) => (_(), i("button", {
+	}, null, 8, qH), (_(!0), i(e, null, y(t.auth.user.roles, (e) => (_(), i("button", {
 		key: e,
 		onClick: (n) => t.setSelectedRole(e),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e == t.auth.user.role }])
-	}, x(e), 11, HH))), 128))], 2)) : n.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
+	}, x(e), 11, JH))), 128))], 2)) : n.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
 		key: 1,
 		class: m([[n.class], "d-flex align-items-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(n.label === void 0 ? "Language" : n.label)),
 		class: "me-2"
-	}, null, 8, UH), (_(!0), i(e, null, y(t.languages(n), (e) => (_(), i("button", {
+	}, null, 8, YH), (_(!0), i(e, null, y(t.languages(n), (e) => (_(), i("button", {
 		key: e.value,
 		type: "button",
 		onClick: O((n) => t.changeLanguage(e.value), ["stop"]),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e.value == t.language }]),
 		title: e.label
-	}, x(e.short || e.value.toUpperCase()), 11, WH))), 128))], 2)) : (_(), i("li", {
+	}, x(e.short || e.value.toUpperCase()), 11, XH))), 128))], 2)) : (_(), i("li", {
 		key: 2,
 		class: m([n.class]),
 		onClick: (e) => t.dropdownAction(n),
 		innerHTML: t.translate(t.getValueOrFunction(n.label))
-	}, null, 10, GH))], 64))), 128))])])) : (_(), i("div", KH, [a("button", {
+	}, null, 10, ZH))], 64))), 128))])])) : (_(), i("div", QH, [a("button", {
 		class: m([t.settings.class]),
 		type: "button",
 		onClick: n[0] ||= (...e) => t.togglePanel && t.togglePanel(...e)
 	}, [t.settings.icon ? (_(), i("i", {
 		key: 0,
 		class: m([t.settings.icon])
-	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, qH)], 2)]))], 8, LH)) : r("", !0);
+	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, $H)], 2)]))], 8, UH)) : r("", !0);
 }
-var YH = /*#__PURE__*/ gA(IH, [["render", JH]]), XH = {
+var tU = /*#__PURE__*/ gA(HH, [["render", eU]]), nU = {
 	name: "VuAdminNav",
 	props: {
 		modelValue: Object,
@@ -26749,33 +26760,33 @@ var YH = /*#__PURE__*/ gA(IH, [["render", JH]]), XH = {
 			}
 		}
 	}
-}, ZH = {
+}, rU = {
 	key: 0,
 	class: "nav-item dropdown"
-}, QH = { class: "dropdown-menu" }, $H = [
+}, iU = { class: "dropdown-menu" }, aU = [
 	"target",
 	"rel",
 	"href"
-], eU = {
+], oU = {
 	key: 1,
 	class: "nav-item"
-}, tU = [
+}, sU = [
 	"target",
 	"rel",
 	"href"
 ];
-function nU(t, n, s, c, l, u) {
+function cU(t, n, s, c, l, u) {
 	return t.auth && t.auth.success && t.visibleItems.length ? (_(), i("ul", {
 		key: 0,
 		class: m(["navbar-nav me-auto mb-2 mb-lg-0", t.menuClass])
-	}, [(_(!0), i(e, null, y(t.visibleItems, (n, s) => (_(), i(e, { key: s }, [n.items && n.items.length ? (_(), i("li", ZH, [a("button", {
+	}, [(_(!0), i(e, null, y(t.visibleItems, (n, s) => (_(), i(e, { key: s }, [n.items && n.items.length ? (_(), i("li", rU, [a("button", {
 		class: m(["btn dropdown-toggle", n.class]),
 		type: "button",
 		"data-bs-toggle": "dropdown"
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), a("span", null, x(t.translate(n.name)), 1)], 2), a("ul", QH, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [a("a", {
+	}, null, 2)) : r("", !0), a("span", null, x(t.translate(n.name)), 1)], 2), a("ul", iU, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [a("a", {
 		class: m(["dropdown-item", e.class]),
 		target: e.target || "",
 		rel: e.target === "_blank" ? "noopener noreferrer" : null,
@@ -26783,7 +26794,7 @@ function nU(t, n, s, c, l, u) {
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(e.icon))
-	}, null, 2)) : r("", !0), o(" " + x(t.translate(e.name)), 1)], 10, $H)]))), 128))])])) : (_(), i("li", eU, [a("a", {
+	}, null, 2)) : r("", !0), o(" " + x(t.translate(e.name)), 1)], 10, aU)]))), 128))])])) : (_(), i("li", oU, [a("a", {
 		class: m(["nav-link scrollto", n.class]),
 		target: n.target || "",
 		rel: n.target === "_blank" ? "noopener noreferrer" : null,
@@ -26791,7 +26802,7 @@ function nU(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), o(" " + x(t.translate(n.name)), 1)], 10, tU)]))], 64))), 128))], 2)) : r("", !0);
+	}, null, 2)) : r("", !0), o(" " + x(t.translate(n.name)), 1)], 10, sU)]))], 64))), 128))], 2)) : r("", !0);
 }
-var rU = /*#__PURE__*/ gA(XH, [["render", nU]]);
-export { hV as VuAdmin, rU as VuAdminNav, FH as VuAuth, YH as VuUserButton, Lc as availableLanguages, Wc as escapeHtml, Vc as getLanguage, Gc as safeUrl, Hc as setLanguage, ml as translate, Ic as translations };
+var lU = /*#__PURE__*/ gA(nU, [["render", cU]]);
+export { xV as VuAdmin, lU as VuAdminNav, VH as VuAuth, tU as VuUserButton, Lc as availableLanguages, Wc as escapeHtml, Vc as getLanguage, Gc as safeUrl, Hc as setLanguage, ml as translate, Ic as translations };

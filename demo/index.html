@@ -30,32 +30,22 @@
     </header>
 
     <details class="border rounded p-3 my-3 bg-body-tertiary">
-      <summary class="fw-bold">What can you try? <small class="text-muted fw-normal">(dummyjson.com — changes are not persisted)</small></summary>
+      <summary class="fw-bold">{{ t('What can you try?') }} <small class="text-muted fw-normal">{{ t('(dummyjson.com — changes are not persisted)') }}</small></summary>
       <div class="row small mt-2">
         <div class="col-md-6">
-          <strong>Products table</strong>
+          <strong>{{ t('Products table') }}</strong>
           <ul class="mb-2">
-            <li>Sort by clicking a header (multiple columns too, but dummyjson only uses the first one)</li>
-            <li>Filters: the <em>Product</em> search and the <em>Category</em> filter really filter, the others are only visible</li>
-            <li>Pagination, rows per page selector</li>
-            <li>Columns: show / hide, collapse (<i class="bi bi-arrows-collapse-vertical"></i>), "Expand all", "Reset" — kept in localStorage</li>
-            <li>Inline editing (title, stock, price, availability) with autosave, row save button</li>
-            <li>Row selection (#), bulk edit and delete in the footer row</li>
-            <li>Row details (expandable), custom action button, CSV export, "More" dropdown</li>
+            <li v-for="text in help.products" :key="text" v-html="t(text)"></li>
           </ul>
         </div>
         <div class="col-md-6">
-          <strong>Product form</strong>
+          <strong>{{ t('Product form') }}</strong>
           <ul class="mb-2">
-            <li>Fields: text, number, select, dropdown (multi), date, checkbox, textarea, list, template</li>
-            <li>HTML editor (TipTap) with image, link and video embed</li>
-            <li>Image upload: drag &amp; drop, preview, image editor, translatable titles, tags</li>
-            <li>Save, save and close, copy, new, delete, reload</li>
+            <li v-for="text in help.form" :key="text" v-html="t(text)"></li>
           </ul>
-          <strong>Carts table</strong>
+          <strong>{{ t('Carts table') }}</strong>
           <ul class="mb-0">
-            <li>Dark theme, relation (user name, avatar), sorting, collapsed column, CSV</li>
-            <li>Read-only form with a template field</li>
+            <li v-for="text in help.carts" :key="text" v-html="t(text)"></li>
           </ul>
         </div>
       </div>
@@ -77,14 +67,81 @@
 
   <script>
 
+    // texts of this page (the "What can you try?" box); keys are the English texts
+    const pageTranslations = {
+      hu: {
+        'What can you try?': 'Mit próbálhatsz ki?',
+        '(dummyjson.com — changes are not persisted)': '(dummyjson.com — a módosítások nem mentődnek)',
+        'Products table': 'Termékek táblázat',
+        'Product form': 'Termék űrlap',
+        'Carts table': 'Kosarak táblázat',
+        'Sort by clicking a header (multiple columns too, but dummyjson only uses the first one)':
+          'Rendezés a fejlécre kattintva (több oszlop szerint is, de a dummyjson csak az elsőt használja)',
+        'Filters: the <em>Product</em> search and the <em>Category</em> filter really filter, the others are only visible':
+          'Szűrők: a <em>Termék</em> keresés és a <em>Kategória</em> szűrő valóban szűr, a többi csak megjelenik',
+        'Pagination, rows per page selector': 'Lapozás, sor / oldal választó',
+        'Columns: show / hide, collapse (<i class="bi bi-arrows-collapse-vertical"></i>), "Expand all", "Reset" — kept in localStorage':
+          'Oszlopok: megjelenítés / elrejtés, összecsukás (<i class="bi bi-arrows-collapse-vertical"></i>), „Mind kinyit”, „Alaphelyzet” — localStorage-ban megmarad',
+        'Inline editing (title, stock, price, availability) with autosave, row save button':
+          'Soron belüli szerkesztés (név, készlet, ár, elérhetőség) automatikus mentéssel, sor mentése gomb',
+        'Row selection (#), bulk edit and delete in the footer row': 'Sorok kijelölése (#), tömeges szerkesztés és törlés a lábléc sorban',
+        'Row details (expandable), custom action button, CSV export, "More" dropdown':
+          'Sor részletei (kinyitható), egyedi művelet gomb, CSV export, „Továbbiak” menü',
+        'Fields: text, number, select, dropdown (multi), date, checkbox, textarea, list, template':
+          'Mezők: szöveg, szám, választó, legördülő (többes), dátum, jelölőnégyzet, szövegterület, lista, sablon',
+        'HTML editor (TipTap) with image, link and video embed': 'HTML szerkesztő (TipTap) kép, link és videó beágyazással',
+        'Image upload: drag &amp; drop, preview, image editor, translatable titles, tags':
+          'Képfeltöltés: drag &amp; drop, előnézet, képszerkesztő, fordítható címek, címkék',
+        'Save, save and close, copy, new, delete, reload': 'Mentés, mentés és bezárás, másolás, új, törlés, újratöltés',
+        'Dark theme, relation (user name, avatar), sorting, collapsed column, CSV':
+          'Sötét téma, kapcsolat (felhasználónév, avatar), rendezés, összecsukott oszlop, CSV',
+        'Read-only form with a template field': 'Csak olvasható űrlap sablon mezővel',
+      },
+    };
+
     const app = Vue.createApp({
       data() {
         return {
-          auth: {}
+          auth: {},
+          language: window.VuAdminHelpers.getLanguage(),
+          help: {
+            products: [
+              'Sort by clicking a header (multiple columns too, but dummyjson only uses the first one)',
+              'Filters: the <em>Product</em> search and the <em>Category</em> filter really filter, the others are only visible',
+              'Pagination, rows per page selector',
+              'Columns: show / hide, collapse (<i class="bi bi-arrows-collapse-vertical"></i>), "Expand all", "Reset" — kept in localStorage',
+              'Inline editing (title, stock, price, availability) with autosave, row save button',
+              'Row selection (#), bulk edit and delete in the footer row',
+              'Row details (expandable), custom action button, CSV export, "More" dropdown',
+            ],
+            form: [
+              'Fields: text, number, select, dropdown (multi), date, checkbox, textarea, list, template',
+              'HTML editor (TipTap) with image, link and video embed',
+              'Image upload: drag &amp; drop, preview, image editor, translatable titles, tags',
+              'Save, save and close, copy, new, delete, reload',
+            ],
+            carts: [
+              'Dark theme, relation (user name, avatar), sorting, collapsed column, CSV',
+              'Read-only form with a template field',
+            ],
+          },
         }
       },
+      methods: {
+        t(key) {
+          return (pageTranslations[this.language] || {})[key] || key;
+        },
+      },
+      created() {
+        document.documentElement.lang = this.language;
+        // the user menu language switch fires this event (LANGUAGE_CHANGE_EVENT in src/i18n.js)
+        window.addEventListener('vu-language-change', (event) => {
+          this.language = event.detail.language;
+          document.documentElement.lang = this.language;
+        });
+      },
       mounted() {
-        
+
         this.auth.success = true;
         this.auth.user = {
           firstName: 'User',
