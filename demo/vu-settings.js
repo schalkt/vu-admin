@@ -3,7 +3,7 @@ window.VuSettings = {
 	button: {
 		registration: {
 			class: 'btn btn-warning me-2',
-			label: 'Regisztráció',
+			label: 'Register',
 			icon: 'bi bi-person-plus me-2',
 		},
 		login:
@@ -22,7 +22,7 @@ window.VuSettings = {
 				}, {
 					class: 'dropdown-item cursor-pointer',
 					label: (params, settings, self) => {
-						return `<i class='bi bi-box-arrow-right me-1'></i> Kilépés`
+						return `<i class='bi bi-box-arrow-right me-1'></i> Sign out`
 					},
 					action: (params, self) => {
 						self.logout();
@@ -31,7 +31,7 @@ window.VuSettings = {
 			label: (params, settings, self) => {
 
 				if (!self.auth || !self.auth.user) {
-					return 'Bejelentkezés';
+					return 'Sign in';
 				}
 
 				const { escapeHtml, safeUrl } = window.VuAdminHelpers;
@@ -47,16 +47,16 @@ window.VuSettings = {
 	auth: {
 		debug: true,
         title: {
-            login: 'Bejelentkezés',
-            registration: 'Regisztráció',
-            forgot: 'Elfelejtett jelszó',
-            activation: 'Aktiválás',
+            login: 'Sign in',
+            registration: 'Register',
+            forgot: 'Forgot password',
+            activation: 'Activation',
         },
         submit: {
-            login: 'Bejelentkezés',
-            registration: 'Regisztráció',
-            forgot: 'Elfelejtett jelszó',
-            activation: 'Aktiválás',
+            login: 'Sign in',
+            registration: 'Register',
+            forgot: 'Forgot password',
+            activation: 'Activation',
         },
         api: {
             login: '/api/auth/login',
@@ -67,33 +67,33 @@ window.VuSettings = {
 		username: {
 			value: 'emilys',
 			type: 'text',
-			label: 'Felhasználónév',
+			label: 'Username',
 			icon: 'bi bi-envelope',
-			placeholder: 'Add meg a felhasználóneved',
-			_help: 'A Freemail és Citromail szolgáltatók nem minden esetben fogadják be megfelelően az e-maileket, így a kézbesítés nem garantált.'
+			placeholder: 'Enter your username',
+			_help: 'Some e-mail providers do not always accept our e-mails properly, so delivery is not guaranteed.'
 		},
 		password: {
-			label: 'Jelszó',
+			label: 'Password',
 			icon: 'bi bi-key-fill',
-			placeholder: 'Add meg a jelszavad',
+			placeholder: 'Enter your password',
 			type: 'password',
-			help: 'Legyen benne legalább 1 kisbetű, 1 nagybetű és 1 szám. Minimum 4 karakter.',
+			help: 'Use at least 1 lowercase letter, 1 uppercase letter and 1 digit. Minimum 4 characters.',
 			_pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
 			pattern: '^(?=.*[a-z]).+$',
 			minlength: 4,
 			hash: 11
 		},
 		password_again: {
-			label: 'Jelszó ismét',
+			label: 'Password again',
 			icon: 'bi bi-key-fill',
 			type: 'password',
-			placeholder: 'Ismételd meg a jelszavad',
-			_help: 'Ide gépeld be újra a jelszavadat amit megadtál.'
+			placeholder: 'Repeat your password',
+			_help: 'Type the password you entered again.'
 		},
-		_help: '<strong>Segítség</strong><br>Az alábbiakban...',
+		_help: '<strong>Help</strong><br>Below...',
 		accepts: [{
 			label: () => {
-				return `Elfogadom az <a href='/aszf.pdf'>Általános Szerződési Feltételeket</a>`
+				return `I accept the <a href='/terms.pdf'>Terms and Conditions</a>`
 			},
 			panels: ['registration'],
 			required: true,
@@ -101,7 +101,7 @@ window.VuSettings = {
 		},
 		{
 			label: () => {
-				return `Elfogadom az <a href='/adatkezelesi-tajekoztato.pdf'>Adatkezelési tájékoztatóban</a> leírtakat`
+				return `I accept the <a href='/privacy-policy.pdf'>Privacy Policy</a>`
 			},
 			panels: ['registration'],
 			required: true,
@@ -109,7 +109,7 @@ window.VuSettings = {
 
 		},
 		{
-			label: 'Feliratkozom a hírlevelekre',
+			label: 'Subscribe to the newsletter',
 			panels: ['registration', 'login'],
 			required: false,
 			name: 'newsletter',

@@ -1,5 +1,5 @@
-// HTML-t összefűző template-ekben minden adatot escape-elni kell (XSS);
-// a helperek a dist/vu-admin.umd.js-ből jönnek (window.VuAdminHelpers)
+// templates that build HTML must escape every data value (XSS);
+// the helpers come from dist/vu-admin.umd.js (window.VuAdminHelpers)
 const { escapeHtml, safeUrl } = window.VuAdminHelpers;
 
 let api = {
@@ -10,7 +10,7 @@ let api = {
 	}
 };
 
-// relation: a userId helyett a dummyjson felhasználó neve/avatarja (egy kérés az összes userre)
+// relation: the dummyjson user's name/avatar instead of userId (one request for all users)
 let relations = {
 	user: {
 		entity: 'user',
@@ -26,7 +26,7 @@ let relations = {
 };
 
 let events = {
-	// vu-admin order → dummyjson ?sortBy=&order= (a szűrőket a dummyjson nem ismeri, csak láthatók)
+	// vu-admin order → dummyjson ?sortBy=&order= (dummyjson does not support the filters, they are only visible)
 	beforeItemsLoad: (urlParams) => {
 		const order = Array.isArray(urlParams.order) ? urlParams.order.filter(Boolean)[0] : null;
 		delete urlParams.order;

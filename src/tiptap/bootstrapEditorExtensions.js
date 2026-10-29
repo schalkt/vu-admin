@@ -1,5 +1,5 @@
 /**
- * TipTap kiterjesztések: HTML kimenet Bootstrap 5 utility osztályokkal (inline style helyett).
+ * TipTap extensions: HTML output with Bootstrap 5 utility classes (instead of inline styles).
  */
 import { Extension, Mark, mergeAttributes } from "@tiptap/core";
 import TextAlign from "@tiptap/extension-text-align";
@@ -46,7 +46,7 @@ const MARGIN_CLASSES = [
 
 const ALERT_VARIANTS = ["secondary", "primary", "success", "danger", "warning", "info", "light", "dark"];
 
-/** Bootstrap float utilities (toolbar: blokk + kép). */
+/** Bootstrap float utilities (toolbar: block + image). */
 export const bootstrapFloatClasses = ["float-start", "float-end", "float-none"];
 
 /** Bootstrap `<img>` utility classes (whitelist for parse + editor UI). */

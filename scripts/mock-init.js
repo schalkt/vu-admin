@@ -1,9 +1,9 @@
 /**
- * Mock adatbázis inicializáló
+ * Mock database initializer
  *
- * Használat:
- *   npm run mock:seed    — törli és újra feltölti seed adatokkal
- *   npm run mock:reset   — csak törli (üres db fájlokat hagy)
+ * Usage:
+ *   npm run mock:seed    — clears and refills with seed data
+ *   npm run mock:reset   — clears only (leaves empty db files)
  */
 
 import fs from 'fs';
@@ -29,13 +29,13 @@ for (const file of seedFiles) {
 
   if (onlyReset && !withSeed) {
     fs.writeFileSync(dbFile, '[]', 'utf-8');
-    console.log(`[reset] ${file} → üres`);
+    console.log(`[reset] ${file} → empty`);
   } else {
     const seed = fs.readFileSync(path.join(seedDir, file), 'utf-8');
     fs.writeFileSync(dbFile, seed, 'utf-8');
     const count = JSON.parse(seed).length;
-    console.log(`[seed]  ${file} → ${count} rekord`);
+    console.log(`[seed]  ${file} → ${count} records`);
   }
 }
 
-console.log('Kész.');
+console.log('Done.');

@@ -699,7 +699,7 @@ const FileUpload = {
         if (fileType.hasOwnProperty(category)) {
           const types = fileType[category];
 
-          // Iterálunk a megadott kiterjesztéseken
+          // Iterate over the given extensions
           extensions.forEach(ext => {
             if (types[ext]) {
               mimeTypes.push(types[ext]);
@@ -1042,12 +1042,12 @@ const FileUpload = {
         let contentRect;
 
         if (preset.crop === "cover") {
-          // Fit mód: a kép közepéről vágunk ki részt, hogy kitöltse a célméretet
+          // Fit mode: crop from the center of the image so it fills the target size
           let scale = Math.max(targetWidth / width, targetHeight / height);
           let drawWidth = width * scale;
           let drawHeight = height * scale;
 
-          // Középről történő kivágás
+          // Crop from the center
           let offsetX = (drawWidth - targetWidth) / 2;
           let offsetY = (drawHeight - targetHeight) / 2;
 
@@ -1055,11 +1055,11 @@ const FileUpload = {
           canvas.height = targetHeight;
           ctx.drawImage(source, -offsetX, -offsetY, drawWidth, drawHeight);
 
-          // "cover" módban a kép kitölti a teljes canvas-t, nincs üres terület
+          // in "cover" mode the image fills the whole canvas, no empty area
           contentRect = { x: 0, y: 0, width: canvas.width, height: canvas.height };
 
         } else if (preset.crop === "contain") {
-          // Contain mód: a kép illeszkedik a célterületbe, üres helyek maradhatnak
+          // Contain mode: the image fits into the target area, empty space may remain
           let scale = Math.min(targetWidth / width, targetHeight / height);
           let drawWidth = width * scale;
           let drawHeight = height * scale;
@@ -1068,15 +1068,15 @@ const FileUpload = {
 
           canvas.width = targetWidth;
           canvas.height = targetHeight;
-          ctx.clearRect(0, 0, targetWidth, targetHeight); // Töröljük az üres területeket
+          ctx.clearRect(0, 0, targetWidth, targetHeight); // Clear the empty areas
           ctx.drawImage(source, offsetX, offsetY, drawWidth, drawHeight);
 
-          // "contain" módban a kép csak a canvas egy részét tölti ki (letterbox) -
-          // a vízjelet ehhez a tényleges méretű területhez kell igazítani, nem a teljes canvas-hoz
+          // in "contain" mode the image fills only part of the canvas (letterbox) -
+          // the watermark must be aligned to this actual area, not to the whole canvas
           contentRect = { x: offsetX, y: offsetY, width: drawWidth, height: drawHeight };
 
         } else {
-          // Nincs crop, marad az eredeti átméretezés
+          // No crop, keep the original resize
           if (width > targetWidth) {
             height = Math.round(height * (targetWidth / width));
             width = targetWidth;
@@ -1209,7 +1209,7 @@ const FileUpload = {
       let { wmWidth, wmHeight } = this.resolveWatermarkSize(watermark.width, contentRect, img);
       const margin = watermark.margin != null ? Number(watermark.margin) : Math.round(contentRect.width * 0.03);
 
-      // Ha a vízjel a margóval együtt kilógna a kép tényleges területéről, arányosan kicsinyítjük, hogy elférjen
+      // If the watermark plus margin would overflow the actual image area, scale it down proportionally to fit
       const maxWidth = Math.max(0, contentRect.width - margin * 2);
       const maxHeight = Math.max(0, contentRect.height - margin * 2);
       const overflowScale = Math.min(1, wmWidth ? maxWidth / wmWidth : 1, wmHeight ? maxHeight / wmHeight : 1);
@@ -1755,7 +1755,7 @@ const FileUpload = {
       const scaleX = tw / dw;
       const scaleY = th / dh;
 
-      // Slider = forráskép px; a pozícióhoz display canvason dolgozunk (WYSIWYG)
+      // Slider = source image px; positioning works on the display canvas (WYSIWYG)
       const blurPx = Math.max(1, this.blurRadius || 20);
       const padDisplay = Math.ceil(Math.max(blurPx / scaleX, blurPx / scaleY) * 3);
       const sx = Math.max(0, dx - padDisplay);
@@ -1975,7 +1975,7 @@ const FileUpload = {
         }
       }
 
-      return null; // Ha nem található a kiterjesztés
+      return null; // If the extension is not found
 
     },
 
@@ -1991,7 +1991,7 @@ const FileUpload = {
         }
       }
 
-      return null; // Ha nem található a MIME-típus
+      return null; // If the MIME type is not found
 
     },
 

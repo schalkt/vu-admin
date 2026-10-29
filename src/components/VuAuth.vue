@@ -370,7 +370,7 @@ const VuAuth = {
 
             if (typeof header === 'string' && header && header[0] === '{') {
                 this.auth.header = JSON.parse(header);
-                // korábbi verzió által mentett X-Auth-Role eltávolítása, ha nincs opt-in
+                // remove X-Auth-Role stored by an earlier version unless opted in
                 if (this.auth.roleHeader !== 'X-Auth-Role') {
                     delete this.auth.header['X-Auth-Role'];
                 }
@@ -496,8 +496,8 @@ const VuAuth = {
                     this.auth.user.role = this.auth.user.roles[0];
                 }
 
-                // szerepkör header csak opt-in (settings.roleHeader); a backend nem bízhat meg benne,
-                // csak a tokenhez tartozó szerepkörök közül választhat vele
+                // the role header is opt-in only (settings.roleHeader); the backend must not trust it,
+                // it may only select one of the token's roles with it
                 if (this.auth.roleHeader && this.auth.user.role) {
                     this.auth.header[this.auth.roleHeader] = this.auth.user.role;
                 }
@@ -879,7 +879,7 @@ const VuAuth = {
 
         window.addEventListener("keydown", this.handleEscapeKey);
 
-        // Töltsd be a reCAPTCHA scriptet, ha még nem érhető el
+        // Load the reCAPTCHA script if it is not available yet
         if (this.recaptchaSiteKey && !document.querySelector('script[src="https://www.google.com/recaptcha/api.js"]')) {
             const script = document.createElement("script");
             script.src = "https://www.google.com/recaptcha/api.js";

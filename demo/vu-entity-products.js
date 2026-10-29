@@ -1,7 +1,7 @@
-// Showcase entitás: a vu-admin tábla és form funkcióinak nagy része egy helyen, a https://dummyjson.com/products API-n.
-// A dummyjson nem ismeri a vu-admin filter/order formátumát és nem perzisztál: a beforeItemsLoad a rendezést,
-// a cím keresést és a kategória szűrőt átfordítja a dummyjson paramétereire, a többi szűrő csak látható.
-// HTML-t összefűző template-ekben minden adatot escape-elni kell (XSS) — a helperek a dist buildből jönnek.
+// Showcase entity: most vu-admin table and form features in one place, on the https://dummyjson.com/products API.
+// dummyjson does not know the vu-admin filter/order format and does not persist: beforeItemsLoad maps the sort,
+// the title search and the category filter to dummyjson parameters; the other filters are only visible.
+// Templates that build HTML must escape every data value (XSS) — the helpers come from the dist build.
 
 window.VuEntities = window.VuEntities || {};
 
@@ -19,9 +19,7 @@ window.VuEntities.products = (preset) => {
 
 	const label = (slug) => slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 
-	const money = (value) => Number(value || 0).toLocaleString('hu-HU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-	// a végleges settings objektum (afterSettingsInit), hogy a form api url-t mentés előtt át lehessen állítani
+		// the final settings object (afterSettingsInit), so the form api url can be switched before saving
 	let settingsRef = null;
 
 	const api = {
@@ -66,17 +64,17 @@ window.VuEntities.products = (preset) => {
 			settings.table.api.url = url;
 		},
 
-		// dummyjson: új elem POST /products/add, módosítás PUT /products/{id}
+		// dummyjson: new item POST /products/add, update PUT /products/{id}
 		beforeItemSave: (item, urlParams, input) => {
 			if (settingsRef) {
 				settingsRef.form.api.url = input && input.id ? BASE_URL : BASE_URL + '/add';
 			}
-			// csak a ténylegesen szerkeszthető mezők mennek el
+			// only the actually editable fields are sent
 			delete item.reviews;
 			delete item.meta;
 		},
 
-		// a form api-t a törlés és az újratöltés is használja → vissza az alap url-re
+		// delete and reload also use the form api → back to the base url
 		afterItemSave: () => {
 			if (settingsRef) {
 				settingsRef.form.api.url = BASE_URL;
@@ -90,7 +88,7 @@ window.VuEntities.products = (preset) => {
 		},
 
 		afterItemsLoad: (data) => {
-			// a dummyjson images mezője URL lista, a gallery upload mező ettől független (inline JSON tárolás)
+			// the dummyjson images field is a URL list; the gallery upload field is independent of it (inline JSON storage)
 			(data.products || []).forEach((product) => {
 				if (!Array.isArray(product.gallery)) {
 					product.gallery = [];
@@ -122,7 +120,7 @@ window.VuEntities.products = (preset) => {
 		},
 		{
 			name: 'thumbnail',
-			title: 'Kép',
+			title: 'Image',
 			sortable: false,
 			width: '5%',
 			class: 'text-center p-1',
@@ -134,7 +132,7 @@ window.VuEntities.products = (preset) => {
 		},
 		{
 			name: 'title',
-			title: 'Termék <small class="text-muted fw-light">(keresés)</small>',
+			title: 'Product <small class="text-muted fw-light">(search)</small>',
 			class: 'text-nowrap',
 			filter: {
 				type: 'text',
@@ -157,14 +155,14 @@ window.VuEntities.products = (preset) => {
 		},
 		{
 			name: 'brand',
-			title: 'Márka',
+			title: 'Brand',
 			collapsible: true,
 			class: 'text-nowrap',
 			template: (brand) => brand ? escapeHtml(brand) : '<span class="text-muted">–</span>',
 		},
 		{
 			name: 'category',
-			title: 'Kategória',
+			title: 'Category',
 			class: 'text-secondary',
 			filter: {
 				type: 'select',
@@ -177,14 +175,14 @@ window.VuEntities.products = (preset) => {
 		},
 		{
 			name: 'tags',
-			title: 'Címkék',
+			title: 'Tags',
 			sortable: false,
 			collapsed: true,
 			template: (tags) => (tags || []).map((tag) => '<span class="badge border text-secondary me-1">' + escapeHtml(tag) + '</span>').join(''),
 		},
 		{
 			name: 'rating',
-			title: 'Értékelés',
+			title: 'Rating',
 			width: '9%',
 			progressbar: {
 				class: 'bg-warning text-dark fw-bold',
@@ -202,7 +200,7 @@ window.VuEntities.products = (preset) => {
 		},
 		{
 			name: 'stock',
-			title: 'Készlet',
+			title: 'Stock',
 			width: '12%',
 			filter: {
 				type: 'number',
@@ -229,7 +227,7 @@ window.VuEntities.products = (preset) => {
 		},
 		{
 			name: 'price',
-			title: 'Ár',
+			title: 'Price',
 			width: '11%',
 			header: { class: 'text-end' },
 			input: {
@@ -246,24 +244,24 @@ window.VuEntities.products = (preset) => {
 		},
 		{
 			name: 'availabilityStatus',
-			title: 'Elérhetőség',
+			title: 'Availability',
 			collapsible: true,
 			input: {
 				type: 'select',
 				options: [
-					{ value: 'In Stock', label: 'Raktáron' },
-					{ value: 'Low Stock', label: 'Kevés' },
-					{ value: 'Out of Stock', label: 'Elfogyott' },
+					{ value: 'In Stock', label: 'In stock' },
+					{ value: 'Low Stock', label: 'Low stock' },
+					{ value: 'Out of Stock', label: 'Out of stock' },
 				],
 				autosave: true,
 			},
 			filter: {
 				type: 'select',
 				options: [
-					{ value: '', label: 'Mind' },
-					{ value: 'In Stock', label: 'Raktáron' },
-					{ value: 'Low Stock', label: 'Kevés' },
-					{ value: 'Out of Stock', label: 'Elfogyott' },
+					{ value: '', label: 'All' },
+					{ value: 'In Stock', label: 'In stock' },
+					{ value: 'Low Stock', label: 'Low stock' },
+					{ value: 'Out of Stock', label: 'Out of stock' },
 				],
 			},
 			bulk: {
@@ -272,11 +270,11 @@ window.VuEntities.products = (preset) => {
 		},
 		{
 			name: 'meta.updatedAt',
-			title: 'Módosítva',
+			title: 'Updated',
 			class: 'text-nowrap small text-secondary',
 			collapsible: true,
 			convert: {
-				in: (value) => value ? new Date(value).toLocaleDateString('hu-HU') : '',
+				in: (value) => value ? new Date(value).toLocaleDateString('en-US') : '',
 			},
 			filter: {
 				type: 'date',
@@ -288,7 +286,7 @@ window.VuEntities.products = (preset) => {
 		},
 		{
 			name: '#buttons',
-			title: 'Műveletek',
+			title: 'Actions',
 			sortable: false,
 			width: '12%',
 			class: 'text-end text-nowrap',
@@ -315,9 +313,9 @@ window.VuEntities.products = (preset) => {
 					icon: (params) => params.table.details.indexOf(params.item.id) >= 0 ? 'bi bi-chevron-up' : 'bi bi-chevron-down',
 				},
 				{
-					// egyedi művelet: saját függvény, a tábla üzenetsávjába ír
+					// custom action: own function, writes to the table's message bar
 					action: (item, params, self) => {
-						self.addTableMessage('Egyedi művelet: ' + item.title + ' (#' + item.id + ')', 3000, 'info');
+						self.addTableMessage('Custom action: ' + item.title + ' (#' + item.id + ')', 3000, 'info');
 					},
 					class: 'btn btn-sm btn-outline-info',
 					icon: 'bi bi-lightning',
@@ -337,7 +335,7 @@ window.VuEntities.products = (preset) => {
 	];
 
 	const table = {
-		title: 'Termékek (showcase)',
+		title: 'Products (showcase)',
 		class: 'table-hover table-responsive table-sm',
 		pagination: {
 			limit: 10,
@@ -352,19 +350,19 @@ window.VuEntities.products = (preset) => {
 			buttons: [
 				{
 					action: 'TABLE_COLUMNS',
-					title: 'Oszlopok',
+					title: 'Columns',
 					class: 'btn btn-sm btn-outline-dark m-1',
 					icon: 'bi bi-layout-three-columns',
 				},
 				{
 					action: 'TABLE_RELOAD',
-					title: 'Frissítés',
+					title: 'Reload',
 					class: 'btn btn-sm btn-outline-dark m-1',
 					icon: 'bi bi-arrow-clockwise',
 				},
 				{
 					action: 'FORM_CREATE',
-					title: 'Új termék',
+					title: 'New product',
 					class: 'btn btn-sm btn-primary m-1',
 					icon: 'bi bi-plus-lg',
 				},
@@ -375,34 +373,34 @@ window.VuEntities.products = (preset) => {
 					icon: 'bi bi-filetype-csv',
 				},
 				{
-					title: 'Továbbiak',
+					title: 'More',
 					class: 'btn btn-sm btn-outline-secondary m-1',
 					icon: 'bi bi-three-dots',
 					dropdowns: [
 						{
 							action: 'TABLE_RESET_FILTERS',
-							title: 'Szűrők törlése',
+							title: 'Clear filters',
 							class: 'dropdown-item cursor-pointer',
 							icon: 'bi bi-funnel',
 						},
 						{
 							action: 'TABLE_RESET_ORDERS',
-							title: 'Rendezés törlése',
+							title: 'Clear sorting',
 							class: 'dropdown-item cursor-pointer',
 							icon: 'bi bi-sort-down',
 						},
 						{
 							action: 'TABLE_CLOSE_DETAILS',
-							title: 'Részletek bezárása',
+							title: 'Close details',
 							class: 'dropdown-item cursor-pointer',
 							icon: 'bi bi-chevron-bar-up',
 						},
 						{
-							title: 'Kijelöltek száma',
+							title: 'Selected count',
 							class: 'dropdown-item cursor-pointer',
 							icon: 'bi bi-check2-square',
 							action: (item, params, self) => {
-								self.addTableMessage(self.selected.length + ' kijelölt sor', 2500, 'secondary');
+								self.addTableMessage(self.selected.length + ' selected rows', 2500, 'secondary');
 							},
 						},
 					],
@@ -415,7 +413,7 @@ window.VuEntities.products = (preset) => {
 			fields: [
 				{
 					name: 'description',
-					label: 'Leírás',
+					label: 'Description',
 					class: 'col-md-2',
 					input: {
 						type: 'textarea',
@@ -425,7 +423,7 @@ window.VuEntities.products = (preset) => {
 				},
 				{
 					name: 'warrantyInformation',
-					label: 'Garancia',
+					label: 'Warranty',
 					class: 'col-md-2',
 					input: {
 						type: 'text',
@@ -439,7 +437,7 @@ window.VuEntities.products = (preset) => {
 					'<li><span class="text-warning">' + '★'.repeat(Math.round(review.rating || 0)) + '</span> ' +
 					escapeHtml(review.comment) + ' <small class="text-muted">— ' + escapeHtml(review.reviewerName) + '</small></li>'
 				).join('');
-				return '<div class="small p-2"><strong>Vélemények</strong><ul class="mb-0">' + (reviews || '<li class="text-muted">Nincs</li>') + '</ul></div>';
+				return '<div class="small p-2"><strong>Reviews</strong><ul class="mb-0">' + (reviews || '<li class="text-muted">None</li>') + '</ul></div>';
 			},
 		},
 		exports: {
@@ -447,14 +445,14 @@ window.VuEntities.products = (preset) => {
 				type: 'csv',
 				fields: [
 					{ name: 'id', title: 'ID' },
-					{ name: 'title', title: 'Termék' },
-					{ name: 'brand', title: 'Márka' },
-					{ name: 'category', title: 'Kategória' },
-					{ name: 'tags', title: 'Címkék', template: (tags) => (tags || []).join(', ') },
-					{ name: 'rating', title: 'Értékelés', template: (value) => String(value).replace('.', ',') },
-					{ name: 'stock', title: 'Készlet', template: (value) => value <= 0 ? 'NINCS' : value },
-					{ name: 'price', title: 'Ár', template: (value) => String(value).replace('.', ',') },
-					{ title: 'Pénznem', template: () => 'USD' },
+					{ name: 'title', title: 'Product' },
+					{ name: 'brand', title: 'Brand' },
+					{ name: 'category', title: 'Category' },
+					{ name: 'tags', title: 'Tags', template: (tags) => (tags || []).join(', ') },
+					{ name: 'rating', title: 'Rating' },
+					{ name: 'stock', title: 'Stock', template: (value) => value <= 0 ? 'OUT OF STOCK' : value },
+					{ name: 'price', title: 'Price' },
+					{ title: 'Currency', template: () => 'USD' },
 				],
 			},
 		},
@@ -462,9 +460,9 @@ window.VuEntities.products = (preset) => {
 
 	const form = {
 		class: 'm-2',
-		title: (item) => item.id ? escapeHtml(item.title) + ' <small class="text-muted">#' + escapeHtml(item.id) + '</small>' : 'Új termék',
+		title: (item) => item.id ? escapeHtml(item.title) + ' <small class="text-muted">#' + escapeHtml(item.id) + '</small>' : 'New product',
 		default: {
-			title: 'Új termék',
+			title: 'New product',
 			category: 'beauty',
 			price: 9.99,
 			stock: 10,
@@ -477,25 +475,25 @@ window.VuEntities.products = (preset) => {
 			class: 'text-end',
 			buttons: [
 				{
-					title: 'Továbbiak',
+					title: 'More',
 					class: 'btn btn-sm btn-outline-dark m-1',
 					icon: 'bi bi-list',
 					dropdowns: [
 						{
 							action: 'FORM_COPY',
-							title: 'Másolás újként',
+							title: 'Copy as new',
 							class: 'dropdown-item cursor-pointer p-1',
 							icon: 'bi bi-copy',
 						},
 						{
 							action: 'FORM_NEW',
-							title: 'Új termék',
+							title: 'New product',
 							class: 'dropdown-item cursor-pointer p-1',
 							icon: 'bi bi-plus-circle',
 						},
 						{
 							action: 'FORM_DELETE',
-							title: 'Törlés',
+							title: 'Delete',
 							class: 'dropdown-item cursor-pointer p-1 text-danger',
 							icon: 'bi bi-trash',
 							disabled: (params) => !params?.item?.id,
@@ -504,26 +502,26 @@ window.VuEntities.products = (preset) => {
 				},
 				{
 					action: 'FORM_RELOAD',
-					title: 'Újratöltés',
+					title: 'Reload',
 					class: 'btn btn-sm btn-outline-dark m-1',
 					icon: 'bi bi-arrow-clockwise',
 					disabled: (params) => !params?.item?.id,
 				},
 				{
 					action: 'FORM_CLOSE',
-					title: 'Bezár',
+					title: 'Close',
 					class: 'btn btn-sm btn-secondary m-1',
 					icon: 'bi bi-x',
 				},
 				{
 					action: 'FORM_SAVE',
-					title: 'Mentés',
+					title: 'Save',
 					class: 'btn btn-sm btn-primary m-1',
 					icon: 'bi bi-save',
 				},
 				{
 					action: 'FORM_SAVE_AND_CLOSE',
-					title: 'Mentés és bezár',
+					title: 'Save and close',
 					class: 'btn btn-sm btn-success m-1',
 					icon: 'bi bi-check2',
 				},
@@ -531,13 +529,13 @@ window.VuEntities.products = (preset) => {
 		},
 		groups: [
 			{
-				title: '<strong>Alap</strong> adatok',
+				title: '<strong>Basic</strong> data',
 				class: 'border rounded p-4 col-md-6',
 				fields: [
 					{
 						type: 'text',
 						name: 'title',
-						label: 'Termék neve',
+						label: 'Product name',
 						required: true,
 						class: 'col-md-8',
 						prefix: '<i class="bi bi-tag"></i>',
@@ -548,12 +546,12 @@ window.VuEntities.products = (preset) => {
 						label: 'SKU',
 						class: 'col-md-4',
 						readonly: true,
-						description: 'Csak olvasható mező',
+						description: 'Read-only field',
 					},
 					{
 						type: 'select',
 						name: 'category',
-						label: 'Kategória',
+						label: 'Category',
 						required: true,
 						class: 'col-md-6',
 						options: categories.map((slug) => ({ value: slug, label: label(slug) })),
@@ -562,13 +560,13 @@ window.VuEntities.products = (preset) => {
 					{
 						type: 'text',
 						name: 'brand',
-						label: 'Márka',
+						label: 'Brand',
 						class: 'col-md-6',
 					},
 					{
 						type: 'number',
 						name: 'price',
-						label: 'Ár',
+						label: 'Price',
 						min: 0,
 						step: 0.01,
 						class: 'col-md-4',
@@ -577,7 +575,7 @@ window.VuEntities.products = (preset) => {
 					{
 						type: 'number',
 						name: 'discountPercentage',
-						label: 'Kedvezmény',
+						label: 'Discount',
 						min: 0,
 						max: 100,
 						step: 0.01,
@@ -587,10 +585,10 @@ window.VuEntities.products = (preset) => {
 					{
 						type: 'number',
 						name: 'stock',
-						label: 'Készlet',
+						label: 'Stock',
 						min: 0,
 						class: 'col-md-4',
-						suffix: 'db',
+						suffix: 'pcs',
 					},
 					{
 						type: 'number',
@@ -599,23 +597,23 @@ window.VuEntities.products = (preset) => {
 						max: 5,
 						step: 0.01,
 						class: 'col-md-6',
-						label: (params) => 'Értékelés <small class="text-muted">(' + params.field.min + '–' + params.field.max + ')</small>',
+						label: (params) => 'Rating <small class="text-muted">(' + params.field.min + '–' + params.field.max + ')</small>',
 					},
 					{
 						type: 'date',
 						name: 'availableFrom',
-						label: 'Elérhető ettől',
+						label: 'Available from',
 						class: 'col-md-6',
 					},
 					{
 						type: 'dropdown',
 						name: 'tags',
-						label: 'Címkék',
+						label: 'Tags',
 						class: 'col-md-12',
 						dropdown: {
 							label: ({ item, field }) => {
 								const count = Array.isArray(item[field.name]) ? item[field.name].length : 0;
-								return count ? 'Címkék (' + count + ')' : 'Címke hozzáadása';
+								return count ? 'Tags (' + count + ')' : 'Add tag';
 							},
 							class: 'btn btn-sm btn-outline-secondary',
 						},
@@ -628,7 +626,7 @@ window.VuEntities.products = (preset) => {
 						type: 'checkbox',
 						name: 'featured',
 						label: null,
-						checkbox: 'Kiemelt termék',
+						checkbox: 'Featured product',
 						true: true,
 						false: false,
 						class: 'col-md-6',
@@ -637,7 +635,7 @@ window.VuEntities.products = (preset) => {
 						type: 'checkbox',
 						name: 'inStock',
 						label: null,
-						checkbox: 'Raktáron',
+						checkbox: 'In stock',
 						true: true,
 						false: false,
 						class: 'col-md-6',
@@ -645,23 +643,23 @@ window.VuEntities.products = (preset) => {
 					{
 						type: 'list',
 						name: 'links',
-						label: 'Linkek',
+						label: 'Links',
 						sortable: true,
 						addButton: {
 							class: 'btn btn-sm btn-outline-primary my-1 w-100',
 							icon: 'bi bi-plus me-1',
-							label: (item) => 'Hozzáadás (' + (item.links || []).length + ')',
+							label: (item) => 'Add (' + (item.links || []).length + ')',
 							wrapperClass: 'col-3',
 						},
 						elements: {
 							href: { type: 'url', class: 'col-md-7', prefix: 'URL' },
-							name: { type: 'text', class: 'col-md-5', prefix: 'Név' },
+							name: { type: 'text', class: 'col-md-5', prefix: 'Name' },
 						},
 					},
 				],
 			},
 			{
-				title: 'Leírás és média',
+				title: 'Description and media',
 				class: 'p-4 col-md-6',
 				fields: [
 					{
@@ -673,39 +671,39 @@ window.VuEntities.products = (preset) => {
 							const url = escapeHtml(safeUrl(item[field.name]));
 							return url
 								? '<img src="' + url + '" height="120" class="rounded border shadow-sm">'
-								: '<span class="text-muted">Nincs kép</span>';
+								: '<span class="text-muted">No image</span>';
 						},
 					},
 					{
 						type: 'textarea',
 						name: 'warrantyInformation',
-						label: 'Garancia',
+						label: 'Warranty',
 						rows: 2,
 					},
 					{
 						type: 'html',
 						name: 'description',
-						label: 'Leírás (HTML szerkesztő, videó beágyazással)',
+						label: 'Description (HTML editor with video embed)',
 						tiptap: {
-							placeholder: 'Termékleírás — félkövér, címsor, lista, link, kép, videó…',
+							placeholder: 'Product description — bold, heading, list, link, image, video…',
 						},
 					},
 					{
 						type: 'upload',
 						name: 'gallery',
-						label: 'Galéria (inline JSON, nincs feltöltési URL)',
+						label: 'Gallery (inline JSON, no upload URL)',
 						params: {
 							ui: 'card',
 							limit: 6,
 							colclass: 'col-6',
-							text: 'Kattints vagy húzd ide a képeket',
+							text: 'Click or drop images here',
 							accept: ['png', 'jpg', 'jpeg', 'webp'],
 							thumbnail: 'small',
 							editor: true,
 							languages: ['hu', 'en'],
 							tags: [
-								{ value: 'public', label: 'Publikus' },
-								{ value: 'hidden', label: 'Rejtett' },
+								{ value: 'public', label: 'Public' },
+								{ value: 'hidden', label: 'Hidden' },
 							],
 							presets: {
 								default: { width: 1280, height: 960, extension: 'webp', quality: 0.85 },

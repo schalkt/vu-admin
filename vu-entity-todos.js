@@ -20,13 +20,13 @@ window.VuEntities.todos = (preset) => {
 		},
 		events: {
 			beforeItemsLoad: (urlParams, settings) => {
-				// Keresem a userId oszlopot és annak filter értékét
+				// Find the userId column and its filter value
 				const userIdColumn = settings.table.columns.find(col => col.name === 'userId');
 				if (userIdColumn && userIdColumn.filter && userIdColumn.filter.value !== undefined && userIdColumn.filter.value !== null) {
-					// Módosítom az API URL-t, hogy tartalmazza a user ID-t
+					// Change the API URL to include the user ID
 					settings.table.api.url = '/api/todos/user/' + userIdColumn.filter.value;
 				} else {
-					// Ha nincs userId filter, visszaállítom az eredeti URL-t
+					// Without a userId filter, restore the original URL
 					settings.table.api.url = '/api/todos';
 				}
 			}

@@ -12,18 +12,18 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 const CAPTCHA_SECRET = process.env.CAPTCHA_SECRET || 'vu-admin-dev-secret-change-in-prod';
 const CAPTCHA_BUCKET = 300; // seconds per time window (5 min)
 const CAPTCHA_ICONS = [
-  { id: 'house',     icon: 'bi-house-fill',      label: 'ház' },
-  { id: 'star',      icon: 'bi-star-fill',        label: 'csillag' },
-  { id: 'heart',     icon: 'bi-heart-fill',       label: 'szív' },
-  { id: 'bell',      icon: 'bi-bell-fill',         label: 'csengő' },
-  { id: 'camera',    icon: 'bi-camera-fill',       label: 'kamera' },
-  { id: 'cloud',     icon: 'bi-cloud-fill',        label: 'felhő' },
-  { id: 'sun',       icon: 'bi-sun-fill',          label: 'nap' },
-  { id: 'moon',      icon: 'bi-moon-stars-fill',   label: 'hold' },
-  { id: 'tree',      icon: 'bi-tree-fill',         label: 'fa' },
-  { id: 'lightning', icon: 'bi-lightning-fill',    label: 'villám' },
-  { id: 'flower',    icon: 'bi-flower1',           label: 'virág' },
-  { id: 'car',       icon: 'bi-car-front-fill',    label: 'autó' },
+  { id: 'house',     icon: 'bi-house-fill',      label: 'house' },
+  { id: 'star',      icon: 'bi-star-fill',        label: 'star' },
+  { id: 'heart',     icon: 'bi-heart-fill',       label: 'heart' },
+  { id: 'bell',      icon: 'bi-bell-fill',         label: 'bell' },
+  { id: 'camera',    icon: 'bi-camera-fill',       label: 'camera' },
+  { id: 'cloud',     icon: 'bi-cloud-fill',        label: 'cloud' },
+  { id: 'sun',       icon: 'bi-sun-fill',          label: 'sun' },
+  { id: 'moon',      icon: 'bi-moon-stars-fill',   label: 'moon' },
+  { id: 'tree',      icon: 'bi-tree-fill',         label: 'tree' },
+  { id: 'lightning', icon: 'bi-lightning-fill',    label: 'lightning' },
+  { id: 'flower',    icon: 'bi-flower1',           label: 'flower' },
+  { id: 'car',       icon: 'bi-car-front-fill',    label: 'car' },
 ];
 
 function captchaBucket() {
@@ -43,7 +43,7 @@ function verifyCaptcha(answers, token) {
   return signCaptcha(list, b) === token || signCaptcha(list, b - 1) === token;
 }
 
-// --- Access token (HS256 JWT, 1 óra lejárat) ---
+// --- Access token (HS256 JWT, expires in 1 hour) ---
 const JWT_SECRET = process.env.JWT_SECRET || 'vu-admin-dev-jwt-secret-change-in-prod';
 
 function createAccessToken(user) {
@@ -123,8 +123,8 @@ function send(res, data, status = 200, delay = 0) {
 }
 
 /**
- * Entity CRUD (/api/{entity}) hibaszimuláció.
- * Itt állítsd true-ra, vagy env: MOCK_ERROR_GET / POST / PUT / DELETE (=true|1).
+ * Entity CRUD (/api/{entity}) error simulation.
+ * Set to true here, or via env: MOCK_ERROR_GET / POST / PUT / DELETE (=true|1).
  */
 export const mockErrors = {
   GET: false,
@@ -144,7 +144,7 @@ function resolveMockErrors(overrides = {}) {
 }
 
 function mockErrorPayload(method) {
-  return { message: `Mock API hiba (${method})` };
+  return { message: `Mock API error (${method})` };
 }
 
 const UPLOAD_MIME = {
@@ -201,7 +201,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
   const errors = resolveMockErrors(mockErrorOverrides);
 
   if (Object.values(errors).some(Boolean)) {
-    console.log('[mock] API hibaszimuláció (entity CRUD):', errors);
+    console.log('[mock] API error simulation (entity CRUD):', errors);
   }
 
   const rejectMock = (res, method) => {
@@ -210,10 +210,10 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
   };
 
   if (!fs.existsSync(dbDir)) {
-    console.warn('[mock] A mock/db/ mappa nem létezik. Futtasd: npm run mock:init');
+    console.warn('[mock] The mock/db/ folder does not exist. Run: npm run mock:seed');
   }
 
-  // --- Feltöltött fájlok kiszolgálása: GET /mock/uploads/:filename ---
+  // --- Serve uploaded files: GET /mock/uploads/:filename ---
   server.middlewares.use('/mock/uploads', (req, res, next) => {
     const filename = (req.url || '/').split('?')[0].replace(/^\//, '');
     if (!filename) return next();
@@ -225,14 +225,14 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     res.end(fs.readFileSync(filepath));
   });
 
-  // --- Fájl feltöltés: POST /api/upload ---
+  // --- File upload: POST /api/upload ---
   server.middlewares.use('/api/upload', (req, res, next) => {
     if (req.method !== 'POST') return next();
 
     const ct = req.headers['content-type'] || '';
     const boundaryMatch = ct.match(/boundary=([^\s;]+)/);
 
-    // multipart/form-data kezelés
+    // multipart/form-data handling
     if (boundaryMatch) {
       const boundary = boundaryMatch[1];
       const chunks = [];
@@ -271,7 +271,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       return;
     }
 
-    // JSON body kezelés (data URL alapú feltöltés fallback)
+    // JSON body handling (data URL based upload fallback)
     let body = '';
     req.on('data', chunk => (body += chunk));
     req.on('end', () => {
@@ -303,7 +303,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     });
   });
 
-  // --- Lokális SVG avatar: GET /mock/avatar/:initials ---
+  // --- Local SVG avatar: GET /mock/avatar/:initials ---
   server.middlewares.use('/mock/avatar', (req, res, next) => {
     const initials = (req.url || '/').split('?')[0].replace(/^\//, '') || '?';
     res.setHeader('Content-Type', 'image/svg+xml');
@@ -311,7 +311,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     res.end(avatarSvg(initials));
   });
 
-  // --- Lokális SVG termék thumbnail: GET /mock/thumb/:label ---
+  // --- Local SVG product thumbnail: GET /mock/thumb/:label ---
   server.middlewares.use('/mock/thumb', (req, res, next) => {
     const label = decodeURIComponent((req.url || '/').split('?')[0].replace(/^\//, '')) || '?';
     res.setHeader('Content-Type', 'image/svg+xml');
@@ -330,7 +330,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     res.setHeader('Cache-Control', 'no-store');
     res.end(JSON.stringify({
       items,
-      question: `Kattints a(z) <strong>${picked[0].label}</strong> ikonra!`,
+      question: `Click the <strong>${picked[0].label}</strong> icon!`,
       token,
     }));
   });
@@ -341,11 +341,11 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
 
     if (action === 'login' && req.method === 'POST') {
       const body = await readBody(req);
-      if (body.honeypot) return send(res, { message: 'Hibás felhasználónév vagy jelszó' }, 401, delay);
-      if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) return send(res, { message: 'Érvénytelen captcha megoldás' }, 422, delay);
+      if (body.honeypot) return send(res, { message: 'Invalid username or password' }, 401, delay);
+      if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) return send(res, { message: 'Invalid captcha answer' }, 422, delay);
       const users = readDb('users') || [];
       const user = users.find(u => u.username === body.username || u.email === body.username);
-      if (!user) return send(res, { message: 'Hibás felhasználónév vagy jelszó' }, 401, delay);
+      if (!user) return send(res, { message: 'Invalid username or password' }, 401, delay);
       if (user.twofa) {
         const { session, code } = twoFaCreate(user.id);
         console.log(`[mock 2FA] OTP for ${user.email}: ${code}`);
@@ -357,11 +357,11 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
 
     if (action === 'register' && req.method === 'POST') {
       const body = await readBody(req);
-      if (body.honeypot) return send(res, { message: 'Regisztráció sikertelen' }, 400, delay);
-      if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) return send(res, { message: 'Érvénytelen captcha megoldás' }, 422, delay);
+      if (body.honeypot) return send(res, { message: 'Registration failed' }, 400, delay);
+      if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) return send(res, { message: 'Invalid captcha answer' }, 422, delay);
       const users = readDb('users') || [];
       const exists = users.find(u => u.email === body.username || u.username === body.username);
-      if (exists) return send(res, { message: 'Ez az e-mail cím már foglalt' }, 409, delay);
+      if (exists) return send(res, { message: 'This e-mail address is already taken' }, 409, delay);
       const inputData = body.input || {};
       if (!inputData.twofa) delete inputData.twofa;
       const newUser = {
@@ -374,7 +374,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       users.push(newUser);
       writeDb('users', users);
       const { password: _, ...safeUser } = newUser;
-      return send(res, { ...safeUser, message: 'Sikeres regisztráció! Az aktiváló e-mail el lett küldve.' }, 200, delay);
+      return send(res, { ...safeUser, message: 'Registration successful! The activation e-mail has been sent.' }, 200, delay);
     }
 
     if (action === 'me' && req.method === 'GET') {
@@ -389,19 +389,19 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       return send(res, {
         ...safeUser,
         accessToken: createAccessToken({ id: 1, ...safeUser }),
-        message: 'Sikeres aktiválás!',
+        message: 'Activation successful!',
       }, 200, delay);
     }
 
     if (action === 'twofa' && req.method === 'POST') {
       const body = await readBody(req);
       const entry = twoFaStore.get(body.twofaSession);
-      if (!entry || Date.now() > entry.expires) return send(res, { message: 'A munkamenet lejárt, kérjük jelentkezz be újra' }, 401, delay);
-      if (entry.code !== String(body.code).trim()) return send(res, { message: 'Érvénytelen kód' }, 422, delay);
+      if (!entry || Date.now() > entry.expires) return send(res, { message: 'The session has expired, please sign in again' }, 401, delay);
+      if (entry.code !== String(body.code).trim()) return send(res, { message: 'Invalid code' }, 422, delay);
       twoFaStore.delete(body.twofaSession);
       const users = readDb('users') || [];
       const user = users.find(u => u.id === entry.userId);
-      if (!user) return send(res, { message: 'Felhasználó nem található' }, 404, delay);
+      if (!user) return send(res, { message: 'User not found' }, 404, delay);
       const { password: _, ...safeUser } = user;
       return send(res, { ...safeUser, accessToken: createAccessToken(user) }, 200, delay);
     }
@@ -409,37 +409,37 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     if (action === 'twofa-resend' && req.method === 'POST') {
       const body = await readBody(req);
       const entry = twoFaStore.get(body.twofaSession);
-      if (!entry || Date.now() > entry.expires) return send(res, { message: 'Nem lehet újraküldeni' }, 400, delay);
+      if (!entry || Date.now() > entry.expires) return send(res, { message: 'Cannot resend' }, 400, delay);
       entry.code = String(Math.floor(100000 + Math.random() * 900000));
       entry.expires = Date.now() + 5 * 60 * 1000;
       console.log(`[mock 2FA] Resent OTP for userId ${entry.userId}: ${entry.code}`);
-      return send(res, { message: 'Kód elküldve' }, 200, delay);
+      return send(res, { message: 'Code sent' }, 200, delay);
     }
 
     next();
   });
 
-  // --- Navigáció: GET /api/navs (VuAdminNav) ---
+  // --- Navigation: GET /api/navs (VuAdminNav) ---
   server.middlewares.use('/api/navs', (req, res, next) => {
     if (req.method !== 'GET') return next();
     return send(res, {
       admin: {
         class: '',
         items: [
-          { name: 'Vezérlőpult', href: '#', icon: 'bi bi-speedometer2 me-1' },
+          { name: 'Dashboard', href: '#', icon: 'bi bi-speedometer2 me-1' },
           {
-            name: 'Tartalom',
+            name: 'Content',
             icon: 'bi bi-file-earmark-text me-1',
             items: [
-              { name: 'Termékek', href: '#product', icon: 'bi bi-box-seam me-1' },
-              { name: 'Bejegyzések', href: '#post', icon: 'bi bi-newspaper me-1' },
-              { name: 'Teendők', href: '#todos', icon: 'bi bi-check2-square me-1' },
-              { name: 'Rejtett menüpont', href: '#', disabled: true },
+              { name: 'Products', href: '#product', icon: 'bi bi-box-seam me-1' },
+              { name: 'Posts', href: '#post', icon: 'bi bi-newspaper me-1' },
+              { name: 'Todos', href: '#todos', icon: 'bi bi-check2-square me-1' },
+              { name: 'Hidden menu item', href: '#', disabled: true },
             ],
           },
-          { name: 'Felhasználók', href: '#user', icon: 'bi bi-people me-1' },
-          { name: 'Dokumentáció', href: 'https://github.com', target: '_blank', icon: 'bi bi-box-arrow-up-right me-1' },
-          { name: 'Letiltott', href: '#', disabled: true },
+          { name: 'Users', href: '#user', icon: 'bi bi-people me-1' },
+          { name: 'Documentation', href: 'https://github.com', target: '_blank', icon: 'bi bi-box-arrow-up-right me-1' },
+          { name: 'Disabled', href: '#', disabled: true },
         ],
       },
     }, 200, delay);
@@ -454,14 +454,14 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     if (!entity) return next();
 
     const items = readDb(entity);
-    if (items === null) return next(); // nincs db fájl → proxy-ra esik
+    if (items === null) return next(); // no db file → falls through to the proxy
 
     const qs = new URLSearchParams(queryPart || '');
     const rawLimit = parseInt(qs.get('limit') || '30');
     const limit = rawLimit === 0 ? Infinity : Math.min(rawLimit, 500);
     const skip = parseInt(qs.get('skip') || '0');
 
-    // GET /api/todos/user/1 — userId szerinti szűrés
+    // GET /api/todos/user/1 — filter by userId
     if (req.method === 'GET' && parts[1] === 'user' && parts[2]) {
       if (errors.GET) return rejectMock(res, 'GET');
       const userId = parseInt(parts[2]);
@@ -483,8 +483,8 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
           : send(res, { message: 'Not found' }, 404, delay);
       }
 
-      // filter paraméter feldolgozása
-      // formátum: {"id":{"type":"array","value":"1,2,3","operator":"IN"}}
+      // parse the filter parameter
+      // format: {"id":{"type":"array","value":"1,2,3","operator":"IN"}}
       let filtered = items;
       const filterParam = qs.get('filter');
       if (filterParam) {
@@ -513,11 +513,11 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
               return true;
             });
           }
-        } catch { /* érvénytelen filter → figyelmen kívül */ }
+        } catch { /* invalid filter → ignored */ }
       }
 
-      // order paraméter feldolgozása (többszintű, dot-notation mezőnév)
-      // formátum: [{"key":"title","dir":"DESC"},{"key":"meta.updatedAt","dir":"ASC"}]
+      // parse the order parameter (multi-level, dot-notation field names)
+      // format: [{"key":"title","dir":"DESC"},{"key":"meta.updatedAt","dir":"ASC"}]
       const orderParam = qs.get('order');
       if (orderParam) {
         try {
@@ -537,7 +537,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
             }
             return 0;
           });
-        } catch { /* érvénytelen order → figyelmen kívül */ }
+        } catch { /* invalid order → ignored */ }
       }
 
       const page = limit === Infinity ? filtered.slice(skip) : filtered.slice(skip, skip + limit);

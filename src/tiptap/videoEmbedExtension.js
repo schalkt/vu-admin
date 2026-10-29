@@ -1,10 +1,10 @@
 /**
- * TipTap videó beágyazás: `<iframe>` node, csak megbízható (whitelistelt) hosztokra.
- * Támogatott forrás: YouTube, Vimeo, Facebook — oldal-URL, embed URL vagy teljes `<iframe>` embed kód.
+ * TipTap video embed: `<iframe>` node, only for trusted (whitelisted) hosts.
+ * Supported sources: YouTube, Vimeo, Facebook — page URL, embed URL or a full `<iframe>` embed code.
  */
 import { Node, mergeAttributes } from "@tiptap/core";
 
-/** Alapértelmezett engedélyezett iframe hosztok (embed `src`). */
+/** Default allowed iframe hosts (embed `src`). */
 export const defaultVideoEmbedHosts = [
   "www.youtube.com",
   "youtube.com",
@@ -15,8 +15,8 @@ export const defaultVideoEmbedHosts = [
 ];
 
 /**
- * Választható képarányok tájolás szerint (null → fix width/height, wrapper nélkül).
- * A Bootstrap csak 1x1, 4x3, 16x9, 21x9 osztályt ad — a többihez a `.ratio` wrapper `--bs-aspect-ratio` változót kap.
+ * Selectable aspect ratios by orientation (null → fixed width/height, no wrapper).
+ * Bootstrap only provides 1x1, 4x3, 16x9, 21x9 classes — for the others the `.ratio` wrapper gets a `--bs-aspect-ratio` variable.
  */
 export const videoEmbedRatioOptions = [
   { value: "21x9", orientation: "landscape", label: "21:9" },
@@ -39,14 +39,14 @@ function ratioParts(ratio) {
   return m ? { w: parseFloat(m[1]), h: parseFloat(m[2]) } : null;
 }
 
-/** Bootstrap osztály-név: a pont nem érvényes CSS osztályban escape nélkül → "9x19-5". */
+/** Bootstrap class name: a dot is not valid in a CSS class without escaping → "9x19-5". */
 export function ratioClassName(ratio) {
   return `ratio-${String(ratio).replace(".", "-")}`;
 }
 
 /**
- * Méret mértékegységek: % a tartalom szélességéhez, vw/vh a képernyőhöz (pl. fekvő mobil: magasság ≤ 85vh).
- * Magasságnál a % nem értelmezhető (a szülő magassága ismeretlen), ezért ott nincs.
+ * Size units: % of the content width, vw/vh of the screen (e.g. landscape phone: height ≤ 85vh).
+ * % makes no sense for the height (the parent's height is unknown), so it is not offered there.
  */
 export const videoSizeUnits = {
   width: ["px", "%", "vw", "vh"],
@@ -54,7 +54,7 @@ export const videoSizeUnits = {
 };
 
 /**
- * Méret normalizálása: 560 / "560" → "560px", "80 vh" → "80vh"; érvénytelen vagy nem engedett egység → null.
+ * Size normalization: 560 / "560" → "560px", "80 vh" → "80vh"; invalid or disallowed unit → null.
  * @param {"width"|"height"} axis
  * @returns {string|null}
  */
@@ -68,7 +68,7 @@ export function normalizeVideoSize(value, axis = "width") {
   return `${+n.toFixed(2)}${unit}`;
 }
 
-/** "80vh" → { value: "80", unit: "vh" } (űrlaphoz). */
+/** "80vh" → { value: "80", unit: "vh" } (for the form). */
 export function splitVideoSize(value, axis = "width") {
   const s = normalizeVideoSize(value, axis);
   if (!s) return { value: "", unit: "px" };
@@ -76,18 +76,18 @@ export function splitVideoSize(value, axis = "width") {
   return { value: m[1], unit: m[2] };
 }
 
-/** px érték száma (iframe width/height HTML attribútumhoz), egyébként null. */
+/** Number of a px value (for the iframe width/height HTML attribute), otherwise null. */
 function pxNumber(size) {
   const m = size && size.match(/^([\d.]+)px$/);
   return m ? Math.round(parseFloat(m[1])) : null;
 }
 
 /**
- * `.ratio` wrapper inline stílusa: nem natív aránynál `--bs-aspect-ratio`, plusz max-width:
- * - csak szélesség → max-width: W
- * - csak magasság → max-width: H × arány (a szélességet az arány adja)
- * - mindkettő → max-width: min(W, H × arány) — pl. 100% széles, de legfeljebb 85vh magas (fekvő mobil)
- * A wrapper legfeljebb a tartalom szélességéig nyúlik, így vízszintesen soha nem lóg ki.
+ * Inline style of the `.ratio` wrapper: `--bs-aspect-ratio` for non-native ratios, plus max-width:
+ * - width only → max-width: W
+ * - height only → max-width: H × ratio (the width follows from the ratio)
+ * - both → max-width: min(W, H × ratio) — e.g. 100% wide but at most 85vh high (landscape phone)
+ * The wrapper is at most as wide as the content, so it never overflows horizontally.
  * @returns {string|null}
  */
 export function videoRatioWrapperStyle(ratio, width, height) {
@@ -109,7 +109,7 @@ export function videoRatioWrapperStyle(ratio, width, height) {
   return parts.length ? parts.join("; ") : null;
 }
 
-/** Fix méret (arány nélkül): pontos szélesség/magasság, de a tartalomnál sosem szélesebb. */
+/** Fixed size (no ratio): exact width/height, but never wider than the content. */
 export function videoFixedSizeStyle(width, height) {
   const w = normalizeVideoSize(width, "width");
   const h = normalizeVideoSize(height, "height");
@@ -120,7 +120,7 @@ export function videoFixedSizeStyle(width, height) {
   return parts.join("; ");
 }
 
-/** Az input alapján valószínű arány: YouTube Shorts / Facebook Reel → álló 9:16, egyébként 16:9. */
+/** Likely ratio based on the input: YouTube Shorts / Facebook Reel → portrait 9:16, otherwise 16:9. */
 export function detectVideoRatio(input) {
   const s = String(input || "");
   if (/youtube\.com\/shorts\//i.test(s)) return "9x16";
@@ -139,7 +139,7 @@ function parseUrl(raw) {
   }
 }
 
-/** `t=1m30s` / `t=90` / `start=90` → másodperc. */
+/** `t=1m30s` / `t=90` / `start=90` → seconds. */
 function parseStartSeconds(value) {
   if (!value) return 0;
   if (/^\d+$/.test(value)) return parseInt(value, 10);
@@ -204,7 +204,7 @@ function facebookEmbed(u) {
 }
 
 /**
- * Felhasználói input (oldal-URL, embed URL vagy `<iframe>` kód) → normalizált embed `src`, vagy null.
+ * User input (page URL, embed URL or `<iframe>` code) → normalized embed `src`, or null.
  * @param {string} input
  */
 export function toVideoEmbedSrc(input) {
@@ -222,7 +222,7 @@ export function toVideoEmbedSrc(input) {
   return youtubeEmbed(u) || vimeoEmbed(u) || facebookEmbed(u);
 }
 
-/** Ismert hosztoknál csak a lejátszó (embed) útvonal engedett; egyéni hosztnál elég a hoszt egyezése. */
+/** For known hosts only the player (embed) path is allowed; for custom hosts a host match is enough. */
 const EMBED_PATH_RULES = {
   "www.youtube.com": /^\/embed\/[A-Za-z0-9_-]+\/?$/,
   "youtube.com": /^\/embed\/[A-Za-z0-9_-]+\/?$/,
@@ -232,7 +232,7 @@ const EMBED_PATH_RULES = {
   "facebook.com": /^\/plugins\/video\.php$/,
 };
 
-/** Pontos, https embed URL és whitelistelt hoszt? */
+/** Exact https embed URL and whitelisted host? */
 export function isAllowedVideoSrc(src, allowedHosts = defaultVideoEmbedHosts) {
   const u = parseUrl(String(src || ""));
   if (!u || u.protocol !== "https:") return false;
@@ -243,8 +243,8 @@ export function isAllowedVideoSrc(src, allowedHosts = defaultVideoEmbedHosts) {
 }
 
 /**
- * Input → beágyazható `src`: előbb YouTube/Vimeo/Facebook normalizálás, különben a nyers (vagy `<iframe>`-ből kinyert)
- * URL, ha a hosztja engedélyezett (projektben bővített `allowedHosts` esetére).
+ * Input → embeddable `src`: YouTube/Vimeo/Facebook normalization first, otherwise the raw (or extracted from `<iframe>`)
+ * URL if its host is allowed (for `allowedHosts` extended in the project).
  */
 export function resolveVideoEmbedSrc(input, allowedHosts = defaultVideoEmbedHosts) {
   const normalized = toVideoEmbedSrc(input);
@@ -263,7 +263,7 @@ function parseRatio(element) {
   return "16x9";
 }
 
-/** Méret visszaolvasása: `data-width`/`data-height` (egységgel), különben a régi iframe px attribútum. */
+/** Read back the size: `data-width`/`data-height` (with unit), otherwise the legacy iframe px attribute. */
 function parseSizeAttr(wrapper, iframe, axis) {
   const fromData = (wrapper && wrapper.getAttribute(`data-${axis}`)) || (iframe && iframe.getAttribute(`data-${axis}`));
   return normalizeVideoSize(fromData, axis) || normalizeVideoSize(iframe && iframe.getAttribute(axis), axis);
@@ -286,12 +286,12 @@ export const VideoEmbed = Node.create({
   addAttributes() {
     return {
       src: { default: null, rendered: false },
-      /** Méret egységgel: "560px", "100%", "80vw", "85vh" (régi tartalomban szám = px). */
+      /** Size with unit: "560px", "100%", "80vw", "85vh" (in legacy content a number = px). */
       width: { default: null, rendered: false },
       height: { default: null, rendered: false },
       allowfullscreen: { default: true, rendered: false },
       title: { default: null, rendered: false },
-      /** Bootstrap `.ratio` wrapper (pl. "16x9"); null → fix méret, wrapper nélkül. */
+      /** Bootstrap `.ratio` wrapper (e.g. "16x9"); null → fixed size, no wrapper. */
       ratio: { default: "16x9", rendered: false },
     };
   },
@@ -313,7 +313,7 @@ export const VideoEmbed = Node.create({
     return [
       {
         tag: "div",
-        // a `ratio` wrapper előbb illeszkedjen, mint a belső iframe
+        // the `ratio` wrapper must match before the inner iframe
         priority: 60,
         getAttrs: (node) => {
           if (typeof node === "string" || !node.classList || !node.classList.contains("ratio")) return false;
@@ -352,7 +352,7 @@ export const VideoEmbed = Node.create({
     return ["iframe", mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, fixed)];
   },
 
-  /** Szerkesztőben: nem-interaktív előnézet, hogy kattintással ki lehessen jelölni a node-ot. */
+  /** In the editor: non-interactive preview so the node can be selected by clicking. */
   addNodeView() {
     return ({ node }) => {
       const dom = document.createElement("div");

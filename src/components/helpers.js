@@ -2,7 +2,7 @@
 const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' };
 
 /**
- * HTML escape: szöveg/attribútum értékhez, ha HTML-t összefűző template-be kerül adat.
+ * HTML escape for text / attribute values when data goes into a template that builds HTML.
  * null/undefined → ''.
  */
 export function escapeHtml(value) {
@@ -13,27 +13,27 @@ export function escapeHtml(value) {
 }
 
 /**
- * URL szűrés href/src értékhez: csak http(s), mailto, tel, relatív URL és data:image (nem SVG) engedett.
- * Nem engedett URL (pl. javascript:) → ''. Az eredményt attribútumba téve még escapeHtml() kell.
+ * URL filter for href/src values: only http(s), mailto, tel, relative URLs and data:image (not SVG) are allowed.
+ * A disallowed URL (e.g. javascript:) → ''. Put into an attribute, the result still needs escapeHtml().
  */
 export function safeUrl(url) {
     if (url === null || url === undefined) {
         return '';
     }
     const value = String(url).trim();
-    // vezérlőkarakterek/whitespace eltávolítása a protokoll ellenőrzéshez (pl. "java\tscript:")
+    // strip control characters / whitespace before the protocol check (e.g. "java\tscript:")
     const normalized = value.replace(/[\u0000-\u0020\u007f]/g, '').toLowerCase();
     if (/^data:image\/(png|jpe?g|gif|webp|avif|bmp)[;,]/.test(normalized)) {
         return value;
     }
     const protocol = normalized.match(/^([a-z][a-z0-9+.-]*):/);
     if (!protocol) {
-        return value; // relatív URL
+        return value; // relative URL
     }
     return ['http', 'https', 'mailto', 'tel'].includes(protocol[1]) ? value : '';
 }
 
-// az entity configok (window.VuEntities) nem modulok, ezért globálisan is elérhető
+// entity configs (window.VuEntities) are not modules, so the helpers are also available globally
 if (typeof window !== 'undefined') {
     window.VuAdminHelpers = Object.assign(window.VuAdminHelpers || {}, { escapeHtml, safeUrl });
 }
@@ -101,7 +101,7 @@ function appendErrorsFromList(errors, list) {
     }
 }
 
-/** getResponseJson() visszatérési érték: { data, error } */
+/** getResponseJson() return value: { data, error } */
 function isResponseJsonEnvelope(payload) {
     return payload != null
         && typeof payload === 'object'
@@ -137,7 +137,7 @@ function collectErrorsFromData(response, data) {
 
 /**
  * @param {Response|null} response
- * @param {object|undefined} payload - API body (json.data) vagy getResponseJson() eredmény
+ * @param {object|undefined} payload - API body (json.data) or getResponseJson() result
  */
 export function getResponseErrors(response, payload) {
     if (!response) {
@@ -165,11 +165,11 @@ export function getResponseErrors(response, payload) {
 
 
 
-// Kriptográfiailag erősebb véletlen-generátor Math.random nélkül
+// Cryptographically stronger random generator without Math.random
 let _fallbackSeed = Date.now() ^ (((typeof performance !== "undefined" && performance.now) ? performance.now() : 0) << 16);
 
 function _fallbackRandomFloat() {
-    // Egyszerű xorshift32
+    // Simple xorshift32
     _fallbackSeed ^= (_fallbackSeed << 13);
     _fallbackSeed ^= (_fallbackSeed >>> 17);
     _fallbackSeed ^= (_fallbackSeed << 5);
@@ -185,7 +185,7 @@ export function secureRandomBytes(length = 16) {
         return bytes;
     }
 
-    // Fallback: xorshift alapú töltés
+    // Fallback: xorshift based fill
     for (let i = 0; i < size; i++) {
         bytes[i] = Math.floor(_fallbackRandomFloat() * 256);
     }
@@ -441,8 +441,8 @@ export function convertToCSV(items, fields, delimiter = ';') {
 
 
 /**
- * CSV cella: formula injection ellen a =, +, -, @, tab, CR kezdetű szöveg elé ' kerül
- * (kivéve a tisztán numerikus értéket, pl. -12.5), és idézőjelezés, ha kell.
+ * CSV cell: against formula injection, text starting with =, +, -, @, tab or CR gets a ' prefix
+ * (except plain numbers, e.g. -12.5), and is quoted when needed.
  */
 export function csvCell(value, delimiter = ';') {
     if (value === undefined || value === null) {

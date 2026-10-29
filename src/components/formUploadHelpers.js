@@ -1,10 +1,10 @@
 import { prepareFetchUrl, prepareFetchOptions, getResponseJson, getResponseErrors } from "./helpers";
 
 /**
- * Mezőszintű feltöltés (image / upload mező).
- * - field.url → külön feltöltés mentés után
- * - upload: 'blob' | 'dataurl' → bináris a JSON body-ban
- * - upload: { fileField, meta, persist, … } → opcionális finomhangolás (url nélkül)
+ * Field-level upload (image / upload field).
+ * - field.url → separate upload after save
+ * - upload: 'blob' | 'dataurl' → binary inside the JSON body
+ * - upload: { fileField, meta, persist, … } → optional fine-tuning (without url)
  */
 export function resolveFieldUploadConfig(field) {
   if (typeof field?.url !== "string" || !field.url) return null;
@@ -22,7 +22,7 @@ export function resolveFieldUploadConfig(field) {
   };
 }
 
-/** Inline (JSON) mezők: nincs upload.url. mode: 'dataurl' | 'blob'. */
+/** Inline (JSON) fields: no upload.url. mode: 'dataurl' | 'blob'. */
 export function getInlineUploadFieldsMap(settings) {
   const map = {};
   if (!settings?.form?.groups) return map;
@@ -42,7 +42,7 @@ export function getInlineUploadFieldsMap(settings) {
   return map;
 }
 
-/** Mezőnév → upload config (csak külön URL-es mezők). */
+/** Field name → upload config (only fields with a separate URL). */
 export function getSeparateUploadFieldsMap(settings) {
   const map = {};
   if (!settings?.form?.groups) return map;
@@ -122,7 +122,7 @@ function prepareFileForInlineJson(file, mode) {
   return copy;
 }
 
-/** Inline mezők: dataurl → data marad, blob kikerül; blob → csak meta (JSON-ben blob nem megy). */
+/** Inline fields: dataurl → data is kept, blob is removed; blob → meta only (a blob cannot go into JSON). */
 export function prepareInlineUploadFieldsForJson(item, inlineFieldsMap) {
   if (!item || !inlineFieldsMap || !Object.keys(inlineFieldsMap).length) return item;
   const out = { ...item };
@@ -134,7 +134,7 @@ export function prepareInlineUploadFieldsForJson(item, inlineFieldsMap) {
   return out;
 }
 
-/** Külön + inline fájlmezők előkészítése JSON mentéshez. */
+/** Prepare separate + inline file fields for a JSON save. */
 export function prepareAllFileFieldsForJsonSave(item, settings) {
   const separateFields = Object.keys(getSeparateUploadFieldsMap(settings));
   const inlineMap = getInlineUploadFieldsMap(settings);
@@ -150,7 +150,7 @@ export function prepareAllFileFieldsForJsonSave(item, settings) {
   return out;
 }
 
-/** JSON mentéshez: feltöltendő fájlokból data/blob kikerül, metaadat marad. */
+/** For a JSON save: data/blob is removed from files to be uploaded, metadata is kept. */
 export function prepareItemForJsonSave(item, uploadFieldNames) {
   if (!item || !uploadFieldNames?.length) return item;
   const out = { ...item };
@@ -269,7 +269,7 @@ function uploadErrorContext(task, label) {
   return `${label || "Upload"} (${part})`;
 }
 
-/** HTTP / API hibák feltöltésnél (400, 405, 500, message, errors, …). */
+/** HTTP / API errors during upload (400, 405, 500, message, errors, …). */
 export function collectUploadResponseErrors(response, json, task, label) {
   const data = json?.data;
   const baseErrors = getResponseErrors(response, json);
@@ -324,7 +324,7 @@ function throwIfUploadResponseFailed(response, json, task, label) {
   }
 }
 
-/** Sikeres JSON mentés után: mezőnkénti multipart feltöltés, json meta mezővel. */
+/** After a successful JSON save: multipart upload per field, with a json meta field. */
 export async function uploadPendingFormFiles({
   tasks,
   savedItem,
@@ -410,7 +410,7 @@ export async function uploadPendingFormFiles({
   return results;
 }
 
-/** DB-ből betöltött / feltöltött állapot szinkronizálása a UI-hoz. */
+/** Sync the state loaded from the DB / uploaded to the UI. */
 export function syncFileUploadState(file) {
   if (!file?.types) return;
   const types = file.types;
@@ -424,7 +424,7 @@ function markFileUploadState(file) {
   syncFileUploadState(file);
 }
 
-/** URL-ek visszaírása; az item (form state) helyben frissül. */
+/** Write back URLs; the item (form state) is updated in place. */
 export function applyUploadResultsToItem(item, uploadFieldNames, uploadResults) {
   if (!item || !uploadResults?.length) return item;
 
@@ -444,7 +444,7 @@ export function applyUploadResultsToItem(item, uploadFieldNames, uploadResults) 
   return item;
 }
 
-/** Feltöltött fájlmezők URL-jeinek mentése (PUT), hogy reload / újranyitás működjön. */
+/** Save the URLs of uploaded file fields (PUT) so reload / reopening works. */
 export async function persistUploadedFileFields({
   savedItem,
   item,

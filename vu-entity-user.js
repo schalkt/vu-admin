@@ -3,15 +3,15 @@ window.VuEntities = window.VuEntities ? window.VuEntities : {};
 
 window.VuEntities.user = (preset) => {
 
-	// HTML-t összefűző template-ekben minden adatot escape-elni kell (XSS)
+	// templates that build HTML must escape every data value (XSS)
 	const { escapeHtml, safeUrl } = window.VuAdminHelpers;
 
 	const availableRoles = [
 		{ value: 'admin', label: 'Admin' },
 		{ value: 'superuser', label: 'Superuser' },
-		{ value: 'moderator', label: 'Moderátor' },
-		{ value: 'editor', label: 'Szerkesztő' },
-		{ value: 'guest', label: 'Vendég' },
+		{ value: 'moderator', label: 'Moderator' },
+		{ value: 'editor', label: 'Editor' },
+		{ value: 'guest', label: 'Guest' },
 	];
 
 	return {
@@ -40,7 +40,7 @@ window.VuEntities.user = (preset) => {
 			}
 		},
 		table: {
-			title: 'Felhasználók',
+			title: 'Users',
 			pagination: {
 				limit: 5,
 				size: 20,
@@ -60,7 +60,7 @@ window.VuEntities.user = (preset) => {
 				},
 				{
 					name: 'id',
-					title: 'Azonosító',
+					title: 'ID',
 					class: 'text-end',
 					width: '6%',
 					filter: {
@@ -71,7 +71,7 @@ window.VuEntities.user = (preset) => {
 				},
 				{
 					name: 'image',
-					title: 'Avatár',
+					title: 'Avatar',
 					sortable: false,
 					template: function (image, item) {
 
@@ -86,7 +86,7 @@ window.VuEntities.user = (preset) => {
 				},
 				{
 					name: 'firstName',
-					title: 'Név <span class="text-muted ms-1 fw-light">( felhasználónév )</span>',
+					title: 'Name <span class="text-muted ms-1 fw-light">( username )</span>',
 					template: (firstName, item) => {
 						return escapeHtml(item.firstName + ' ' + item.lastName) + '<span class="text-muted ms-2 fw-light">( ' + escapeHtml(item.username) + ' )</span>';
 					},
@@ -99,7 +99,7 @@ window.VuEntities.user = (preset) => {
 				},
 				{
 					name: 'birthDate',
-					title: 'Születési dátum',
+					title: 'Birth date',
 					convert: {
 						in: (value, item, column) => {
 							if (!value) return '';
@@ -167,7 +167,7 @@ window.VuEntities.user = (preset) => {
 				},
 				{
 					name: 'height',
-					title: 'Magasság (cm)',
+					title: 'Height (cm)',
 					width: '10%',
 					progressbar: {
 						class: 'bg-info text-dark fw-bold',
@@ -200,7 +200,7 @@ window.VuEntities.user = (preset) => {
 				},
 				{
 					name: 'weight',
-					title: 'Súly (kg)',
+					title: 'Weight (kg)',
 					width: '10%',
 					progressbar: {
 						class: 'bg-info text-dark fw-bold',
@@ -254,7 +254,7 @@ window.VuEntities.user = (preset) => {
 				{
 
 					name: 'hair.color',
-					title: 'Hajszín',
+					title: 'Hair color',
 					template: (value) => {
 
 						if (!value) return '';
@@ -297,7 +297,7 @@ window.VuEntities.user = (preset) => {
 				},
 				{
 					name: 'address.city',
-					title: 'Cím',
+					title: 'Address',
 					template: (value, item) => {
 
 						let address = '<span>' + escapeHtml(value) + '</span> <small class="text-light">' + escapeHtml(item['address.address']) + '</small>';
@@ -392,7 +392,7 @@ window.VuEntities.user = (preset) => {
 						// },
 						{
 							action: (item, params, self) => {
-								// Küldjünk FILTER eventet a todos entity-nek, ugyanazt, mint a filterLink
+								// Send a FILTER event to the todos entity, the same as filterLink does
 								const filterValue = item[self.settings.pkey];
 								if (filterValue !== undefined && filterValue !== null) {
 									self.sendEvent('FILTER', 'todos', {
@@ -509,7 +509,7 @@ window.VuEntities.user = (preset) => {
 			},
 			groups: [
 				{
-					title: 'Személyes adatok',
+					title: 'Personal data',
 					class: 'border rounded p-4 col-md-5',
 					fields: [
 						{
@@ -526,51 +526,51 @@ window.VuEntities.user = (preset) => {
 						{
 							type: 'text',
 							name: 'firstName',
-							label: 'Keresztnév',
+							label: 'First name',
 							required: true,
 							class: 'col-md-6',
 						},
 						{
 							type: 'text',
 							name: 'lastName',
-							label: 'Vezetéknév',
+							label: 'Last name',
 							required: true,
 							class: 'col-md-6',
 						},
 						{
 							type: 'text',
 							name: 'username',
-							label: 'Felhasználónév',
+							label: 'Username',
 							required: true,
 						},
 						{
 							type: 'email',
 							name: 'email',
-							label: 'E-mail cím',
+							label: 'E-mail address',
 							required: true,
 						},
 						{
 							type: 'date',
 							name: 'birthDate',
-							label: 'Születési dátum',
+							label: 'Birth date',
 						},
 						{
 							type: 'select',
 							name: 'gender',
-							label: 'Nem',
+							label: 'Gender',
 							class: 'col-md-6',
 							options: [
-								{ value: 'male', label: 'Férfi' },
-								{ value: 'female', label: 'Nő' },
+								{ value: 'male', label: 'Male' },
+								{ value: 'female', label: 'Female' },
 							],
 						},
 
 						{
 							type: 'dropdown',
 							name: 'roles',
-							label: 'Szerepkörök',
+							label: 'Roles',
 							dropdown: {
-								label: 'Szerepkör hozzáadása',
+								label: 'Add role',
 								class: 'btn btn-sm btn-outline-secondary',
 							},
 							list: {
@@ -581,35 +581,35 @@ window.VuEntities.user = (preset) => {
 						{
 							type: 'select',
 							name: 'twofa',
-							label: 'Kétlépéses hitelesítés (2FA)',
+							label: 'Two-factor authentication (2FA)',
 							options: [
 								{ value: '', label: 'Kikapcsolva' },
-								{ value: 'email', label: 'E-mail kód' },
+								{ value: 'email', label: 'E-mail code' },
 							],
 						},
 					]
 				},
 				{
-					title: 'Fizikai adatok',
+					title: 'Physical data',
 					class: 'border rounded p-4 col-md-3',
 					fields: [
 						{
 							type: 'number',
 							name: 'age',
-							label: 'Kor (év)',
+							label: 'Age (years)',
 							readonly: true,
 						},
 						{
 							type: 'number',
 							name: 'height',
-							label: 'Magasság (cm)',
+							label: 'Height (cm)',
 							min: 50,
 							max: 250,
 						},
 						{
 							type: 'number',
 							name: 'weight',
-							label: 'Súly (kg)',
+							label: 'Weight (kg)',
 							min: 20,
 							max: 300,
 						},
@@ -629,7 +629,7 @@ window.VuEntities.user = (preset) => {
 					]
 				},
 				{
-					title: 'Lakcím',
+					title: 'Home address',
 					class: 'border rounded p-4 col-md-4',
 					fields: [
 						{

@@ -331,16 +331,16 @@ const VuAdminForm = {
         return;
       }
 
-      // Ha string, akkor közvetlenül megjelenítjük
+      // If it is a string, show it directly
       if (typeof errors === 'string') {
         this.addFormMessage(errors, defaultTimeout, defaultLevel);
         return;
       }
 
-      // Ha array, akkor minden elemet megjelenítünk
+      // If it is an array, show every element
       if (Array.isArray(errors)) {
         for (let error of errors) {
-          // Ha az error egy objektum message mezővel
+          // If the error is an object with a message field
           if (error && typeof error === 'object' && error.message) {
             this.addFormMessage(
               error.message, 
@@ -348,11 +348,11 @@ const VuAdminForm = {
               error.priority || defaultLevel
             );
           } 
-          // Ha az error egy string
+          // If the error is a string
           else if (typeof error === 'string') {
             this.addFormMessage(error, defaultTimeout, defaultLevel);
           }
-          // Ha az error egy objektum, de nincs message mező, próbáljuk az error objektumot stringgé alakítani
+          // If the error is an object without a message field, try to convert it to a string
           else if (error && typeof error === 'object') {
             this.addFormMessage(
               JSON.stringify(error), 
@@ -364,7 +364,7 @@ const VuAdminForm = {
         return;
       }
 
-      // Ha objektum, akkor próbáljuk kinyerni a message mezőt
+      // If it is an object, try to extract the message field
       if (typeof errors === 'object' && errors.message) {
         this.addFormMessage(
           errors.message, 
@@ -374,7 +374,7 @@ const VuAdminForm = {
         return;
       }
 
-      // Végül, ha semmi más nem működik, próbáljuk stringgé alakítani
+      // Finally, if nothing else works, try to convert it to a string
       this.addFormMessage(
         String(errors), 
         defaultTimeout, 

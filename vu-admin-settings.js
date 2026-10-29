@@ -20,7 +20,7 @@ window.VuSettings = {
     theme: 'dark',
     button: {
         registration: {
-            label: 'Regisztráció',
+            label: 'Register',
             class: 'btn btn-warning me-2',
             icon: 'bi bi-person-plus me-2',
         },
@@ -30,7 +30,7 @@ window.VuSettings = {
             label: (params, settings, self) => {
 
                 if (!self.auth || !self.auth.user) {
-                    return 'Bejelentkezés';
+                    return 'Sign in';
                 }
 
                 const { escapeHtml, safeUrl } = window.VuAdminHelpers;
@@ -47,9 +47,9 @@ window.VuSettings = {
                     class: 'dropdown-item',
                     label: (params, settings, self) => {
                         if (!self.auth?.user?.role) {
-                            return `<span class='text-warning'><i class='bi bi-exclamation-triangle me-1'></i>Szerepkör nincs beállítva</span><br><small class='text-muted' style='white-space:normal;display:block;max-width:220px'>Az adatok megtekintéséhez és szerkesztéséhez szerepkör szükséges.</small>`;
+                            return `<span class='text-warning'><i class='bi bi-exclamation-triangle me-1'></i>No role assigned</span><br><small class='text-muted' style='white-space:normal;display:block;max-width:220px'>A role is required to view and edit data.</small>`;
                         }
-                        return 'Szerepkör váltás';
+                        return 'Switch role';
                     },
                     disabled: (params, settings, self) => {
                         return !self.auth?.user?.role;
@@ -65,7 +65,7 @@ window.VuSettings = {
                 }, {
                     class: 'dropdown-item cursor-pointer',
                     label: (params, settings, self) => {
-                        return `<i class='bi bi-person me-1'></i> Profil adatok`
+                        return `<i class='bi bi-person me-1'></i> Profile`
                     },
                     action: (params, self) => {
                         self.showProfilModal();
@@ -73,7 +73,7 @@ window.VuSettings = {
                 }, {
                     class: 'dropdown-item cursor-pointer',
                     label: (params, settings, self) => {
-                        return `<i class='bi bi-box-arrow-right me-1'></i> Kilépés`
+                        return `<i class='bi bi-box-arrow-right me-1'></i> Sign out`
                     },
                     action: (params, self) => {
                         self.logout();
@@ -88,32 +88,32 @@ window.VuSettings = {
         captcha: {
             url: '/api/auth/captcha',
             panels: ['login', 'registration', 'forgot'],
-            error: 'Kérjük válassz ki 1 ikont a folytatáshoz!',
+            error: 'Please select 1 icon to continue!',
         },
         twofa: {
             panels: ['login'],
-            label: 'Hitelesítő kód',
-            placeholder: '6 jegyű kód',
-            info: 'Add meg az e-mail címedre küldött 6 jegyű kódot. A kód 5 percig érvényes.',
-            error: 'Érvénytelen kód, kérjük próbáld újra!',
+            label: 'Verification code',
+            placeholder: '6-digit code',
+            info: 'Enter the 6-digit code sent to your e-mail address. The code is valid for 5 minutes.',
+            error: 'Invalid code, please try again!',
         },
         title: {
-            login: 'Bejelentkezés',
-            registration: 'Regisztráció',
-            forgot: 'Elfelejtett jelszó',
-            activation: 'Aktiválás',
-            password: 'Új jelszó beállítása',
-            twofa: 'Kétlépéses hitelesítés',
+            login: 'Sign in',
+            registration: 'Register',
+            forgot: 'Forgot password',
+            activation: 'Activation',
+            password: 'Set new password',
+            twofa: 'Two-factor authentication',
         },
         submit: {
-            login: 'Bejelentkezés',
-            registration: 'Regisztráció',
-            cancel: 'Mégsem',
-            forgot: 'Elfelejtett jelszó',
-            password: 'Jelszó mentése',
-            activation: 'Aktiválás',
-            twofa: 'Megerősítés',
-            resend: 'Újraküldés',
+            login: 'Sign in',
+            registration: 'Register',
+            cancel: 'Cancel',
+            forgot: 'Forgot password',
+            password: 'Save password',
+            activation: 'Activation',
+            twofa: 'Verify',
+            resend: 'Resend',
         },
         api: {
             login: '/api/auth/login',
@@ -128,39 +128,39 @@ window.VuSettings = {
         username: {
             value: 'emilys',
             type: 'text',
-            label: 'Felhasználónév / E-mail cím',
+            label: 'Username / e-mail address',
             icon: 'bi bi-envelope',
-            placeholder: 'Add meg a felhasználóneved',
-            help: 'A Freemail és Citromail szolgáltatók nem minden esetben fogadják be megfelelően az e-maileket, így a kézbesítés nem garantált.'
+            placeholder: 'Enter your username',
+            help: 'Some e-mail providers do not always accept our e-mails properly, so delivery is not guaranteed.'
         },
         password: {
-            label: 'Jelszó',
+            label: 'Password',
             icon: 'bi bi-key-fill',
-            placeholder: 'Add meg a jelszavad',
+            placeholder: 'Enter your password',
             type: 'password',
-            help: 'Legyen benne legalább 1 kisbetű, 1 nagybetű és 1 szám. Minimum 4 karakter.',
-            forgot: 'Elfelejtett a jelszavad?',
+            help: 'Use at least 1 lowercase letter, 1 uppercase letter and 1 digit. Minimum 4 characters.',
+            forgot: 'Forgot your password?',
             pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
             pattern: '^(?=.*[a-z]).+$',
             minlength: 4,
             hash: 0
         },
         password_again: {
-            label: 'Jelszó ismét',
+            label: 'Password again',
             icon: 'bi bi-key-fill',
             type: 'password',
-            placeholder: 'Ismételd meg a jelszavad',
-            help: 'Ide gépeld be újra a jelszavadat amit megadtál.',
-            nomatch: 'A két jelszó nem egyezik!'
+            placeholder: 'Repeat your password',
+            help: 'Type the password you entered again.',
+            nomatch: 'The two passwords do not match!'
         },
         help: {
-            forgot: 'Ha a megadott e-mail cím létezik az adatbázisunkban, küldünk egy e-mailt egy linkkel. Az e-mailben található linkre kattintva átirányítunk egy weboldalra, ahol beállíthatod az új jelszavadat. Az e-mailben található link csak 1 óráig érvényes.',
-            registration: `<div class='text-muted p-2 rounded shadow-sm'>A regisztráció beküldése után egy <strong>visszaigazoló levél</strong> fog érkezni az e-mail címedre, melyben az aktiváló linkre kell <strong>kattintani</strong>, hogy a regisztráció érvényesítve legyen. A kattintás után megjelenik weboldalunk, ahol <strong>további adatok</strong> megadására van lehetőség.</div>`
+            forgot: 'If the given e-mail address exists in our database, we send you an e-mail with a link. Clicking the link takes you to a page where you can set your new password. The link in the e-mail is valid for 1 hour only.',
+            registration: `<div class='text-muted p-2 rounded shadow-sm'>After submitting the registration you will receive a <strong>confirmation e-mail</strong>; <strong>click</strong> the activation link in it to validate your registration. After the click our website opens, where you can enter <strong>further details</strong>.</div>`
         },
         inputs: {
             'lastname': {
                 panels: ['activation'],
-                label: 'Vezetéknév',
+                label: 'Last name',
                 prefix: null,
                 suffix: null,
                 type: 'text',
@@ -170,7 +170,7 @@ window.VuSettings = {
             },
             'firstname': {
                 panels: ['activation'],
-                label: 'Keresztnév',
+                label: 'First name',
                 prefix: null,
                 suffix: null,
                 type: 'text',
@@ -180,7 +180,7 @@ window.VuSettings = {
             },
             'phone1': {
                 panels: ['activation'],
-                label: 'Telefonszám',
+                label: 'Phone number',
                 prefix: null,
                 suffix: null,
                 type: 'text',
@@ -190,7 +190,7 @@ window.VuSettings = {
             },
             'birthdate': {
                 panels: ['activation'],
-                label: 'Születési dátum',
+                label: 'Birth date',
                 prefix: null,
                 suffix: null,
                 type: 'date',
@@ -200,21 +200,21 @@ window.VuSettings = {
             },
             'twofa': {
                 panels: ['registration'],
-                label: 'Kétlépéses hitelesítés (2FA)',
+                label: 'Two-factor authentication (2FA)',
                 type: 'select',
                 placeholder: null,
                 multiple: false,
                 required: false,
                 options: [
-                    { label: 'Nem kérek 2FA-t', value: '' },
-                    { label: 'E-mail kód', value: 'email' },
+                    { label: 'No 2FA', value: '' },
+                    { label: 'E-mail code', value: 'email' },
                 ],
-                help: 'Bejelentkezéskor egy 6 jegyű kódot küldünk az e-mail címedre, amit meg kell adnod a belépéshez.',
+                help: 'At sign-in we send a 6-digit code to your e-mail address that you need to enter to sign in.',
             },
         },
         accepts: [{
             label: () => {
-                return `Elfogadom az <a href='/aszf.pdf'>Általános Szerződési Feltételeket</a>`
+                return `I accept the <a href='/terms.pdf'>Terms and Conditions</a>`
             },
             panels: ['registration'],
             required: true,
@@ -222,7 +222,7 @@ window.VuSettings = {
         },
         {
             label: () => {
-                return `Elfogadom az <a href='/adatkezelesi-tajekoztato.pdf'>Adatkezelési tájékoztatóban</a> leírtakat`
+                return `I accept the <a href='/privacy-policy.pdf'>Privacy Policy</a>`
             },
             panels: ['registration'],
             required: true,
@@ -230,7 +230,7 @@ window.VuSettings = {
 
         },
         {
-            label: 'Feliratkozom a hírlevelekre',
+            label: 'Subscribe to the newsletter',
             panels: ['registration', 'login'],
             required: false,
             name: 'newsletter',
@@ -269,7 +269,7 @@ window.VuSettings = {
 
                 if (auth.response) {
 
-                    auth.response.message = 'A jelszó frissítése sikertelen!';
+                    auth.response.message = 'Password update failed!';
                     //auth.response.message = 'Error ' + auth.response.code + ' - ' + auth.response.data.message;
                 }
             },
@@ -313,7 +313,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = auth.response.data?.message || 'Sikeres regisztráció! Az aktiváló e-mail el lett küldve.';
+                    auth.response.message = auth.response.data?.message || 'Registration successful! The activation e-mail has been sent.';
                 }
 
             },
@@ -360,7 +360,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = auth.response.data.message ? auth.response.data.message : 'Sikeres jelszó visszaállítás';
+                    auth.response.message = auth.response.data.message ? auth.response.data.message : 'Password reset successful';
                 }
 
             },
@@ -370,7 +370,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = auth.response.data.message ? auth.response.data.message : 'Sikeres jelszó visszaállítás';
+                    auth.response.message = auth.response.data.message ? auth.response.data.message : 'Password reset successful';
                 }
 
             },

@@ -84,8 +84,8 @@ const VuAdminNav = {
     },
     methods: {
         safeUrl,
-        // ikon csak CSS osztály lehet (pl. "bi bi-people me-1"), HTML nem kerül a DOM-ba;
-        // a régi '<i class="...">' formából az osztály kiolvasásra kerül
+        // the icon can only be a CSS class (e.g. "bi bi-people me-1"), no HTML gets into the DOM;
+        // the class is extracted from the legacy '<i class="...">' form
         iconClass(icon) {
             if (!icon || typeof icon !== "string") {
                 return "";

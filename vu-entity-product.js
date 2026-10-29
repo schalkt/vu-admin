@@ -3,7 +3,7 @@ window.VuEntities = window.VuEntities ? window.VuEntities : {};
 
 window.VuEntities.product = (preset) => {
 
-	// HTML-t összefűző template-ekben minden adatot escape-elni kell (XSS)
+	// templates that build HTML must escape every data value (XSS)
 	const { escapeHtml, safeUrl } = window.VuAdminHelpers;
 
 	let api = {
@@ -532,9 +532,9 @@ window.VuEntities.product = (preset) => {
 			raw: function (item) {
 				return [
 					'<div class="my-1 p-2 bg-secondary text-dark d-flex align-items-center justify-content-center">',
-					// '<small class="me-4"><strong class="me-2">Azonosító</strong><span>' + item['_id'] + '</span></small>',
-					// '<small class="me-4"><strong class="me-2">Létrehozva</strong><span>' + (new Date(item['date_created_at'])).toLocaleString('hu-HU') + '</span></small>',
-					// '<small class="me-4"><strong class="me-2">Módosítva</strong><span>' + (new Date(item['date_updated_at'])).toLocaleString('hu-HU') + '</span></small>',
+					// '<small class="me-4"><strong class="me-2">ID</strong><span>' + item['_id'] + '</span></small>',
+					// '<small class="me-4"><strong class="me-2">Created</strong><span>' + (new Date(item['date_created_at'])).toLocaleString('hu-HU') + '</span></small>',
+					// '<small class="me-4"><strong class="me-2">Updated</strong><span>' + (new Date(item['date_updated_at'])).toLocaleString('hu-HU') + '</span></small>',
 					'</div>'
 				].join('');
 			}
@@ -719,12 +719,12 @@ window.VuEntities.product = (preset) => {
 					{
 						type: 'list',
 						name: 'links',
-						label: 'Linkek',
+						label: 'Links',
 						sortable: true,
 						addButton: {
 							class: 'btn btn-sm btn-primary my-1 w-100',
 							icon: 'bi bi-plus me-1',
-							label: 'Hozzáadás',
+							label: 'Add',
 							wrapperClass: 'col-3',
 						},
 						elements: {
@@ -833,11 +833,11 @@ window.VuEntities.product = (preset) => {
 											value: undefined
 										},
 										{
-											label: 'Elsődleges',
+											label: 'Primary',
 											value: 'primary'
 										},
 										{
-											label: 'Másodlagos',
+											label: 'Secondary',
 											value: 'secondary'
 										}
 									];
@@ -881,9 +881,9 @@ window.VuEntities.product = (preset) => {
 						type: 'html',
 						name: 'description',
 						label: 'Description',
-						/* field.tiptap: html mező opciók — első körben csak placeholder */
+						/* field.tiptap: html field options — only a placeholder for now */
 						tiptap: {
-							placeholder: 'Termékleírás (TipTap: félkövér, címsor, lista, igazítás, link…)',
+							placeholder: 'Product description (TipTap: bold, heading, list, alignment, link…)',
 						},
 					},
 					{

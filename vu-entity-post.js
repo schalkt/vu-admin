@@ -3,7 +3,7 @@ window.VuEntities = window.VuEntities ? window.VuEntities : {};
 
 window.VuEntities.post = (preset) => {
 
-	// HTML-t összefűző template-ekben minden adatot escape-elni kell (XSS)
+	// templates that build HTML must escape every data value (XSS)
 	const { escapeHtml, safeUrl } = window.VuAdminHelpers;
 
 	let api = {

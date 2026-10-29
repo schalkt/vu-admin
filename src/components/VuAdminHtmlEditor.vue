@@ -563,7 +563,7 @@ import {
   ratioClassName,
 } from "../tiptap/videoEmbedExtension.js";
 
-/** ratio: "auto" (forrásból felismerve: Shorts/Reel → 9:16, egyébként 16:9) | arány érték | "" (fix méret) */
+/** ratio: "auto" (detected from the source: Shorts/Reel → 9:16, otherwise 16:9) | ratio value | "" (fixed size) */
 const EMPTY_VIDEO_FORM = () => ({
   url: "",
   width: "",
@@ -575,7 +575,7 @@ const EMPTY_VIDEO_FORM = () => ({
   title: "",
 });
 
-/** Gyors méretek: a "Fit screen" laptopon és fekvő mobilon is teljesen látszik (100% széles, ≤ 85vh magas). */
+/** Quick sizes: "Fit screen" is fully visible on laptops and landscape phones too (100% wide, ≤ 85vh high). */
 const VIDEO_SIZE_PRESETS = [
   { label: "Full width", width: "100%", height: null },
   { label: "Fit screen", width: "100%", height: "85vh", hint: "Full width, but at most 85% of the screen height (landscape phone, laptop)" },
@@ -700,7 +700,7 @@ const HtmlEditor = {
     videoResolvedSrc() {
       return resolveVideoEmbedSrc(this.videoForm.url, this.videoAllowedHosts);
     },
-    /** Ténylegesen használt arány ("auto" feloldva), vagy null fix méretnél. */
+    /** The ratio actually used ("auto" resolved), or null for a fixed size. */
     videoEffectiveRatio() {
       const r = this.videoForm.ratio;
       if (r === "auto") return detectVideoRatio(this.videoForm.url);
@@ -1053,7 +1053,7 @@ const HtmlEditor = {
         this.selectedVideoPos = videoPos;
       }
     },
-    /** Kattintott DOM elem → videoEmbed node pozíció (node view wrapperen keresztül), vagy null. */
+    /** Clicked DOM element → videoEmbed node position (via the node view wrapper), or null. */
     videoPosFromEvent(view, event) {
       const t = event.target;
       if (!view.editable || !(t instanceof Element)) return null;
@@ -1204,7 +1204,7 @@ const HtmlEditor = {
         },
       });
     },
-    /** `tiptapOptions.extensions`: tömb → hozzáfűzés; függvény → (alap bővítmények, ctx) => végleges lista. */
+    /** `tiptapOptions.extensions`: array → appended; function → (default extensions, ctx) => final list. */
     resolveExtensions(defaults) {
       const extra = this.tiptapOptions && this.tiptapOptions.extensions;
       if (typeof extra === "function") {
@@ -1254,7 +1254,7 @@ const HtmlEditor = {
         if (el && typeof el.focus === "function") el.focus();
       });
     },
-    /** "85vh" → { height: "85", heightUnit: "vh" } (űrlap mezők). */
+    /** "85vh" → { height: "85", heightUnit: "vh" } (form fields). */
     videoSizeToForm(width, height) {
       const w = splitVideoSize(width, "width");
       const h = splitVideoSize(height, "height");
@@ -1270,7 +1270,7 @@ const HtmlEditor = {
     videoRatioClass(ratio) {
       return ratioClassName(ratio);
     },
-    /** "9x16" → "9:16 · álló (telefon)" */
+    /** "9x16" → "9:16 · portrait (phone)" */
     videoRatioLabel(ratio) {
       const opt = videoEmbedRatioOptions.find((r) => r.value === ratio);
       if (!opt) return String(ratio || "").replace("x", ":");
@@ -1580,7 +1580,7 @@ export default HtmlEditor;
           margin: 0.5rem 0;
           cursor: pointer;
 
-          // szerkesztőben a lejátszó ne nyelje el a kattintást (kijelölés / dupla katt → szerkesztés)
+          // in the editor the player must not swallow the click (select / double click → edit)
           iframe {
             pointer-events: none;
             border: 0;

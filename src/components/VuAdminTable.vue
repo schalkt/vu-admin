@@ -577,8 +577,8 @@ export default {
     return {
       item: {},
       items: {},
-      selected: [], // config alá menjen, hogy a localStorage -ba mentsük el ezt is
-      details: [], // melyik sor van kinyitva
+      selected: [], // should move under config so it is also stored in localStorage
+      details: [], // which rows are expanded
       bulkitem: {},
       bulkinputs: [],
       config: {
@@ -793,18 +793,18 @@ export default {
         this.editItem(data.payload.item);
       });
 
-      // Hallgassunk FILTER eventekre, ha van filterListen konfiguráció
+      // Listen to FILTER events when filterListen is configured
       if (this.settings.table && this.settings.table.filterListen) {
         const filterListen = this.settings.table.filterListen;
         const eventName = `FILTER-${this.settings.entity}`;
         
-        // Csak egyszer regisztráljuk az event listener-t
+        // Register the event listener only once
         if (!this._filterListenerRegistered) {
           eventBus.on(eventName, (data) => {
             if (data.from === filterListen.entity && data.payload) {
               const { field, value } = data.payload;
               
-              // Keressük meg a megfelelő oszlopot
+              // Find the matching column
               const column = this.settings.table.columns.find(col => col.name === field);
               if (column && column.filter) {
                 column.filter.value = value;
@@ -1089,7 +1089,7 @@ export default {
         params.$event.stopPropagation();
       }
 
-      // Ha van filterLink konfiguráció, küldjünk eventet
+      // When filterLink is configured, send an event
       if (button.filterLink && params.item) {
         const filterValue = params.item[button.filterLink.value || this.settings.pkey];
         if (filterValue !== undefined && filterValue !== null) {
@@ -2089,7 +2089,7 @@ export default {
 
         this.convertOut(this.settings.table.columns, [item]);
 
-        // unflatten nem kell a Mongo miatt, de mi van ha a backend mysql? akkor a json úgy is egy mező
+        // unflatten is not needed for Mongo, but what if the backend is MySQL? then the JSON is a single field anyway
         //item = unflattenObject(item);
 
         const response = await fetch(
@@ -2174,10 +2174,10 @@ export default {
       this.saveColumnState(column, 'collapsed');
     },
 
-    // oszlop állapot (hidden, collapsed): config az alapértelmezés, a felhasználó által
-    // egyszer már állított érték localStorage-ból felülírja
-    // táblázatonkénti localStorage állapot egy közös kulcs alatt: { [entity]: { [preset]: state } }
-    // 'vu-columns' — oszlopok (hidden, collapsed), 'vu-tables' — rendezés, szűrők, sor / oldal
+    // column state (hidden, collapsed): the config is the default, a value the user has
+    // already set once overrides it from localStorage
+    // per-table localStorage state under one shared key: { [entity]: { [preset]: state } }
+    // 'vu-columns' — columns (hidden, collapsed), 'vu-tables' — sort, filters, rows per page
     readStore(key) {
       try {
         const store = JSON.parse(localStorage.getItem(key)) || {};
@@ -2239,7 +2239,7 @@ export default {
 
       if (state.order) {
         const order = Object.assign({}, state.order);
-        // a configban fixált rendezés nem írható felül
+        // a sort order fixed in the config cannot be overridden
         for (let [key, value] of Object.entries(this.settings.table.order || {})) {
           if (value && value.fixed) {
             order[key] = value;
@@ -2831,7 +2831,7 @@ export default {
     gap: 0.35rem;
   }
 
-  /* Összecsukott oszlop: csak desktopon, mobil kártya nézetben teljes tartalom */
+  /* Collapsed column: desktop only, the mobile card view always shows the full content */
   @media (min-width: 768px) {
     .vua-table [data-collapsed] {
       width: 2rem;
@@ -2855,7 +2855,7 @@ export default {
     }
   }
 
-  /* Mobil stílusok: táblázat -> kártya nézet */
+  /* Mobile styles: table -> card view */
   @media (max-width: 767.98px) {
     .vua-table-responsive {
       border: 0;
@@ -2913,7 +2913,7 @@ export default {
     }
   }
 
-  /* Mobil modal: teljes képernyős szerkesztő/szűrő ablak */
+  /* Mobile modal: full-screen editor / filter window */
   @media (max-width: 575.98px) {
     .modal .modal-dialog {
       width: 100%;

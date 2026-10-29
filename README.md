@@ -685,7 +685,7 @@ metadata use the primary (first) language, falling back to the active one.
 
 ### Paste from clipboard
 
-Below the drop zone there's a small "Vágólapról beillesztéshez, kattints ide és nyomj Ctrl+V-t" hint —
+Below the drop zone there's a small "To paste from clipboard, click here and press Ctrl+V" hint —
 clicking it focuses a dedicated paste target, and pressing <kbd>Ctrl</kbd>+<kbd>V</kbd> (with an image on
 the clipboard, e.g. a screenshot) uploads it the same way as picking a file or dragging one in. No extra
 config needed; it's always on. Pasting into any other input on the page (e.g. a title field) still pastes
