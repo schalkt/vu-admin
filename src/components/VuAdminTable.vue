@@ -237,7 +237,7 @@
                 <span v-if="column.template" v-html="tableCellTemplate(column.template, item, index, column)">
                 </span>
 
-                <div v-if="column.progressbar" class="progress" role="progressbar" :aria-label="column.title || column.name" :aria-valuenow="item[column.name]"
+                <div v-if="column.progressbar" class="progress" role="progressbar" :aria-label="translate(column.title || column.name)" :aria-valuenow="item[column.name]"
                   :aria-valuemax="column.progressbar.max">
                   <div class="progress-bar" :class="[column.progressbar.class]" :style="{ width: Math.round(item[column.name] / column.progressbar.max * 100) + '%' }">
                     <span v-if="column.progressbar.value">{{ item[column.name] }}</span>

@@ -50,6 +50,8 @@ export const translations = {
     "Expand column": "Oszlop kinyitása",
     "Expand all": "Mind kinyit",
     "Filter / Sort": "Szűrés / Rendezés",
+    "{count} selected": "{count} kiválasztva",
+    "not selected": "nincs kiválasztva",
     Sort: "Rendezés",
     Filters: "Szűrők",
     "=": "Egyenlő",
@@ -128,6 +130,8 @@ export const translations = {
     "Blur (B)": "Elmosás (B)",
     "Blur strength (source px)": "Elmosás erőssége (forráskép px)",
     "Draw a rectangle": "Rajzolj egy téglalapot",
+    "Apply crop": "Vágás alkalmazása",
+    "Draw a crop area": "Jelöld ki a vágási területet",
 
     // HTML editor
     Bold: "Félkövér",

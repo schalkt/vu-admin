@@ -2934,6 +2934,8 @@ var Nc = "vu-language", Pc = "vu-language-change", Fc = [{
 	"Expand column": "Oszlop kinyitása",
 	"Expand all": "Mind kinyit",
 	"Filter / Sort": "Szűrés / Rendezés",
+	"{count} selected": "{count} kiválasztva",
+	"not selected": "nincs kiválasztva",
 	Sort: "Rendezés",
 	Filters: "Szűrők",
 	"=": "Egyenlő",
@@ -2999,6 +3001,8 @@ var Nc = "vu-language", Pc = "vu-language-change", Fc = [{
 	"Blur (B)": "Elmosás (B)",
 	"Blur strength (source px)": "Elmosás erőssége (forráskép px)",
 	"Draw a rectangle": "Rajzolj egy téglalapot",
+	"Apply crop": "Vágás alkalmazása",
+	"Draw a crop area": "Jelöld ki a vágási területet",
 	Bold: "Félkövér",
 	Italic: "Dőlt",
 	Underline: "Aláhúzott",
@@ -22290,7 +22294,7 @@ function RF(t, n, c, l, u, d) {
 					class: m(["btn btn-sm", t.editor.cropMode ? "btn-warning" : "btn-outline-light"]),
 					onClick: n[27] ||= (...e) => t.editorCropButtonClick && t.editorCropButtonClick(...e),
 					title: t.translate("Crop")
-				}, [n[76] ||= a("i", { class: "bi bi-crop" }, null, -1), t.editor.cropMode ? (_(), i("span", EF, x(t.editor.crop ? "Apply crop" : "Draw a crop area"), 1)) : r("", !0)], 10, TF),
+				}, [n[76] ||= a("i", { class: "bi bi-crop" }, null, -1), t.editor.cropMode ? (_(), i("span", EF, x(t.translate(t.editor.crop ? "Apply crop" : "Draw a crop area")), 1)) : r("", !0)], 10, TF),
 				t.editor.cropMode && t.editor.crop ? (_(), i("button", {
 					key: 0,
 					type: "button",
@@ -22480,7 +22484,7 @@ var WF = /*#__PURE__*/ gA(BF, [["render", UF]]), GF = {
 			return qc(e, t, this.settings, this);
 		},
 		translate(e, t, n) {
-			return typeof e == "string" ? translate(e, this.settings && this.settings.translate, t, n || this.settings && this.settings.language) : e;
+			return typeof e == "string" ? ml(e, this.settings && this.settings.translate, t, n || this.settings && this.settings.language) : e;
 		},
 		selectOptions(e, t) {
 			return typeof e == "function" ? e(this.item, t, this) : e;
@@ -23675,6 +23679,12 @@ var dR = /*#__PURE__*/ gA(FL, [["render", uR]]), fR = {
 		tableAction: Function
 	},
 	methods: {
+		dropdownButtonLabel(e) {
+			if (e.multiple) return this.translate("{count} selected", { count: (e.value || []).length });
+			if (e.value === void 0 || e.value === null || e.value === "") return this.translate("not selected");
+			let t = (e.options || []).find((t) => t.value === e.value);
+			return this.translate(t && t.label ? t.label : String(e.value));
+		},
 		translate(e, t, n) {
 			return ml(e, this.settings.translate, t, n || this.settings.language);
 		},
@@ -23791,7 +23801,7 @@ function ZR(t, n, s, c, l, u) {
 				}
 			}, [...n[26] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, TR)) : r("", !0)
 		])) : r("", !0),
-		s.column.filter && s.column.filter.type == "select" ? (_(), i("div", ER, [s.column.filter.dropdown ? (_(), i("div", DR, [a("button", OR, x(s.column.filter.multiple ? (s.column.filter.value || []).length + " selected" : s.column.filter.value ? s.column.filter.value : "not selected"), 1), a("ul", kR, [
+		s.column.filter && s.column.filter.type == "select" ? (_(), i("div", ER, [s.column.filter.dropdown ? (_(), i("div", DR, [a("button", OR, x(u.dropdownButtonLabel(s.column.filter)), 1), a("ul", kR, [
 			a("li", null, [(_(!0), i(e, null, y(s.column.filter.options, (e) => (_(), i("span", {
 				key: e,
 				class: m(["dropdown-item cursor-pointer", { selected: s.column.filter.multiple ? (s.column.filter.value || []).indexOf(e.value) >= 0 : s.column.filter.value === e.value }]),
@@ -24969,7 +24979,7 @@ function uV(t, c, l, u, d, f) {
 						key: 3,
 						class: "progress",
 						role: "progressbar",
-						"aria-label": o.title || o.name,
+						"aria-label": f.translate(o.title || o.name),
 						"aria-valuenow": t[o.name],
 						"aria-valuemax": o.progressbar.max
 					}, [a("div", {

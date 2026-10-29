@@ -473,7 +473,7 @@
 
           <button type="button" class="btn btn-sm" :class="editor.cropMode ? 'btn-warning' : 'btn-outline-light'" @click="editorCropButtonClick" :title="translate('Crop')">
             <i class="bi bi-crop"></i>
-            <span v-if="editor.cropMode" class="ms-1 small">{{ editor.crop ? 'Apply crop' : 'Draw a crop area' }}</span>
+            <span v-if="editor.cropMode" class="ms-1 small">{{ translate(editor.crop ? 'Apply crop' : 'Draw a crop area') }}</span>
           </button>
           <button v-if="editor.cropMode && editor.crop" type="button" class="btn btn-sm btn-outline-warning" @click="editor.crop = null; editorDraw()" :title="translate('Clear crop')">
             <i class="bi bi-x"></i>

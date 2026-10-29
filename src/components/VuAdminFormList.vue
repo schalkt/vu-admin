@@ -99,6 +99,7 @@
 
 <script>
 import {
+  translate,
   getValueOrFunction,
   arrayItemMoveDown,
   arrayItemMoveUp

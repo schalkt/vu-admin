@@ -52,7 +52,7 @@
 
       <div class="dropdown" v-if="column.filter.dropdown">
         <button class="btn btn-sm btn-secondary dropdown-toggle my-1" type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-          {{ column.filter.multiple ? ((column.filter.value || []).length + " selected") : (column.filter.value ? column.filter.value : 'not selected') }}
+          {{ dropdownButtonLabel(column.filter) }}
         </button>
         <ul class="dropdown-menu">
           <li>
@@ -195,6 +195,18 @@ export default {
     tableAction: Function,
   },
   methods: {
+    // dropdown filter button: "3 selected" / selected option label / "not selected" (translated)
+    dropdownButtonLabel(filter) {
+      if (filter.multiple) {
+        return this.translate("{count} selected", { count: (filter.value || []).length });
+      }
+      if (filter.value === undefined || filter.value === null || filter.value === "") {
+        return this.translate("not selected");
+      }
+      const option = (filter.options || []).find((item) => item.value === filter.value);
+      return this.translate(option && option.label ? option.label : String(filter.value));
+    },
+
     translate(key, vars, language) {
       return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
     },
