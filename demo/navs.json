@@ -1,0 +1,22 @@
+{
+  "admin": {
+    "class": "",
+    "items": [
+      { "name": "Termékek", "href": "#products", "icon": "bi bi-box-seam me-1" },
+      { "name": "Kosarak", "href": "#carts", "icon": "bi bi-cart3 me-1" },
+      {
+        "name": "Funkciók",
+        "icon": "bi bi-stars me-1",
+        "class": "btn-link text-decoration-none",
+        "items": [
+          { "name": "Tábla: szűrés, rendezés, oszlopok", "href": "#products", "icon": "bi bi-table me-1" },
+          { "name": "Form: mezőtípusok, feltöltés", "href": "#products", "icon": "bi bi-ui-checks me-1" },
+          { "name": "Reláció, sötét téma", "href": "#carts", "icon": "bi bi-diagram-3 me-1" },
+          { "name": "Rejtett (disabled) menüpont", "href": "#", "disabled": true }
+        ]
+      },
+      { "name": "dummyjson.com", "href": "https://dummyjson.com/docs/products", "target": "_blank", "icon": "bi bi-box-arrow-up-right me-1" },
+      { "name": "Letiltott", "href": "#", "disabled": true }
+    ]
+  }
+}

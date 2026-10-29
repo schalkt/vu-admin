@@ -22,14 +22,52 @@
 
   <div class="container-fluid" id="app">
 
-    <header class="sticky-top p-2 border shadow d-flex justify-content-end align-items-center gap-2">
+    <header class="sticky-top navbar navbar-expand p-2 border shadow bg-body gap-2">
+      <vu-admin-nav v-model="auth" :url="'./navs.json'"></vu-admin-nav>
       <vu-user-button v-model="auth" :panel="'login'"></vu-user-button>
       <vu-user-button v-model="auth" :panel="'registration'"></vu-user-button>
       <vu-auth v-model="auth" :settings="'auth'"></vu-auth>
     </header>
 
+    <details class="border rounded p-3 my-3 bg-body-tertiary">
+      <summary class="fw-bold">Mit lehet kipróbálni? <small class="text-muted fw-normal">(dummyjson.com — a mentések nem maradnak meg)</small></summary>
+      <div class="row small mt-2">
+        <div class="col-md-6">
+          <strong>Termékek tábla</strong>
+          <ul class="mb-2">
+            <li>Rendezés fejlécre kattintva (több oszlop is, de a dummyjson csak az elsőt veszi figyelembe)</li>
+            <li>Szűrők: a <em>Termék</em> keresés és a <em>Kategória</em> valóban szűr, a többi csak látható</li>
+            <li>Lapozás, sor / oldal választó</li>
+            <li>Oszlopok: ki/be kapcsolás, összecsukás (<i class="bi bi-arrows-collapse-vertical"></i>), „Mind kinyit”, „Alaphelyzet” — localStorage-ban marad</li>
+            <li>Inline szerkesztés (cím, készlet, ár, elérhetőség) autosave-vel, sor mentés gomb</li>
+            <li>Sor kijelölés (#), bulk szerkesztés és törlés a lábsorban</li>
+            <li>Sor részletek (lenyíló), egyedi művelet gomb, CSV export, „Továbbiak” dropdown</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <strong>Termék form</strong>
+          <ul class="mb-2">
+            <li>Mezők: text, number, select, dropdown (multi), date, checkbox, textarea, list, template</li>
+            <li>HTML szerkesztő (TipTap) képpel, linkkel, videó beágyazással</li>
+            <li>Képfeltöltés: drag&amp;drop, előnézet, képszerkesztő, nyelvi címek, címkék</li>
+            <li>Mentés, mentés és bezár, másolás, új, törlés, újratöltés</li>
+          </ul>
+          <strong>Kosarak tábla</strong>
+          <ul class="mb-0">
+            <li>Sötét téma, reláció (felhasználó neve, avatar), rendezés, összecsukott oszlop, CSV</li>
+            <li>Csak olvasható form template mezővel</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
     <div v-cloak v-if="auth.success">
-      <vu-admin :entity="'carts'" :auth="auth"></vu-admin>
+      <section id="products" class="mb-5">
+        <vu-admin :entity="'products'" :auth="auth"></vu-admin>
+      </section>
+      <section id="carts" class="mb-5">
+        <vu-admin :entity="'carts'" :auth="auth"></vu-admin>
+      </section>
     </div>
 
   </div>
@@ -58,6 +96,7 @@
         this.auth.settings = {
           entitiesVariable: 'VuEntities',
           entities: {
+            products: './vu-entity-products.js',
             carts: './vu-entity-demo.js',
           }
         };
@@ -68,6 +107,7 @@
     app.component('vu-admin', VuAdmin.VuAdmin);
     app.component('vu-auth', VuAdmin.VuAuth);
     app.component('vu-user-button', VuAdmin.VuUserButton);
+    app.component('vu-admin-nav', VuAdmin.VuAdminNav);
     app.mount('#app');
 
   </script>

@@ -85,8 +85,32 @@ vu-admin/
 ├── vu-entity-user.js
 ├── vu-entity-post.js
 ├── vu-entity-todos.js
-└── index.html
+├── index.html
+└── demo/                           # UMD build demo on dummyjson.com (see below)
+    ├── index.html
+    ├── vu-settings.js
+    ├── vu-entity-products.js       # feature showcase entity
+    ├── vu-entity-demo.js           # carts entity (dark theme, relation)
+    └── navs.json                   # static VuAdminNav menu
 ```
+
+### UMD demo — `demo/`
+
+A static page that loads the built `dist/vu-admin.umd.js` (run `npm run build` first) and uses the public
+[dummyjson.com](https://dummyjson.com) API, so it works without the mock server: open `/demo/` on the Vite dev server
+(`npm run dev`) or serve the project root with any static server.
+
+- **Products** (`vu-entity-products.js`) shows most table and form features: sorting, all filter types, pagination,
+  column toggle / collapse (persisted), inline editing with autosave, row select + bulk edit / delete, row details,
+  custom row action, toolbar dropdown, CSV export; form with text, number, select, dropdown, date, checkbox, textarea,
+  list, template, HTML editor and inline (JSON) image upload, plus save / copy / new / delete / reload buttons.
+- **Carts** (`vu-entity-demo.js`): dark theme, relation (user name + avatar from `/users`), sorting, collapsed column, CSV export.
+- **VuAdminNav** reads `demo/navs.json`.
+
+dummyjson limitations: `events.beforeItemsLoad` maps the sort to `?sortBy=&order=` (first sort key only), the *Product*
+filter to `/products/search?q=` and the *Category* filter to `/products/category/{slug}`; other filters are visible but
+ignored. Writes are simulated (not persisted); create uses `POST /products/add` (switched in `beforeItemSave`);
+bulk save / delete endpoints do not exist on dummyjson and return an error message.
 
 ---
 
@@ -814,8 +838,9 @@ Changes in this version and what to do in the consuming project:
 1. **Entity configs / `vu-admin-settings.js`:** search for every function listed under *HTML output and XSS* above that
    concatenates data into HTML (`+ value +`, `${item.x}`, `.join('</span><span>')`) and wrap each data value in
    `escapeHtml()`; wrap `href`/`src` in `escapeHtml(safeUrl())`. Add at the top of each entity factory:
-   `const { escapeHtml, safeUrl } = window.VuAdminHelpers;`. Done in this repo for `vu-entity-*.js` and
-   `vu-admin-settings.js`; **not yet done in `demo/vu-entity-demo.js`** (it uses the `dist` build, rebuild first with `npm run prod`).
+   `const { escapeHtml, safeUrl } = window.VuAdminHelpers;`. Done in this repo for `vu-entity-*.js`,
+   `vu-admin-settings.js`, `demo/vu-entity-demo.js` and `demo/vu-settings.js`. Apps that load the UMD build
+   (`dist/vu-admin.umd.js`) need a build that already contains `window.VuAdminHelpers` (also `VuAdmin.escapeHtml`).
 2. **Messages:** if the app put HTML into `auth.response.message` or table/form messages (e.g. `<br>`, `<strong>`),
    it is now shown literally — use plain text and `\n` for line breaks. The library's own "Saved" message is now `Saved (id: 5)`.
 3. **Role header:** if the backend reads `X-Auth-Role`, either set `roleHeader: 'X-Auth-Role'` in the auth settings

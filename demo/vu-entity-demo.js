@@ -1,3 +1,6 @@
+// HTML-t összefűző template-ekben minden adatot escape-elni kell (XSS);
+// a helperek a dist/vu-admin.umd.js-ből jönnek (window.VuAdminHelpers)
+const { escapeHtml, safeUrl } = window.VuAdminHelpers;
 
 let api = {
 	url: 'https://dummyjson.com/carts',
@@ -5,6 +8,34 @@ let api = {
 		items: "carts",
 		total: "total",
 	}
+};
+
+// relation: a userId helyett a dummyjson felhasználó neve/avatarja (egy kérés az összes userre)
+let relations = {
+	user: {
+		entity: 'user',
+		local: 'userId',
+		foreign: 'id',
+		api: {
+			url: 'https://dummyjson.com/users',
+			input: {
+				items: 'users',
+			},
+		},
+	},
+};
+
+let events = {
+	// vu-admin order → dummyjson ?sortBy=&order= (a szűrőket a dummyjson nem ismeri, csak láthatók)
+	beforeItemsLoad: (urlParams) => {
+		const order = Array.isArray(urlParams.order) ? urlParams.order.filter(Boolean)[0] : null;
+		delete urlParams.order;
+		delete urlParams.filter;
+		if (order) {
+			urlParams.sortBy = order.key;
+			urlParams.order = String(order.dir).toLowerCase();
+		}
+	},
 };
 
 let columns = [
@@ -42,32 +73,47 @@ let columns = [
 
 			if (!thumb) return '';
 
-			return '<a target="_blank" href="' + thumb + '"><img class="border border-secondary rounded shadow-sm" height="34" width="auto" src="' + thumb + '"></a>';
+			const url = escapeHtml(safeUrl(thumb));
+
+			if (!url) return '';
+
+			return '<a target="_blank" rel="noopener noreferrer" href="' + url + '"><img class="border border-secondary rounded shadow-sm" height="34" width="auto" src="' + url + '"></a>';
 		}
 	},
 	{
 		name: 'userId',
 		title: 'User',
-		sortable: false,
-		width: '8%',
-		class: 'text-center',
+		width: '14%',
+		class: 'text-nowrap',
+		relation: {
+			config: 'user',
+			params: {
+				limit: 0,
+				select: ['id', 'firstName', 'lastName', 'image'],
+			},
+		},
 		filter: {
 			type: 'number',
 			operator: '=',
 			buttonx: true,
 		},
-		template: (userId) => {
+		template: (userId, item) => {
+			if (item.user) {
+				return '<img src="' + escapeHtml(safeUrl(item.user.image)) + '" height="24" width="24" class="rounded-circle border me-1">' +
+					escapeHtml(item.user.firstName + ' ' + item.user.lastName);
+			}
 			const colors = ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f','#edc948','#b07aa1','#ff9da7'];
 			let h = 0;
 			for (let i = 0; i < ('' + userId).length; i++) h = ('' + userId).charCodeAt(i) + ((h << 5) - h);
 			const bg = colors[Math.abs(h) % colors.length];
-			return `<span class="badge rounded-pill px-2" style="background:${bg};font-size:.75rem">#${userId}</span>`;
+			return `<span class="badge rounded-pill px-2" style="background:${bg};font-size:.75rem">#${escapeHtml(userId)}</span>`;
 		}
 	},
 	{
 		name: 'products',
 		title: 'Products',
 		sortable: false,
+		collapsible: true,
 		template: function (products) {
 
 			if (!products) return '';
@@ -77,8 +123,8 @@ let columns = [
 			for (let product of products) {
 				items.push(
 					'<small class="mx-1">' +
-					'<span class="badge border border-secondary text-secondary me-1">' + product.quantity + ' ×</span>' +
-					product.title +
+					'<span class="badge border border-secondary text-secondary me-1">' + escapeHtml(product.quantity) + ' ×</span>' +
+					escapeHtml(product.title) +
 					'</small>'
 				);
 			}
@@ -91,7 +137,6 @@ let columns = [
 		title: 'Items',
 		width: '6%',
 		class: 'text-center',
-		sortable: false,
 		filter: {
 			type: 'number',
 			operators: [
@@ -106,7 +151,6 @@ let columns = [
 		title: 'Qty',
 		width: '6%',
 		class: 'text-center',
-		sortable: false,
 		filter: {
 			type: 'number',
 			operators: [
@@ -122,7 +166,7 @@ let columns = [
 		class: 'text-end',
 		header: { class: 'text-end' },
 		width: '10%',
-		sortable: false,
+		collapsed: true,
 		filter: {
 			type: 'number',
 			operators: [
@@ -141,7 +185,6 @@ let columns = [
 		class: 'text-end',
 		header: { class: 'text-end' },
 		width: '10%',
-		sortable: false,
 		filter: {
 			type: 'number',
 			operators: [
@@ -184,7 +227,7 @@ let columns = [
 ];
 
 let form = {
-	title: (item) => 'Cart #' + item.id,
+	title: (item) => 'Cart #' + escapeHtml(item.id),
 	control: {
 		class: 'text-end',
 		buttons: [
@@ -259,7 +302,7 @@ let form = {
 
 						const rows = products.map(p => {
 							const thumb = p.thumbnail
-								? '<img height="40" width="40" src="' + p.thumbnail + '" class="rounded border object-fit-cover me-2">'
+								? '<img height="40" width="40" src="' + escapeHtml(safeUrl(p.thumbnail)) + '" class="rounded border object-fit-cover me-2">'
 								: '<span class="d-inline-block rounded border bg-secondary me-2" style="width:40px;height:40px"></span>';
 
 							const discount = p.discountPercentage
@@ -268,10 +311,10 @@ let form = {
 
 							return '<tr>' +
 								'<td class="pe-2 align-middle">' + thumb + '</td>' +
-								'<td class="pe-3 align-middle">' + p.title + discount + '</td>' +
-								'<td class="text-center align-middle pe-3"><span class="badge bg-secondary">' + p.quantity + ' ×</span></td>' +
-								'<td class="text-end align-middle pe-2"><small class="text-muted text-decoration-line-through">' + p.price + '</small></td>' +
-								'<td class="text-end align-middle"><strong class="text-info">' + (p.discountedTotal ?? p.discountedPrice ?? p.total) + ' USD</strong></td>' +
+								'<td class="pe-3 align-middle">' + escapeHtml(p.title) + discount + '</td>' +
+								'<td class="text-center align-middle pe-3"><span class="badge bg-secondary">' + escapeHtml(p.quantity) + ' ×</span></td>' +
+								'<td class="text-end align-middle pe-2"><small class="text-muted text-decoration-line-through">' + escapeHtml(p.price) + '</small></td>' +
+								'<td class="text-end align-middle"><strong class="text-info">' + escapeHtml(p.discountedTotal ?? p.discountedPrice ?? p.total) + ' USD</strong></td>' +
 								'</tr>';
 						});
 
@@ -292,12 +335,16 @@ let form = {
 	]
 };
 
-window.VuEntities = {
+window.VuEntities = window.VuEntities || {};
+
+Object.assign(window.VuEntities, {
 
 	carts: () => {
 		return {
 			pkey: 'id',
 			api: api,
+			events: events,
+			relations: relations,
 			theme: 'dark',
 			table: {
 				title: 'Carts',
@@ -306,6 +353,9 @@ window.VuEntities = {
 					limit: 10,
 					size: 10,
 					limits: [5, 10, 20, 50],
+				},
+				order: {
+					discountedTotal: { dir: 'DESC', idx: 0, fixed: false },
 				},
 				control: {
 					class: 'text-center border rounded mt-2',
@@ -322,11 +372,30 @@ window.VuEntities = {
 							class: 'btn btn-sm btn-outline-dark m-1',
 							icon: 'bi bi-arrow-clockwise',
 						},
+						{
+							action: 'TABLE_EXPORT',
+							title: 'CSV',
+							class: 'btn btn-sm btn-outline-success m-1',
+							icon: 'bi bi-filetype-csv',
+						},
 					],
 				},
 				columns: columns,
+				exports: {
+					default: {
+						type: 'csv',
+						fields: [
+							{ name: 'id', title: 'Cart ID' },
+							{ name: 'userId', title: 'User ID' },
+							{ name: 'totalProducts', title: 'Items' },
+							{ name: 'totalQuantity', title: 'Qty' },
+							{ name: 'total', title: 'Total' },
+							{ name: 'discountedTotal', title: 'Discounted total' },
+						],
+					},
+				},
 			},
 			form: form,
 		};
 	}
-};
+});
