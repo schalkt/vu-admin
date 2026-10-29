@@ -16,8 +16,97 @@ var handleError = function (response) {
 
 }
 
+// Texts of this file are English translation keys. Translations for other languages go into
+// window.VuSettings.translate: they override the built-in dictionary (src/i18n.js) for every component,
+// and an entity config's own `translate` overrides them again for that entity.
+const REGISTRATION_HELP = `<div class='text-muted p-2 rounded shadow-sm'>After submitting the registration you will receive a <strong>confirmation e-mail</strong>; <strong>click</strong> the activation link in it to validate your registration. After the click our website opens, where you can enter <strong>further details</strong>.</div>`;
+
 window.VuSettings = {
     theme: 'dark',
+
+    // languages offered in the user menu (default: English, Magyar)
+    languages: [
+        { value: 'en', label: 'English' },
+        { value: 'hu', label: 'Magyar' },
+    ],
+
+    // project-level translations: override / extend the built-in dictionary
+    translate: {
+        hu: {
+            // override of a built-in text
+            'Save and close': 'Mentés és bezárás',
+
+            // user menu
+            'Register': 'Regisztráció',
+
+            // auth modal
+            'Sign in': 'Bejelentkezés',
+            'Forgot password': 'Elfelejtett jelszó',
+            'Activation': 'Aktiválás',
+            'Set new password': 'Új jelszó beállítása',
+            'Two-factor authentication': 'Kétlépéses hitelesítés',
+            'Save password': 'Jelszó mentése',
+            'Verify': 'Megerősítés',
+            'Resend': 'Újraküldés',
+            'Please select 1 icon to continue!': 'Kérjük, válassz ki 1 ikont a folytatáshoz!',
+            'Verification code': 'Hitelesítő kód',
+            '6-digit code': '6 jegyű kód',
+            'Enter the 6-digit code sent to your e-mail address. The code is valid for 5 minutes.': 'Add meg az e-mail címedre küldött 6 jegyű kódot. A kód 5 percig érvényes.',
+            'Invalid code, please try again!': 'Érvénytelen kód, kérjük, próbáld újra!',
+            'Username / e-mail address': 'Felhasználónév / e-mail cím',
+            'Enter your username': 'Add meg a felhasználóneved',
+            'Some e-mail providers do not always accept our e-mails properly, so delivery is not guaranteed.': 'Egyes e-mail szolgáltatók nem mindig fogadják be megfelelően a leveleinket, így a kézbesítés nem garantált.',
+            'Password': 'Jelszó',
+            'Enter your password': 'Add meg a jelszavad',
+            'Use at least 1 lowercase letter, 1 uppercase letter and 1 digit. Minimum 4 characters.': 'Legyen benne legalább 1 kisbetű, 1 nagybetű és 1 szám. Minimum 4 karakter.',
+            'Forgot your password?': 'Elfelejtetted a jelszavad?',
+            'Password again': 'Jelszó ismét',
+            'Repeat your password': 'Ismételd meg a jelszavad',
+            'Type the password you entered again.': 'Gépeld be újra a megadott jelszavad.',
+            'The two passwords do not match!': 'A két jelszó nem egyezik!',
+            'If the given e-mail address exists in our database, we send you an e-mail with a link. Clicking the link takes you to a page where you can set your new password. The link in the e-mail is valid for 1 hour only.': 'Ha a megadott e-mail cím szerepel az adatbázisunkban, küldünk egy e-mailt egy linkkel. A linkre kattintva egy oldalra jutsz, ahol beállíthatod az új jelszavad. A link csak 1 óráig érvényes.',
+            [REGISTRATION_HELP]: "<div class='text-muted p-2 rounded shadow-sm'>A regisztráció beküldése után egy <strong>visszaigazoló levél</strong> érkezik az e-mail címedre; a benne lévő aktiváló linkre <strong>kattintva</strong> érvényesítheted a regisztrációt. Ezután megnyílik a weboldalunk, ahol <strong>további adatokat</strong> adhatsz meg.</div>",
+            'Last name': 'Vezetéknév',
+            'First name': 'Keresztnév',
+            'Phone number': 'Telefonszám',
+            'e.g. +36 70 1111-222': 'pl.: +36 70 1111-222',
+            'Birth date': 'Születési dátum',
+            'Two-factor authentication (2FA)': 'Kétlépéses hitelesítés (2FA)',
+            'No 2FA': 'Nem kérek 2FA-t',
+            'E-mail code': 'E-mail kód',
+            'At sign-in we send a 6-digit code to your e-mail address that you need to enter to sign in.': 'Bejelentkezéskor egy 6 jegyű kódot küldünk az e-mail címedre, amit meg kell adnod a belépéshez.',
+            "I accept the <a href='/terms.pdf'>Terms and Conditions</a>": "Elfogadom az <a href='/terms.pdf'>Általános Szerződési Feltételeket</a>",
+            "I accept the <a href='/privacy-policy.pdf'>Privacy Policy</a>": "Elfogadom az <a href='/privacy-policy.pdf'>Adatkezelési tájékoztatót</a>",
+            'Subscribe to the newsletter': 'Feliratkozom a hírlevélre',
+            'Error {code}': 'Hiba ({code})',
+            'Password update failed!': 'A jelszó frissítése sikertelen!',
+            'Password reset successful': 'Sikeres jelszó-visszaállítás',
+
+            // server (mock API) messages
+            'Invalid username or password': 'Hibás felhasználónév vagy jelszó',
+            'Invalid captcha answer': 'Érvénytelen captcha megoldás',
+            'Registration failed': 'Sikertelen regisztráció',
+            'This e-mail address is already taken': 'Ez az e-mail cím már foglalt',
+            'Registration successful! The activation e-mail has been sent.': 'Sikeres regisztráció! Az aktiváló e-mailt elküldtük.',
+            'Activation successful!': 'Sikeres aktiválás!',
+            'The session has expired, please sign in again': 'A munkamenet lejárt, kérjük, jelentkezz be újra',
+            'Invalid code': 'Érvénytelen kód',
+            'User not found': 'A felhasználó nem található',
+            'Cannot resend': 'Nem lehet újraküldeni',
+            'Code sent': 'Kód elküldve',
+
+            // navigation (/api/navs)
+            'Dashboard': 'Vezérlőpult',
+            'Content': 'Tartalom',
+            'Products': 'Termékek',
+            'Posts': 'Bejegyzések',
+            'Todos': 'Teendők',
+            'Users': 'Felhasználók',
+            'Documentation': 'Dokumentáció',
+            'Hidden menu item': 'Rejtett menüpont',
+            'Disabled': 'Letiltott',
+        },
+    },
     button: {
         registration: {
             label: 'Register',
@@ -161,7 +250,7 @@ window.VuSettings = {
         },
         help: {
             forgot: 'If the given e-mail address exists in our database, we send you an e-mail with a link. Clicking the link takes you to a page where you can set your new password. The link in the e-mail is valid for 1 hour only.',
-            registration: `<div class='text-muted p-2 rounded shadow-sm'>After submitting the registration you will receive a <strong>confirmation e-mail</strong>; <strong>click</strong> the activation link in it to validate your registration. After the click our website opens, where you can enter <strong>further details</strong>.</div>`
+            registration: REGISTRATION_HELP,
         },
         inputs: {
             'lastname': {
@@ -190,7 +279,7 @@ window.VuSettings = {
                 prefix: null,
                 suffix: null,
                 type: 'text',
-                placeholder: 'pl.: +36 70 1111-222',
+                placeholder: 'e.g. +36 70 1111-222',
                 required: true,
                 colclass: 'col-md-6'
             },
@@ -248,7 +337,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = 'Error ' + auth.response.code + (auth.response.data?.message ? ' - ' + auth.response.data.message : '');
+                    auth.response.message = window.VuAdminHelpers.translate('Error {code}', { code: auth.response.code }) + (auth.response.data?.message ? ' - ' + window.VuAdminHelpers.translate(auth.response.data.message) : '');
                 }
 
             },
@@ -257,7 +346,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = 'Error ' + auth.response.code + (auth.response.data?.message ? ' - ' + auth.response.data.message : '');
+                    auth.response.message = window.VuAdminHelpers.translate('Error {code}', { code: auth.response.code }) + (auth.response.data?.message ? ' - ' + window.VuAdminHelpers.translate(auth.response.data.message) : '');
                 }
 
             },
@@ -266,7 +355,7 @@ window.VuSettings = {
                 console.log(auth.response);
 
                 if (auth.response) {
-                    auth.response.message = 'Error ' + auth.response.code + (auth.response.data?.message ? ' - ' + auth.response.data.message : '');
+                    auth.response.message = window.VuAdminHelpers.translate('Error {code}', { code: auth.response.code }) + (auth.response.data?.message ? ' - ' + window.VuAdminHelpers.translate(auth.response.data.message) : '');
                 }
             },
             password: (auth) => {
@@ -286,7 +375,7 @@ window.VuSettings = {
                 if (auth.response) {
                     auth.response.message = auth.response.data?.message
                         ? auth.response.data.message
-                        : 'Error ' + auth.response.code;
+                        : window.VuAdminHelpers.translate('Error {code}', { code: auth.response.code });
                 }
             },
         },

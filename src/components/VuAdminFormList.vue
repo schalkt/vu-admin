@@ -22,7 +22,7 @@
                 :field="elementDef" :item="item" :settings="settings" :formId="formId" :optionValue="'object'"></VuAdminFormSelect>
 
               <input v-else :type="elementDef.type" :required="elementDef.required"
-                :placeholder="elementDef.placeholder || ''" class="form-control" v-model="value[elindex][elementKey]">
+                :placeholder="translate(elementDef.placeholder || '')" class="form-control" v-model="value[elindex][elementKey]">
 
               <span v-if="elementDef.suffix" class="input-group-text">
                 {{ elementDef.suffix }}
@@ -69,7 +69,7 @@
               <VuAdminFormSelect v-if="element.type == 'select' && (!element.relation || (element.relation && element.relation.items))" v-model="element.value" :field="Object.assign({}, element, { required: false })"
                 :item="item" :settings="settings" :formId="formId" :optionValue="'object'"></VuAdminFormSelect>
 
-              <input v-else :type="element.type" :placeholder="element.placeholder || ''" class="form-control form-control-sm" v-model="element.value">
+              <input v-else :type="element.type" :placeholder="translate(element.placeholder || '')" class="form-control form-control-sm" v-model="element.value">
 
               <span v-if="element.suffix" class="input-group-text">
                 {{ element.suffix }}
@@ -87,7 +87,7 @@
       <div :class="addButton.wrapperClass">
         <button type="button" :class="addButton.class" @click="arrayAddNewItem(field, item)">
           <i v-if="addButton.icon" :class="addButton.icon"></i>
-          <span v-if="addButton.label" v-html="getValueOrFunction(addButton.label, item)"></span>
+          <span v-if="addButton.label" v-html="translate(getValueOrFunction(addButton.label, item))"></span>
         </button>
       </div>
 
@@ -157,9 +157,10 @@ const VuAdminFormList = {
       return getValueOrFunction(object, params, this.settings, this);
     },
 
-    // translate(key, vars, language) {
-    //   return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
-    // },
+    translate(key, vars, language) {
+      if (typeof key !== "string") return key;
+      return translate(key, this.settings && this.settings.translate, vars, language ? language : this.settings && this.settings.language);
+    },
 
     selectOptions(options, field) {
       if (typeof options === "function") {

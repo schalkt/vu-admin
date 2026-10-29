@@ -371,7 +371,7 @@
                  @drop.prevent="handleDrop">
 
             <span v-if="files && params.limit > files.length">
-              <i class="bi bi-upload me-2"></i> {{ params.text }}
+              <i class="bi bi-upload me-2"></i> {{ translate(params.text) }}
               <small v-if="params.limit">
                 ( <strong class="">{{ files.length }}</strong> / <span class="">{{ params.limit }}</span> )
               </small>

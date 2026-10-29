@@ -411,11 +411,14 @@ export function translate(key, translates, vars, language) {
 
     language = language ? language : getLanguage();
 
-    // own (entity / project) dictionary first, then the built-in one (src/i18n.js), else the key itself
-    const own = translates && translates[language] ? translates[language][key] : undefined;
-    const builtIn = translations[language] ? translations[language][key] : undefined;
+    // lookup order: own dictionary (entity config / component settings) → global (window.VuSettings.translate,
+    // vu-admin-settings.js) → built-in (src/i18n.js) → the key itself
+    const lookup = (dictionary) => dictionary && dictionary[language] ? dictionary[language][key] : undefined;
+    const global = typeof window !== 'undefined' && window.VuSettings ? window.VuSettings.translate : undefined;
 
-    return replaceVars(own || builtIn || key, vars);
+    const value = lookup(translates) || lookup(global) || lookup(translations);
+
+    return replaceVars(value || key, vars);
 
 }
 

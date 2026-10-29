@@ -29,7 +29,7 @@
         column.filter.operators && column.filter.operators.length > 0
       " v-model="column.filter.operator" :disabled="column.filter.fixed" @change="reloadTable()" class="form-select form-select-sm pe-0">
         <option v-for="operator in column.filter.operators" :key="operator" :value="operator.value">
-          {{ operator.label }}
+          {{ translate(operator.label) }}
         </option>
       </select>
 

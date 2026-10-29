@@ -243,18 +243,49 @@ From code: `setLanguage('hu')`, `getLanguage()` (exported, and on `window.VuAdmi
 User menu labels are translated when they are dictionary keys (`label: 'Language'`); labels built by functions can use
 `window.VuAdminHelpers.translate('Sign out')`.
 
-Add or override texts per entity (merged over the built-in dictionary); `{name}` style placeholders are replaced:
+**Overriding translations.** Every text can be overridden or added at two levels; the first match wins:
+
+1. **entity** — `translate` in a `vu-entity-*.js` config (only for that entity's table / form);
+2. **project** — `window.VuSettings.translate` in `vu-admin-settings.js` (every component: tables, forms, auth modal, user menu, nav);
+3. **built-in** — `src/i18n.js`;
+4. otherwise the key itself (English) is shown.
 
 ```js
+// vu-admin-settings.js
+window.VuSettings = {
+  languages: [{ value: 'en', label: 'English' }, { value: 'hu', label: 'Magyar' }, { value: 'de', label: 'Deutsch' }],
+  translate: {
+    hu: { 'Save and close': 'Mentés és bezárás', 'Sign in': 'Bejelentkezés' },  // override built-in / add own texts
+    de: { Save: 'Speichern', 'Loading file: {name}': 'Datei wird geladen: {name}' }, // a whole new language
+  },
+  …
+};
+
+// vu-entity-product.js
 translate: {
-  hu: { 'Save and close': 'Mentés + bezár', 'My custom button': 'Saját gomb' },
-  de: { Save: 'Speichern', 'Loading file: {name}': 'Datei wird geladen: {name}' },
+  hu: { 'Save and close': 'Mentés + bezárás', Price: 'Ár' },   // wins over vu-admin-settings.js for this entity
 },
 ```
 
-Config texts (column titles, button titles, option labels, field names) also go through `translate()`, so they can be
-translated by adding them as keys. Table / form messages are translated when the key exists; server messages are shown as they are.
-Auth (`VuAuth`) texts come from `window.VuSettings.auth` and are not part of this dictionary.
+`{name}` style placeholders are replaced. Keys are the English texts exactly as written in the code / config
+(HTML included, e.g. `"I accept the <a href='/terms.pdf'>Terms</a>"`).
+
+What goes through `translate()` (so it can be translated / overridden):
+
+- all built-in UI texts (table, pagination, filters, messages, upload, image / HTML editor, video embed);
+- config texts: table title, column titles, button / dropdown titles, filter and select option labels, operator labels,
+  form group titles, field labels, placeholders, checkbox texts, prefixes / suffixes, descriptions, list "add" buttons,
+  upload `params.text`, details field labels;
+- auth modal (`VuAuth`) texts from `window.VuSettings.auth` (titles, labels, placeholders, help, buttons, accept labels,
+  extra inputs and their options) and `auth.response.message` (server messages, e.g. `'Invalid username or password'`);
+- user menu labels (string labels; functions can call `window.VuAdminHelpers.translate('Sign out')`);
+- `VuAdminNav` item names;
+- table / form messages (built-in ones; server messages when their text is a key).
+
+Not translated: HTML returned by `template` / `details.raw` / `form.title` functions (call
+`window.VuAdminHelpers.translate()` inside them) and the captcha question (comes as HTML from the server).
+`vu-admin-settings.js` in this repo contains a complete `hu` dictionary for its own auth texts, the mock API messages
+and the nav menu, and `vu-entity-product.js` shows entity-level overrides.
 
 ---
 

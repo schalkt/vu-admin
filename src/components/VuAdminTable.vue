@@ -7,7 +7,7 @@
         <div class="d-flex align-items-center justify-content-between">
           <div class="d-inline-block">
             <h5 class="card-title d-inline-block mb-2" v-if="settings.table.title">
-              {{ settings.table.title }}
+              {{ translate(settings.table.title) }}
             </h5>
 
             <div v-show="ui.wait.table && settings.table.title" class="spinner-border spinner-border-sm mx-2" role="status">
@@ -80,7 +80,7 @@
                 <span class="dropdown-item cursor-pointer" @click="toggleColumn(column)">
                   <i v-if="!column.hidden" class="bi bi-check-square-fill me-2"></i>
                   <i v-if="column.hidden" class="bi bi-x-square me-2 text-danger"></i>
-                  {{ column.title }}
+                  {{ translate(column.title || column.name) }}
                   <small class="badge text-secondary fw-normal">{{ column.name }}</small>
                 </span>
               </li>
@@ -210,7 +210,7 @@
           <template v-for="(item, index) in this.items" :key="item.id">
             <tr class="align-middle">
               <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :data-collapsed="column.collapsed || null" :key="column.name"
-                :data-label="column.title ? column.title : translate(column.name)" :width="column.collapsed ? null : column.width" :class="getValueOrFunction(column.class, {
+                :data-label="translate(column.title ? column.title : column.name)" :width="column.collapsed ? null : column.width" :class="getValueOrFunction(column.class, {
                   column: column,
                   item: item,
                 })
@@ -333,7 +333,7 @@
                 <div class="m-0" v-for="field in settings.table.details.fields" :key="field">
                   <div class="row g-3 align-items-center">
                     <div class="col-12 col-md text-md-end" :class="[field.class]">
-                      <label class="col-form-label">{{ field.label }}</label>
+                      <label class="col-form-label">{{ translate(field.label) }}</label>
                     </div>
                     <div class="col-12 col-md" :class="[field.input.class]">
                       <input :type="field.input.type" v-if="['select', 'textarea'].indexOf(field.input.type) < 0" class="form-control form-control-sm" v-model="item[field.name]"

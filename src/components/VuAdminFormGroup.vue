@@ -3,7 +3,7 @@
   <div class="row m-1">
     <div v-for="group in settings.form.groups" :key="group" :class="[group.class ? group.class : 'col-md-12']">
 
-      <h2 v-if="group.title" class="form-row-title mb-4 fw-lighter" v-html="group.title ? group.title : ''"></h2>
+      <h2 v-if="group.title" class="form-row-title mb-4 fw-lighter" v-html="group.title ? translate(group.title) : ''"></h2>
 
       <div class="row" v-cloak v-if="item && group.fields">
         <div :class="[getValueOrFunction(field.class ? field.class : 'col-md-12'), 'input_type_' + field.type]" v-for="field in group.fields" :key="field">
@@ -12,29 +12,29 @@
 
             <span v-if="field.label">
               <label v-if="['html', 'image', 'upload'].indexOf(field.type) >= 0" :class="{ 'required': field.required }" v-cloak class="form-label text-secondary mb-1">
-                {{ field.label ? field.label : translate(field.name) }}
+                {{ translate(field.label ? field.label : field.name) }}
                 <span class="badge text-secondary fw-light" v-if="field.maxlength">
                   {{ item[field.name] ? item[field.name].length : 0 }} / {{ field.maxlength }}
                 </span>
               </label>
               <label v-else :class="{ 'required': field.required }" v-cloak class="form-label text-secondary mb-1" :for="formId + '_' + field.name"
-                v-html="getValueOrFunction(field.label ? field.label : translate(field.name), { field: field, item: item })">
+                v-html="translate(getValueOrFunction(field.label ? field.label : field.name, { field: field, item: item }))">
               </label>
             </span>
 
             <div v-if="['html', 'image', 'list', 'addresses', 'template'].indexOf(field.type) < 0" class="input-group">
-              <span v-if="field.prefix" class="input-group-text" v-html="getValueOrFunction(field.prefix, {
+              <span v-if="field.prefix" class="input-group-text" v-html="translate(getValueOrFunction(field.prefix, {
                 field: field,
                 item: item
-              })"></span>
+              }))"></span>
 
               <input v-if="field.type == 'text'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })"
                 type="text" :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength"
-                :placeholder="field.placeholder ? field.placeholder : ''" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
+                :placeholder="field.placeholder ? translate(field.placeholder) : ''" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
 
               <input v-if="field.type == 'number'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })"
                 type="number" :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]" :min="field.min" :max="field.max" :step="field.step"
-                :placeholder="field.placeholder ? field.placeholder : ''" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
+                :placeholder="field.placeholder ? translate(field.placeholder) : ''" :disabled="field.disabled" :readonly="field.readonly" :required="field.required" />
 
               <input v-if="['date', 'datetime', 'datetime-local'].indexOf(field.type) >= 0" class="form-control"
                 :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })" :type="field.type" :name="field.name"
@@ -47,13 +47,13 @@
                   :false-value="field.false != undefined ? field.false : false" v-model="item[field.name]" :disabled="field.disabled" :readonly="field.readonly"
                   :required="field.required" />
                 <label class="form-check-label cursor-pointer" :for="formId + '_' + field.name">
-                  {{ field.checkbox }}
+                  {{ translate(field.checkbox) }}
                 </label>
               </div>
 
               <input v-if="field.type == 'email'" autocomplete="on" class="form-control"
                 :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })" type="email" :name="field.name" :id="formId + '_' + field.name"
-                v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? field.placeholder : ''"
+                v-model="item[field.name]" :minlength="field.minlength" :maxlength="field.maxlength" :placeholder="field.placeholder ? translate(field.placeholder) : ''"
                 :readonly="field.readonly" :disabled="field.disabled" :required="field.required" />
 
 
@@ -62,13 +62,13 @@
 
               <textarea v-if="field.type == 'textarea'" class="form-control" :class="getValueOrFunction(field.inputclass ? field.inputclass : '', { field: field, item: item })"
                 :name="field.name" :id="formId + '_' + field.name" v-model="item[field.name]" :rows="field.rows" :minlength="field.minlength" :maxlength="field.maxlength"
-                :placeholder="field.placeholder ? field.placeholder : ''" :disabled="field.disabled" :readonly="field.readonly" :required="field.required">
+                :placeholder="field.placeholder ? translate(field.placeholder) : ''" :disabled="field.disabled" :readonly="field.readonly" :required="field.required">
               </textarea>
 
-              <span v-if="field.suffix" class="input-group-text" v-html="getValueOrFunction(field.suffix, {
+              <span v-if="field.suffix" class="input-group-text" v-html="translate(getValueOrFunction(field.suffix, {
                 field: field,
                 item: item
-              })"></span>
+              }))"></span>
 
             </div>
 
@@ -127,7 +127,7 @@
                 <div v-for="address in item[field.name]" :key="address">
                   {{ address }}
                   <label class="form-label text-secondary mb-1" :for="formId + '_' + field.name">
-                    {{ field.label }}
+                    {{ translate(field.label) }}
                   </label>
                   <input class="form-control" type="text" :name="field.name" :id="formId + '_' + field.name" v-model="address.country" />
                 </div>
@@ -145,10 +145,10 @@
             </div>
 
             <div class="p-1" v-if="field.description">
-              <small><i class="text-muted" v-html="getValueOrFunction(field.description, {
+              <small><i class="text-muted" v-html="translate(getValueOrFunction(field.description, {
                 field: field,
                 item: item
-              })"></i>
+              }))"></i>
               </small>
             </div>
 

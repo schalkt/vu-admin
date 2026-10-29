@@ -14,28 +14,28 @@
                     </div>
 
                     <h1 class="text-center mt-2 mb-4">
-                        {{ settings.title[auth.panel] }}
+                        {{ translate(settings.title[auth.panel]) }}
                     </h1>
 
                     <form @submit.prevent="handleSubmit()" @click.stop="">
 
                         <div class="mb-3" v-if="auth.panel != 'activation' && auth.panel != 'password' && auth.panel != 'twofa'">
-                            <label for="email" class="form-label text-primary">{{ settings.username.label }}</label>
+                            <label for="email" class="form-label text-primary">{{ translate(settings.username.label) }}</label>
                             <div class="input-group">
                                 <span v-if="settings.username.icon" class="input-group-text" :class="{ 'rounded-bottom-0': settings.username.help }">
                                     <i :class="[settings.username.icon]"></i>
                                 </span>
                                 <input id="email" name="email" :type="settings.username.type" v-model="username" class="form-control"
-                                    :class="{ 'rounded-bottom-0': settings.username.help }" :placeholder="settings.username.placeholder" required :disabled="loading" />
+                                    :class="{ 'rounded-bottom-0': settings.username.help }" :placeholder="translate(settings.username.placeholder)" required :disabled="loading" />
                             </div>
-                            <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="settings.username.help" v-html="settings.username.help"></small>
+                            <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="settings.username.help" v-html="translate(settings.username.help)"></small>
                         </div>
 
                         <template v-if="auth.panel != 'forgot' && auth.panel != 'activation' && auth.panel != 'twofa'">
 
                             <div class="mb-3">
                                 <label v-if="settings.password.label" for="password" class="form-label text-primary">
-                                    {{ settings.password.label }}
+                                    {{ translate(settings.password.label) }}
                                 </label>
                                 <div class="input-group">
                                     <span v-if="settings.password.icon" class="input-group-text"
@@ -43,7 +43,7 @@
                                         <i :class="[settings.password.icon]"></i>
                                     </span>
                                     <input id="password" name="password" :type="settings.password.type" v-model="password" class="form-control"
-                                        :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }" :placeholder="settings.password.placeholder"
+                                        :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }" :placeholder="translate(settings.password.placeholder)"
                                         :pattern="settings.password.pattern" :minlength="auth.panel == 'registration' ? settings.password.minlength : 1" required
                                         :disabled="loading" />
                                     <span v-if="auth.panel == 'registration' || auth.panel == 'password'" class="input-group-text"
@@ -60,13 +60,13 @@
                                     </span>
                                 </div>
                                 <small class="d-block border border-top-0 rounded-bottom p-2 text-muted"
-                                    v-if="(auth.panel == 'registration' || auth.panel == 'password') && settings.password.help" v-html="settings.password.help"></small>
+                                    v-if="(auth.panel == 'registration' || auth.panel == 'password') && settings.password.help" v-html="translate(settings.password.help)"></small>
                             </div>
 
                             <div class="mb-4" v-if="auth.panel === 'registration' || auth.panel === 'password'">
                                 <label for="password_again" class="form-label text-primary">
-                                    {{ settings.password_again.label }}
-                                    <small v-if="password_again.length > 0 && password_again != password" class="text-danger" v-html="settings.password_again.nomatch">
+                                    {{ translate(settings.password_again.label) }}
+                                    <small v-if="password_again.length > 0 && password_again != password" class="text-danger" v-html="translate(settings.password_again.nomatch)">
                                     </small>
                                 </label>
                                 <div class="input-group">
@@ -74,7 +74,7 @@
                                         <i :class="[settings.password_again.icon]"></i>
                                     </span>
                                     <input id="password_again" name="password_again" :type="settings.password_again.type" v-model="password_again" class="form-control"
-                                        :class="{ 'rounded-bottom-0': settings.password_again.help }" :placeholder="settings.password_again.placeholder"
+                                        :class="{ 'rounded-bottom-0': settings.password_again.help }" :placeholder="translate(settings.password_again.placeholder)"
                                         :minlength="settings.password.minlength" required :disabled="loading" />
                                     <span class="input-group-text" :class="{ 'rounded-bottom-0': settings.password_again.help }">
                                         <small class="" :class="{
@@ -89,7 +89,7 @@
                                     </span>
                                 </div>
                                 <small class="d-block border border-top-0 rounded-bottom p-2 text-muted"
-                                    v-if="(auth.panel == 'registration' || auth.panel == 'password') && settings.password_again.help" v-html="settings.password_again.help"></small>
+                                    v-if="(auth.panel == 'registration' || auth.panel == 'password') && settings.password_again.help" v-html="translate(settings.password_again.help)"></small>
                             </div>
 
                         </template>
@@ -112,24 +112,24 @@
                             </div>
                         </div>
                         <p v-if="captchaError" class="text-danger text-center small mt-2 mb-3 fw-semibold">
-                            {{ settings.captcha.error }}
+                            {{ translate(settings.captcha.error) }}
                         </p>
 
                         <!-- 2FA code input -->
                         <div v-if="auth.panel === 'twofa' && settings.twofa" class="mb-3">
-                            <p class="text-center small text-muted mb-3" v-html="settings.twofa.info"></p>
-                            <label class="form-label text-primary">{{ settings.twofa.label }}</label>
+                            <p class="text-center small text-muted mb-3" v-html="translate(settings.twofa.info)"></p>
+                            <label class="form-label text-primary">{{ translate(settings.twofa.label) }}</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
                                 <input type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
                                     v-model="twofaCode" class="form-control text-center fw-bold fs-5"
-                                    :placeholder="settings.twofa.placeholder" required :disabled="loading"
+                                    :placeholder="translate(settings.twofa.placeholder)" required :disabled="loading"
                                     autocomplete="one-time-code" />
                             </div>
                             <div class="text-end mt-2">
                                 <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none"
                                     @click.stop="resendTwofa" :disabled="loading">
-                                    <i class="bi bi-arrow-repeat me-1"></i>{{ settings.submit.resend }}
+                                    <i class="bi bi-arrow-repeat me-1"></i>{{ translate(settings.submit.resend) }}
                                 </button>
                             </div>
                         </div>
@@ -139,12 +139,12 @@
                             v-model="honeypot" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
 
                         <div class="mb-4 text-center" v-if="auth.panel == 'login' && settings.password.forgot">
-                            <button type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleForgotPassword" v-html="settings.password.forgot">
+                            <button type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleForgotPassword" v-html="translate(settings.password.forgot)">
                             </button>
                         </div>
 
                         <div class="d-flex mb-4" v-if="auth.panel == 'forgot' && settings.help && settings.help.forgot">
-                            <small class="text-muted" v-html="settings.help.forgot"></small>
+                            <small class="text-muted" v-html="translate(settings.help.forgot)"></small>
                         </div>
 
                         <div class="row">
@@ -152,27 +152,27 @@
                                 <div v-if="input.panels.indexOf(auth.panel) >= 0 && !input.hidden" :class="[input.colclass ? input.colclass : 'col-md-12']">
                                     <div class="mb-3">
                                         <label v-if="input.label" :for="key" class="form-label text-primary" :class="{ 'required': input.required }"
-                                            v-html="getValueOrFunction(input.label)"></label>
+                                            v-html="translate(getValueOrFunction(input.label))"></label>
                                         <div class="input-group">
                                             <span v-if="input.prefix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }"
-                                                v-html="getValueOrFunction(input.prefix)">
+                                                v-html="translate(getValueOrFunction(input.prefix))">
                                             </span>
 
                                             <select v-if="input.type == 'select'" class="form-select" :disabled="loading" :required="input.required" v-model="inputs[key]"
                                                 :multiple="input.multiple">
                                                 <option></option>
-                                                <option v-for="option in input.options" :key="option" :value="option.value" v-html="getValueOrFunction(option.label)">
+                                                <option v-for="option in input.options" :key="option" :value="option.value" v-html="translate(getValueOrFunction(option.label))">
                                                 </option>
                                             </select>
 
                                             <input v-else :id="key" :name="key" :type="input.type" v-model="inputs[key]" class="form-control"
-                                                :class="{ 'rounded-bottom-0': input.help }" :placeholder="input.placeholder" :required="input.required" :disabled="loading" />
+                                                :class="{ 'rounded-bottom-0': input.help }" :placeholder="translate(input.placeholder)" :required="input.required" :disabled="loading" />
 
                                             <span v-if="input.suffix" class="input-group-text" :class="{ 'rounded-bottom-0': input.help }"
-                                                v-html="getValueOrFunction(input.suffix)"></span>
+                                                v-html="translate(getValueOrFunction(input.suffix))"></span>
 
                                         </div>
-                                        <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="input.help" v-html="getValueOrFunction(input.help)">
+                                        <small class="d-block border border-top-0 rounded-bottom p-2 text-muted" v-if="input.help" v-html="translate(getValueOrFunction(input.help))">
                                         </small>
                                     </div>
                                 </div>
@@ -184,7 +184,7 @@
                             <div v-if="accept.panels.indexOf(auth.panel) >= 0" class="form-check">
                                 <input type="checkbox" class="form-check-input" :id="'accept_' + accept.name" :name="'accept_' + accept.name" v-model="accepts[accept.name]"
                                     :required="accept.required" :disabled="loading" />
-                                <label v-if="accept.label" class="form-check-label" :for="'accept_' + accept.name" v-html="getValueOrFunction(accept.label)">
+                                <label v-if="accept.label" class="form-check-label" :for="'accept_' + accept.name" v-html="translate(getValueOrFunction(accept.label))">
                                 </label>
                             </div>
 
@@ -192,25 +192,25 @@
 
 
                         <div v-if="auth.panel == 'registration' && settings.help && settings.help.registration" class="mt-4">
-                            <div v-html="getValueOrFunction(settings.help.registration)"></div>
+                            <div v-html="translate(getValueOrFunction(settings.help.registration))"></div>
                         </div>
 
                         <div class="mt-3 text-center" v-if="auth.response.message">
-                            <div :class="{ 'text-danger': !auth.response.ok, 'text-success': auth.response.ok }" style="white-space: pre-line">{{ auth.response.message }}</div>
+                            <div :class="{ 'text-danger': !auth.response.ok, 'text-success': auth.response.ok }" style="white-space: pre-line">{{ translate(auth.response.message) }}</div>
                         </div>
 
                         <div class="mt-4 d-flex justify-content-between">
                             <button v-if="auth.panel != 'login' && auth.panel != 'activation'" type="button" @click.stop="toggleClear"
                                 class="btn btn-secondary w-100 me-2 text-nowrap" :disabled="loading">
-                                <i class="bi bi-arrow-left-square mx-1"></i> {{ settings.submit.login }}
+                                <i class="bi bi-arrow-left-square mx-1"></i> {{ translate(settings.submit.login) }}
                             </button>
                             <button v-if="auth.panel == 'login' && settings.registrationEnabled !== false" type="button" class="btn btn-warning w-100 me-2 text-nowrap" @click.stop="toggleNewRegistration"
                                 :disabled="loading">
-                                <i class="bi bi-person-plus mx-1"></i> {{ settings.submit.registration }}
+                                <i class="bi bi-person-plus mx-1"></i> {{ translate(settings.submit.registration) }}
                             </button>
                             <button type="submit" class="btn w-100 text-nowrap"
                                 :class="{ 'btn-primary': auth.panel != 'registration', 'btn-warning': auth.panel == 'registration' }" :disabled="loading">
-                                {{ settings.submit[auth.panel] }}
+                                {{ translate(settings.submit[auth.panel]) }}
                                 <i v-if="auth.panel == 'registration'" class="bi bi-person-plus mx-1"></i>
                                 <i v-else class="bi bi-arrow-right-square mx-1"></i>
                             </button>
@@ -219,7 +219,7 @@
 
                         <div class="mt-2 text-end">
                             <button type="button" @click.stop="close" class="btn btn-light border w-100 me-1" :disabled="loading">
-                                {{ settings.submit.cancel }} <i class="bi bi-x-square mx-1"></i>
+                                {{ translate(settings.submit.cancel) }} <i class="bi bi-x-square mx-1"></i>
                             </button>
                         </div>
 
@@ -257,6 +257,7 @@ import {
     secureRandomInt,
     getResponseErrors,
 } from "./helpers";
+import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
 
 const eventBus = mitt();
@@ -268,6 +269,8 @@ const VuAuth = {
     },
     data() {
         return {
+            // current UI language, updated by the user menu language switch (re-renders the texts)
+            language: getLanguage(),
             theme: "light",
             auth: undefined,
             username: "",
@@ -825,8 +828,12 @@ const VuAuth = {
             return getValueOrFunction(object, params, this.settings, this);
         },
 
+        // config texts are translation keys: auth settings translate → window.VuSettings.translate → built-in
         translate(key, vars, language) {
-            return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
+            if (typeof key !== 'string') {
+                return key;
+            }
+            return translate(key, this.settings.translate, vars, language || this.settings.language || this.language);
         },
 
         isTwofaPanel(panel) {
@@ -879,6 +886,11 @@ const VuAuth = {
 
         window.addEventListener("keydown", this.handleEscapeKey);
 
+        this._onLanguageChange = (event) => {
+            this.language = event.detail.language;
+        };
+        window.addEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+
         // Load the reCAPTCHA script if it is not available yet
         if (this.recaptchaSiteKey && !document.querySelector('script[src="https://www.google.com/recaptcha/api.js"]')) {
             const script = document.createElement("script");
@@ -930,6 +942,7 @@ const VuAuth = {
     },
     beforeUnmount() {
         window.removeEventListener("keydown", this.handleEscapeKey);
+        window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
     },
 };
 

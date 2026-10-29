@@ -4,13 +4,13 @@
             <li v-if="item.items && item.items.length" class="nav-item dropdown">
                 <button class="btn dropdown-toggle" :class="item.class" type="button" data-bs-toggle="dropdown">
                     <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
-                    <span>{{ item.name }}</span>
+                    <span>{{ translate(item.name) }}</span>
                 </button>
                 <ul class="dropdown-menu">
                     <li v-for="(subitem, subindex) in visibleChildren(item)" :key="subindex">
                         <a class="dropdown-item" :class="subitem.class" :target="subitem.target || ''" :rel="subitem.target === '_blank' ? 'noopener noreferrer' : null" :href="safeUrl(subitem.href)">
                             <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)"></i>
-                            {{ subitem.name }}
+                            {{ translate(subitem.name) }}
                         </a>
                     </li>
                 </ul>
@@ -18,7 +18,7 @@
             <li v-else class="nav-item">
                 <a class="nav-link scrollto" :class="item.class" :target="item.target || ''" :rel="item.target === '_blank' ? 'noopener noreferrer' : null" :href="safeUrl(item.href)">
                     <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
-                    {{ item.name }}
+                    {{ translate(item.name) }}
                 </a>
             </li>
         </template>
@@ -26,7 +26,8 @@
 </template>
 
 <script>
-import { prepareFetchOptions, safeUrl } from "./helpers";
+import { prepareFetchOptions, safeUrl, translate } from "./helpers";
+import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
 const VuAdminNav = {
     name: "VuAdminNav",
@@ -46,6 +47,7 @@ const VuAdminNav = {
             auth: {},
             payload: null,
             loaded: false,
+            language: getLanguage(),
         };
     },
     computed: {
@@ -67,6 +69,15 @@ const VuAdminNav = {
             return items.filter((item) => !item.disabled);
         },
     },
+    mounted() {
+        this._onLanguageChange = (event) => {
+            this.language = event.detail.language;
+        };
+        window.addEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+    },
+    beforeUnmount() {
+        window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+    },
     watch: {
         modelValue: {
             handler(value) {
@@ -84,6 +95,10 @@ const VuAdminNav = {
     },
     methods: {
         safeUrl,
+        // item names are translation keys: window.VuSettings.translate → built-in dictionary
+        translate(key) {
+            return translate(key, null, null, this.language);
+        },
         // the icon can only be a CSS class (e.g. "bi bi-people me-1"), no HTML gets into the DOM;
         // the class is extracted from the legacy '<i class="...">' form
         iconClass(icon) {

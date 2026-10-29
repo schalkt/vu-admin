@@ -1046,12 +1046,54 @@ window.VuEntities.product = (preset) => {
 		api: api,
 		events: events,
 		_theme: 'dark',
+		// entity-level translations: override vu-admin-settings.js (window.VuSettings.translate) and the built-in dictionary
 		translate: {
 			'en': {
 				'New': 'New product',
 				'Thumb': 'Photo',
-				'Title': 'Product',				
-			}
+				'Title': 'Product',
+			},
+			'hu': {
+				// overrides of built-in / vu-admin-settings.js texts, for this entity only
+				'New': 'Új termék',
+				'Save and close': 'Mentés + bezárás',
+				'Products': 'Termékek',
+
+				// this entity's own texts
+				'Thumb': 'Fotó',
+				'Title': 'Termék',
+				'SKU': 'Cikkszám',
+				'Rating': 'Értékelés',
+				'Category': 'Kategória',
+				'Tags': 'Címkék',
+				'Brand': 'Márka',
+				'Stock': 'Készlet',
+				'Price': 'Ár',
+				'Updated': 'Módosítva',
+				'Buttons': 'Gombok',
+				'Product': 'Termék',
+				'Description': 'Leírás',
+				'Barcode': 'Vonalkód',
+				'Links': 'Linkek',
+				'Websites': 'Weboldalak',
+				'Owners': 'Tulajdonosok',
+				'Primary': 'Elsődleges',
+				'Secondary': 'Másodlagos',
+				'Add': 'Hozzáadás',
+				'New product': 'Új termék',
+				'Discount': 'Kedvezmény',
+				'Roles': 'Szerepkörök',
+				'Images': 'Képek',
+				'Documents': 'Dokumentumok',
+				'Public': 'Publikus',
+				'Hidden': 'Rejtett',
+				'More actions': 'További műveletek',
+				'More information': 'További információk',
+				'Export data': 'Adatok exportálása',
+				'<strong>Main</strong> parameters': '<strong>Fő</strong> paraméterek',
+				'Click or drop here to upload': 'Kattints vagy húzd ide a feltöltéshez',
+				'Product description (TipTap: bold, heading, list, alignment, link…)': 'Termékleírás (TipTap: félkövér, címsor, lista, igazítás, link…)',
+			},
 		},
 		// relations: {
 		// 	user: {

@@ -4,7 +4,7 @@
     @change="handleChange($event)" v-model="newitem" :disabled="field.disabled" :readonly="field.readonly" :required="field.required">
     <option :class="getValueOrFunction(field.optionclass ? field.optionclass : '', { field: field, item: item, option: option })" v-for="option in options" :key="option"
       :value="option.value">
-      {{ option.label ? option.label : option.value }}
+      {{ translate(option.label ? option.label : option.value) }}
     </option>
   </select>
 
@@ -69,9 +69,10 @@ const VuAdminFormSelect = {
       return getValueOrFunction(object, params, this.settings, this);
     },
 
-    // translate(key, vars, language) {
-    //   return translate(key, this.settings.translate, vars, language ? language : this.settings.language);
-    // },
+    translate(key, vars, language) {
+      if (typeof key !== "string") return key;
+      return translate(key, this.settings && this.settings.translate, vars, language ? language : this.settings && this.settings.language);
+    },
 
     async selectOptions(options, field) {
       if (typeof options === "function") {
