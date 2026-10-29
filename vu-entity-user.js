@@ -3,6 +3,9 @@ window.VuEntities = window.VuEntities ? window.VuEntities : {};
 
 window.VuEntities.user = (preset) => {
 
+	// HTML-t összefűző template-ekben minden adatot escape-elni kell (XSS)
+	const { escapeHtml, safeUrl } = window.VuAdminHelpers;
+
 	const availableRoles = [
 		{ value: 'admin', label: 'Admin' },
 		{ value: 'superuser', label: 'Superuser' },
@@ -76,7 +79,7 @@ window.VuEntities.user = (preset) => {
 							return;
 						}
 
-						let img = '<img class="rounded" height="24" src="' + image + '" alt="' + item['username'] + '" />';
+						let img = '<img class="rounded" height="24" src="' + escapeHtml(safeUrl(image)) + '" alt="' + escapeHtml(item['username']) + '" />';
 
 						return img;
 					},
@@ -85,7 +88,7 @@ window.VuEntities.user = (preset) => {
 					name: 'firstName',
 					title: 'Név <span class="text-muted ms-1 fw-light">( felhasználónév )</span>',
 					template: (firstName, item) => {
-						return item.firstName + ' ' + item.lastName + '<span class="text-muted ms-2 fw-light">( ' + item.username + ' )</span>';
+						return escapeHtml(item.firstName + ' ' + item.lastName) + '<span class="text-muted ms-2 fw-light">( ' + escapeHtml(item.username) + ' )</span>';
 					},
 					filterLink: {
 						entity: 'todos',
@@ -237,7 +240,7 @@ window.VuEntities.user = (preset) => {
 						if (!value) return '<span class="badge bg-secondary opacity-50">–</span>';
 						if (value === 'email') return '<span class="badge bg-info text-dark">E-mail</span>';
 						if (value === 'totp') return '<span class="badge bg-success">TOTP</span>';
-						return value;
+						return escapeHtml(value);
 					},
 					filter: {
 						type: 'select',
@@ -256,9 +259,9 @@ window.VuEntities.user = (preset) => {
 
 						if (!value) return '';
 						let color = value.toLowerCase();
-						let icon = '<i class="bi bi-circle-fill" style="color: ' + color.replace('blonde', '#FBE7A1') + '"></i>';
+						let icon = '<i class="bi bi-circle-fill" style="color: ' + escapeHtml(color.replace('blonde', '#FBE7A1').replace(/[^a-z0-9#]/g, '')) + '"></i>';
 
-						return icon + ' ' + '<span class="text-secondary ms-2">' + color + '</span>';
+						return icon + ' ' + '<span class="text-secondary ms-2">' + escapeHtml(color) + '</span>';
 
 					},
 					filter: {
@@ -297,9 +300,9 @@ window.VuEntities.user = (preset) => {
 					title: 'Cím',
 					template: (value, item) => {
 
-						let address = '<span>' + value + '</span> <small class="text-light">' + item['address.address'] + '</small>';
-						let search = 'https://www.google.com/maps/search/' + value + ' ' + item['address.postalCode'] + ',' + item['address.address'] + ',' + item['address.country'];
-						let link = '<a class="link-offset-2 link-underline link-underline-opacity-0" href="' + search + '" + search" target="_blank"><i class="bi bi-geo-alt me-1"></i>' + address + '</a>';
+						let address = '<span>' + escapeHtml(value) + '</span> <small class="text-light">' + escapeHtml(item['address.address']) + '</small>';
+						let search = 'https://www.google.com/maps/search/' + encodeURIComponent(value + ' ' + item['address.postalCode'] + ',' + item['address.address'] + ',' + item['address.country']);
+						let link = '<a class="link-offset-2 link-underline link-underline-opacity-0" href="' + escapeHtml(search) + '" target="_blank" rel="noopener noreferrer"><i class="bi bi-geo-alt me-1"></i>' + address + '</a>';
 
 						return link;
 
@@ -340,7 +343,7 @@ window.VuEntities.user = (preset) => {
 
 						if (img.types && img.types.large) {
 							elements.push(
-								'<a target="_blank" href="' + baseUrl + (img.types.large.url ? img.types.large.url : img.types.large.data) + '"><img height="24" width="auto" class="" src="' + baseUrl + (img.types.tiny.url ? img.types.tiny.url : img.types.tiny.data) + '" alt="' + img.title + '" /></a>'
+								'<a target="_blank" rel="noopener noreferrer" href="' + escapeHtml(safeUrl(baseUrl + (img.types.large.url ? img.types.large.url : img.types.large.data))) + '"><img height="24" width="auto" class="" src="' + escapeHtml(safeUrl(baseUrl + (img.types.tiny.url ? img.types.tiny.url : img.types.tiny.data))) + '" alt="' + escapeHtml(img.title) + '" /></a>'
 							);
 						}
 
@@ -517,7 +520,7 @@ window.VuEntities.user = (preset) => {
 							template: ({ field, item }) => {
 								const src = item[field.name] || '/mock/avatar/??';
 								const name = (item.firstName || '') + ' ' + (item.lastName || '');
-								return '<img src="' + src + '" height="64" width="64" class="rounded-circle border shadow mb-1"><br><small class="text-muted">' + name.trim() + '</small>';
+								return '<img src="' + escapeHtml(safeUrl(src)) + '" height="64" width="64" class="rounded-circle border shadow mb-1"><br><small class="text-muted">' + escapeHtml(name.trim()) + '</small>';
 							},
 						},
 						{
@@ -618,9 +621,9 @@ window.VuEntities.user = (preset) => {
 								const hair = item[field.name];
 								if (!hair) return '<span class="text-muted">–</span>';
 								const color = (hair.color || '').toLowerCase();
-								const cssColor = color.replace('blonde', '#FBE7A1');
+								const cssColor = color.replace('blonde', '#FBE7A1').replace(/[^a-z0-9#]/g, '');
 								return '<i class="bi bi-circle-fill me-2" style="color:' + cssColor + '"></i>' +
-									'<span class="text-secondary">' + (hair.color || '') + ' · ' + (hair.type || '') + '</span>';
+									'<span class="text-secondary">' + escapeHtml(hair.color) + ' · ' + escapeHtml(hair.type) + '</span>';
 							},
 						},
 					]
@@ -636,9 +639,9 @@ window.VuEntities.user = (preset) => {
 							template: ({ field, item }) => {
 								const a = item[field.name];
 								if (!a) return '<span class="text-muted">–</span>';
-								return '<div class="mb-1"><strong>' + (a.address || '') + '</strong></div>' +
-									'<div class="text-secondary">' + (a.postalCode || '') + ' ' + (a.city || '') + '</div>' +
-									'<div class="text-muted">' + (a.country || '') + '</div>';
+								return '<div class="mb-1"><strong>' + escapeHtml(a.address) + '</strong></div>' +
+									'<div class="text-secondary">' + escapeHtml(a.postalCode) + ' ' + escapeHtml(a.city) + '</div>' +
+									'<div class="text-muted">' + escapeHtml(a.country) + '</div>';
 							},
 						},
 					]

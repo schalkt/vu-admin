@@ -426,19 +426,19 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       admin: {
         class: '',
         items: [
-          { name: 'Vezérlőpult', href: '#', icon: '<i class="bi bi-speedometer2 me-1"></i>' },
+          { name: 'Vezérlőpult', href: '#', icon: 'bi bi-speedometer2 me-1' },
           {
             name: 'Tartalom',
-            icon: '<i class="bi bi-file-earmark-text me-1"></i>',
+            icon: 'bi bi-file-earmark-text me-1',
             items: [
-              { name: 'Termékek', href: '#product', icon: '<i class="bi bi-box-seam me-1"></i>' },
-              { name: 'Bejegyzések', href: '#post', icon: '<i class="bi bi-newspaper me-1"></i>' },
-              { name: 'Teendők', href: '#todos', icon: '<i class="bi bi-check2-square me-1"></i>' },
+              { name: 'Termékek', href: '#product', icon: 'bi bi-box-seam me-1' },
+              { name: 'Bejegyzések', href: '#post', icon: 'bi bi-newspaper me-1' },
+              { name: 'Teendők', href: '#todos', icon: 'bi bi-check2-square me-1' },
               { name: 'Rejtett menüpont', href: '#', disabled: true },
             ],
           },
-          { name: 'Felhasználók', href: '#user', icon: '<i class="bi bi-people me-1"></i>' },
-          { name: 'Dokumentáció', href: 'https://github.com', target: '_blank', icon: '<i class="bi bi-box-arrow-up-right me-1"></i>' },
+          { name: 'Felhasználók', href: '#user', icon: 'bi bi-people me-1' },
+          { name: 'Dokumentáció', href: 'https://github.com', target: '_blank', icon: 'bi bi-box-arrow-up-right me-1' },
           { name: 'Letiltott', href: '#', disabled: true },
         ],
       },

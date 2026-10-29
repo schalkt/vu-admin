@@ -18,7 +18,7 @@
           <div class="d-inline-block" v-if="messages.table.length">
             <small class="d-inline-block px-1 mx-1" v-if="message.table">
               <span :class="['text-' + message.table.priority]">
-                <span class="fw-bold" v-html="message.table.msg"></span>
+                <span class="fw-bold">{{ message.table.msg }}</span>
               </span>
             </small>
 
@@ -30,7 +30,7 @@
                 <li v-for="message in messages.table" :key="message">
                   <span class="dropdown-item" :class="['text-' + message.priority]">
                     <small class="me-2 text-muted">{{ message.datetime }}</small>
-                    <span class="fw-bold" v-html="message.msg"></span>
+                    <span class="fw-bold">{{ message.msg }}</span>
                   </span>
                 </li>
               </ul>
@@ -1147,7 +1147,7 @@ export default {
             item,
             () => {
               this.addTableMessage(
-                this.translate("Saved") + ` <small>( ${this.settings.pkey}:  ${params.item[this.settings.pkey]} )</small>`,
+                this.translate("Saved") + ` (${this.settings.pkey}: ${params.item[this.settings.pkey]})`,
                 2500,
               );
             },
@@ -1694,7 +1694,7 @@ export default {
         this.tableNoWait();
 
         this.addTableMessage(
-          this.translate("Saved") + ` <small>( ${this.settings.pkey}:  ${item[this.settings.pkey]} )</small>`,
+          this.translate("Saved") + ` (${this.settings.pkey}: ${item[this.settings.pkey]})`,
           2500,
         );
 
@@ -2502,7 +2502,7 @@ export default {
           this.tableNoWait();
 
           this.addTableMessage(
-            this.translate("Saved") + ` <small>( ${this.settings.pkey}:  ${item[this.settings.pkey]} )</small>`,
+            this.translate("Saved") + ` (${this.settings.pkey}: ${item[this.settings.pkey]})`,
             2500,
           );
 

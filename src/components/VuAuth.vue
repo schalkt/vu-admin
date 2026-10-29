@@ -196,7 +196,7 @@
                         </div>
 
                         <div class="mt-3 text-center" v-if="auth.response.message">
-                            <div :class="{ 'text-danger': !auth.response.ok, 'text-success': auth.response.ok }" v-html="auth.response.message"></div>
+                            <div :class="{ 'text-danger': !auth.response.ok, 'text-success': auth.response.ok }" style="white-space: pre-line">{{ auth.response.message }}</div>
                         </div>
 
                         <div class="mt-4 d-flex justify-content-between">
@@ -370,6 +370,10 @@ const VuAuth = {
 
             if (typeof header === 'string' && header && header[0] === '{') {
                 this.auth.header = JSON.parse(header);
+                // korábbi verzió által mentett X-Auth-Role eltávolítása, ha nincs opt-in
+                if (this.auth.roleHeader !== 'X-Auth-Role') {
+                    delete this.auth.header['X-Auth-Role'];
+                }
             }
 
             if (typeof settings === 'string' && settings && settings[0] === '{') {
@@ -488,11 +492,14 @@ const VuAuth = {
                     this.auth.header = {};
                 }
 
-                if (this.auth.user.role) {
-                    this.auth.header['X-Auth-Role'] = this.auth.user.role;
-                } else if (this.auth.user.roles) {
+                if (!this.auth.user.role && this.auth.user.roles) {
                     this.auth.user.role = this.auth.user.roles[0];
-                    this.auth.header['X-Auth-Role'] = this.auth.user.role;
+                }
+
+                // szerepkör header csak opt-in (settings.roleHeader); a backend nem bízhat meg benne,
+                // csak a tokenhez tartozó szerepkörök közül választhat vele
+                if (this.auth.roleHeader && this.auth.user.role) {
+                    this.auth.header[this.auth.roleHeader] = this.auth.user.role;
                 }
 
                 if (this.auth.user.token) {
@@ -526,7 +533,7 @@ const VuAuth = {
                     this.auth.response.data
                 );
                 if (errors?.length) {
-                    this.auth.response.message = errors.map((e) => e.message).join('<br>');
+                    this.auth.response.message = errors.map((e) => e.message).join('\n');
                 }
             }
 
@@ -898,7 +905,9 @@ const VuAuth = {
                 },
             };            
         }
-        
+
+        this.auth.roleHeader = this.settings.roleHeader || null;
+
         this.checkStorage();
         this.reset();
         this.updateInputs();

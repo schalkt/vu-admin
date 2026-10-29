@@ -120,7 +120,6 @@ window.VuSettings = {
 				// auth.token = responseData.accessToken;
 				auth.header = {
 					'X-Auth-Token' : responseData.accessToken,
-					'X-Auth-Role' : auth.role ? auth.role: null,
 				};
 
 			}

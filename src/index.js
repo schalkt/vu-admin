@@ -3,5 +3,7 @@ import VuAuth from './components/VuAuth.vue';
 import VuUserButton from './components/VuUserButton.vue';
 import VuAdminNav from './components/VuAdminNav.vue';
 
-export { VuAdmin, VuAuth, VuUserButton, VuAdminNav };
+import { escapeHtml, safeUrl } from './components/helpers.js';
+
+export { VuAdmin, VuAuth, VuUserButton, VuAdminNav, escapeHtml, safeUrl };
 

@@ -249,7 +249,8 @@ fixed filters (`fixed: true`) always come from the config. The filter *Reset* bu
   sortable: true,
 
   // display transformation (in-memory, does not affect saved value)
-  template: (value, item) => `<strong>${value}</strong>`,
+  // returns HTML → every data value must go through escapeHtml() (see Security)
+  template: (value, item) => `<strong>${escapeHtml(value)}</strong>`,
 
   // value conversions applied on load (in) and before save (out)
   convert: {
@@ -490,7 +491,7 @@ form: {
 // Custom HTML template
 {
   type: 'template', name: 'address', label: null,
-  template: ({ field, item }) => `<div>${item.address?.city}</div>`,
+  template: ({ field, item }) => `<div>${escapeHtml(item.address?.city)}</div>`,
 }
 
 // All fields support:
@@ -709,6 +710,8 @@ window.VuSettings.auth = {
   accepts: [
     { name: 'tos',  label: () => 'I accept the <a href="/tos">Terms</a>', panels: ['registration'], required: true },
   ],
+  // optional: send the selected role in this header (default: not sent, see Security)
+  // roleHeader: 'X-Auth-Role',
   onSuccess: {
     login: (auth) => {
       auth.user = auth.response.data;
@@ -744,6 +747,82 @@ Entities (the admin data views) are only loaded when the logged-in user has a `r
 ### Session restore on page load
 
 If `api.profile` is set, VuAuth calls it on every mount using the stored token header. On success the response is merged into `auth.user` and localStorage is refreshed. If the user now has a role but `auth.settings` was not previously set (e.g. role was assigned after first login), `onSuccess.profile` can populate `auth.settings` at this point. On failure (401, network error) the user is logged out automatically.
+
+---
+
+## Security
+
+### HTML output and XSS
+
+Vu-admin renders some config values as HTML (`v-html`). **Config functions that return HTML must escape every data value**
+coming from the API / users, otherwise a stored value like `<img src=x onerror=…>` runs in every admin's browser.
+
+Affected config keys (all return HTML): table column `template`, column `header.title`, button `template`,
+`input.prefix` / `input.suffix`, `table.details.raw`, form `title`, form field `label` / `prefix` / `suffix` / `description`,
+form field `type: 'template'`, list `elementDef.template`, user button `label` / `dropdowns[].label`, auth `accepts[].label`, `help`.
+
+Helpers (exported from the package and available globally as `window.VuAdminHelpers`, because entity configs are not modules):
+
+```js
+const { escapeHtml, safeUrl } = window.VuAdminHelpers;   // or: import { escapeHtml, safeUrl } from 'vu-admin'
+
+escapeHtml('<b>"x"</b>')          // '&lt;b&gt;&quot;x&quot;&lt;/b&gt;'  — null/undefined → ''
+safeUrl('javascript:alert(1)')    // ''  — allows http(s), mailto, tel, relative URLs, data:image/* (not SVG)
+
+template: (value, item) =>
+  '<a href="' + escapeHtml(safeUrl(item.url)) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(value) + '</a>'
+```
+
+Rules: text → `escapeHtml(v)`; `href`/`src` → `escapeHtml(safeUrl(v))`; inline `style` values → whitelist characters
+(e.g. `v.replace(/[^a-z0-9#]/gi, '')`); URL parts → `encodeURIComponent(v)`.
+
+Rendered as **plain text** by the library (HTML is not interpreted): table/form messages (incl. server error messages),
+`auth.response.message` (newlines are kept, use `\n` instead of `<br>`), `VuAdminNav` item `name`.
+
+### Role header
+
+`X-Auth-Role` is **no longer sent by default.** Set `window.VuSettings.auth.roleHeader = 'X-Auth-Role'` to send the
+selected role (`auth.user.role`, changed via the user button role switcher). The backend must never authorize based on
+this header alone: it may only select one of the roles that belong to the token's user, and must reject anything else.
+A previously stored `X-Auth-Role` is removed from `localStorage` (`vu-header`) on the next page load if `roleHeader` is not set.
+
+### CSV export
+
+Every CSV cell goes through `csvCell()`: values starting with `=`, `+`, `-`, `@`, tab or CR get a `'` prefix
+(formula injection; plain numbers like `-12.5` are kept), and cells containing the delimiter, `"`, newlines or
+leading/trailing whitespace are quoted (`"` doubled). Objects are exported as JSON.
+
+### VuAdminNav
+
+Nav items come from the API (`/api/navs`). `icon` is a **CSS class string** (`'bi bi-people me-1'`), not HTML —
+the legacy `'<i class="…">'` form still works (the class is extracted), any other HTML is dropped. `href` goes
+through `safeUrl()`, `target: '_blank'` links get `rel="noopener noreferrer"`.
+
+### Still open (not solvable in the library alone)
+
+- The token (`X-Auth-Token`) is stored in `localStorage` (`vu-user`, `vu-header`) — readable by any XSS. Prefer an
+  httpOnly + SameSite cookie session, or short-lived tokens with refresh.
+- File upload `accept` is checked client-side only; the backend must validate type/size, and should not serve
+  uploaded SVG/HTML inline from the app's origin (`Content-Disposition: attachment` or a separate domain).
+- Mock server (`mock/`) is for development only: login does not check the password, secrets have hard-coded fallbacks.
+- `captcha.question` from the captcha endpoint is rendered as HTML (trusted own backend).
+
+### Migration notes (for integrators / AI agents updating an app that uses vu-admin)
+
+Changes in this version and what to do in the consuming project:
+
+1. **Entity configs / `vu-admin-settings.js`:** search for every function listed under *HTML output and XSS* above that
+   concatenates data into HTML (`+ value +`, `${item.x}`, `.join('</span><span>')`) and wrap each data value in
+   `escapeHtml()`; wrap `href`/`src` in `escapeHtml(safeUrl())`. Add at the top of each entity factory:
+   `const { escapeHtml, safeUrl } = window.VuAdminHelpers;`. Done in this repo for `vu-entity-*.js` and
+   `vu-admin-settings.js`; **not yet done in `demo/vu-entity-demo.js`** (it uses the `dist` build, rebuild first with `npm run prod`).
+2. **Messages:** if the app put HTML into `auth.response.message` or table/form messages (e.g. `<br>`, `<strong>`),
+   it is now shown literally — use plain text and `\n` for line breaks. The library's own "Saved" message is now `Saved (id: 5)`.
+3. **Role header:** if the backend reads `X-Auth-Role`, either set `roleHeader: 'X-Auth-Role'` in the auth settings
+   **and** make the backend validate it against the token's roles, or (preferred) let the backend derive the role from the token.
+   Custom `onSuccess.login` handlers that set `auth.header['X-Auth-Role']` themselves should drop it.
+4. **Nav API:** return `icon` as a class string (`"bi bi-people me-1"`) instead of HTML.
+5. **CSV:** consumers parsing exported CSV must handle quoted cells and the `'` prefix on formula-like values.
 
 ---
 

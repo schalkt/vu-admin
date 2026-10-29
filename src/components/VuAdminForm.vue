@@ -39,7 +39,7 @@
       <span class="d-inline-block ms-3 mt-1" v-if="message.form">
         <span :class="['text-' + message.form.priority]">
           <i class="bi bi-envelope-fill me-2"></i>
-          <span v-html="message.form.msg"></span>
+          <span>{{ message.form.msg }}</span>
         </span>
       </span>
 
@@ -65,7 +65,7 @@
               <li v-for="message in messages.form" :key="message">
                 <span class="dropdown-item disabled" :class="['text-' + message.priority]">
                   <small class="me-2 text-muted">{{ message.datetime }}</small>
-                  <span v-html="message.msg"></span>
+                  <span>{{ message.msg }}</span>
                 </span>
               </li>
             </ul>
@@ -576,7 +576,7 @@ const VuAdminForm = {
 
         if (item) {
           this.addFormMessage(
-            this.translate("Saved") + ` <small>( ${this.settings.pkey}:  ${item[this.settings.pkey]} )</small>`,
+            this.translate("Saved") + ` (${this.settings.pkey}: ${item[this.settings.pkey]})`,
             2500
           );
 

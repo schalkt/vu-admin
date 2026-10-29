@@ -3,6 +3,9 @@ window.VuEntities = window.VuEntities ? window.VuEntities : {};
 
 window.VuEntities.product = (preset) => {
 
+	// HTML-t összefűző template-ekben minden adatot escape-elni kell (XSS)
+	const { escapeHtml, safeUrl } = window.VuAdminHelpers;
+
 	let api = {
 		url: '/api/products',
 		// options: {
@@ -116,7 +119,8 @@ window.VuEntities.product = (preset) => {
 					return;
 				}
 
-				return '<a target="_blank" href="' + src + '"><img class="border border-light rounded shadow" height="34" width="auto" src="' + src + '"></a>';
+				const url = escapeHtml(safeUrl(src));
+				return url ? '<a target="_blank" rel="noopener noreferrer" href="' + url + '"><img class="border border-light rounded shadow" height="34" width="auto" src="' + url + '"></a>' : '';
 
 			}
 		},
@@ -213,7 +217,7 @@ window.VuEntities.product = (preset) => {
 			class: 'text-nowrap',
 			template: (tags) => {
 				if (!tags || !tags.length) return '';
-				return '<span class="badge border text-dark me-1 p-1">' + tags.join('</span><span class="badge border text-dark me-1 p-1">') + '</span>'
+				return tags.map(tag => '<span class="badge border text-dark me-1 p-1">' + escapeHtml(tag) + '</span>').join('');
 			},
 			filter: {
 				type: 'select',
@@ -256,7 +260,7 @@ window.VuEntities.product = (preset) => {
 				if (!website) {
 					return '';
 				}
-				return '<a class="link" target="_blank" href="/">' + website + '</a>';
+				return '<a class="link" target="_blank" rel="noopener noreferrer" href="/">' + escapeHtml(website) + '</a>';
 			},
 			filter: {
 				type: 'text',
@@ -315,7 +319,7 @@ window.VuEntities.product = (preset) => {
 			title: 'Updated',
 			class: 'text-nowrap',
 			template: (value) => {
-				return '<small>' + value + '</small>';
+				return '<small>' + escapeHtml(value) + '</small>';
 			},
 			convert: {
 				in: (value, item) => {
@@ -707,7 +711,7 @@ window.VuEntities.product = (preset) => {
 					{
 						type: 'template',
 						template: (value) => {
-							return `<div class="border rounded p-1 text-secondary fw-light overflow-auto"><small>${JSON.stringify(value)}</small></div>`
+							return `<div class="border rounded p-1 text-secondary fw-light overflow-auto"><small>${escapeHtml(JSON.stringify(value))}</small></div>`
 						},
 						description: '<span>Field description here</span>',
 						class: 'o',

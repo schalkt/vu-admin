@@ -1,4 +1,43 @@
 
+const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' };
+
+/**
+ * HTML escape: szöveg/attribútum értékhez, ha HTML-t összefűző template-be kerül adat.
+ * null/undefined → ''.
+ */
+export function escapeHtml(value) {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    return String(value).replace(/[&<>"'`]/g, (ch) => HTML_ESCAPES[ch]);
+}
+
+/**
+ * URL szűrés href/src értékhez: csak http(s), mailto, tel, relatív URL és data:image (nem SVG) engedett.
+ * Nem engedett URL (pl. javascript:) → ''. Az eredményt attribútumba téve még escapeHtml() kell.
+ */
+export function safeUrl(url) {
+    if (url === null || url === undefined) {
+        return '';
+    }
+    const value = String(url).trim();
+    // vezérlőkarakterek/whitespace eltávolítása a protokoll ellenőrzéshez (pl. "java\tscript:")
+    const normalized = value.replace(/[\u0000-\u0020\u007f]/g, '').toLowerCase();
+    if (/^data:image\/(png|jpe?g|gif|webp|avif|bmp)[;,]/.test(normalized)) {
+        return value;
+    }
+    const protocol = normalized.match(/^([a-z][a-z0-9+.-]*):/);
+    if (!protocol) {
+        return value; // relatív URL
+    }
+    return ['http', 'https', 'mailto', 'tel'].includes(protocol[1]) ? value : '';
+}
+
+// az entity configok (window.VuEntities) nem modulok, ezért globálisan is elérhető
+if (typeof window !== 'undefined') {
+    window.VuAdminHelpers = Object.assign(window.VuAdminHelpers || {}, { escapeHtml, safeUrl });
+}
+
 export function deepMerge(target, source) {
 
     for (const key in source) {
@@ -381,17 +420,17 @@ export function translate(key, translates, vars, language) {
 
 export function convertToCSV(items, fields, delimiter = ';') {
 
-    const headers = fields.map(field => field.title ? field.title : (field.name.charAt(0).toUpperCase() + field.name.slice(1))).join(delimiter);
+    const headers = fields.map(field => csvCell(field.title ? field.title : (field.name.charAt(0).toUpperCase() + field.name.slice(1)), delimiter)).join(delimiter);
     const rows = items.map(row =>
         fields.map(field => {
 
             let value = row[field.name];
 
             if (field.template) {
-                return field.template(value, row, items);
+                value = field.template(value, row, items);
             }
 
-            return value !== undefined ? value : '';
+            return csvCell(value, delimiter);
 
         }).join(delimiter)
     );
@@ -400,6 +439,28 @@ export function convertToCSV(items, fields, delimiter = ';') {
 
 }
 
+
+/**
+ * CSV cella: formula injection ellen a =, +, -, @, tab, CR kezdetű szöveg elé ' kerül
+ * (kivéve a tisztán numerikus értéket, pl. -12.5), és idézőjelezés, ha kell.
+ */
+export function csvCell(value, delimiter = ';') {
+    if (value === undefined || value === null) {
+        return '';
+    }
+
+    let text = typeof value === 'object' ? JSON.stringify(value) : String(value);
+
+    if (/^[=+\-@\t\r]/.test(text) && !/^[+-]?\d+([.,]\d+)?$/.test(text)) {
+        text = "'" + text;
+    }
+
+    if (text.includes(delimiter) || /["\r\n]/.test(text) || text !== text.trim()) {
+        text = '"' + text.replace(/"/g, '""') + '"';
+    }
+
+    return text;
+}
 
 export function downloadCSV(csvContent, filename = 'export.csv') {
 

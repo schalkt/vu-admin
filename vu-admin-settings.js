@@ -33,9 +33,10 @@ window.VuSettings = {
                     return 'Bejelentkezés';
                 }
 
-                let fullName = [self.auth.user.firstName, self.auth.user.lastName].join(' ');
-                let role = self.auth.user.role ? ` (${self.auth.user.role})` : '';
-                let img = `<img class='img-fluid rounded me-2' width='22' src='${self.auth.user.image}' />`;
+                const { escapeHtml, safeUrl } = window.VuAdminHelpers;
+                let fullName = escapeHtml([self.auth.user.firstName, self.auth.user.lastName].join(' '));
+                let role = self.auth.user.role ? ` (${escapeHtml(self.auth.user.role)})` : '';
+                let img = `<img class='img-fluid rounded me-2' width='22' src='${escapeHtml(safeUrl(self.auth.user.image))}' />`;
 
                 return img + fullName + role;
 
@@ -57,7 +58,7 @@ window.VuSettings = {
                 {
                     class: 'dropdown-item fw-light',
                     label: (params, settings, self) => {
-                        return self.auth.user.email;
+                        return window.VuAdminHelpers.escapeHtml(self.auth.user.email);
                     },
                 }, {
                     class: 'dropdown-divider'

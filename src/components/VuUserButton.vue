@@ -89,7 +89,9 @@ const VuUserButton = {
 
         setSelectedRole(role) {
             this.auth.user.role = role;
-            this.auth.header['X-Auth-Role'] = this.auth.user.role;
+            if (this.auth.roleHeader) {
+                this.auth.header[this.auth.roleHeader] = this.auth.user.role;
+            }
 
             localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
             localStorage.setItem('vu-header', JSON.stringify(this.auth.header));

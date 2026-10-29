@@ -3,6 +3,9 @@ window.VuEntities = window.VuEntities ? window.VuEntities : {};
 
 window.VuEntities.post = (preset) => {
 
+	// HTML-t összefűző template-ekben minden adatot escape-elni kell (XSS)
+	const { escapeHtml, safeUrl } = window.VuAdminHelpers;
+
 	let api = {
 		url: '/api/posts',
 		input: {
@@ -47,7 +50,7 @@ window.VuEntities.post = (preset) => {
 			title: 'Tags',
 			template: (value, item) => {
 				if (!Array.isArray(value) || !value.length) return '';
-				return value.map(tag => `<span class="badge text-bg-light border me-1">${tag}</span>`).join('');
+				return value.map(tag => `<span class="badge text-bg-light border me-1">${escapeHtml(tag)}</span>`).join('');
 			},
 			filter: {
 				type: 'select',
@@ -94,8 +97,8 @@ window.VuEntities.post = (preset) => {
 				}
 			},
 			template: (value, item) => {
-				if (!item.user) return '<span class="text-muted">#' + value + '</span>';
-				return item.user.firstName + ' ' + item.user.lastName;
+				if (!item.user) return '<span class="text-muted">#' + escapeHtml(value) + '</span>';
+				return escapeHtml(item.user.firstName + ' ' + item.user.lastName);
 			},
 			buttons: [
 				{
