@@ -229,13 +229,19 @@ table: {
 
 ### Column config
 
+`hidden` and `collapsed` are only defaults: once the user toggles a column, its state is stored in
+`localStorage` (key `vu-columns`, shared by all tables: `{ [entity]: { [preset]: { [column]: { hidden, collapsed } } } }`) and takes precedence over the config.
+The *Reset* item of the Columns dropdown clears the stored state.
+
 ```js
 {
   name: 'price',            // maps to item.price (dot-notation for nested: 'meta.updatedAt')
   title: 'Price',
   width: '10%',
   class: 'text-end',
-  hidden: false,
+  hidden: false,            // default visibility (Columns dropdown)
+  collapsible: false,       // show collapse toggle in header (narrow strip, content hidden)
+  collapsed: false,         // collapsed by default (implies collapsible: true)
   sortable: true,
 
   // display transformation (in-memory, does not affect saved value)

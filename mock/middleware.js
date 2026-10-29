@@ -530,6 +530,31 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       return send(res, newItem, 201, delay);
     }
 
+    // Bulk: PUT /api/{entity} { item, ids } — DELETE /api/{entity} { ids }
+    if ((req.method === 'PUT' || req.method === 'PATCH' || req.method === 'DELETE') && !id) {
+      if (errors[req.method === 'DELETE' ? 'DELETE' : 'PUT']) return rejectMock(res, req.method === 'DELETE' ? 'DELETE' : 'PUT');
+
+      const body = await readBody(req);
+      const ids = Array.isArray(body.ids) ? body.ids.map(v => { const n = Number(v); return isNaN(n) ? v : n; }) : [];
+      if (!ids.length) return send(res, { message: 'No ids given' }, 400, delay);
+
+      if (req.method === 'DELETE') {
+        const deleted = items.filter(i => ids.includes(i.id));
+        writeDb(entity, items.filter(i => !ids.includes(i.id)));
+        return send(res, deleted.map(d => ({ ...d, isDeleted: true, deletedOn: new Date().toISOString() })), 200, delay);
+      }
+
+      const updated = [];
+      for (const item of items) {
+        if (ids.includes(item.id)) {
+          Object.assign(item, body.item || {});
+          updated.push(item);
+        }
+      }
+      writeDb(entity, items);
+      return send(res, updated, 200, delay);
+    }
+
     if ((req.method === 'PUT' || req.method === 'PATCH') && id) {
       if (errors.PUT) return rejectMock(res, 'PUT');
 

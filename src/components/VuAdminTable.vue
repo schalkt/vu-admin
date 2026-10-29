@@ -93,6 +93,15 @@
               <li>
                 <span class="dropdown-item cursor-pointer" @click="toggleColumn(false)">{{ translate('Hidden all') }}</span>
               </li>
+              <li v-if="countCollapsedColumns()">
+                <span class="dropdown-item cursor-pointer" @click="expandAllColumns()">
+                  {{ translate('Expand all') }}
+                  <span class="badge text-bg-secondary ms-1">{{ countCollapsedColumns() }}</span>
+                </span>
+              </li>
+              <li>
+                <span class="dropdown-item cursor-pointer" @click="resetColumnState()">{{ translate('Reset') }}</span>
+              </li>
             </ul>
           </div>
 
@@ -134,8 +143,12 @@
       <table v-if="settings.table" class="table vua-table vua-table-responsive mb-0" :class="[settings.table.class]">
         <thead>
           <tr class="vua-table-header">
-            <th class="" v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :key="column" :width="column.width"
+            <th class="" v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :data-collapsed="column.collapsed || null" :key="column" :width="column.collapsed ? null : column.width"
               :class="[column.header ? column.header.class : '']">
+              <button v-if="column.collapsible" type="button" class="btn btn-sm vua-col-toggle p-0 me-1"
+                :title="translate(column.collapsed ? 'Expand column' : 'Collapse column')" @click.stop="toggleCollapseColumn(column)">
+                <i class="bi" :class="column.collapsed ? 'bi-arrows-expand-vertical' : 'bi-arrows-collapse-vertical'"></i>
+              </button>
               <span class="d-inline-block no-select text-nowrap" :class="{ 'cursor-pointer': isSortable(column) }" @click="sortTable(column)">
 
                 <span v-html="(column.header && column.header.title
@@ -178,7 +191,7 @@
             </th>
           </tr>
           <tr v-if="countFilters()" class="vua-table-filter">
-            <th v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :key="column" :width="column.width"
+            <th v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :data-collapsed="column.collapsed || null" :key="column" :width="column.collapsed ? null : column.width"
               :class="[column.filter ? column.filter.class : '']">
               <div class="d-inline-block w-100 px-1" v-if="column.index && column.click">
                 <span class="cursor-pointer badge border badge-index-toggle py-1 px-2 me-1 my-2 w-100" v-cloak :class="{ 'active': haveSelectedRowInPage() }"
@@ -196,8 +209,8 @@
         <tbody>
           <template v-for="(item, index) in this.items" :key="item.id">
             <tr class="align-middle">
-              <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :key="column.name"
-                :data-label="column.title ? column.title : translate(column.name)" :width="column.width" :class="getValueOrFunction(column.class, {
+              <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :data-collapsed="column.collapsed || null" :key="column.name"
+                :data-label="column.title ? column.title : translate(column.name)" :width="column.collapsed ? null : column.width" :class="getValueOrFunction(column.class, {
                   column: column,
                   item: item,
                 })
@@ -357,7 +370,7 @@
         </tbody>
         <tfoot>
           <tr v-if="selected.length > 0" class="vua-table-bulk border-info">
-            <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :key="column.name" :data-label="column.title" :width="column.width"
+            <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :data-collapsed="column.collapsed || null" :key="column.name" :data-label="column.title" :width="column.collapsed ? null : column.width"
               :class="column.class">
               <div class="d-inline-block w-100 px-1" v-if="column.index">
                 <span v-cloak class="cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100" @click="toggleSelectedAll()">
@@ -646,6 +659,7 @@ export default {
     this.formId = "form_" + this.settings.entity + "_" + uid;
     this.modalId = "modal_" + this.settings.entity + "_" + uid;
     this.mobileFilterModalId = "modal_filters_" + this.settings.entity + "_" + uid;
+    this.columnDefaults = null;
 
   },
   mounted() {
@@ -753,6 +767,8 @@ export default {
         this.settings.api,
         this.settings.form.api
       );
+
+      this.initColumnState();
 
       this.settings.initialized = true;
 
@@ -2046,10 +2062,12 @@ export default {
           this.settings.events.beforeBulkSave(this.bulkitem);
         }
 
+        const outputFields = this.settings.table.api.output && this.settings.table.api.output.fields;
+
         for (let field in this.bulkitem) {
           if (
             this.bulkinputs.indexOf(field) >= 0 &&
-            this.settings.table.api.output.fields.includes(field)
+            (!outputFields || outputFields.includes(field))
           ) {
             item[field] = this.bulkitem[field];
           }
@@ -2117,14 +2135,131 @@ export default {
       if (column === true) {
         this.settings.table.columns.map((el) => {
           el.hidden = false;
+          this.saveColumnState(el, 'hidden');
         });
       } else if (column === false) {
         this.settings.table.columns.map((el) => {
           el.hidden = true;
+          this.saveColumnState(el, 'hidden');
         });
       } else {
         column.hidden = !column.hidden;
+        this.saveColumnState(column, 'hidden');
       }
+    },
+
+    countCollapsedColumns() {
+      return this.settings.table.columns.filter(
+        (element) => element.collapsed === true && !element.hidden
+      ).length;
+    },
+
+    expandAllColumns() {
+      this.settings.table.columns.forEach((column) => {
+        if (column.collapsed) {
+          column.collapsed = false;
+          this.saveColumnState(column, 'collapsed');
+        }
+      });
+    },
+
+    toggleCollapseColumn(column) {
+      column.collapsed = !column.collapsed;
+      this.saveColumnState(column, 'collapsed');
+    },
+
+    // oszlop állapot (hidden, collapsed): config az alapértelmezés, a felhasználó által
+    // egyszer már állított érték localStorage-ból felülírja
+    // minden táblázat a 'vu-columns' kulcs alatt: { [entity]: { [preset]: { [column]: { hidden, collapsed } } } }
+    readColumnStore() {
+      try {
+        return JSON.parse(localStorage.getItem('vu-columns')) || {};
+      } catch (e) {
+        return {};
+      }
+    },
+
+    writeColumnStore(store) {
+      try {
+        localStorage.setItem('vu-columns', JSON.stringify(store));
+      } catch (e) {
+        // localStorage unavailable (e.g. private mode) - ignore
+      }
+    },
+
+    readColumnState() {
+      const store = this.readColumnStore();
+      const entity = store[this.settings.entity] || {};
+      return entity[this.settings.preset || 'default'] || {};
+    },
+
+    writeColumnState(state) {
+      const store = this.readColumnStore();
+      const entity = this.settings.entity;
+      const preset = this.settings.preset || 'default';
+      store[entity] = store[entity] || {};
+      if (state) {
+        store[entity][preset] = state;
+      } else {
+        delete store[entity][preset];
+        if (!Object.keys(store[entity]).length) {
+          delete store[entity];
+        }
+      }
+      this.writeColumnStore(store);
+    },
+
+    initColumnState() {
+      const columns = this.settings.table.columns || [];
+
+      if (!this.columnDefaults) {
+        this.columnDefaults = {};
+        columns.forEach((column) => {
+          if (column.collapsed) {
+            column.collapsible = true;
+          }
+          if (column.name) {
+            this.columnDefaults[column.name] = {
+              hidden: !!column.hidden,
+              collapsed: !!column.collapsed,
+            };
+          }
+        });
+      }
+
+      const state = this.readColumnState();
+      columns.forEach((column) => {
+        const entry = column.name && state[column.name];
+        if (!entry) {
+          return;
+        }
+        if (typeof entry.hidden === 'boolean') {
+          column.hidden = entry.hidden;
+        }
+        if (column.collapsible && typeof entry.collapsed === 'boolean') {
+          column.collapsed = entry.collapsed;
+        }
+      });
+    },
+
+    saveColumnState(column, prop) {
+      if (!column.name) {
+        return;
+      }
+      const state = this.readColumnState();
+      state[column.name] = Object.assign({}, state[column.name], { [prop]: !!column[prop] });
+      this.writeColumnState(state);
+    },
+
+    resetColumnState() {
+      this.writeColumnState(null);
+      this.settings.table.columns.forEach((column) => {
+        const defaults = column.name && this.columnDefaults && this.columnDefaults[column.name];
+        if (defaults) {
+          column.hidden = defaults.hidden;
+          column.collapsed = defaults.collapsed;
+        }
+      });
     },
 
     toggleSelectedAll() {
@@ -2636,6 +2771,30 @@ export default {
     flex-wrap: wrap;
     align-items: center;
     gap: 0.35rem;
+  }
+
+  /* Összecsukott oszlop: csak desktopon, mobil kártya nézetben teljes tartalom */
+  @media (min-width: 768px) {
+    .vua-table [data-collapsed] {
+      width: 2rem;
+      max-width: 2rem;
+      overflow: hidden;
+    }
+
+    .vua-table td[data-collapsed] > *,
+    .vua-table .vua-table-filter th[data-collapsed] > *,
+    .vua-table .vua-table-header th[data-collapsed] > :not(.vua-col-toggle) {
+      display: none !important;
+    }
+  }
+
+  .vua-table .vua-col-toggle {
+    line-height: 1;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   /* Mobil stílusok: táblázat -> kártya nézet */

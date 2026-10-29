@@ -137,12 +137,14 @@ window.VuEntities.product = (preset) => {
 		{
 			name: 'sku',
 			title: 'SKU',
-			class: 'text-dark text-center'
+			class: 'text-dark text-center',
+			collapsible: true,
 		},
 		{
 			name: 'rating',
 			title: 'Rating',
 			width: '10%',
+			collapsed: true,
 			progressbar: {
 				class: 'bg-primary text-light fw-bold',
 				max: 5,
