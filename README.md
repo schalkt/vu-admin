@@ -233,6 +233,10 @@ table: {
 `localStorage` (key `vu-columns`, shared by all tables: `{ [entity]: { [preset]: { [column]: { hidden, collapsed } } } }`) and takes precedence over the config.
 The *Reset* item of the Columns dropdown clears the stored state.
 
+The current sort order, filter values / operators and rows per page are stored the same way under
+`vu-tables` on every table load, and restored when the table is opened again. Fixed sort orders and
+fixed filters (`fixed: true`) always come from the config. The filter *Reset* button restores the config defaults.
+
 ```js
 {
   name: 'price',            // maps to item.price (dot-notation for nested: 'meta.updatedAt')

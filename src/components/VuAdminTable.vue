@@ -876,7 +876,11 @@ export default {
       }
 
       this.resetFilter();
-      this.resetOrder(true);
+      this.resetOrder();
+      this.restoreTableState();
+
+      this.reloadTable();
+      this.calcPage();
     },
 
     resetFilter(reload) {
@@ -1357,6 +1361,8 @@ export default {
       try {
 
         this.tableWait(true);
+
+        this.saveTableState();
 
         urlParams = urlParams ? urlParams : {};
         urlParams.filter = this.getFiltersForFetch();
@@ -2170,43 +2176,95 @@ export default {
 
     // oszlop állapot (hidden, collapsed): config az alapértelmezés, a felhasználó által
     // egyszer már állított érték localStorage-ból felülírja
-    // minden táblázat a 'vu-columns' kulcs alatt: { [entity]: { [preset]: { [column]: { hidden, collapsed } } } }
-    readColumnStore() {
+    // táblázatonkénti localStorage állapot egy közös kulcs alatt: { [entity]: { [preset]: state } }
+    // 'vu-columns' — oszlopok (hidden, collapsed), 'vu-tables' — rendezés, szűrők, sor / oldal
+    readStore(key) {
       try {
-        return JSON.parse(localStorage.getItem('vu-columns')) || {};
+        const store = JSON.parse(localStorage.getItem(key)) || {};
+        const entity = store[this.settings.entity] || {};
+        return entity[this.settings.preset || 'default'] || {};
       } catch (e) {
         return {};
       }
     },
 
-    writeColumnStore(store) {
+    writeStore(key, state) {
       try {
-        localStorage.setItem('vu-columns', JSON.stringify(store));
+        const store = JSON.parse(localStorage.getItem(key)) || {};
+        const entity = this.settings.entity;
+        const preset = this.settings.preset || 'default';
+        store[entity] = store[entity] || {};
+        if (state) {
+          store[entity][preset] = state;
+        } else {
+          delete store[entity][preset];
+          if (!Object.keys(store[entity]).length) {
+            delete store[entity];
+          }
+        }
+        localStorage.setItem(key, JSON.stringify(store));
       } catch (e) {
         // localStorage unavailable (e.g. private mode) - ignore
       }
     },
 
     readColumnState() {
-      const store = this.readColumnStore();
-      const entity = store[this.settings.entity] || {};
-      return entity[this.settings.preset || 'default'] || {};
+      return this.readStore('vu-columns');
     },
 
     writeColumnState(state) {
-      const store = this.readColumnStore();
-      const entity = this.settings.entity;
-      const preset = this.settings.preset || 'default';
-      store[entity] = store[entity] || {};
-      if (state) {
-        store[entity][preset] = state;
-      } else {
-        delete store[entity][preset];
-        if (!Object.keys(store[entity]).length) {
-          delete store[entity];
+      this.writeStore('vu-columns', state);
+    },
+
+    saveTableState() {
+      const filter = {};
+      for (let column of this.settings.table.columns || []) {
+        if (column.name && column.filter && !column.filter.fixed) {
+          filter[column.name] = {
+            value: column.filter.value === undefined ? null : column.filter.value,
+            operator: column.filter.operator === undefined ? null : column.filter.operator,
+          };
         }
       }
-      this.writeColumnStore(store);
+
+      this.writeStore('vu-tables', {
+        order: this.config.order,
+        filter: filter,
+        limit: this.config.pagination.limit,
+      });
+    },
+
+    restoreTableState() {
+      const state = this.readStore('vu-tables');
+
+      if (state.order) {
+        const order = Object.assign({}, state.order);
+        // a configban fixált rendezés nem írható felül
+        for (let [key, value] of Object.entries(this.settings.table.order || {})) {
+          if (value && value.fixed) {
+            order[key] = value;
+          }
+        }
+        this.config.order = order;
+        this.config.orderIndex = Object.values(order).reduce((max, o) => Math.max(max, o.idx + 1), 0);
+      }
+
+      if (state.filter) {
+        for (let column of this.settings.table.columns || []) {
+          const entry = column.name && state.filter[column.name];
+          if (!entry || !column.filter || column.filter.fixed) {
+            continue;
+          }
+          column.filter.value = entry.value === null
+            ? (column.filter.multiple ? [] : undefined)
+            : entry.value;
+          column.filter.operator = entry.operator === null ? undefined : entry.operator;
+        }
+      }
+
+      if (state.limit) {
+        this.config.pagination.limit = state.limit;
+      }
     },
 
     initColumnState() {

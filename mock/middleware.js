@@ -516,6 +516,30 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
         } catch { /* érvénytelen filter → figyelmen kívül */ }
       }
 
+      // order paraméter feldolgozása (többszintű, dot-notation mezőnév)
+      // formátum: [{"key":"title","dir":"DESC"},{"key":"meta.updatedAt","dir":"ASC"}]
+      const orderParam = qs.get('order');
+      if (orderParam) {
+        try {
+          const orders = (JSON.parse(orderParam) || []).filter(o => o && o.key);
+          const getPath = (obj, key) => key.split('.').reduce((v, k) => (v == null ? v : v[k]), obj);
+          filtered = [...filtered].sort((a, b) => {
+            for (const { key, dir } of orders) {
+              const av = getPath(a, key);
+              const bv = getPath(b, key);
+              if (av == bv) continue;
+              if (av == null) return 1;
+              if (bv == null) return -1;
+              const cmp = typeof av === 'number' && typeof bv === 'number'
+                ? av - bv
+                : String(av).localeCompare(String(bv), 'hu', { numeric: true });
+              if (cmp !== 0) return String(dir).toUpperCase() === 'DESC' ? -cmp : cmp;
+            }
+            return 0;
+          });
+        } catch { /* érvénytelen order → figyelmen kívül */ }
+      }
+
       const page = limit === Infinity ? filtered.slice(skip) : filtered.slice(skip, skip + limit);
       return send(res, { [entity]: page, total: filtered.length, skip, limit: rawLimit }, 200, delay);
     }
