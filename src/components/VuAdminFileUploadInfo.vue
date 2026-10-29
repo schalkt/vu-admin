@@ -81,7 +81,7 @@
       <tfoot>
         <tr>
           <td colspan="3">
-            {{ file.uploaded ? 'uploaded' : 'uploading' }}
+            {{ translate(file.uploaded ? 'uploaded' : 'uploading') }}
           </td>
           <td class="text-end">
             <span class="text-nowrap" v-html="roundFileSize(file.bytes, true)"></span>
@@ -94,15 +94,15 @@
     </table>
 
     <small class="d-flex justify-content-between text-nowrap">
-      <span class="text-muted fw-light me-3">original filename</span> {{ file.original.name }}
+      <span class="text-muted fw-light me-3">{{ translate('original filename') }}</span> {{ file.original.name }}
     </small>
 
     <small class="d-flex justify-content-between  text-nowrap">
-      <span class="text-muted fw-light me-3">{{ file.uploaded ? 'uploaded' : 'uploading' }} filename</span> <span>{{ file.slug }}</span>
+      <span class="text-muted fw-light me-3">{{ translate(file.uploaded ? 'uploaded filename' : 'uploading filename') }}</span> <span>{{ file.slug }}</span>
     </small>
 
     <small v-if="file.uploaded" class="d-flex justify-content-between">
-      <span class="text-muted fw-light me-3">uploaded at</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
+      <span class="text-muted fw-light me-3">{{ translate('uploaded at') }}</span> <span>{{ dateFormat(file.timestamp * 1000) }}</span>
     </small>
 
     <Teleport to="body">
@@ -124,6 +124,11 @@ const FileUploadInfo = {
 
   props: {
     file: Object,
+    // translate() of the parent VuAdminFileUpload (uses the form settings)
+    translate: {
+      type: Function,
+      default: (key) => key,
+    },
   },
 
   data() {

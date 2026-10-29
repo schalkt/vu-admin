@@ -59,7 +59,7 @@
 
                     <div class="input-group border">
 
-                      <span class="cursor-move p-1 px-2 border-end d-flex align-items-center" title="Drag to reorder">
+                      <span class="cursor-move p-1 px-2 border-end d-flex align-items-center" :title="translate('Drag to reorder')">
                         <i class="bi bi-grip-vertical text-muted"></i>
                       </span>
 
@@ -164,7 +164,7 @@
                           <li><hr class="dropdown-divider my-2"></li>
                           <li class="p-2 pt-0">
                             <small class="fw-light">
-                              <VuAdminFileUploadInfo :file="file"></VuAdminFileUploadInfo>
+                              <VuAdminFileUploadInfo :file="file" :translate="translate"></VuAdminFileUploadInfo>
                             </small>
                           </li>
                         </ul>
@@ -196,7 +196,7 @@
 
               <div v-if="0" class="vsa-image-info position-absolute start-0 bottom-0 end-0 p-2 text-center">
 
-                <span v-if="file.resized" class="badge bg-warning text-dark m-1">resized</span>
+                <span v-if="file.resized" class="badge bg-warning text-dark m-1">{{ translate('resized') }}</span>
 
                 <div class="" v-for="(type, index) in file.types" :key="index">
                   <span class="badge bg-dark text-light fw-light mx-1 text-uppercase">{{ type.extension }}</span>
@@ -207,16 +207,16 @@
                 <strong class="bg-dark text-light rounded p-0 px-2 mb-1">#{{ index + 1 }}</strong>
 
                 <div class="text-center mt-2">
-                  <button title="Delete the image" type="button" class="btn btn-sm btn-outline-danger mx-1 d-inline-block" @click="remove(index)">
+                  <button :title="translate('Delete the image')" type="button" class="btn btn-sm btn-outline-danger mx-1 d-inline-block" @click="remove(index)">
                     <i class="bi bi-trash"></i>
                   </button>
 
-                  <button title="Download the image" v-if="file && file.types && file.uploaded" type="button" class="btn btn-sm btn-outline-light mx-1"
+                  <button :title="translate('Download the image')" v-if="file && file.types && file.uploaded" type="button" class="btn btn-sm btn-outline-light mx-1"
                     @click="download(index, params)">
                     <i class="bi bi-download"></i>
                   </button>
 
-                  <a title="Open in new tab" v-if="file && file.types && file.uploaded" class="btn btn-sm btn-outline-light mx-1" target="_blank" :href="file.types[params.download].url
+                  <a :title="translate('Open in new tab')" v-if="file && file.types && file.uploaded" class="btn btn-sm btn-outline-light mx-1" target="_blank" :href="file.types[params.download].url
                     ? file.types[params.download].url
                     : file.types[params.download].data
                     ">
@@ -272,7 +272,7 @@
 
               <div class="w-100 mb-2 d-flex justify-content-around align-items-center">
 
-                <span class="cursor-move p-1 px-2 border border-end-0 h-100 d-flex align-items-center" title="Drag to reorder">
+                <span class="cursor-move p-1 px-2 border border-end-0 h-100 d-flex align-items-center" :title="translate('Drag to reorder')">
                   <i class="bi bi-grip-vertical text-muted"></i>
                 </span>
 
@@ -336,7 +336,7 @@
                     <li><hr class="dropdown-divider my-2"></li>
                     <li class="p-2 pt-0">
                       <small class="fw-light">
-                        <VuAdminFileUploadInfo :file="file"></VuAdminFileUploadInfo>
+                        <VuAdminFileUploadInfo :file="file" :translate="translate"></VuAdminFileUploadInfo>
                       </small>
                     </li>
                   </ul>
@@ -378,7 +378,7 @@
             </span>
 
             <span v-else class="fs-6">
-              <i class="bi bi-exclamation-circle"></i> You've reached the upload limit
+              <i class="bi bi-exclamation-circle"></i> {{ translate("You've reached the upload limit") }}
             </span>
 
           </label>
@@ -398,7 +398,7 @@
 
           <small>
             <div v-if="params.accept">
-              <span class="text-secondary">accept only</span>
+              <span class="text-secondary">{{ translate('accept only') }}</span>
               <strong class="ms-1 text-muted" v-for="ext in params.accept" :key="ext">{{ ext }}</strong>
             </div>
 
@@ -453,37 +453,37 @@
              @mousemove.stop
              @mouseup.stop>
 
-          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(-90)" title="Rotate left 90°">
+          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(-90)" :title="translate('Rotate left 90°')">
             <i class="bi bi-arrow-counterclockwise"></i>
           </button>
-          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(90)" title="Rotate right 90°">
+          <button type="button" class="btn btn-sm btn-outline-light" @click="editorRotate(90)" :title="translate('Rotate right 90°')">
             <i class="bi bi-arrow-clockwise"></i>
           </button>
 
           <span class="text-secondary mx-1">|</span>
 
-          <button type="button" class="btn btn-sm" :class="editor.flipX ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('x')" title="Flip horizontal">
+          <button type="button" class="btn btn-sm" :class="editor.flipX ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('x')" :title="translate('Flip horizontal')">
             <i class="bi bi-symmetry-vertical"></i>
           </button>
-          <button type="button" class="btn btn-sm" :class="editor.flipY ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('y')" title="Flip vertical">
+          <button type="button" class="btn btn-sm" :class="editor.flipY ? 'btn-light' : 'btn-outline-light'" @click="editorFlip('y')" :title="translate('Flip vertical')">
             <i class="bi bi-symmetry-horizontal"></i>
           </button>
 
           <span class="text-secondary mx-1">|</span>
 
-          <button type="button" class="btn btn-sm" :class="editor.cropMode ? 'btn-warning' : 'btn-outline-light'" @click="editorCropButtonClick" title="Crop">
+          <button type="button" class="btn btn-sm" :class="editor.cropMode ? 'btn-warning' : 'btn-outline-light'" @click="editorCropButtonClick" :title="translate('Crop')">
             <i class="bi bi-crop"></i>
             <span v-if="editor.cropMode" class="ms-1 small">{{ editor.crop ? 'Apply crop' : 'Draw a crop area' }}</span>
           </button>
-          <button v-if="editor.cropMode && editor.crop" type="button" class="btn btn-sm btn-outline-warning" @click="editor.crop = null; editorDraw()" title="Clear crop">
+          <button v-if="editor.cropMode && editor.crop" type="button" class="btn btn-sm btn-outline-warning" @click="editor.crop = null; editorDraw()" :title="translate('Clear crop')">
             <i class="bi bi-x"></i>
           </button>
 
           <span class="text-secondary mx-1">|</span>
 
-          <button type="button" class="btn btn-sm" :class="editor.blurMode ? 'btn-warning' : 'btn-outline-light'" @click="editorToggleBlur" title="Blur (B)">
+          <button type="button" class="btn btn-sm" :class="editor.blurMode ? 'btn-warning' : 'btn-outline-light'" @click="editorToggleBlur" :title="translate('Blur (B)')">
             <i class="bi bi-eye-slash"></i>
-            <span v-if="editor.blurMode" class="ms-1 small">Draw a rectangle</span>
+            <span v-if="editor.blurMode" class="ms-1 small">{{ translate('Draw a rectangle') }}</span>
           </button>
 
           <template v-if="editor.blurMode">
@@ -498,7 +498,7 @@
                        step="1"
                        v-model.number="blurRadius"
                        @change="clampBlurRadius()"
-                       title="Blur strength (source px)">
+                       :title="translate('Blur strength (source px)')">
                 <span class="input-group-text">px</span>
                 <button type="button" class="btn btn-outline-light" @click="adjustBlurRadius(5)" title="+5 px">+</button>
               </div>
@@ -515,9 +515,9 @@
           </template>
 
           <div class="ms-auto d-flex gap-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary text-light border-secondary" @click="editorClose">Cancel</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary text-light border-secondary" @click="editorClose">{{ translate('Cancel') }}</button>
             <button type="button" class="btn btn-sm btn-primary" @click="editorApply">
-              <i class="bi bi-check2 me-1"></i>Apply
+              <i class="bi bi-check2 me-1"></i>{{ translate('Apply') }}
             </button>
           </div>
         </div>
@@ -1923,7 +1923,7 @@ const FileUpload = {
     },
 
     remove(index) {
-      if (confirm("Are you sure you want to remove?")) {
+      if (confirm(this.translate("Are you sure you want to remove?"))) {
         this.bytes -= this.files[index].bytes;
         this.files.splice(index, 1);
         this.count = this.files.length;
@@ -1931,7 +1931,7 @@ const FileUpload = {
     },
 
     resetConfirm() {
-      if (confirm("Are you sure you want to remove all?")) {
+      if (confirm(this.translate("Are you sure you want to remove all?"))) {
         this.reset();
       }
     },

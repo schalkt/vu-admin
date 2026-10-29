@@ -13,7 +13,7 @@
 - **Authentication** — login, registration, forgot password, activation flow, `/me` session restore, localStorage persistence, **two-factor authentication (email OTP)**, role-based entity access
 - **Relations** — automatic join of related entities, displayed inline in table and form
 - **Events** — lifecycle hooks: `beforeItemSave`, `afterItemSave`, `beforeItemDelete`, `afterItemDelete`, `afterItemsLoad`, `beforeItemsLoad`, etc.
-- **i18n** — built-in Hungarian translations, fully overridable per entity
+- **i18n** — built-in Hungarian translations, browser language detection, language switch in the user menu (stored in localStorage), overridable per entity
 - **Themes** — Bootstrap `light` / `dark` per entity
 - **Mock server** — zero-backend dev environment with seed data, full CRUD, auth, SVG avatars
 
@@ -173,7 +173,7 @@ window.VuEntities = window.VuEntities || {};
 window.VuEntities.product = (preset) => ({
 
   pkey: 'id',           // primary key field
-  language: 'en',       // translation key
+  // language: 'hu',     // pins this entity to a language (default: user choice / browser language), see Translations
   debug: false,
 
   api: {
@@ -212,6 +212,49 @@ window.VuEntities.product = (preset) => ({
 
 });
 ```
+
+---
+
+### Translations
+
+All built-in UI texts are English keys passed through `translate()`; the library ships a complete Hungarian
+dictionary in `src/i18n.js` (table, pagination, messages, file upload, image editor, HTML editor, video embed, user menu).
+
+**UI language** (`getLanguage()` in `src/i18n.js`):
+
+1. the user's choice, stored in `localStorage` under `vu-language`;
+2. otherwise the browser language (`navigator.languages`, `hu-HU` → `hu`) if it is available;
+3. otherwise the first available language (`en`).
+
+Available languages: `[{ value: 'en', label: 'English' }, { value: 'hu', label: 'Magyar' }]`, override with
+`window.VuSettings.languages`. The user menu gets a language switch with the built-in `BUTTON_LANGUAGE` dropdown item:
+
+```js
+window.VuSettings.button.login.dropdowns = [
+  { action: 'BUTTON_LANGUAGE', class: 'dropdown-item', label: 'Language' },  // optional: languages: [{ value, label, short }]
+  …
+];
+```
+
+Switching stores the choice and updates every vu-admin table / form / user menu on the page immediately
+(`vu-language-change` window event). An entity config with its own `language: 'hu'` is pinned to that language.
+From code: `setLanguage('hu')`, `getLanguage()` (exported, and on `window.VuAdminHelpers`).
+
+User menu labels are translated when they are dictionary keys (`label: 'Language'`); labels built by functions can use
+`window.VuAdminHelpers.translate('Sign out')`.
+
+Add or override texts per entity (merged over the built-in dictionary); `{name}` style placeholders are replaced:
+
+```js
+translate: {
+  hu: { 'Save and close': 'Mentés + bezár', 'My custom button': 'Saját gomb' },
+  de: { Save: 'Speichern', 'Loading file: {name}': 'Datei wird geladen: {name}' },
+},
+```
+
+Config texts (column titles, button titles, option labels, field names) also go through `translate()`, so they can be
+translated by adding them as keys. Table / form messages are translated when the key exists; server messages are shown as they are.
+Auth (`VuAuth`) texts come from `window.VuSettings.auth` and are not part of this dictionary.
 
 ---
 

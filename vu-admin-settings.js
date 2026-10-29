@@ -47,7 +47,8 @@ window.VuSettings = {
                     class: 'dropdown-item',
                     label: (params, settings, self) => {
                         if (!self.auth?.user?.role) {
-                            return `<span class='text-warning'><i class='bi bi-exclamation-triangle me-1'></i>No role assigned</span><br><small class='text-muted' style='white-space:normal;display:block;max-width:220px'>A role is required to view and edit data.</small>`;
+                            const t = window.VuAdminHelpers.translate;
+                            return `<span class='text-warning'><i class='bi bi-exclamation-triangle me-1'></i>${t('No role assigned')}</span><br><small class='text-muted' style='white-space:normal;display:block;max-width:220px'>${t('A role is required to view and edit data.')}</small>`;
                         }
                         return 'Switch role';
                     },
@@ -61,11 +62,16 @@ window.VuSettings = {
                         return window.VuAdminHelpers.escapeHtml(self.auth.user.email);
                     },
                 }, {
+                    // built-in language switch (languages: window.VuSettings.languages or English / Magyar)
+                    action: 'BUTTON_LANGUAGE',
+                    class: 'dropdown-item',
+                    label: 'Language',
+                }, {
                     class: 'dropdown-divider'
                 }, {
                     class: 'dropdown-item cursor-pointer',
                     label: (params, settings, self) => {
-                        return `<i class='bi bi-person me-1'></i> Profile`
+                        return `<i class='bi bi-person me-1'></i> ${window.VuAdminHelpers.translate('Profile')}`
                     },
                     action: (params, self) => {
                         self.showProfilModal();
@@ -73,7 +79,7 @@ window.VuSettings = {
                 }, {
                     class: 'dropdown-item cursor-pointer',
                     label: (params, settings, self) => {
-                        return `<i class='bi bi-box-arrow-right me-1'></i> Sign out`
+                        return `<i class='bi bi-box-arrow-right me-1'></i> ${window.VuAdminHelpers.translate('Sign out')}`
                     },
                     action: (params, self) => {
                         self.logout();

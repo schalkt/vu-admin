@@ -1045,7 +1045,6 @@ window.VuEntities.product = (preset) => {
 		debug: false,
 		api: api,
 		events: events,
-		language: 'en',
 		_theme: 'dark',
 		translate: {
 			'en': {

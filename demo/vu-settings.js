@@ -18,11 +18,16 @@ window.VuSettings = {
 						return window.VuAdminHelpers.escapeHtml(self.auth.user.email);
 					},
 				}, {
+					// built-in language switch: browser language by default, the choice is kept in localStorage
+					action: 'BUTTON_LANGUAGE',
+					class: 'dropdown-item',
+					label: 'Language',
+				}, {
 					class: 'dropdown-divider'
 				}, {
 					class: 'dropdown-item cursor-pointer',
 					label: (params, settings, self) => {
-						return `<i class='bi bi-box-arrow-right me-1'></i> Sign out`
+						return `<i class='bi bi-box-arrow-right me-1'></i> ${window.VuAdminHelpers.translate('Sign out')}`
 					},
 					action: (params, self) => {
 						self.logout();

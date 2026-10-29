@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="!config.pagination.hidden" aria-label="Page navigation" class="mt-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+  <nav v-if="!config.pagination.hidden" :aria-label="translate('Page navigation')" class="mt-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
 
     <div class="d-flex align-items-center">
       <span v-cloak v-show="config.pagination.from > 0" class="mx-1 small">
@@ -27,7 +27,7 @@
         </ul>
       </div>
       <div v-show="ui && ui.wait.table" class="spinner-border spinner-border-sm mx-2" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">{{ translate('Loading...') }}</span>
       </div>
     </div>
 

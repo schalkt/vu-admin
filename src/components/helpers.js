@@ -1,5 +1,6 @@
+import { translations, getLanguage, setLanguage, availableLanguages } from '../i18n.js';
 
-const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' };
+const HTML_ESCAPES ={ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' };
 
 /**
  * HTML escape for text / attribute values when data goes into a template that builds HTML.
@@ -35,7 +36,15 @@ export function safeUrl(url) {
 
 // entity configs (window.VuEntities) are not modules, so the helpers are also available globally
 if (typeof window !== 'undefined') {
-    window.VuAdminHelpers = Object.assign(window.VuAdminHelpers || {}, { escapeHtml, safeUrl });
+    window.VuAdminHelpers = Object.assign(window.VuAdminHelpers || {}, {
+        escapeHtml,
+        safeUrl,
+        // translate('Sign out') / translate(key, vars) with the built-in dictionary and the current language
+        translate: (key, vars, language) => translate(key, null, vars, language),
+        getLanguage,
+        setLanguage,
+        availableLanguages,
+    });
 }
 
 export function deepMerge(target, source) {
@@ -393,28 +402,20 @@ export function translate(key, translates, vars, language) {
             }
 
             const varKey = value.slice(open + 1, close).trim();
-            result += vars[varKey] ? vars[varKey] : '';
+            result += vars[varKey] !== undefined && vars[varKey] !== null ? vars[varKey] : '';
             i = close + 1;
         }
 
         return result;
     }
 
-    if (!translates) {
-        return replaceVars(key, vars);
-    }
+    language = language ? language : getLanguage();
 
-    language = language ? language : document.documentElement.lang;
+    // own (entity / project) dictionary first, then the built-in one (src/i18n.js), else the key itself
+    const own = translates && translates[language] ? translates[language][key] : undefined;
+    const builtIn = translations[language] ? translations[language][key] : undefined;
 
-    if (!language || !translates[language]) {
-        return replaceVars(key, vars);
-    }
-
-    if (!translates[language][key]) {
-        return replaceVars(key, vars);
-    }
-
-    return replaceVars(translates[language][key]);
+    return replaceVars(own || builtIn || key, vars);
 
 }
 

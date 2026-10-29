@@ -481,7 +481,6 @@ window.VuEntities.post = (preset) => {
 		pkey: 'id',
 		debug: false,
 		api: api,
-		language: 'en',
 		table: table,
 		form: form,
 		translate: {

@@ -11,7 +11,7 @@
             </h5>
 
             <div v-show="ui.wait.table && settings.table.title" class="spinner-border spinner-border-sm mx-2" role="status">
-              <span class="visually-hidden">Loading...</span>
+              <span class="visually-hidden">{{ translate('Loading...') }}</span>
             </div>
           </div>
 
@@ -237,7 +237,7 @@
                 <span v-if="column.template" v-html="tableCellTemplate(column.template, item, index, column)">
                 </span>
 
-                <div v-if="column.progressbar" class="progress" role="progressbar" aria-label="Warning example" :aria-valuenow="item[column.name]"
+                <div v-if="column.progressbar" class="progress" role="progressbar" :aria-label="column.title || column.name" :aria-valuenow="item[column.name]"
                   :aria-valuemax="column.progressbar.max">
                   <div class="progress-bar" :class="[column.progressbar.class]" :style="{ width: Math.round(item[column.name] / column.progressbar.max * 100) + '%' }">
                     <span v-if="column.progressbar.value">{{ item[column.name] }}</span>
@@ -452,7 +452,7 @@
         <div class="modal-content" v-if="authAndSettings()">
           <div class="modal-header">
             <h5 class="modal-title">{{ translate('Filter / Sort') }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" :aria-label="translate('Close')"></button>
           </div>
           <div class="modal-body">
 
@@ -1575,7 +1575,7 @@ export default {
           return;
         }
 
-        const confirmed = confirm("Are you sure you want to delete this item");
+        const confirmed = confirm(this.translate("Are you sure you want to delete this item?"));
 
         if (!confirmed) {
           return;
@@ -2558,7 +2558,8 @@ export default {
 
       this.message[type] = {
         uid: uid,
-        msg: msg,
+        // built-in messages are translated, unknown (e.g. server) messages stay as they are
+        msg: typeof msg === "string" ? this.translate(msg) : msg,
         timeout: timeout !== undefined ? timeout : 2500,
         datetime: new Date().toLocaleString("hu-HU"),
         priority: priority ? priority : "secondary",

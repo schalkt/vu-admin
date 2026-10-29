@@ -9,6 +9,7 @@
 <script>
 
 import VuAdminTable from "./VuAdminTable.vue";
+import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
 import {
   translate,
@@ -72,7 +73,8 @@ const VuAdmin = {
         // must be function and called once for update entity settings
         // example prepare options for selects, (settings) => {},
         init: null,
-        language: document.documentElement ? document.documentElement.lang : 'en',
+        // UI language: user choice (localStorage) or browser language; an entity can pin its own
+        language: getLanguage(),
 
         api: {
           auth: {},
@@ -99,51 +101,8 @@ const VuAdmin = {
           }
         },
 
-        translate: {
-          hu: {
-            Columns: "Oszlopok",
-            All: "Mind",
-            page: "oldal",
-            row: "sor",
-            hidden: "rejtett",
-            First: "Első",
-            Next: "Következő",
-            Prev: "Előző",
-            Last: "Utolsó",
-            Reload: "Újratöltés",
-            New: "Új",
-            Active: "Aktív",
-            Deleted: "Törölt",
-            Copy: "Másolás",
-            Delete: "Törlés",
-            Close: "Bezár",
-            Save: "Mentés",
-            Send: "Küldés",
-            Export: "Exportálás",
-            "Select all": "Mind kiválaszt",
-            "Unselect all": "Mind töröl",
-            "Invert all": "Kijelölések megfordítása",
-            "Visible all": "Mind látható",
-            "Hidden all": "Mind rejtett",
-            "Collapse column": "Oszlop összecsukása",
-            "Expand column": "Oszlop kinyitása",
-            "Expand all": "Mind kinyit",
-            "Save and close": "Ment és bezár",
-            "Filter / Sort": "Szűrés / Rendezés",
-            Sort: "Rendezés",
-            Filters: "Szűrők",
-            "Rows per page": "Sor / oldal",
-            Reset: "Alaphelyzet",
-            Apply: "Alkalmaz",
-            "=": "Egyenlő",
-            ">": "Nagyobb",
-            ">=": "Nagyobb vagy egyenlő",
-            "<": "Kisebb",
-            "<=": "Kisebb vagy egyenlő",
-            "Are you sure you want to delete all selected items?":
-              "Biztos hogy törölni akarod az összes kiválasztott elemet?",
-          },
-        },
+        // entity / project level overrides, merged over the built-in dictionary (src/i18n.js)
+        translate: {},
         events: {
           // init
           afterSettingsInit: undefined,
@@ -193,9 +152,16 @@ const VuAdmin = {
     }
   },
   created() {
-
-
-
+    // the user menu language switch updates every table / form on the page
+    this._onLanguageChange = (event) => {
+      if (this.settings && !this.languagePinned) {
+        this.settings.language = event.detail.language;
+      }
+    };
+    window.addEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+  },
+  beforeUnmount() {
+    window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
   },
   mounted() { },
   methods: {
@@ -262,6 +228,7 @@ const VuAdmin = {
 
       if (entitySettings) {
 
+        this.languagePinned = !!entitySettings.language;
         this.settings = deepMerge(this.defaults, entitySettings);
         this.settings.entity = this.entity;
         this.settings.preset = this.preset ? this.preset : "default";

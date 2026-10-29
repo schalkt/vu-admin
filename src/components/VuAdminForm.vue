@@ -4,7 +4,7 @@
     <div class="vua-overlay" :class="{ blocked: !!overlayCenterMessage, immediate: !!overlayCenterMessage }">
       <div v-if="overlayCenterMessage" class="vua-overlay-panel text-center px-4 py-3">
         <div class="spinner-border text-primary mb-3" role="status">
-          <span class="visually-hidden">Loading...</span>
+          <span class="visually-hidden">{{ translate('Loading...') }}</span>
         </div>
         <div class="vua-overlay-message">{{ overlayCenterMessage }}</div>
         <div v-if="saveProgress?.uploadTypeKey" class="vua-overlay-preset text-muted small mt-2">
@@ -44,9 +44,9 @@
       </span>
 
       <span v-if="ui.wait.form && !overlayCenterMessage" class="spinner-border spinner-border-sm mx-2" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">{{ translate('Loading...') }}</span>
       </span>
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+      <button type="button" class="btn-close" data-bs-dismiss="modal" :aria-label="translate('Close')"
         :disabled="saveProgress?.active && saveProgress?.warnLeave"></button>
 
     </div>
@@ -391,7 +391,8 @@ const VuAdminForm = {
 
       this.message[type] = {
         uid: uid,
-        msg: msg,
+        // built-in messages are translated, unknown (e.g. server) messages stay as they are
+        msg: typeof msg === "string" ? this.translate(msg) : msg,
         timeout: timeout !== undefined ? timeout : 2500,
         datetime: new Date().toLocaleString("hu-HU"),
         priority: priority ? priority : "secondary",
@@ -608,7 +609,7 @@ const VuAdminForm = {
           return;
         }
 
-        const confirmed = confirm("Are you sure you want to delete this item?");
+        const confirmed = confirm(this.translate("Are you sure you want to delete this item?"));
 
         if (!confirmed) {
           return;

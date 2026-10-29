@@ -56,7 +56,7 @@ const VuAdminNav = {
             if (typeof window !== "undefined" && window.__VU_ADMIN_NAV_URL__) {
                 return window.__VU_ADMIN_NAV_URL__;
             }
-            const prefix = (typeof window !== "undefined" && window.__VU_ADMIN_PREFIX__) || "/szerk";
+            const prefix = (typeof window !== "undefined" && window.__VU_ADMIN_PREFIX__) || "/admin";
             return prefix + "/api/navs";
         },
         menuClass() {
