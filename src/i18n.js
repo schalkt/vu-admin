@@ -236,6 +236,9 @@ export const translations = {
     "Switch role": "Szerepkör váltás",
     "No role assigned": "Nincs szerepkör beállítva",
     "A role is required to view and edit data.": "Az adatok megtekintéséhez és szerkesztéséhez szerepkör szükséges.",
+    // API action menüpontok (VuAdminNav)
+    Done: "Kész",
+    Error: "Hiba",
   },
 };
 

@@ -75,18 +75,54 @@ export function getValueOrFunction(object, params, settings, vua) {
     }
 }
 
+function snippetFromBody(text) {
+    const plain = String(text || '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    const fatal = plain.match(/Fatal error:.*?(?= Stack trace:|$)/i);
+    if (fatal) {
+        return fatal[0].trim().slice(0, 300);
+    }
+    return plain.slice(0, 240);
+}
+
 export async function getResponseJson(response) {
+    if (!response) {
+        return { data: undefined, error: new Error('Network error') };
+    }
+
+    let text = '';
     try {
-        return {
-            data: await response.json(),
-            error: null
-        }
+        text = await response.text();
+    } catch (error) {
+        console.error('[vu-admin] response read error:', error);
+        return { data: undefined, error };
+    }
+
+    const trimmed = text.trim();
+    if (!trimmed) {
+        return { data: undefined, error: null };
+    }
+
+    const contentType = (response.headers.get('content-type') || '').toLowerCase();
+    const looksJson = trimmed.startsWith('{') || trimmed.startsWith('[');
+    const looksHtml = trimmed.startsWith('<') || /fatal error/i.test(trimmed);
+
+    if (looksHtml || (!looksJson && !contentType.includes('json'))) {
+        const error = new Error(snippetFromBody(text) || 'Invalid response');
+        console.error('[vu-admin] non-JSON response:', error);
+        return { data: undefined, error };
+    }
+
+    try {
+        return { data: JSON.parse(trimmed), error: null };
     } catch (error) {
         console.error('[vu-admin] JSON parse error:', error);
         return {
             data: undefined,
-            error: error
-        }
+            error: new Error(snippetFromBody(text) || error.message),
+        };
     }
 }
 
@@ -129,12 +165,19 @@ function collectErrorsFromData(response, data) {
                 appendErrorsFromList(errors, data.errors.exception);
             } else {
                 for (const key in data.errors) {
-                    if (Array.isArray(data.errors[key])) {
-                        appendErrorsFromList(errors, data.errors[key]);
+                    const val = data.errors[key];
+                    if (Array.isArray(val)) {
+                        appendErrorsFromList(errors, val);
+                    } else if (typeof val === 'string') {
+                        appendErrorsFromList(errors, [val]);
+                    } else if (val && typeof val === 'object' && val.message) {
+                        appendErrorsFromList(errors, [val]);
                     }
                 }
             }
         }
+    } else if (data && data.ok === false && response.status !== 202) {
+        errors.push(normalizeErrorEntry(typeof data.message === 'string' ? data.message : 'Request failed'));
     } else if (data && typeof data.message === 'string' && response.status >= 400) {
         errors.push(normalizeErrorEntry(data.message));
     } else if (response.status >= 400 && response.status <= 511) {
@@ -169,7 +212,34 @@ export function getResponseErrors(response, payload) {
         return [normalizeErrorEntry(formatHttpStatus(response))];
     }
 
+    if (data && data.ok === false && response.status !== 202) {
+        return [normalizeErrorEntry(typeof data.message === 'string' ? data.message : 'Request failed')];
+    }
+
     return null;
+}
+
+export function isApiResponseOk(response, payload) {
+    if (!response || !response.ok) {
+        return false;
+    }
+
+    if (getResponseErrors(response, payload)) {
+        return false;
+    }
+
+    const envelope = isResponseJsonEnvelope(payload) ? payload : null;
+    const data = envelope ? envelope.data : payload;
+
+    if (data == null || typeof data !== 'object' || Array.isArray(data)) {
+        return false;
+    }
+
+    if (data.ok === false) {
+        return false;
+    }
+
+    return true;
 }
 
 

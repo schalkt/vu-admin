@@ -255,7 +255,9 @@ import {
     translate,
     getValueOrFunction,
     secureRandomInt,
+    getResponseJson,
     getResponseErrors,
+    isApiResponseOk,
 } from "./helpers";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
@@ -405,7 +407,7 @@ const VuAuth = {
 
                 await this.getStatusAndJson(response);
 
-                if (response.ok) {
+                if (this.auth.response.ok) {
                     if (this.settings.onSuccess && this.settings.onSuccess.profile) {
                         this.settings.onSuccess.profile(this.auth);
                     } else {
@@ -474,14 +476,28 @@ const VuAuth = {
         },
 
         async getStatusAndJson(response) {
-            this.auth.response.code = response.status;
+            this.auth.response.code = response ? response.status : 0;
 
-            try {
-                this.auth.response.data = await response.json();
-            } catch (error) {
-                this.auth.response.data = null;
-                console.error('Error parsing response:', error);
+            const json = await getResponseJson(response);
+            this.auth.response.data = json.data ?? null;
+
+            const errors = getResponseErrors(response, json);
+            const ok = isApiResponseOk(response, json);
+            this.auth.response.ok = ok;
+
+            if (!ok) {
+                if (json.error && (this.auth.response.data == null || typeof this.auth.response.data !== 'object')) {
+                    this.auth.response.data = {
+                        ok: false,
+                        errors: { server: json.error.message || String(json.error) },
+                    };
+                }
+                if (!this.auth.response.message && errors?.length) {
+                    this.auth.response.message = errors.map((e) => e.message).join('\n');
+                }
             }
+
+            return ok;
         },
 
         onSuccess(panel) {
@@ -645,7 +661,7 @@ const VuAuth = {
                 return;
             }
 
-            if (response.ok) {
+            if (this.auth.response.ok) {
                 this.onSuccess('login');
                 this.close();
             } else {
@@ -676,7 +692,7 @@ const VuAuth = {
 
             await this.getStatusAndJson(response);
 
-            if (response.ok) {
+            if (this.auth.response.ok) {
                 this.onSuccess('registration');
             } else {
                 this.onError('registration');
@@ -694,7 +710,7 @@ const VuAuth = {
 
             await this.getStatusAndJson(response);
 
-            if (response.ok) {
+            if (this.auth.response.ok) {
                 this.onSuccess('activation');
                 this.close();
             } else {
@@ -720,7 +736,7 @@ const VuAuth = {
 
                 await this.getStatusAndJson(response);
 
-                if (response.ok) {
+                if (this.auth.response.ok) {
                     this.onPasswordReset('forgot');
                 } else {
                     this.onError('forgot');
@@ -752,7 +768,7 @@ const VuAuth = {
 
                 await this.getStatusAndJson(response);
 
-                if (response.ok) {
+                if (this.auth.response.ok) {
                     this.onPasswordUpdate('password');
                 } else {
                     this.onError('password');
@@ -773,7 +789,7 @@ const VuAuth = {
 
             await this.getStatusAndJson(response);
 
-            if (response.ok) {
+            if (this.auth.response.ok) {
                 this.onSuccess('login');
                 this.close();
             } else {
@@ -791,8 +807,7 @@ const VuAuth = {
                     body: JSON.stringify({ twofaSession: this.twofaSession }),
                 });
                 await this.getStatusAndJson(response);
-                if (response.ok) {
-                    this.auth.response.ok = true;
+                if (this.auth.response.ok) {
                     this.auth.response.message = this.auth.response.data?.message || '';
                     this.$forceUpdate();
                 }
