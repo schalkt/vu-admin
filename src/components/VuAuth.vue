@@ -14,12 +14,23 @@
                     </div>
 
                     <h1 class="text-center mt-2 mb-4">
-                        {{ translate(settings.title[auth.panel]) }}
+                        {{ translate(panelText('title')) }}
                     </h1>
+
+                    <!-- profile: the signed-in user, then the password change -->
+                    <div v-if="auth.panel == 'profile' && auth.user" class="vua-auth-profile d-flex align-items-center gap-3 border rounded p-3 mb-4">
+                        <img v-if="auth.user.image" :src="safeUrl(auth.user.image)" width="48" height="48" class="rounded-circle border" alt="">
+                        <div class="min-w-0">
+                            <div class="fw-semibold">{{ [auth.user.firstName, auth.user.lastName].join(' ').trim() || auth.user.username }}</div>
+                            <div class="small text-secondary text-truncate">{{ auth.user.email }}</div>
+                            <span v-if="auth.user.role" class="badge text-bg-secondary mt-1">{{ auth.user.role }}</span>
+                        </div>
+                    </div>
+                    <h2 v-if="auth.panel == 'profile'" class="h6 text-secondary text-uppercase mb-3">{{ translate('Change password') }}</h2>
 
                     <form @submit.prevent="handleSubmit()" @click.stop="">
 
-                        <div class="mb-3" v-if="auth.panel != 'activation' && auth.panel != 'password' && auth.panel != 'twofa'">
+                        <div class="mb-3" v-if="auth.panel != 'activation' && auth.panel != 'password' && auth.panel != 'twofa' && auth.panel != 'profile'">
                             <label for="email" class="form-label text-primary">{{ translate(settings.username.label) }}</label>
                             <div class="input-group">
                                 <span v-if="settings.username.icon" class="input-group-text" :class="{ 'rounded-bottom-0': settings.username.help }">
@@ -33,37 +44,50 @@
 
                         <template v-if="auth.panel != 'forgot' && auth.panel != 'activation' && auth.panel != 'twofa'">
 
+                            <div v-if="auth.panel == 'profile'" class="mb-3">
+                                <label for="password_current" class="form-label text-primary">{{ translate('Current password') }}</label>
+                                <div class="input-group">
+                                    <span v-if="settings.password.icon" class="input-group-text"><i :class="[settings.password.icon]"></i></span>
+                                    <input id="password_current" name="password_current" :type="currentPasswordType" v-model="password_current" class="form-control"
+                                        autocomplete="current-password" required :disabled="loading" />
+                                    <span class="cursor-pointer input-group-text" @click.stop="currentPasswordType = currentPasswordType == 'password' ? 'text' : 'password'">
+                                        <i v-if="currentPasswordType == 'password'" class="bi bi-eye"></i>
+                                        <i v-else class="bi bi-eye-slash"></i>
+                                    </span>
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <label v-if="settings.password.label" for="password" class="form-label text-primary">
-                                    {{ translate(settings.password.label) }}
+                                    {{ translate(auth.panel == 'profile' ? 'New password' : settings.password.label) }}
                                 </label>
                                 <div class="input-group">
                                     <span v-if="settings.password.icon" class="input-group-text"
-                                        :class="{ 'rounded-bottom-0': (auth.panel == 'registration' || auth.panel == 'password') && settings.password.help }">
+                                        :class="{ 'rounded-bottom-0': newPasswordPanel && settings.password.help }">
                                         <i :class="[settings.password.icon]"></i>
                                     </span>
                                     <input id="password" name="password" :type="settings.password.type" v-model="password" class="form-control"
-                                        :class="{ 'rounded-bottom-0': auth.panel == 'registration' && settings.password.help }" :placeholder="translate(settings.password.placeholder)"
-                                        :pattern="settings.password.pattern" :minlength="auth.panel == 'registration' ? settings.password.minlength : 1" required
+                                        :class="{ 'rounded-bottom-0': newPasswordPanel && settings.password.help }" :placeholder="translate(settings.password.placeholder)"
+                                        :pattern="settings.password.pattern" :minlength="auth.panel == 'registration' || auth.panel == 'profile' ? settings.password.minlength : 1" required
                                         :disabled="loading" />
-                                    <span v-if="auth.panel == 'registration' || auth.panel == 'password'" class="input-group-text"
-                                        :class="{ 'rounded-bottom-0': (auth.panel == 'registration' || auth.panel == 'password') && settings.password.help }">
+                                    <span v-if="newPasswordPanel" class="input-group-text"
+                                        :class="{ 'rounded-bottom-0': newPasswordPanel && settings.password.help }">
                                         <small class="" :class="{
                                             'text-success': password.length >= settings.password.minlength,
                                             'text-danger': password.length < settings.password.minlength,
                                         }">{{ password.length }}</small>
                                     </span>
                                     <span class="cursor-pointer input-group-text" @click.stop="toggleType('password')"
-                                        :class="{ 'rounded-bottom-0': (auth.panel == 'registration' || auth.panel == 'password') && settings.password.help }">
+                                        :class="{ 'rounded-bottom-0': newPasswordPanel && settings.password.help }">
                                         <i v-if="settings.password.type == 'password'" class="bi bi-eye"></i>
                                         <i v-else class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
                                 <small class="d-block border border-top-0 rounded-bottom p-2 text-muted"
-                                    v-if="(auth.panel == 'registration' || auth.panel == 'password') && settings.password.help" v-html="translate(settings.password.help)"></small>
+                                    v-if="newPasswordPanel && settings.password.help" v-html="translate(settings.password.help)"></small>
                             </div>
 
-                            <div class="mb-4" v-if="auth.panel === 'registration' || auth.panel === 'password'">
+                            <div class="mb-4" v-if="newPasswordPanel">
                                 <label for="password_again" class="form-label text-primary">
                                     {{ translate(settings.password_again.label) }}
                                     <small v-if="password_again.length > 0 && password_again != password" class="text-danger" v-html="translate(settings.password_again.nomatch)">
@@ -83,13 +107,13 @@
                                         }">{{ password_again.length }}</small>
                                     </span>
                                     <span class="cursor-pointer input-group-text" @click.stop="toggleType('password_again')"
-                                        :class="{ 'rounded-bottom-0': (auth.panel == 'registration' || auth.panel == 'password') && settings.password_again.help }">
+                                        :class="{ 'rounded-bottom-0': newPasswordPanel && settings.password_again.help }">
                                         <i v-if="settings.password_again.type == 'password'" class="bi bi-eye"></i>
                                         <i v-else class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
                                 <small class="d-block border border-top-0 rounded-bottom p-2 text-muted"
-                                    v-if="(auth.panel == 'registration' || auth.panel == 'password') && settings.password_again.help" v-html="translate(settings.password_again.help)"></small>
+                                    v-if="newPasswordPanel && settings.password_again.help" v-html="translate(settings.password_again.help)"></small>
                             </div>
 
                         </template>
@@ -211,7 +235,7 @@
                         </div>
 
                         <div class="mt-4 d-flex justify-content-between">
-                            <button v-if="auth.panel != 'login' && auth.panel != 'activation'" type="button" @click.stop="toggleClear"
+                            <button v-if="auth.panel != 'login' && auth.panel != 'activation' && auth.panel != 'profile'" type="button" @click.stop="toggleClear"
                                 class="btn btn-secondary w-100 me-2 text-nowrap" :disabled="loading">
                                 <i class="bi bi-arrow-left-square mx-1"></i> {{ translate(settings.submit.login) }}
                             </button>
@@ -221,7 +245,7 @@
                             </button>
                             <button type="submit" class="btn w-100 text-nowrap"
                                 :class="{ 'btn-primary': auth.panel != 'registration', 'btn-warning': auth.panel == 'registration' }" :disabled="loading">
-                                {{ translate(settings.submit[auth.panel]) }}
+                                {{ translate(panelText('submit')) }}
                                 <i v-if="auth.panel == 'registration'" class="bi bi-person-plus mx-1"></i>
                                 <i v-else class="bi bi-arrow-right-square mx-1"></i>
                             </button>
@@ -270,6 +294,7 @@ import {
     getResponseErrors,
     isApiResponseOk,
     escapeHtml,
+    safeUrl,
 } from "./helpers";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 import { effectiveTheme, THEME_CHANGE_EVENT } from "../theme.js";
@@ -291,6 +316,9 @@ const VuAuth = {
             username: "",
             password: "",
             password_again: "",
+            // profile panel: current password (+ its show / hide toggle)
+            password_current: "",
+            currentPasswordType: "password",
             accepts: {},
             inputs: {},
             honeypot: '',
@@ -334,6 +362,10 @@ const VuAuth = {
     },
 
     computed: {
+        // panels with a "new password" field (strength help, length counter, repeat)
+        newPasswordPanel() {
+            return ['registration', 'password', 'profile'].indexOf(this.auth && this.auth.panel) >= 0;
+        },
         captchaRequired() {
             const panel = this.auth && this.auth.panel;
             if (!this.settings || !this.settings.captcha || !this.settings.captcha.panels) return false;
@@ -365,6 +397,7 @@ const VuAuth = {
 
 
     methods: {
+        safeUrl,
 
         detectQuery() {
 
@@ -482,6 +515,8 @@ const VuAuth = {
         reset() {
             this.password = "";
             this.password_again = "";
+            this.password_current = "";
+            this.currentPasswordType = "password";
             this.twofaCode = "";
             this.twofaSession = "";
             this.twofaMethod = "";
@@ -664,6 +699,9 @@ const VuAuth = {
                     case 'password':
                         await this.handlePasswordSubmit();
                         break;
+                    case 'profile':
+                        await this.handleProfilePasswordSubmit();
+                        break;
                 }
             } catch (e) {
                 console.error('[auth] submit error', e);
@@ -823,6 +861,62 @@ const VuAuth = {
                 }
             } catch (error) {
                 this.onError('password');
+            }
+        },
+
+        // title / submit text of the current panel: settings.title / settings.submit, built-in default for 'profile'
+        panelText(kind) {
+            const texts = this.settings[kind] || {};
+            if (texts[this.auth.panel]) {
+                return texts[this.auth.panel];
+            }
+            const defaults = { title: { profile: 'Profile' }, submit: { profile: 'Save password' } };
+            return (defaults[kind] && defaults[kind][this.auth.panel]) || '';
+        },
+
+        // profile panel: password change of the signed-in user
+        // POST settings.api.changePassword (default /api/auth/password) with the login header,
+        // body { currentPassword, password } (both hashed like at sign-in: settings.password.hash)
+        // the answer's `message` is shown; an error here never signs the user out
+        async handleProfilePasswordSubmit() {
+            this.auth.response = {};
+
+            if (!this.password_current || !this.password || this.password !== this.password_again) {
+                return;
+            }
+
+            const url = (this.settings.api && this.settings.api.changePassword) || '/api/auth/password';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, this.auth.header || {}),
+                    body: JSON.stringify({
+                        currentPassword: await this.hashPassword(this.password_current),
+                        password: await this.hashPassword(this.password),
+                    }),
+                });
+
+                await this.getStatusAndJson(response);
+            } catch (error) {
+                this.auth.response = { ok: false, message: 'Network error' };
+                return;
+            }
+
+            const data = this.auth.response.data || {};
+            if (this.auth.response.ok) {
+                this.auth.response.message = data.message || 'Password changed';
+                this.password_current = '';
+                this.password = '';
+                this.password_again = '';
+                if (this.settings.onSuccess && this.settings.onSuccess.changePassword) {
+                    this.settings.onSuccess.changePassword(this.auth);
+                }
+            } else {
+                this.auth.response.message = data.message || 'Password update failed!';
+                if (this.settings.onError && this.settings.onError.changePassword) {
+                    this.settings.onError.changePassword(this.auth);
+                }
             }
         },
 

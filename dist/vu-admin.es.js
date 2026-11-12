@@ -26356,6 +26356,8 @@ var lH = {
 			username: "",
 			password: "",
 			password_again: "",
+			password_current: "",
+			currentPasswordType: "password",
 			accepts: {},
 			inputs: {},
 			honeypot: "",
@@ -26390,6 +26392,13 @@ var lH = {
 		}
 	},
 	computed: {
+		newPasswordPanel() {
+			return [
+				"registration",
+				"password",
+				"profile"
+			].indexOf(this.auth && this.auth.panel) >= 0;
+		},
 		captchaRequired() {
 			let e = this.auth && this.auth.panel;
 			return !this.settings || !this.settings.captcha || !this.settings.captcha.panels ? !1 : this.settings.captcha.panels.includes(e);
@@ -26408,6 +26417,7 @@ var lH = {
 		}
 	},
 	methods: {
+		safeUrl: Kc,
 		detectQuery() {
 			let e = new URL(window.location.href);
 			if (e.searchParams.has("vuparams")) {
@@ -26440,7 +26450,7 @@ var lH = {
 			this.auth.success = !1, this.auth.header = null, this.auth.settings = null, this.auth.user = null, this.authUpdate(), localStorage.removeItem("vu-user"), localStorage.removeItem("vu-header"), localStorage.removeItem("vu-settings");
 		},
 		reset() {
-			this.password = "", this.password_again = "", this.twofaCode = "", this.twofaSession = "", this.twofaMethod = "", this.twofaTrustDays = 0, this.twofaTrustMaxDays = null, this.auth.response = {};
+			this.password = "", this.password_again = "", this.password_current = "", this.currentPasswordType = "password", this.twofaCode = "", this.twofaSession = "", this.twofaMethod = "", this.twofaTrustDays = 0, this.twofaTrustMaxDays = null, this.auth.response = {};
 		},
 		close() {
 			this.auth.visible = !1, this.authUpdate(), this.reset();
@@ -26513,7 +26523,10 @@ var lH = {
 							case "activation":
 								await this.handleActivationSubmit();
 								break;
-							case "password": await this.handlePasswordSubmit();
+							case "password":
+								await this.handlePasswordSubmit();
+								break;
+							case "profile": await this.handleProfilePasswordSubmit();
 						}
 					} catch (e) {
 						console.error("[auth] submit error", e);
@@ -26604,6 +26617,38 @@ var lH = {
 			} catch {
 				this.onError("password");
 			}
+		},
+		panelText(e) {
+			let t = this.settings[e] || {};
+			if (t[this.auth.panel]) return t[this.auth.panel];
+			let n = {
+				title: { profile: "Profile" },
+				submit: { profile: "Save password" }
+			};
+			return n[e] && n[e][this.auth.panel] || "";
+		},
+		async handleProfilePasswordSubmit() {
+			if (this.auth.response = {}, !this.password_current || !this.password || this.password !== this.password_again) return;
+			let e = this.settings.api && this.settings.api.changePassword || "/api/auth/password";
+			try {
+				let t = await fetch(e, {
+					method: "POST",
+					headers: Object.assign({ "Content-Type": "application/json" }, this.auth.header || {}),
+					body: JSON.stringify({
+						currentPassword: await this.hashPassword(this.password_current),
+						password: await this.hashPassword(this.password)
+					})
+				});
+				await this.getStatusAndJson(t);
+			} catch {
+				this.auth.response = {
+					ok: !1,
+					message: "Network error"
+				};
+				return;
+			}
+			let t = this.auth.response.data || {};
+			this.auth.response.ok ? (this.auth.response.message = t.message || "Password changed", this.password_current = "", this.password = "", this.password_again = "", this.settings.onSuccess && this.settings.onSuccess.changePassword && this.settings.onSuccess.changePassword(this.auth)) : (this.auth.response.message = t.message || "Password update failed!", this.settings.onError && this.settings.onError.changePassword && this.settings.onError.changePassword(this.auth));
 		},
 		async handleTwofaSubmit() {
 			this.auth.response = {};
@@ -26715,77 +26760,101 @@ var lH = {
 	class: "spinner-border spinner-border-sm text-primary"
 }, mH = { class: "text-center mt-2 mb-4" }, hH = {
 	key: 0,
+	class: "vua-auth-profile d-flex align-items-center gap-3 border rounded p-3 mb-4"
+}, gH = ["src"], _H = { class: "min-w-0" }, vH = { class: "fw-semibold" }, yH = { class: "small text-secondary text-truncate" }, bH = {
+	key: 0,
+	class: "badge text-bg-secondary mt-1"
+}, xH = {
+	key: 1,
+	class: "h6 text-secondary text-uppercase mb-3"
+}, SH = {
+	key: 0,
 	class: "mb-3"
-}, gH = {
+}, CH = {
 	for: "email",
 	class: "form-label text-primary"
-}, _H = { class: "input-group" }, vH = [
+}, wH = { class: "input-group" }, TH = [
 	"type",
 	"placeholder",
 	"disabled"
-], yH = ["innerHTML"], bH = { class: "mb-3" }, xH = {
+], EH = ["innerHTML"], DH = {
 	key: 0,
-	for: "password",
-	class: "form-label text-primary"
-}, SH = { class: "input-group" }, CH = [
-	"type",
-	"placeholder",
-	"pattern",
-	"minlength",
-	"disabled"
-], wH = {
-	key: 0,
-	class: "bi bi-eye"
-}, TH = {
-	key: 1,
-	class: "bi bi-eye-slash"
-}, EH = ["innerHTML"], DH = {
-	key: 0,
-	class: "mb-4"
+	class: "mb-3"
 }, OH = {
-	for: "password_again",
+	for: "password_current",
 	class: "form-label text-primary"
-}, kH = ["innerHTML"], AH = { class: "input-group" }, jH = [
-	"type",
-	"placeholder",
-	"minlength",
-	"disabled"
-], MH = {
+}, kH = { class: "input-group" }, AH = {
+	key: 0,
+	class: "input-group-text"
+}, jH = ["type", "disabled"], MH = {
 	key: 0,
 	class: "bi bi-eye"
 }, NH = {
 	key: 1,
 	class: "bi bi-eye-slash"
-}, PH = ["innerHTML"], FH = {
+}, PH = { class: "mb-3" }, FH = {
+	key: 0,
+	for: "password",
+	class: "form-label text-primary"
+}, IH = { class: "input-group" }, LH = [
+	"type",
+	"placeholder",
+	"pattern",
+	"minlength",
+	"disabled"
+], RH = {
+	key: 0,
+	class: "bi bi-eye"
+}, zH = {
+	key: 1,
+	class: "bi bi-eye-slash"
+}, BH = ["innerHTML"], VH = {
+	key: 1,
+	class: "mb-4"
+}, HH = {
+	for: "password_again",
+	class: "form-label text-primary"
+}, UH = ["innerHTML"], WH = { class: "input-group" }, GH = [
+	"type",
+	"placeholder",
+	"minlength",
+	"disabled"
+], KH = {
+	key: 0,
+	class: "bi bi-eye"
+}, qH = {
+	key: 1,
+	class: "bi bi-eye-slash"
+}, JH = ["innerHTML"], YH = {
 	key: 2,
 	class: "mb-3"
-}, IH = {
+}, XH = {
 	key: 0,
 	class: "text-center py-2"
-}, LH = { key: 1 }, RH = ["innerHTML"], zH = { class: "d-flex justify-content-center gap-2 flex-wrap" }, BH = ["onClick"], VH = {
+}, ZH = { key: 1 }, QH = ["innerHTML"], $H = { class: "d-flex justify-content-center gap-2 flex-wrap" }, eU = ["onClick"], tU = {
 	key: 3,
 	class: "text-danger text-center small mt-2 mb-3 fw-semibold"
-}, HH = {
+}, nU = {
 	key: 4,
 	class: "mb-3"
-}, UH = ["innerHTML"], WH = { class: "form-label text-primary" }, GH = { class: "input-group" }, KH = ["placeholder", "disabled"], qH = {
+}, rU = ["innerHTML"], iU = { class: "form-label text-primary" }, aU = { class: "input-group" }, oU = ["placeholder", "disabled"], sU = {
 	key: 0,
 	class: "mt-3"
-}, JH = {
+}, cU = {
 	for: "twofa_trust",
 	class: "form-label text-primary"
-}, YH = ["disabled"], XH = ["value"], ZH = ["innerHTML"], QH = { class: "text-end mt-2" }, $H = ["disabled"], eU = {
+}, lU = ["disabled"], uU = ["value"], dU = ["innerHTML"], fU = { class: "text-end mt-2" }, pU = ["disabled"], mU = {
 	key: 5,
 	class: "mb-4 text-center"
-}, tU = ["innerHTML"], nU = {
+}, hU = ["innerHTML"], gU = {
 	key: 6,
 	class: "d-flex mb-4"
-}, rU = ["innerHTML"], iU = { class: "row" }, aU = { class: "mb-3" }, oU = ["for", "innerHTML"], sU = { class: "input-group" }, cU = ["innerHTML"], lU = [
+}, _U = ["innerHTML"], vU = { class: "row" }, yU = { class: "mb-3" }, bU = ["for", "innerHTML"], xU = { class: "input-group" }, SU = ["innerHTML"], CU = [
 	"disabled",
 	"required",
 	"onUpdate:modelValue",
 	"multiple"
-], uU = ["value", "innerHTML"], dU = [
+], wU = ["value", "innerHTML"], TU = [
 	"id",
 	"name",
 	"type",
@@ -26793,29 +26862,29 @@ var lH = {
 	"placeholder",
 	"required",
 	"disabled"
-], fU = ["innerHTML"], pU = ["innerHTML"], mU = {
+], EU = ["innerHTML"], DU = ["innerHTML"], OU = {
 	key: 0,
 	class: "form-check"
-}, hU = [
+}, kU = [
 	"id",
 	"name",
 	"onUpdate:modelValue",
 	"required",
 	"disabled"
-], gU = ["for", "innerHTML"], _U = {
+], AU = ["for", "innerHTML"], jU = {
 	key: 7,
 	class: "mt-4"
-}, vU = ["innerHTML"], yU = {
+}, MU = ["innerHTML"], NU = {
 	key: 8,
 	class: "mt-3 text-center"
-}, bU = { class: "mt-4 d-flex justify-content-between" }, xU = ["disabled"], SU = ["disabled"], CU = ["disabled"], wU = {
+}, PU = { class: "mt-4 d-flex justify-content-between" }, FU = ["disabled"], IU = ["disabled"], LU = ["disabled"], RU = {
 	key: 0,
 	class: "bi bi-person-plus mx-1"
-}, TU = {
+}, zU = {
 	key: 1,
 	class: "bi bi-arrow-right-square mx-1"
-}, EU = { class: "mt-2 text-end" }, DU = ["disabled"], OU = ["id"], kU = { class: "modal-dialog modal-xl" }, AU = { class: "modal-content h-100" };
-function jU(t, s, c, l, u, d) {
+}, BU = { class: "mt-2 text-end" }, VU = ["disabled"], HU = ["id"], UU = { class: "modal-dialog modal-xl" }, WU = { class: "modal-content h-100" };
+function GU(t, s, c, l, u, d) {
 	let f = b("VuAdminForm");
 	return t.auth && t.auth.visible ? (_(), i("div", {
 		key: 0,
@@ -26823,24 +26892,37 @@ function jU(t, s, c, l, u, d) {
 		"data-bs-theme": [t.theme]
 	}, [a("div", {
 		class: "row d-flex justify-content-center align-items-center min-vh-100",
-		onClick: s[18] ||= j((...e) => t.close && t.close(...e), ["stop"])
+		onClick: s[20] ||= j((...e) => t.close && t.close(...e), ["stop"])
 	}, [a("div", dH, [a("div", {
 		class: "card shadow p-4 position-relative",
-		onClick: s[17] ||= j(() => {}, ["stop"])
+		onClick: s[19] ||= j(() => {}, ["stop"])
 	}, [
 		a("div", fH, [t.loading ? (_(), i("i", pH)) : r("", !0), a("button", {
 			type: "button",
 			class: "btn p-2",
 			onClick: s[0] ||= j((...e) => t.close && t.close(...e), ["stop"])
-		}, [...s[20] ||= [a("i", { class: "bi bi-x px-1 text-muted" }, null, -1)]])]),
-		a("h1", mH, S(t.translate(t.settings.title[t.auth.panel])), 1),
+		}, [...s[22] ||= [a("i", { class: "bi bi-x px-1 text-muted" }, null, -1)]])]),
+		a("h1", mH, S(t.translate(t.panelText("title"))), 1),
+		t.auth.panel == "profile" && t.auth.user ? (_(), i("div", hH, [t.auth.user.image ? (_(), i("img", {
+			key: 0,
+			src: t.safeUrl(t.auth.user.image),
+			width: "48",
+			height: "48",
+			class: "rounded-circle border",
+			alt: ""
+		}, null, 8, gH)) : r("", !0), a("div", _H, [
+			a("div", vH, S([t.auth.user.firstName, t.auth.user.lastName].join(" ").trim() || t.auth.user.username), 1),
+			a("div", yH, S(t.auth.user.email), 1),
+			t.auth.user.role ? (_(), i("span", bH, S(t.auth.user.role), 1)) : r("", !0)
+		])])) : r("", !0),
+		t.auth.panel == "profile" ? (_(), i("h2", xH, S(t.translate("Change password")), 1)) : r("", !0),
 		a("form", {
-			onSubmit: s[15] ||= j((e) => t.handleSubmit(), ["prevent"]),
-			onClick: s[16] ||= j(() => {}, ["stop"])
+			onSubmit: s[17] ||= j((e) => t.handleSubmit(), ["prevent"]),
+			onClick: s[18] ||= j(() => {}, ["stop"])
 		}, [
-			t.auth.panel != "activation" && t.auth.panel != "password" && t.auth.panel != "twofa" ? (_(), i("div", hH, [
-				a("label", gH, S(t.translate(t.settings.username.label)), 1),
-				a("div", _H, [t.settings.username.icon ? (_(), i("span", {
+			t.auth.panel != "activation" && t.auth.panel != "password" && t.auth.panel != "twofa" && t.auth.panel != "profile" ? (_(), i("div", SH, [
+				a("label", CH, S(t.translate(t.settings.username.label)), 1),
+				a("div", wH, [t.settings.username.icon ? (_(), i("span", {
 					key: 0,
 					class: m(["input-group-text", { "rounded-bottom-0": t.settings.username.help }])
 				}, [a("i", { class: m([t.settings.username.icon]) }, null, 2)], 2)) : r("", !0), k(a("input", {
@@ -26852,90 +26934,110 @@ function jU(t, s, c, l, u, d) {
 					placeholder: t.translate(t.settings.username.placeholder),
 					required: "",
 					disabled: t.loading
-				}, null, 10, vH), [[T, t.username]])]),
+				}, null, 10, TH), [[T, t.username]])]),
 				t.settings.username.help ? (_(), i("small", {
 					key: 0,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.settings.username.help)
-				}, null, 8, yH)) : r("", !0)
-			])) : r("", !0),
-			t.auth.panel != "forgot" && t.auth.panel != "activation" && t.auth.panel != "twofa" ? (_(), i(e, { key: 1 }, [a("div", bH, [
-				t.settings.password.label ? (_(), i("label", xH, S(t.translate(t.settings.password.label)), 1)) : r("", !0),
-				a("div", SH, [
-					t.settings.password.icon ? (_(), i("span", {
-						key: 0,
-						class: m(["input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help }])
-					}, [a("i", { class: m([t.settings.password.icon]) }, null, 2)], 2)) : r("", !0),
-					k(a("input", {
-						id: "password",
-						name: "password",
-						type: t.settings.password.type,
-						"onUpdate:modelValue": s[2] ||= (e) => t.password = e,
-						class: m(["form-control", { "rounded-bottom-0": t.auth.panel == "registration" && t.settings.password.help }]),
-						placeholder: t.translate(t.settings.password.placeholder),
-						pattern: t.settings.password.pattern,
-						minlength: t.auth.panel == "registration" ? t.settings.password.minlength : 1,
-						required: "",
-						disabled: t.loading
-					}, null, 10, CH), [[T, t.password]]),
-					t.auth.panel == "registration" || t.auth.panel == "password" ? (_(), i("span", {
-						key: 1,
-						class: m(["input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help }])
-					}, [a("small", { class: m(["", {
-						"text-success": t.password.length >= t.settings.password.minlength,
-						"text-danger": t.password.length < t.settings.password.minlength
-					}]) }, S(t.password.length), 3)], 2)) : r("", !0),
-					a("span", {
-						class: m(["cursor-pointer input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help }]),
-						onClick: s[3] ||= j((e) => t.toggleType("password"), ["stop"])
-					}, [t.settings.password.type == "password" ? (_(), i("i", wH)) : (_(), i("i", TH))], 2)
-				]),
-				(t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help ? (_(), i("small", {
-					key: 1,
-					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
-					innerHTML: t.translate(t.settings.password.help)
 				}, null, 8, EH)) : r("", !0)
-			]), t.auth.panel === "registration" || t.auth.panel === "password" ? (_(), i("div", DH, [
-				a("label", OH, [o(S(t.translate(t.settings.password_again.label)) + " ", 1), t.password_again.length > 0 && t.password_again != t.password ? (_(), i("small", {
-					key: 0,
-					class: "text-danger",
-					innerHTML: t.translate(t.settings.password_again.nomatch)
-				}, null, 8, kH)) : r("", !0)]),
-				a("div", AH, [
-					t.settings.password.icon ? (_(), i("span", {
-						key: 0,
-						class: m(["input-group-text", { "rounded-bottom-0": t.settings.password_again.help }])
-					}, [a("i", { class: m([t.settings.password_again.icon]) }, null, 2)], 2)) : r("", !0),
+			])) : r("", !0),
+			t.auth.panel != "forgot" && t.auth.panel != "activation" && t.auth.panel != "twofa" ? (_(), i(e, { key: 1 }, [
+				t.auth.panel == "profile" ? (_(), i("div", DH, [a("label", OH, S(t.translate("Current password")), 1), a("div", kH, [
+					t.settings.password.icon ? (_(), i("span", AH, [a("i", { class: m([t.settings.password.icon]) }, null, 2)])) : r("", !0),
 					k(a("input", {
-						id: "password_again",
-						name: "password_again",
-						type: t.settings.password_again.type,
-						"onUpdate:modelValue": s[4] ||= (e) => t.password_again = e,
-						class: m(["form-control", { "rounded-bottom-0": t.settings.password_again.help }]),
-						placeholder: t.translate(t.settings.password_again.placeholder),
-						minlength: t.settings.password.minlength,
+						id: "password_current",
+						name: "password_current",
+						type: t.currentPasswordType,
+						"onUpdate:modelValue": s[2] ||= (e) => t.password_current = e,
+						class: "form-control",
+						autocomplete: "current-password",
 						required: "",
 						disabled: t.loading
-					}, null, 10, jH), [[T, t.password_again]]),
-					a("span", { class: m(["input-group-text", { "rounded-bottom-0": t.settings.password_again.help }]) }, [a("small", { class: m(["", {
-						"text-success": t.password_again.length >= t.settings.password.minlength,
-						"text-danger": t.password_again.length < t.settings.password.minlength
-					}]) }, S(t.password_again.length), 3)], 2),
+					}, null, 8, jH), [[T, t.password_current]]),
 					a("span", {
-						class: m(["cursor-pointer input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password_again.help }]),
-						onClick: s[5] ||= j((e) => t.toggleType("password_again"), ["stop"])
-					}, [t.settings.password_again.type == "password" ? (_(), i("i", MH)) : (_(), i("i", NH))], 2)
+						class: "cursor-pointer input-group-text",
+						onClick: s[3] ||= j((e) => t.currentPasswordType = t.currentPasswordType == "password" ? "text" : "password", ["stop"])
+					}, [t.currentPasswordType == "password" ? (_(), i("i", MH)) : (_(), i("i", NH))])
+				])])) : r("", !0),
+				a("div", PH, [
+					t.settings.password.label ? (_(), i("label", FH, S(t.translate(t.auth.panel == "profile" ? "New password" : t.settings.password.label)), 1)) : r("", !0),
+					a("div", IH, [
+						t.settings.password.icon ? (_(), i("span", {
+							key: 0,
+							class: m(["input-group-text", { "rounded-bottom-0": t.newPasswordPanel && t.settings.password.help }])
+						}, [a("i", { class: m([t.settings.password.icon]) }, null, 2)], 2)) : r("", !0),
+						k(a("input", {
+							id: "password",
+							name: "password",
+							type: t.settings.password.type,
+							"onUpdate:modelValue": s[4] ||= (e) => t.password = e,
+							class: m(["form-control", { "rounded-bottom-0": t.newPasswordPanel && t.settings.password.help }]),
+							placeholder: t.translate(t.settings.password.placeholder),
+							pattern: t.settings.password.pattern,
+							minlength: t.auth.panel == "registration" || t.auth.panel == "profile" ? t.settings.password.minlength : 1,
+							required: "",
+							disabled: t.loading
+						}, null, 10, LH), [[T, t.password]]),
+						t.newPasswordPanel ? (_(), i("span", {
+							key: 1,
+							class: m(["input-group-text", { "rounded-bottom-0": t.newPasswordPanel && t.settings.password.help }])
+						}, [a("small", { class: m(["", {
+							"text-success": t.password.length >= t.settings.password.minlength,
+							"text-danger": t.password.length < t.settings.password.minlength
+						}]) }, S(t.password.length), 3)], 2)) : r("", !0),
+						a("span", {
+							class: m(["cursor-pointer input-group-text", { "rounded-bottom-0": t.newPasswordPanel && t.settings.password.help }]),
+							onClick: s[5] ||= j((e) => t.toggleType("password"), ["stop"])
+						}, [t.settings.password.type == "password" ? (_(), i("i", RH)) : (_(), i("i", zH))], 2)
+					]),
+					t.newPasswordPanel && t.settings.password.help ? (_(), i("small", {
+						key: 1,
+						class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
+						innerHTML: t.translate(t.settings.password.help)
+					}, null, 8, BH)) : r("", !0)
 				]),
-				(t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password_again.help ? (_(), i("small", {
-					key: 0,
-					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
-					innerHTML: t.translate(t.settings.password_again.help)
-				}, null, 8, PH)) : r("", !0)
-			])) : r("", !0)], 64)) : r("", !0),
-			t.captchaRequired ? (_(), i("div", FH, [t.captcha.loading ? (_(), i("div", IH, [...s[21] ||= [a("span", { class: "spinner-border spinner-border-sm text-secondary" }, null, -1)]])) : t.captcha.items.length ? (_(), i("div", LH, [a("div", {
+				t.newPasswordPanel ? (_(), i("div", VH, [
+					a("label", HH, [o(S(t.translate(t.settings.password_again.label)) + " ", 1), t.password_again.length > 0 && t.password_again != t.password ? (_(), i("small", {
+						key: 0,
+						class: "text-danger",
+						innerHTML: t.translate(t.settings.password_again.nomatch)
+					}, null, 8, UH)) : r("", !0)]),
+					a("div", WH, [
+						t.settings.password.icon ? (_(), i("span", {
+							key: 0,
+							class: m(["input-group-text", { "rounded-bottom-0": t.settings.password_again.help }])
+						}, [a("i", { class: m([t.settings.password_again.icon]) }, null, 2)], 2)) : r("", !0),
+						k(a("input", {
+							id: "password_again",
+							name: "password_again",
+							type: t.settings.password_again.type,
+							"onUpdate:modelValue": s[6] ||= (e) => t.password_again = e,
+							class: m(["form-control", { "rounded-bottom-0": t.settings.password_again.help }]),
+							placeholder: t.translate(t.settings.password_again.placeholder),
+							minlength: t.settings.password.minlength,
+							required: "",
+							disabled: t.loading
+						}, null, 10, GH), [[T, t.password_again]]),
+						a("span", { class: m(["input-group-text", { "rounded-bottom-0": t.settings.password_again.help }]) }, [a("small", { class: m(["", {
+							"text-success": t.password_again.length >= t.settings.password.minlength,
+							"text-danger": t.password_again.length < t.settings.password.minlength
+						}]) }, S(t.password_again.length), 3)], 2),
+						a("span", {
+							class: m(["cursor-pointer input-group-text", { "rounded-bottom-0": t.newPasswordPanel && t.settings.password_again.help }]),
+							onClick: s[7] ||= j((e) => t.toggleType("password_again"), ["stop"])
+						}, [t.settings.password_again.type == "password" ? (_(), i("i", KH)) : (_(), i("i", qH))], 2)
+					]),
+					t.newPasswordPanel && t.settings.password_again.help ? (_(), i("small", {
+						key: 0,
+						class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
+						innerHTML: t.translate(t.settings.password_again.help)
+					}, null, 8, JH)) : r("", !0)
+				])) : r("", !0)
+			], 64)) : r("", !0),
+			t.captchaRequired ? (_(), i("div", YH, [t.captcha.loading ? (_(), i("div", XH, [...s[23] ||= [a("span", { class: "spinner-border spinner-border-sm text-secondary" }, null, -1)]])) : t.captcha.items.length ? (_(), i("div", ZH, [a("div", {
 				class: "text-center small mb-2",
 				innerHTML: t.captchaQuestion
-			}, null, 8, RH), a("div", zH, [(_(!0), i(e, null, y(t.captcha.items, (e) => (_(), i("button", {
+			}, null, 8, QH), a("div", $H, [(_(!0), i(e, null, y(t.captcha.items, (e) => (_(), i("button", {
 				key: e.id,
 				type: "button",
 				class: m(["btn btn-outline-secondary px-2 py-1", { "btn-primary border-primary": t.captcha.answers.includes(e.id) }]),
@@ -26948,37 +27050,37 @@ function jU(t, s, c, l, u, d) {
 					"font-size": "1.2rem",
 					display: "block"
 				}
-			}, null, 2)], 10, BH))), 128))])])) : r("", !0)])) : r("", !0),
-			t.captchaError ? (_(), i("p", VH, S(t.translate(t.settings.captcha.error)), 1)) : r("", !0),
-			t.auth.panel === "twofa" && t.settings.twofa ? (_(), i("div", HH, [
+			}, null, 2)], 10, eU))), 128))])])) : r("", !0)])) : r("", !0),
+			t.captchaError ? (_(), i("p", tU, S(t.translate(t.settings.captcha.error)), 1)) : r("", !0),
+			t.auth.panel === "twofa" && t.settings.twofa ? (_(), i("div", nU, [
 				a("p", {
 					class: "text-center small text-muted mb-3",
 					innerHTML: t.translate(t.settings.twofa.info)
-				}, null, 8, UH),
-				a("label", WH, S(t.translate(t.settings.twofa.label)), 1),
-				a("div", GH, [s[22] ||= a("span", { class: "input-group-text" }, [a("i", { class: "bi bi-shield-lock" })], -1), k(a("input", {
+				}, null, 8, rU),
+				a("label", iU, S(t.translate(t.settings.twofa.label)), 1),
+				a("div", aU, [s[24] ||= a("span", { class: "input-group-text" }, [a("i", { class: "bi bi-shield-lock" })], -1), k(a("input", {
 					type: "text",
 					inputmode: "numeric",
 					pattern: "[0-9]{6}",
-					"onUpdate:modelValue": s[6] ||= (e) => t.twofaCode = e,
-					onInput: s[7] ||= (e) => t.twofaCode = t.twofaCode.replace(/\D/g, "").slice(0, 6),
+					"onUpdate:modelValue": s[8] ||= (e) => t.twofaCode = e,
+					onInput: s[9] ||= (e) => t.twofaCode = t.twofaCode.replace(/\D/g, "").slice(0, 6),
 					class: "form-control text-center fw-bold fs-5",
 					placeholder: t.translate(t.settings.twofa.placeholder),
 					required: "",
 					disabled: t.loading,
 					autocomplete: "one-time-code"
-				}, null, 40, KH), [[D, t.twofaCode]])]),
-				t.twofaTrustOptions.length ? (_(), i("div", qH, [
-					a("label", JH, S(t.translate(t.settings.twofa.trust.label)), 1),
+				}, null, 40, oU), [[D, t.twofaCode]])]),
+				t.twofaTrustOptions.length ? (_(), i("div", sU, [
+					a("label", cU, S(t.translate(t.settings.twofa.trust.label)), 1),
 					k(a("select", {
 						id: "twofa_trust",
 						class: "form-select",
-						"onUpdate:modelValue": s[8] ||= (e) => t.twofaTrustDays = e,
+						"onUpdate:modelValue": s[10] ||= (e) => t.twofaTrustDays = e,
 						disabled: t.loading
 					}, [(_(!0), i(e, null, y(t.twofaTrustOptions, (e) => (_(), i("option", {
 						key: e.value,
 						value: e.value
-					}, S(t.translate(e.label)), 9, XH))), 128))], 8, YH), [[
+					}, S(t.translate(e.label)), 9, uU))), 128))], 8, lU), [[
 						E,
 						t.twofaTrustDays,
 						void 0,
@@ -26988,14 +27090,14 @@ function jU(t, s, c, l, u, d) {
 						key: 0,
 						class: "d-block text-muted mt-1",
 						innerHTML: t.translate(t.settings.twofa.trust.help)
-					}, null, 8, ZH)) : r("", !0)
+					}, null, 8, dU)) : r("", !0)
 				])) : r("", !0),
-				a("div", QH, [a("button", {
+				a("div", fU, [a("button", {
 					type: "button",
 					class: "btn btn-link btn-sm p-0 text-decoration-none",
-					onClick: s[9] ||= j((...e) => t.resendTwofa && t.resendTwofa(...e), ["stop"]),
+					onClick: s[11] ||= j((...e) => t.resendTwofa && t.resendTwofa(...e), ["stop"]),
 					disabled: t.loading
-				}, [s[23] ||= a("i", { class: "bi bi-arrow-repeat me-1" }, null, -1), o(S(t.translate(t.settings.submit.resend)), 1)], 8, $H)])
+				}, [s[25] ||= a("i", { class: "bi bi-arrow-repeat me-1" }, null, -1), o(S(t.translate(t.settings.submit.resend)), 1)], 8, pU)])
 			])) : r("", !0),
 			k(a("input", {
 				type: "text",
@@ -27003,7 +27105,7 @@ function jU(t, s, c, l, u, d) {
 				tabindex: "-1",
 				autocomplete: "new-password",
 				"aria-hidden": "true",
-				"onUpdate:modelValue": s[10] ||= (e) => t.honeypot = e,
+				"onUpdate:modelValue": s[12] ||= (e) => t.honeypot = e,
 				style: {
 					position: "absolute",
 					left: "-9999px",
@@ -27012,32 +27114,32 @@ function jU(t, s, c, l, u, d) {
 					opacity: "0"
 				}
 			}, null, 512), [[D, t.honeypot]]),
-			t.auth.panel == "login" && t.settings.password.forgot ? (_(), i("div", eU, [a("button", {
+			t.auth.panel == "login" && t.settings.password.forgot ? (_(), i("div", mU, [a("button", {
 				type: "button",
 				class: "btn btn-link p-0 text-decoration-none text-nowrap",
-				onClick: s[11] ||= j((...e) => t.toggleForgotPassword && t.toggleForgotPassword(...e), ["stop"]),
+				onClick: s[13] ||= j((...e) => t.toggleForgotPassword && t.toggleForgotPassword(...e), ["stop"]),
 				innerHTML: t.translate(t.settings.password.forgot)
-			}, null, 8, tU)])) : r("", !0),
-			t.auth.panel == "forgot" && t.settings.help && t.settings.help.forgot ? (_(), i("div", nU, [a("small", {
+			}, null, 8, hU)])) : r("", !0),
+			t.auth.panel == "forgot" && t.settings.help && t.settings.help.forgot ? (_(), i("div", gU, [a("small", {
 				class: "text-muted",
 				innerHTML: t.translate(t.settings.help.forgot)
-			}, null, 8, rU)])) : r("", !0),
-			a("div", iU, [(_(!0), i(e, null, y(t.settings.inputs, (n, o) => (_(), i(e, { key: o }, [n.panels.indexOf(t.auth.panel) >= 0 && !n.hidden ? (_(), i("div", {
+			}, null, 8, _U)])) : r("", !0),
+			a("div", vU, [(_(!0), i(e, null, y(t.settings.inputs, (n, o) => (_(), i(e, { key: o }, [n.panels.indexOf(t.auth.panel) >= 0 && !n.hidden ? (_(), i("div", {
 				key: 0,
 				class: m([n.colclass ? n.colclass : "col-md-12"])
-			}, [a("div", aU, [
+			}, [a("div", yU, [
 				n.label ? (_(), i("label", {
 					key: 0,
 					for: o,
 					class: m(["form-label text-primary", { required: n.required }]),
 					innerHTML: t.translate(t.getValueOrFunction(n.label))
-				}, null, 10, oU)) : r("", !0),
-				a("div", sU, [
+				}, null, 10, bU)) : r("", !0),
+				a("div", xU, [
 					n.prefix ? (_(), i("span", {
 						key: 0,
 						class: m(["input-group-text", { "rounded-bottom-0": n.help }]),
 						innerHTML: t.translate(t.getValueOrFunction(n.prefix))
-					}, null, 10, cU)) : r("", !0),
+					}, null, 10, SU)) : r("", !0),
 					n.type == "select" ? k((_(), i("select", {
 						key: 1,
 						class: "form-select",
@@ -27045,11 +27147,11 @@ function jU(t, s, c, l, u, d) {
 						required: n.required,
 						"onUpdate:modelValue": (e) => t.inputs[o] = e,
 						multiple: n.multiple
-					}, [s[24] ||= a("option", null, null, -1), (_(!0), i(e, null, y(n.options, (e) => (_(), i("option", {
+					}, [s[26] ||= a("option", null, null, -1), (_(!0), i(e, null, y(n.options, (e) => (_(), i("option", {
 						key: e,
 						value: e.value,
 						innerHTML: t.translate(t.getValueOrFunction(e.label))
-					}, null, 8, uU))), 128))], 8, lU)), [[E, t.inputs[o]]]) : k((_(), i("input", {
+					}, null, 8, wU))), 128))], 8, CU)), [[E, t.inputs[o]]]) : k((_(), i("input", {
 						key: 2,
 						id: o,
 						name: o,
@@ -27059,20 +27161,20 @@ function jU(t, s, c, l, u, d) {
 						placeholder: t.translate(n.placeholder),
 						required: n.required,
 						disabled: t.loading
-					}, null, 10, dU)), [[T, t.inputs[o]]]),
+					}, null, 10, TU)), [[T, t.inputs[o]]]),
 					n.suffix ? (_(), i("span", {
 						key: 3,
 						class: m(["input-group-text", { "rounded-bottom-0": n.help }]),
 						innerHTML: t.translate(t.getValueOrFunction(n.suffix))
-					}, null, 10, fU)) : r("", !0)
+					}, null, 10, EU)) : r("", !0)
 				]),
 				n.help ? (_(), i("small", {
 					key: 1,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.getValueOrFunction(n.help))
-				}, null, 8, pU)) : r("", !0)
+				}, null, 8, DU)) : r("", !0)
 			])], 2)) : r("", !0)], 64))), 128))]),
-			(_(!0), i(e, null, y(t.settings.accepts, (e) => (_(), i("div", { key: e }, [e.panels.indexOf(t.auth.panel) >= 0 ? (_(), i("div", mU, [k(a("input", {
+			(_(!0), i(e, null, y(t.settings.accepts, (e) => (_(), i("div", { key: e }, [e.panels.indexOf(t.auth.panel) >= 0 ? (_(), i("div", OU, [k(a("input", {
 				type: "checkbox",
 				class: "form-check-input",
 				id: "accept_" + e.name,
@@ -27080,35 +27182,35 @@ function jU(t, s, c, l, u, d) {
 				"onUpdate:modelValue": (n) => t.accepts[e.name] = n,
 				required: e.required,
 				disabled: t.loading
-			}, null, 8, hU), [[w, t.accepts[e.name]]]), e.label ? (_(), i("label", {
+			}, null, 8, kU), [[w, t.accepts[e.name]]]), e.label ? (_(), i("label", {
 				key: 0,
 				class: "form-check-label",
 				for: "accept_" + e.name,
 				innerHTML: t.translate(t.getValueOrFunction(e.label))
-			}, null, 8, gU)) : r("", !0)])) : r("", !0)]))), 128)),
-			t.auth.panel == "registration" && t.settings.help && t.settings.help.registration ? (_(), i("div", _U, [a("div", { innerHTML: t.translate(t.getValueOrFunction(t.settings.help.registration)) }, null, 8, vU)])) : r("", !0),
-			t.auth.response.message ? (_(), i("div", yU, [a("div", {
+			}, null, 8, AU)) : r("", !0)])) : r("", !0)]))), 128)),
+			t.auth.panel == "registration" && t.settings.help && t.settings.help.registration ? (_(), i("div", jU, [a("div", { innerHTML: t.translate(t.getValueOrFunction(t.settings.help.registration)) }, null, 8, MU)])) : r("", !0),
+			t.auth.response.message ? (_(), i("div", NU, [a("div", {
 				class: m({
 					"text-danger": !t.auth.response.ok,
 					"text-success": t.auth.response.ok
 				}),
 				style: { "white-space": "pre-line" }
 			}, S(t.translate(t.auth.response.message)), 3)])) : r("", !0),
-			a("div", bU, [
-				t.auth.panel != "login" && t.auth.panel != "activation" ? (_(), i("button", {
+			a("div", PU, [
+				t.auth.panel != "login" && t.auth.panel != "activation" && t.auth.panel != "profile" ? (_(), i("button", {
 					key: 0,
 					type: "button",
-					onClick: s[12] ||= j((...e) => t.toggleClear && t.toggleClear(...e), ["stop"]),
+					onClick: s[14] ||= j((...e) => t.toggleClear && t.toggleClear(...e), ["stop"]),
 					class: "btn btn-secondary w-100 me-2 text-nowrap",
 					disabled: t.loading
-				}, [s[25] ||= a("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.login)), 1)], 8, xU)) : r("", !0),
+				}, [s[27] ||= a("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.login)), 1)], 8, FU)) : r("", !0),
 				t.auth.panel == "login" && t.settings.registrationEnabled !== !1 ? (_(), i("button", {
 					key: 1,
 					type: "button",
 					class: "btn btn-warning w-100 me-2 text-nowrap",
-					onClick: s[13] ||= j((...e) => t.toggleNewRegistration && t.toggleNewRegistration(...e), ["stop"]),
+					onClick: s[15] ||= j((...e) => t.toggleNewRegistration && t.toggleNewRegistration(...e), ["stop"]),
 					disabled: t.loading
-				}, [s[26] ||= a("i", { class: "bi bi-person-plus mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.registration)), 1)], 8, SU)) : r("", !0),
+				}, [s[28] ||= a("i", { class: "bi bi-person-plus mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.registration)), 1)], 8, IU)) : r("", !0),
 				a("button", {
 					type: "submit",
 					class: m(["btn w-100 text-nowrap", {
@@ -27116,23 +27218,23 @@ function jU(t, s, c, l, u, d) {
 						"btn-warning": t.auth.panel == "registration"
 					}]),
 					disabled: t.loading
-				}, [o(S(t.translate(t.settings.submit[t.auth.panel])) + " ", 1), t.auth.panel == "registration" ? (_(), i("i", wU)) : (_(), i("i", TU))], 10, CU)
+				}, [o(S(t.translate(t.panelText("submit"))) + " ", 1), t.auth.panel == "registration" ? (_(), i("i", RU)) : (_(), i("i", zU))], 10, LU)
 			]),
-			a("div", EU, [a("button", {
+			a("div", BU, [a("button", {
 				type: "button",
-				onClick: s[14] ||= j((...e) => t.close && t.close(...e), ["stop"]),
+				onClick: s[16] ||= j((...e) => t.close && t.close(...e), ["stop"]),
 				class: "btn btn-light border w-100 me-1",
 				disabled: t.loading
-			}, [o(S(t.translate(t.settings.submit.cancel)) + " ", 1), s[27] ||= a("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, DU)])
+			}, [o(S(t.translate(t.settings.submit.cancel)) + " ", 1), s[29] ||= a("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, VU)])
 		], 32)
 	])])]), a("div", {
 		class: "modal shadow",
 		id: t.modalId,
 		tabindex: "-1"
-	}, [a("div", kU, [a("div", AU, [t.settings.form && t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
+	}, [a("div", UU, [a("div", WU, [t.settings.form && t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
 		key: 0,
 		modelValue: t.item,
-		"onUpdate:modelValue": s[19] ||= (e) => t.item = e,
+		"onUpdate:modelValue": s[21] ||= (e) => t.item = e,
 		formid: t.formId,
 		settings: t.settings,
 		modalWindow: t.modalWindow,
@@ -27151,12 +27253,12 @@ function jU(t, s, c, l, u, d) {
 		"deleteItem",
 		"reloadTable",
 		"fetchRelation"
-	])) : r("", !0)])])], 8, OU)], 8, uH)) : r("", !0);
+	])) : r("", !0)])])], 8, HU)], 8, uH)) : r("", !0);
 }
-var MU = /*#__PURE__*/ EA(lH, [["render", jU]]);
+var KU = /*#__PURE__*/ EA(lH, [["render", GU]]);
 // src/components/VuUserButton.vue
 Nc();
-var NU = {
+var qU = {
 	name: "VuUserButton",
 	props: {
 		modelValue: Object,
@@ -27182,6 +27284,9 @@ var NU = {
 	methods: {
 		updateAuth() {
 			this.$emit("update:modelValue", this.auth);
+		},
+		showProfilModal() {
+			this.auth.panel = "profile", this.auth.visible = !0, this.updateAuth();
 		},
 		togglePanel() {
 			this.auth.visible = !this.auth.visible, this.auth.panel = this.panel ? this.panel : "login", this.updateAuth();
@@ -27230,60 +27335,60 @@ var NU = {
 	beforeUnmount() {
 		window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(HV, this._onThemeChange);
 	}
-}, PU = ["data-bs-theme"], FU = {
+}, JU = ["data-bs-theme"], YU = {
 	key: 0,
 	class: "dropdown"
-}, IU = ["innerHTML"], LU = {
+}, XU = ["innerHTML"], ZU = {
 	class: "dropdown-menu dropdown-menu-end",
 	"aria-labelledby": "userDropdown"
-}, RU = ["innerHTML"], zU = ["onClick"], BU = ["innerHTML"], VU = ["onClick", "title"], HU = ["innerHTML"], UU = [
+}, QU = ["innerHTML"], $U = ["onClick"], eW = ["innerHTML"], tW = ["onClick", "title"], nW = ["innerHTML"], rW = [
 	"onClick",
 	"title",
 	"aria-label"
-], WU = { key: 1 }, GU = ["onClick", "innerHTML"], KU = {
+], iW = { key: 1 }, aW = ["onClick", "innerHTML"], oW = {
 	key: 1,
 	class: "d-inline-block"
-}, qU = ["innerHTML"];
-function JU(t, n, o, s, c, l) {
+}, sW = ["innerHTML"];
+function cW(t, n, o, s, c, l) {
 	return (t.panel != "registration" || t.registrationEnabled) && (!t.auth.user && t.panel != "login" || t.panel == "login") ? (_(), i("div", {
 		key: 0,
 		class: "vua-user-button d-inline-block",
 		"data-bs-theme": [t.theme]
-	}, [t.auth.user ? (_(), i("div", FU, [a("button", {
+	}, [t.auth.user ? (_(), i("div", YU, [a("button", {
 		class: m(["dropdown-toggle", [t.settings.class]]),
 		type: "button",
 		id: "userDropdown",
 		"data-bs-toggle": "dropdown",
 		"aria-expanded": "false"
-	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, IU)], 2), a("ul", LU, [(_(!0), i(e, null, y(t.settings.dropdowns, (n) => (_(), i(e, { key: n }, [n.action == "BUTTON_ROLES" ? (_(), i("li", {
+	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, XU)], 2), a("ul", ZU, [(_(!0), i(e, null, y(t.settings.dropdowns, (n) => (_(), i(e, { key: n }, [n.action == "BUTTON_ROLES" ? (_(), i("li", {
 		key: 0,
 		class: m([[n.class], "d-flex items-align-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(n.label)),
 		class: "me-2"
-	}, null, 8, RU), (_(!0), i(e, null, y(t.auth.user.roles, (e) => (_(), i("button", {
+	}, null, 8, QU), (_(!0), i(e, null, y(t.auth.user.roles, (e) => (_(), i("button", {
 		key: e,
 		onClick: (n) => t.setSelectedRole(e),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e == t.auth.user.role }])
-	}, S(e), 11, zU))), 128))], 2)) : n.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
+	}, S(e), 11, $U))), 128))], 2)) : n.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
 		key: 1,
 		class: m([[n.class], "d-flex align-items-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(n.label === void 0 ? "Language" : n.label)),
 		class: "me-2"
-	}, null, 8, BU), (_(!0), i(e, null, y(t.languages(n), (e) => (_(), i("button", {
+	}, null, 8, eW), (_(!0), i(e, null, y(t.languages(n), (e) => (_(), i("button", {
 		key: e.value,
 		type: "button",
 		onClick: j((n) => t.changeLanguage(e.value), ["stop"]),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e.value == t.language }]),
 		title: e.label
-	}, S(e.short || e.value.toUpperCase()), 11, VU))), 128))], 2)) : n.action == "BUTTON_THEME" ? (_(), i("li", {
+	}, S(e.short || e.value.toUpperCase()), 11, tW))), 128))], 2)) : n.action == "BUTTON_THEME" ? (_(), i("li", {
 		key: 2,
 		class: m([[n.class], "d-flex align-items-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(n.label === void 0 ? "Theme" : n.label)),
 		class: "me-2"
-	}, null, 8, HU), (_(!0), i(e, null, y(t.themes(n), (e) => (_(), i("button", {
+	}, null, 8, nW), (_(!0), i(e, null, y(t.themes(n), (e) => (_(), i("button", {
 		key: e.value,
 		type: "button",
 		onClick: j((n) => t.changeTheme(e.value), ["stop"]),
@@ -27293,21 +27398,21 @@ function JU(t, n, o, s, c, l) {
 	}, [e.icon ? (_(), i("i", {
 		key: 0,
 		class: m(e.icon)
-	}, null, 2)) : (_(), i("span", WU, S(t.translate(e.label)), 1))], 10, UU))), 128))], 2)) : (_(), i("li", {
+	}, null, 2)) : (_(), i("span", iW, S(t.translate(e.label)), 1))], 10, rW))), 128))], 2)) : (_(), i("li", {
 		key: 3,
 		class: m([n.class]),
 		onClick: (e) => t.dropdownAction(n),
 		innerHTML: t.translate(t.getValueOrFunction(n.label))
-	}, null, 10, GU))], 64))), 128))])])) : (_(), i("div", KU, [a("button", {
+	}, null, 10, aW))], 64))), 128))])])) : (_(), i("div", oW, [a("button", {
 		class: m([t.settings.class]),
 		type: "button",
 		onClick: n[0] ||= (...e) => t.togglePanel && t.togglePanel(...e)
 	}, [t.settings.icon ? (_(), i("i", {
 		key: 0,
 		class: m([t.settings.icon])
-	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, qU)], 2)]))], 8, PU)) : r("", !0);
+	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, sW)], 2)]))], 8, JU)) : r("", !0);
 }
-var YU = /*#__PURE__*/ EA(NU, [["render", JU]]), XU = {
+var lW = /*#__PURE__*/ EA(qU, [["render", cW]]), uW = {
 	name: "VuAdminNav",
 	props: {
 		modelValue: Object,
@@ -27437,20 +27542,20 @@ var YU = /*#__PURE__*/ EA(NU, [["render", JU]]), XU = {
 			}
 		}
 	}
-}, ZU = {
+}, dW = {
 	key: 0,
 	class: "dropdown-divider"
-}, QU = ["disabled", "onClick"], $U = [
+}, fW = ["disabled", "onClick"], pW = [
 	"aria-current",
 	"target",
 	"rel",
 	"href"
-], eW = ["disabled", "onClick"], tW = [
+], mW = ["disabled", "onClick"], hW = [
 	"aria-current",
 	"target",
 	"rel",
 	"href"
-], nW = {
+], gW = {
 	key: 1,
 	class: "vu-admin-nav-result position-fixed bottom-0 end-0 m-3 shadow",
 	style: {
@@ -27458,14 +27563,14 @@ var YU = /*#__PURE__*/ EA(NU, [["render", JU]]), XU = {
 		"max-width": "640px",
 		width: "calc(100% - 2rem)"
 	}
-}, rW = { class: "d-flex align-items-start gap-2" }, iW = { class: "me-auto" }, aW = {
+}, _W = { class: "d-flex align-items-start gap-2" }, vW = { class: "me-auto" }, yW = {
 	key: 0,
 	class: "spinner-border spinner-border-sm ms-2",
 	"aria-hidden": "true"
-}, oW = {
+}, bW = {
 	key: 1,
 	class: "ms-2"
-}, sW = ["aria-label", "disabled"], cW = {
+}, xW = ["aria-label", "disabled"], SW = {
 	key: 0,
 	class: "mt-2 mb-0 small overflow-auto",
 	style: {
@@ -27473,7 +27578,7 @@ var YU = /*#__PURE__*/ EA(NU, [["render", JU]]), XU = {
 		"white-space": "pre-wrap"
 	}
 };
-function lW(t, n, s, c, l, u) {
+function CW(t, n, s, c, l, u) {
 	return _(), i(e, null, [t.auth && t.auth.success && t.visibleItems.length ? (_(), i("ul", {
 		key: 0,
 		class: m(["navbar-nav flex-grow-1 mb-2 mb-lg-0", t.menuClass])
@@ -27487,7 +27592,7 @@ function lW(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), a("span", null, S(t.translate(n.name)), 1)], 2), a("ul", { class: m(["dropdown-menu", n.menuClass]) }, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [e.divider ? (_(), i("hr", ZU)) : e.header ? (_(), i("h6", {
+	}, null, 2)) : r("", !0), a("span", null, S(t.translate(n.name)), 1)], 2), a("ul", { class: m(["dropdown-menu", n.menuClass]) }, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [e.divider ? (_(), i("hr", dW)) : e.header ? (_(), i("h6", {
 		key: 1,
 		class: m(["dropdown-header", e.class])
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
@@ -27502,7 +27607,7 @@ function lW(t, n, s, c, l, u) {
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(e.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, QU)) : (_(), i("a", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, fW)) : (_(), i("a", {
 		key: 3,
 		class: m(["dropdown-item", [e.class, { active: t.isActive(e) }]]),
 		"aria-current": t.isActive(e) ? "page" : null,
@@ -27512,7 +27617,7 @@ function lW(t, n, s, c, l, u) {
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(e.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, $U))]))), 128))], 2)], 2)) : (_(), i("li", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, pW))]))), 128))], 2)], 2)) : (_(), i("li", {
 		key: 1,
 		class: m(["nav-item", n.itemClass])
 	}, [n.api ? (_(), i("button", {
@@ -27524,7 +27629,7 @@ function lW(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, eW)) : (_(), i("a", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, mW)) : (_(), i("a", {
 		key: 1,
 		class: m(["nav-link scrollto", [n.class, { active: t.isActive(n) }]]),
 		"aria-current": t.isActive(n) ? "page" : null,
@@ -27534,18 +27639,18 @@ function lW(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, tW))], 2))], 64))), 128))], 2)) : r("", !0), t.result ? (_(), i("div", nW, [a("div", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, hW))], 2))], 64))), 128))], 2)) : r("", !0), t.result ? (_(), i("div", gW, [a("div", {
 		class: m(["alert mb-0", t.result.running ? "alert-secondary" : t.result.ok ? "alert-success" : "alert-danger"]),
 		role: "status"
-	}, [a("div", rW, [a("strong", iW, [o(S(t.translate(t.result.name)) + " ", 1), t.result.running ? (_(), i("span", aW)) : (_(), i("span", oW, "— " + S(t.result.ok ? t.translate("Done") : t.translate("Error")) + " (" + S(t.result.status) + ")", 1))]), a("button", {
+	}, [a("div", _W, [a("strong", vW, [o(S(t.translate(t.result.name)) + " ", 1), t.result.running ? (_(), i("span", yW)) : (_(), i("span", bW, "— " + S(t.result.ok ? t.translate("Done") : t.translate("Error")) + " (" + S(t.result.status) + ")", 1))]), a("button", {
 		type: "button",
 		class: "btn-close",
 		"aria-label": t.translate("Close"),
 		disabled: t.result.running,
 		onClick: n[0] ||= (e) => t.result = null
-	}, null, 8, sW)]), t.result.running ? r("", !0) : (_(), i("pre", cW, S(t.result.output), 1))], 2)])) : r("", !0)], 64);
+	}, null, 8, xW)]), t.result.running ? r("", !0) : (_(), i("pre", SW, S(t.result.output), 1))], 2)])) : r("", !0)], 64);
 }
-var uW = /*#__PURE__*/ EA(XU, [["render", lW]]), dW = {
+var wW = /*#__PURE__*/ EA(uW, [["render", CW]]), TW = {
 	title: "",
 	documentTitle: "{view} | {title}",
 	logo: "",
@@ -27567,7 +27672,7 @@ var uW = /*#__PURE__*/ EA(XU, [["render", lW]]), dW = {
 		menu: "admin"
 	}
 };
-function fW(e, t) {
+function EW(e, t) {
 	let n = {};
 	return Object.keys(e).forEach((t) => {
 		let r = e[t];
@@ -27577,14 +27682,14 @@ function fW(e, t) {
 		n[e] = r && typeof r == "object" && !Array.isArray(r) && n[e] && typeof n[e] == "object" ? Object.assign(n[e], r) : r;
 	}), n;
 }
-function pW() {
+function DW() {
 	try {
 		return !!(localStorage.getItem("vu-user") && localStorage.getItem("vu-header"));
 	} catch {
 		return !1;
 	}
 }
-var mW = {
+var OW = {
 	name: "VuAdminApp",
 	props: { session: {
 		type: Object,
@@ -27594,10 +27699,10 @@ var mW = {
 		let e = typeof window < "u" && window.VuSettings && window.VuSettings.app ? window.VuSettings.app : {};
 		return {
 			auth: this.session || { inputs: {} },
-			settings: fW(dW, e),
+			settings: EW(TW, e),
 			language: Hc(),
 			hash: typeof window < "u" ? window.location.hash : "",
-			restoring: !this.session && pW(),
+			restoring: !this.session && DW(),
 			themeChoice: KV(),
 			themeTick: 0
 		};
@@ -27665,20 +27770,20 @@ var mW = {
 	},
 	components: {
 		VuAdmin: sH,
-		VuAuth: MU,
-		VuUserButton: YU,
-		VuAdminNav: uW
+		VuAuth: KU,
+		VuUserButton: lW,
+		VuAdminNav: wW
 	}
-}, hW = ["data-bs-theme"], gW = ["href"], _W = [
+}, kW = ["data-bs-theme"], AW = ["href"], jW = [
 	"src",
 	"alt",
 	"height",
 	"width"
-], vW = { key: 1 }, yW = {
+], MW = { key: 1 }, NW = {
 	key: 0,
 	class: "vu-admin-app-loading d-flex justify-content-center align-items-center py-5 text-secondary"
 };
-function bW(e, t, o, c, l, u) {
+function PW(e, t, o, c, l, u) {
 	let d = b("vu-admin-nav"), f = b("vu-user-button"), p = b("vu-admin"), h = b("vu-auth");
 	return _(), i("div", { class: m(["vu-admin-app", e.settings.container]) }, [
 		a("header", {
@@ -27696,7 +27801,7 @@ function bW(e, t, o, c, l, u) {
 				height: e.settings.brand.height || null,
 				width: e.settings.brand.width || null,
 				class: m(["d-inline-block", { "me-2": e.settings.title }])
-			}, null, 10, _W)) : r("", !0), e.settings.title ? (_(), i("span", vW, S(e.translate(e.settings.title)), 1)) : r("", !0)], 10, gW)) : r("", !0),
+			}, null, 10, jW)) : r("", !0), e.settings.title ? (_(), i("span", MW, S(e.translate(e.settings.title)), 1)) : r("", !0)], 10, AW)) : r("", !0),
 			s(d, {
 				modelValue: e.auth,
 				"onUpdate:modelValue": t[0] ||= (t) => e.auth = t,
@@ -27718,8 +27823,8 @@ function bW(e, t, o, c, l, u) {
 				"onUpdate:modelValue": t[2] ||= (t) => e.auth = t,
 				panel: "login"
 			}, null, 8, ["modelValue"])
-		], 10, hW),
-		a("main", { class: m(e.settings.main.class) }, [e.restoring ? (_(), i("div", yW, [t[4] ||= a("span", {
+		], 10, kW),
+		a("main", { class: m(e.settings.main.class) }, [e.restoring ? (_(), i("div", NW, [t[4] ||= a("span", {
 			class: "spinner-border spinner-border-sm me-2",
 			"aria-hidden": "true"
 		}, null, -1), a("span", null, S(e.translate("Loading...")), 1)])) : r("", !0), s(p, { auth: e.auth }, null, 8, ["auth"])], 2),
@@ -27731,5 +27836,5 @@ function bW(e, t, o, c, l, u) {
 		}, null, 8, ["modelValue"]))
 	], 2);
 }
-var xW = /*#__PURE__*/ EA(mW, [["render", bW]]);
-export { sH as VuAdmin, xW as VuAdminApp, BV as VuAdminCount, uW as VuAdminNav, MU as VuAuth, YU as VuUserButton, Rc as availableLanguages, WV as availableThemes, Gc as escapeHtml, Hc as getLanguage, KV as getTheme, Kc as safeUrl, Uc as setLanguage, QV as setTheme, _l as translate, Lc as translations };
+var FW = /*#__PURE__*/ EA(OW, [["render", PW]]);
+export { sH as VuAdmin, FW as VuAdminApp, BV as VuAdminCount, wW as VuAdminNav, KU as VuAuth, lW as VuUserButton, Rc as availableLanguages, WV as availableThemes, Gc as escapeHtml, Hc as getLanguage, KV as getTheme, Kc as safeUrl, Uc as setLanguage, QV as setTheme, _l as translate, Lc as translations };

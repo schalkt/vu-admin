@@ -204,6 +204,14 @@ window.VuSettings = {
             'Created': 'Létrehozva',
             'User': 'Felhasználó',
             'Age': 'Kor',
+
+            // profile (user menu → Profile)
+            'Change password': 'Jelszó módosítása',
+            'Current password': 'Jelenlegi jelszó',
+            'New password': 'Új jelszó',
+            'Password changed': 'A jelszó megváltozott',
+            'The current password is incorrect': 'A jelenlegi jelszó hibás',
+            'The new password must differ from the current one': 'Az új jelszó nem egyezhet a jelenlegivel',
             'Yes': 'Igen',
             'No': 'Nem',
         },
@@ -335,6 +343,7 @@ window.VuSettings = {
             register: '/api/auth/register',
             forgot: '/password/forgot',
             password: '/password/update',
+            changePassword: '/api/auth/password',  // profile → password change of the signed-in user
             activation: '/api/auth/activate',
             twofa: '/api/auth/twofa',
             twofaResend: '/api/auth/twofa-resend',

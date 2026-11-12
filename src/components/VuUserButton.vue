@@ -110,6 +110,13 @@ const VuUserButton = {
             this.$emit("update:modelValue", this.auth);
         },
 
+        // user menu "Profile": the profile panel of VuAuth (password change)
+        showProfilModal() {
+            this.auth.panel = 'profile';
+            this.auth.visible = true;
+            this.updateAuth();
+        },
+
         togglePanel() {
             this.auth.visible = !this.auth.visible;
             this.auth.panel = this.panel ? this.panel : 'login';

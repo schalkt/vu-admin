@@ -1027,6 +1027,25 @@ Entities (the admin data views) are only loaded when the logged-in user has a `r
 
 If `api.profile` is set, VuAuth calls it on every mount using the stored token header. On success the response is merged into `auth.user` and localStorage is refreshed. If the user now has a role but `auth.settings` was not previously set (e.g. role was assigned after first login), `onSuccess.profile` can populate `auth.settings` at this point. On failure (401, network error) the user is logged out automatically.
 
+### Profile — password change
+
+The *Profile* item of the user menu (`action: (params, self) => self.showProfilModal()`) opens the `profile` panel of
+VuAuth: the signed-in user (avatar, name, e-mail, role) and a password change form — current password, new password
+and its repeat, with the same `password` rules (pattern, minlength, help) as the registration.
+
+```js
+auth: {
+  api: { changePassword: '/api/auth/password' },          // default
+  onSuccess: { changePassword: (auth) => { /* … */ } },   // optional
+  onError:   { changePassword: (auth) => { /* … */ } },   // optional
+}
+```
+
+Request: `POST api.changePassword` with the login header, body `{ currentPassword, password }` — both hashed like at
+sign-in (`password.hash`). Answer: 2xx → success, 4xx → error; the `message` of the answer is shown (translated when
+it is a dictionary key). An error never signs the user out. The mock server checks the current password and stores
+the new one (`POST /api/auth/password`).
+
 ---
 
 ## Security

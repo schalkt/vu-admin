@@ -194,6 +194,43 @@ test.describe('user menu', () => {
     await expect(page.locator('.vua-table-container[data-bs-theme="dark"]')).toHaveCount(0);
   });
 
+  test('profile: password change', async ({ page }) => {
+    await openDashboard(page);
+    await page.locator('.vua-user-button .dropdown-toggle').click();
+    await page.locator('.vua-user-button .dropdown-menu li', { hasText: 'Profile' }).click();
+
+    const panel = page.locator('.vua-auth');
+    await expect(panel.locator('h1')).toHaveText('Profile');
+    await expect(panel.locator('.vua-auth-profile')).toContainText('Emily Johnson');
+    await expect(panel.locator('#email')).toHaveCount(0);
+
+    const submit = async (current, next) => {
+      await panel.locator('#password_current').fill(current);
+      await panel.locator('#password').fill(next);
+      await panel.locator('#password_again').fill(next);
+      await panel.locator('button[type="submit"]').click();
+    };
+
+    // wrong current password: error, the user stays signed in
+    await submit('wrong-password', 'newpass1');
+    await expect(panel).toContainText('The current password is incorrect');
+    await expect(panel.locator('#password_current')).toHaveValue('wrong-password');
+
+    await submit('emilyspass', 'emilyspass');
+    await expect(panel).toContainText('The new password must differ from the current one');
+
+    await submit('emilyspass', 'newpass1');
+    await expect(panel).toContainText('Password changed');
+    await expect(panel.locator('#password_current')).toHaveValue('');
+
+    // stored by the mock server; the page is still signed in
+    const users = await (await page.request.get('/api/users?limit=0')).json();
+    expect(users.users.find((user) => user.id === 1).password).toBe('newpass1');
+    await panel.locator('button', { hasText: 'Cancel' }).click();
+    await expect(panel).toHaveCount(0);
+    await expect(widget(page, 'table', 'user')).toBeVisible();
+  });
+
   test('language switch translates the page', async ({ page }) => {
     await openDashboard(page);
     await userMenuButton(page, 'HU');

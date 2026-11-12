@@ -61,6 +61,19 @@ function createAccessToken(user) {
   return `${header}.${payload}.${signature}`;
 }
 
+// user id (sub) of a valid, unexpired access token, or null
+function tokenUserId(token) {
+  try {
+    const [header, payload, signature] = String(token || '').split('.');
+    const expected = crypto.createHmac('sha256', JWT_SECRET).update(header + '.' + payload).digest('base64url');
+    if (!signature || signature !== expected) return null;
+    const data = JSON.parse(Buffer.from(payload, 'base64url').toString());
+    return data.exp > Math.floor(Date.now() / 1000) ? String(data.sub) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 // --- 2FA session store (in-memory, TTL 5 min) ---
 const twoFaStore = new Map();
 
@@ -378,6 +391,25 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       writeDb('users', users);
       const { password: _, ...safeUser } = newUser;
       return send(res, { ...safeUser, message: 'Registration successful! The activation e-mail has been sent.' }, 200, delay);
+    }
+
+    // password change of the signed-in user (profile): { currentPassword, password }
+    // the user comes from the token (sub), else the first user (like /me); passwords are compared as sent
+    if (action === 'password' && req.method === 'POST') {
+      const body = await readBody(req);
+      const users = readDb('users') || [];
+      const user = users.find(u => String(u.id) === tokenUserId(req.headers['x-auth-token'])) || users[0];
+      if (!user) return send(res, { message: 'User not found' }, 404, delay);
+      if (!body.currentPassword || !body.password) return send(res, { message: 'The current and the new password are required' }, 422, delay);
+      if (user.password !== undefined && body.currentPassword !== user.password) {
+        return send(res, { message: 'The current password is incorrect' }, 422, delay);
+      }
+      if (body.password === body.currentPassword) {
+        return send(res, { message: 'The new password must differ from the current one' }, 422, delay);
+      }
+      user.password = body.password;
+      writeDb('users', users);
+      return send(res, { message: 'Password changed' }, 200, delay);
     }
 
     if (action === 'me' && req.method === 'GET') {
