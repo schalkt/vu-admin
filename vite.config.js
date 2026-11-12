@@ -16,7 +16,8 @@ export default defineConfig({
       name: 'custom-api',
       configureServer(server) {
 
-        const delay = 500;
+        // MOCK_DELAY: simulated network delay in ms (the e2e tests run with 0)
+        const delay = process.env.MOCK_DELAY !== undefined ? Number(process.env.MOCK_DELAY) : 500;
 
         if (useMock) {
           createMockMiddleware(server, { delay });

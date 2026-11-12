@@ -4,7 +4,8 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbDir = path.join(__dirname, 'db');
+// MOCK_DB_DIR: another db folder (e.g. the e2e tests use a fresh copy, the dev data in mock/db stays untouched)
+const dbDir = process.env.MOCK_DB_DIR ? path.resolve(process.env.MOCK_DB_DIR) : path.join(__dirname, 'db');
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 

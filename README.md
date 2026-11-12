@@ -53,7 +53,23 @@ npm run dev         # starts Vite at http://localhost:5173
 npm run mock:reset  # clear all mock/db/ records (empty arrays)
 npm run build       # production build → dist/
 npm run serve       # preview production build
+npm run test:e2e    # end-to-end tests (Playwright)
 ```
+
+### End-to-end tests
+
+`npm run test:e2e` runs `tests/e2e/` with Playwright in the installed Google Chrome (no browser download). It starts
+its own Vite dev server on port 5174 (your `npm run dev` on 5173 can keep running) with a fresh copy of the seed data
+in `temp/e2e-db` and no simulated network delay, so the dev data in `mock/db` is never touched. The session is
+restored from localStorage (like after a sign-in), no captcha needed.
+
+Covered: session restore with the loading indicator, hash navigation and lazy loading, filtered view links
+(`#todos?userId=1`), dashboard counters (totals, links, refresh after an inline change) and table widgets (columns,
+rows, sort, filter row, pagination, title link), role-based widgets, stored table state vs. config changes, empty
+result, theme and language switch.
+
+Mock server environment variables (also usable with `npm run dev` / `npm run mock:seed`): `MOCK_DB_DIR` — another
+db folder, `MOCK_DELAY` — simulated delay in ms (default 500).
 
 ---
 

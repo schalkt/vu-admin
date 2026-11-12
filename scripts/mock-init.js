@@ -12,7 +12,8 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const seedDir = path.join(__dirname, '../mock/seed');
-const dbDir = path.join(__dirname, '../mock/db');
+// MOCK_DB_DIR: seed another db folder (e.g. the e2e tests' copy), default: mock/db
+const dbDir = process.env.MOCK_DB_DIR ? path.resolve(process.env.MOCK_DB_DIR) : path.join(__dirname, '../mock/db');
 
 const args = process.argv.slice(2);
 const withSeed = args.includes('--seed');

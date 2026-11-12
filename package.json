@@ -13,7 +13,8 @@
     "release": "npm --no-git-tag-version version patch && npm run prod",
     "init": "npm prune && npm install && npm update && npm audit fix",
     "mock:seed": "node scripts/mock-init.js --seed",
-    "mock:reset": "node scripts/mock-init.js --reset"
+    "mock:reset": "node scripts/mock-init.js --reset",
+    "test:e2e": "playwright test"
   },
   "keywords": [
     "vue",
@@ -24,6 +25,7 @@
   "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "@popperjs/core": "^2.11.8",
     "@tiptap/core": "3.33.1",
     "@tiptap/extension-image": "3.33.1",
