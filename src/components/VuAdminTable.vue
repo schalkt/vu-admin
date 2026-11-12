@@ -680,7 +680,6 @@ export default {
     this.modalId = "modal_" + this.settings.entity + "_" + uid;
     this.mobileFilterModalId = "modal_filters_" + this.settings.entity + "_" + uid;
     this.columnDefaults = null;
-    this.stateFingerprint = this.configFingerprint();
 
   },
   mounted() {
@@ -2300,13 +2299,21 @@ export default {
       return (hash >>> 0).toString(36);
     },
 
+    // computed once, on first use: the first table init runs in the immediate `auth` watcher, before created()
+    stateFingerprint() {
+      if (!this._stateFingerprint) {
+        this._stateFingerprint = this.configFingerprint();
+      }
+      return this._stateFingerprint;
+    },
+
     readStore(key) {
       try {
         const store = JSON.parse(localStorage.getItem(key)) || {};
         const entity = store[this.settings.entity] || {};
         const state = entity[this.settings.preset || 'default'] || {};
         // stored for another config version → ignored (and overwritten on the next save)
-        if (state._config !== this.stateFingerprint) {
+        if (state._config !== this.stateFingerprint()) {
           return {};
         }
         delete state._config;
@@ -2323,7 +2330,7 @@ export default {
         const preset = this.settings.preset || 'default';
         store[entity] = store[entity] || {};
         if (state) {
-          store[entity][preset] = Object.assign({}, state, { _config: this.stateFingerprint });
+          store[entity][preset] = Object.assign({}, state, { _config: this.stateFingerprint() });
         } else {
           delete store[entity][preset];
           if (!Object.keys(store[entity]).length) {

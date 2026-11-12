@@ -568,10 +568,5 @@ window.VuSettings = {
             },
         }
     },
-    translate: {
-        hu: {
-
-        }
-    }
 };
 

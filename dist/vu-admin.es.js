@@ -24088,7 +24088,7 @@ var gz = /*#__PURE__*/ EA(AR, [["render", hz]]), _z = Nc(), vz = {
 	},
 	created() {
 		let e = ll(1e5);
-		this.formId = "form_" + this.settings.entity + "_" + e, this.modalId = "modal_" + this.settings.entity + "_" + e, this.mobileFilterModalId = "modal_filters_" + this.settings.entity + "_" + e, this.columnDefaults = null, this.stateFingerprint = this.configFingerprint();
+		this.formId = "form_" + this.settings.entity + "_" + e, this.modalId = "modal_" + this.settings.entity + "_" + e, this.mobileFilterModalId = "modal_filters_" + this.settings.entity + "_" + e, this.columnDefaults = null;
 	},
 	mounted() {
 		this.modalElement = document.getElementById(this.modalId), this.modalWindow = new fo(this.modalElement), this.mobileFilterModalElement = document.getElementById(this.mobileFilterModalId), this.mobileFilterModalWindow = new fo(this.mobileFilterModalElement), this.modalElement.addEventListener("hidden.bs.modal", (e) => {
@@ -24640,10 +24640,13 @@ var gz = /*#__PURE__*/ EA(AR, [["render", hz]]), _z = Nc(), vz = {
 			for (let e = 0; e < t.length; e++) n = (n << 5) + n + t.charCodeAt(e) | 0;
 			return (n >>> 0).toString(36);
 		},
+		stateFingerprint() {
+			return this._stateFingerprint ||= this.configFingerprint(), this._stateFingerprint;
+		},
 		readStore(e) {
 			try {
 				let t = ((JSON.parse(localStorage.getItem(e)) || {})[this.settings.entity] || {})[this.settings.preset || "default"] || {};
-				return t._config === this.stateFingerprint ? (delete t._config, t) : {};
+				return t._config === this.stateFingerprint() ? (delete t._config, t) : {};
 			} catch {
 				return {};
 			}
@@ -24651,7 +24654,7 @@ var gz = /*#__PURE__*/ EA(AR, [["render", hz]]), _z = Nc(), vz = {
 		writeStore(e, t) {
 			try {
 				let n = JSON.parse(localStorage.getItem(e)) || {}, r = this.settings.entity, i = this.settings.preset || "default";
-				n[r] = n[r] || {}, t ? n[r][i] = Object.assign({}, t, { _config: this.stateFingerprint }) : (delete n[r][i], Object.keys(n[r]).length || delete n[r]), localStorage.setItem(e, JSON.stringify(n));
+				n[r] = n[r] || {}, t ? n[r][i] = Object.assign({}, t, { _config: this.stateFingerprint() }) : (delete n[r][i], Object.keys(n[r]).length || delete n[r]), localStorage.setItem(e, JSON.stringify(n));
 			} catch {}
 		},
 		readColumnState() {
