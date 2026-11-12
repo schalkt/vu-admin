@@ -11,6 +11,7 @@
 - **Data table** — sortable columns (multi-column), server-side pagination, per-column filters, column visibility toggle, expandable row details, inline editing, bulk actions, CSV export
 - **Form** — modal-based editor with field types: `text`, `number`, `email`, `textarea`, `date`, `datetime-local`, `checkbox`, `select`, `dropdown` (multi-select), `list` (dynamic arrays), `html` (TipTap editor), `image`/`upload` (drag-and-drop with presets, inline JSON or separate upload URL per field), `template` (custom HTML)
 - **Authentication** — login, registration, forgot password, activation flow, `/me` session restore, localStorage persistence, **two-factor authentication (email OTP)**, role-based entity access
+- **Single-page navigation** — `<vu-admin-app>` renders the whole admin page (brand, nav, user menu, every entity); nav items with `#entity` hrefs switch views via the URL hash without a page reload, tables load their data only when first shown and keep their state afterwards
 - **Relations** — automatic join of related entities, displayed inline in table and form
 - **Events** — lifecycle hooks: `beforeItemSave`, `afterItemSave`, `beforeItemDelete`, `afterItemDelete`, `afterItemsLoad`, `beforeItemsLoad`, etc.
 - **i18n** — built-in Hungarian translations, browser language detection, language switch in the user menu (stored in localStorage), overridable per entity
@@ -62,7 +63,9 @@ npm run serve       # preview production build
 vu-admin/
 ├── src/
 │   ├── components/
-│   │   ├── VuAdmin.vue             # entity host (loads config, mounts table)
+│   │   ├── VuAdminApp.vue          # whole page: header (brand, nav, user menu) + entity views + auth
+│   │   ├── VuAdmin.vue             # entity host (loads config, mounts table); without entity: hash-routed views
+│   │   ├── VuAdminNav.vue          # navbar menu from /api/navs (hash links, API actions)
 │   │   ├── VuAdminTable.vue        # table + pagination + filters + actions
 │   │   ├── VuAdminForm.vue         # modal form
 │   │   ├── VuAdminFormGroup.vue    # field renderer
@@ -200,6 +203,17 @@ or the capitalized entity name.
 <script type="module" src="./vu-admin-settings.js"></script>
 <script type="module" src="./index.js"></script>
 ```
+
+`App.vue` only needs the page component — header, navigation, entity views and the auth modal are all inside it:
+
+```html
+<template>
+  <vu-admin-app></vu-admin-app>
+</template>
+```
+
+The individual components (`<vu-admin-nav>`, `<vu-user-button>`, `<vu-admin>`, `<vu-auth>`) can still be used on
+their own for a custom layout.
 
 ### 3. Entity config — e.g. `vu-entity-product.js`
 
@@ -933,6 +947,17 @@ leading/trailing whitespace are quoted (`"` doubled). Objects are exported as JS
 Nav items come from the API (`/api/navs`). `icon` is a **CSS class string** (`'bi bi-people me-1'`), not HTML —
 the legacy `'<i class="…">'` form still works (the class is extracted), any other HTML is dropped. `href` goes
 through `safeUrl()`, `target: '_blank'` links get `rel="noopener noreferrer"`.
+
+**In-page navigation:** an item whose `href` is `#<entity>` (a key of `auth.settings.entities`, e.g. `#user`) switches
+the view of `<vu-admin :auth>` / `<vu-admin-app>` without a page reload — only that entity's table is shown, the
+browser back / forward buttons work and the URL can be shared. `href: '#'` (or any unknown hash) shows every entity.
+The item matching the current hash gets the `active` class and `aria-current="page"`; a dropdown with an active
+child is highlighted too.
+
+```json
+{ "name": "Dashboard", "href": "#", "icon": "bi bi-speedometer2 me-1" },
+{ "name": "Users", "href": "#user", "icon": "bi bi-people me-1" }
+```
 
 Dropdown items can be grouped: `{ "header": "Migrations" }` renders a group heading (`dropdown-header`, translated,
 optional `icon` / `class`), `{ "divider": true }` a separator. A dropdown that contains a header or divider keeps the
