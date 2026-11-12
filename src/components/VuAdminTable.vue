@@ -574,6 +574,11 @@ export default {
   props: {
     settings: Object,
     auth: Object,
+    // filters from the URL hash ("#todos?userId=1" → { userId: '1' }); null = not the active view, nothing changes
+    routeFilter: {
+      type: Object,
+      default: null,
+    },
   },
   components: {
     VuAdminForm,
@@ -657,7 +662,15 @@ export default {
         }
 
       }
-    }
+    },
+    routeFilter: {
+      deep: true,
+      handler(value) {
+        if (this.settings.initialized) {
+          this.applyRouteFilter(value, true);
+        }
+      },
+    },
   },
   created() {
 
@@ -667,6 +680,7 @@ export default {
     this.modalId = "modal_" + this.settings.entity + "_" + uid;
     this.mobileFilterModalId = "modal_filters_" + this.settings.entity + "_" + uid;
     this.columnDefaults = null;
+    this.stateFingerprint = this.configFingerprint();
 
   },
   mounted() {
@@ -710,6 +724,16 @@ export default {
 
   methods: {
     safeUrl,
+
+    // window event after a successful save / delete, e.g. dashboard counters refresh on it:
+    // window.addEventListener('vu-admin:change', (e) => e.detail.entity, e.detail.action)
+    notifyChange(action) {
+      try {
+        window.dispatchEvent(new CustomEvent('vu-admin:change', { detail: { entity: this.settings.entity, action } }));
+      } catch (e) {
+        // CustomEvent unavailable - ignore
+      }
+    },
 
     init() {
 
@@ -886,9 +910,64 @@ export default {
       this.resetFilter();
       this.resetOrder();
       this.restoreTableState();
+      this.applyRouteFilter(this.routeFilter, false);
 
       this.reloadTable();
       this.calcPage();
+    },
+
+    // URL hash filters: { column name: value }; the columns set by the previous route but missing now are cleared
+    // (so "#todos" after "#todos?userId=1" shows every todo again). Values are matched to the filter options
+    // ('1' → 1, 'true' → true), unknown columns and fixed filters are ignored.
+    applyRouteFilter(filter, reload) {
+      if (!filter || !this.settings.table || !this.settings.table.columns) {
+        return;
+      }
+
+      const previous = this._routeFilterColumns || [];
+      const applied = [];
+      let changed = false;
+
+      for (let column of this.settings.table.columns) {
+        if (!column.name || !column.filter || column.filter.fixed) {
+          continue;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(filter, column.name)) {
+          const value = this.routeFilterValue(column, filter[column.name]);
+          column.filter.value = value;
+          column.filter.operator = column.filter.default_operator || '=';
+          applied.push(column.name);
+          changed = true;
+        } else if (previous.indexOf(column.name) >= 0) {
+          column.filter.value = column.filter.multiple ? [] : undefined;
+          column.filter.operator = column.filter.default_operator;
+          changed = true;
+        }
+      }
+
+      this._routeFilterColumns = applied;
+
+      if (changed && reload) {
+        this.setPage(1, false);
+        this.reloadTable();
+      }
+    },
+
+    routeFilterValue(column, raw) {
+      const value = String(raw);
+      const options = Array.isArray(column.filter.options) ? column.filter.options : [];
+      const option = options.find((item) => String(item.value) === value);
+      if (option) {
+        return option.value;
+      }
+      if (value === 'true' || value === 'false') {
+        return value === 'true';
+      }
+      if (column.filter.type === 'number' && value !== '' && !isNaN(Number(value))) {
+        return Number(value);
+      }
+      return value;
     },
 
     resetFilter(reload) {
@@ -1632,6 +1711,8 @@ export default {
           this.settings.events.afterItemDelete(data, response);
         }
 
+        this.notifyChange('delete');
+
         this.reloadTable();
 
       } catch (error) {
@@ -1680,6 +1761,7 @@ export default {
           callback(response);
         }
 
+        this.notifyChange('delete');
         this.reloadTable();
         this.tableNoWait();
       } catch (error) {
@@ -2046,6 +2128,8 @@ export default {
           this.settings.events.afterItemSave(responseData, urlParams, this.auth);
         }
 
+        this.notifyChange('save');
+
         this.endSaveProgress();
 
         if (onSuccess) {
@@ -2127,6 +2211,8 @@ export default {
           callback(json.data);
         }
 
+        this.notifyChange('save');
+
         // this.selected = [];
         this.reloadTable();
       } catch (error) {
@@ -2186,11 +2272,38 @@ export default {
     // already set once overrides it from localStorage
     // per-table localStorage state under one shared key: { [entity]: { [preset]: state } }
     // 'vu-columns' — columns (hidden, collapsed), 'vu-tables' — sort, filters, rows per page
+    // fingerprint of the config defaults the stored state is based on (sort, rows per page, columns, default
+    // filters): when the config changes, the old stored state is dropped instead of overriding the new defaults
+    configFingerprint() {
+      const table = this.settings.table || {};
+      const source = JSON.stringify({
+        order: table.order || null,
+        limit: table.pagination ? table.pagination.limit : null,
+        columns: (table.columns || []).map((column) => [
+          column.name,
+          !!column.hidden,
+          !!column.collapsed,
+          column.filter ? [column.filter.default_value, column.filter.default_operator, !!column.filter.fixed] : null,
+        ]),
+      });
+      let hash = 5381;
+      for (let i = 0; i < source.length; i++) {
+        hash = ((hash << 5) + hash + source.charCodeAt(i)) | 0;
+      }
+      return (hash >>> 0).toString(36);
+    },
+
     readStore(key) {
       try {
         const store = JSON.parse(localStorage.getItem(key)) || {};
         const entity = store[this.settings.entity] || {};
-        return entity[this.settings.preset || 'default'] || {};
+        const state = entity[this.settings.preset || 'default'] || {};
+        // stored for another config version → ignored (and overwritten on the next save)
+        if (state._config !== this.stateFingerprint) {
+          return {};
+        }
+        delete state._config;
+        return state;
       } catch (e) {
         return {};
       }
@@ -2203,7 +2316,7 @@ export default {
         const preset = this.settings.preset || 'default';
         store[entity] = store[entity] || {};
         if (state) {
-          store[entity][preset] = state;
+          store[entity][preset] = Object.assign({}, state, { _config: this.stateFingerprint });
         } else {
           delete store[entity][preset];
           if (!Object.keys(store[entity]).length) {

@@ -647,3 +647,42 @@ export function roundFileSize(fileSize, suffix) {
 export function extensionByFilename(filename) {
     return filename.split(".").reverse()[0];
 }
+// entity config of auth.settings.entities[entity] (script URL or { url, preset }): loads the script once and
+// returns window[entitiesVariable][entity](preset), or null when it is not available
+const entityScripts = {};
+
+export function loadEntityConfig(auth, entity, preset) {
+    const settings = auth && auth.settings ? auth.settings : null;
+    const config = settings && settings.entities ? settings.entities[entity] : null;
+    if (!config) {
+        return Promise.resolve(null);
+    }
+
+    const url = typeof config === 'object' ? config.url : config;
+    const variable = settings.entitiesVariable || 'VuEntities';
+    const factory = () => (window[variable] && window[variable][entity] ? window[variable][entity](preset) : null);
+
+    if (window[variable] && window[variable][entity]) {
+        return Promise.resolve(factory());
+    }
+    if (!url) {
+        return Promise.resolve(null);
+    }
+
+    if (!entityScripts[url]) {
+        entityScripts[url] = new Promise((resolve) => {
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = url;
+            script.onload = () => resolve(true);
+            script.onerror = () => {
+                console.error(`[vu-admin] failed to load entity script: ${url}`);
+                delete entityScripts[url];
+                resolve(false);
+            };
+            document.head.appendChild(script);
+        });
+    }
+
+    return entityScripts[url].then(() => factory());
+}

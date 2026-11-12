@@ -66,6 +66,7 @@ vu-admin/
 │   │   ├── VuAdminApp.vue          # whole page: header (brand, nav, user menu) + entity views + auth
 │   │   ├── VuAdmin.vue             # entity host (loads config, mounts table); without entity: hash-routed views
 │   │   ├── VuAdminNav.vue          # navbar menu from /api/navs (hash links, API actions)
+│   │   ├── VuAdminCount.vue        # dashboard counter card (record count, links to the filtered view)
 │   │   ├── VuAdminTable.vue        # table + pagination + filters + actions
 │   │   ├── VuAdminForm.vue         # modal form
 │   │   ├── VuAdminFormGroup.vue    # field renderer
@@ -89,8 +90,10 @@ vu-admin/
 ├── vu-entity-post.js
 ├── vu-entity-todos.js
 ├── index.html
+├── TODO.md                         # planned features
 └── demo/                           # UMD build demo on dummyjson.com (see below)
-    ├── index.html
+    ├── index.html                  # separate components (nav, user button, auth, tables) in own layout
+    ├── app.html                    # the same demo as one <vu-admin-app> (dashboard, hash navigation)
     ├── vu-settings.js
     ├── vu-entity-products.js       # feature showcase entity
     ├── vu-entity-demo.js           # carts entity (dark theme, relation)
@@ -109,6 +112,17 @@ A static page that loads the built `dist/vu-admin.umd.js` (run `npm run build` f
   list, template, HTML editor and inline (JSON) image upload, plus save / copy / new / delete / reload buttons.
 - **Carts** (`vu-entity-demo.js`): dark theme, relation (user name + avatar from `/users`), sorting, collapsed column, CSV export.
 - **VuAdminNav** reads `demo/navs.json`.
+
+Two pages, the same entities:
+
+- **`demo/index.html`** — the separate components (`<vu-admin-nav>`, `<vu-user-button>`, `<vu-auth>`,
+  `<vu-admin :entity>`) in the page's own layout, with a "What can you try?" box.
+- **`demo/app.html`** — the whole page as one `<vu-admin-app>`: dashboard (counters + two tables), the entity views
+  switched by the URL hash (`#products`, `#carts`), brand / title from `window.VuSettings.app`; signed in with the
+  `session` prop.
+
+> The Vite dev server caches its transformed copy of `dist/` and does not watch it: after `npm run build` restart
+> `npm run dev` (or open the demo through a static server) to see the new build.
 
 dummyjson limitations: `events.beforeItemsLoad` maps the sort to `?sortBy=&order=` (first sort key only), the *Product*
 filter to `/products/search?q=` and the *Category* filter to `/products/category/{slug}`; other filters are visible but
@@ -167,6 +181,10 @@ factory function, `title` is used in the browser tab title), e.g. `product: { ur
 
 - **hash navigation** – `#user` shows only the `user` table, an empty / unknown hash (e.g. `#`) shows all of them;
   nav items with `href: '#user'` (VuAdminNav) switch views without a page reload and get the `active` class;
+- **filtered views** – `#todos?userId=1&completed=false` opens the todos view with these column filters set (a
+  shareable link); the query value is matched to the filter options (`'1'` → `1`, `'false'` → `false`). Going to
+  `#todos` afterwards clears the filters the link had set. In an entity config:
+  `action: (item) => { window.location.hash = '#todos?userId=' + item.id; }`;
 - **lazy loading** – a table is created (and calls its API) only when it first becomes visible; afterwards it is
   just hidden (`v-show`), so filters / paging are kept and switching back does not reload.
 
@@ -174,8 +192,9 @@ factory function, `title` is used in the browser tab title), e.g. `product: { ur
 
 #### Dashboard (start page)
 
-`auth.settings.dashboard` configures what the empty hash (`#`, the start page) shows: entity tables in a Bootstrap
-grid, each with its own column class, row count and sort. Without it the start page shows every entity.
+`auth.settings.dashboard` configures what the empty hash (`#`, the start page) shows: counters and entity tables in
+a Bootstrap grid, each with its own column class (and the tables with their own row count, columns and sort).
+Without it the start page shows every entity.
 
 ```js
 auth.settings = {
@@ -183,7 +202,9 @@ auth.settings = {
   dashboard: {
     class: 'row g-3',                        // container class (default: 'row')
     items: [
-      { entity: 'user',  class: 'col-md-6', title: 'Latest users', limit: 10, order: { createdAt: 'DESC' },
+      { type: 'count', entity: 'user',  title: 'Users',      icon: 'bi bi-people', roles: ['admin'] },
+      { type: 'count', entity: 'todos', title: 'Open todos', icon: 'bi bi-list-check', filter: { completed: false } },
+      { entity: 'user',  class: 'col-md-6', title: 'Latest users', limit: 10, order: { createdAt: 'DESC' }, roles: ['admin'],
         columns: ['image', 'firstName', 'createdAt', '#buttons'] },
       { entity: 'todos', class: 'col-md-6', title: 'Open todos',   limit: 10, order: { completed: 'ASC', id: 'DESC' },
         columns: ['todo', 'userId', 'completed', '#buttons'] },
@@ -191,6 +212,8 @@ auth.settings = {
   },
 };
 ```
+
+Table items (default `type`):
 
 | Item key | Description |
 |---|---|
@@ -206,10 +229,27 @@ auth.settings = {
 | `order` | default sort, replaces the entity's own: `{ field: 'ASC' \| 'DESC' }` in priority order, or the full `{ field: { dir, idx, fixed } }` form |
 | `settings` | any further entity config override, deep-merged (e.g. `{ table: { control: { buttons: [] } } }`) |
 | `preset` | passed to the entity function (default: `'dashboard'`); also the localStorage table state key, so the widget's paging / sort does not mix with the full entity view — give two widgets of the same entity different presets |
+| `roles` | only for these roles, e.g. `['admin', 'editor']` — the user's active role (`auth.user.role`, switchable in the user menu) |
 | `disabled` | `true` hides the widget |
 
-The dashboard tables are created only when the start page is first shown, like the entity views. A table wider than
-its column scrolls horizontally.
+Counter items (`type: 'count'`, `VuAdminCount`): the number of records of an entity, from the API's total
+(`api.input.total`, requested with `limit=1`). The card links to the filtered entity view.
+
+| Item key | Description |
+|---|---|
+| `entity` | key of `entities` (required) |
+| `title`, `icon` | card text (translation key) and icon class, e.g. `'bi bi-people'` |
+| `filter` | `{ completed: false }` (`=`) or `{ price: { value: 100, operator: '>' } }` |
+| `link` | default: the filtered view (`#todos?completed=false`, only `=` filters); `false` = no link, a string = another URL |
+| `class` | column class (default: `col-6 col-md-3`) |
+| `cardClass` | card class (default: `border-0 shadow-sm`) |
+| `roles`, `disabled`, `preset` | as for the tables |
+
+The counters refresh when the start page is shown again and after a save / delete of their entity in any table
+(the tables fire a `vu-admin:change` window event: `event.detail = { entity, action: 'save' | 'delete' }`).
+
+The dashboard is created only when the start page is first shown, like the entity views. A table wider than its
+column scrolls horizontally.
 
 #### Whole admin page — `<vu-admin-app>`
 
@@ -234,6 +274,17 @@ window.VuSettings = {
 
 The `{view}` of the tab title is the entity's `title` (`entities: { user: { url: '/vu-entity-user.js', title: 'Users' } }`),
 or the capitalized entity name.
+
+While a stored session is being restored (the profile request), the page shows a loading indicator instead of an
+empty, signed-out looking page.
+
+`session` prop — a ready auth object instead of the built-in sign-in (a demo, or an app that signs in elsewhere).
+The auth modal and the register button are not rendered and nothing is read from / written to localStorage
+(see `demo/app.html`):
+
+```html
+<vu-admin-app :session="{ success: true, user: { firstName: 'Demo' }, header: {}, settings: { entities: { … }, dashboard: { … } } }"></vu-admin-app>
+```
 
 ### 2. Mount components — `index.html`
 
@@ -425,6 +476,10 @@ The *Reset* item of the Columns dropdown clears the stored state.
 The current sort order, filter values / operators and rows per page are stored the same way under
 `vu-tables` on every table load, and restored when the table is opened again. Fixed sort orders and
 fixed filters (`fixed: true`) always come from the config. The filter *Reset* button restores the config defaults.
+
+Both stored states remember a fingerprint of the config defaults they were made with (sort, rows per page,
+columns, default filters). When the config changes, the old stored state is dropped and the new defaults apply —
+no need to clear localStorage after editing an entity config or a dashboard widget.
 
 ```js
 {
@@ -1121,6 +1176,9 @@ Empty `IN` list is treated as no filter (returns all).
 | `beforeBulkSave` | `(bulkItem)` | Hook before bulk PUT |
 | `afterBulkSave` | `(data, response)` | Hook after bulk PUT |
 | `beforeItemsExport` | `(items)` | Modify items before CSV generation |
+
+After a successful save / delete (single or bulk) every table also fires a window event, independent of the entity
+config: `window.addEventListener('vu-admin:change', (e) => e.detail /* { entity, action: 'save' | 'delete' } */)`.
 
 ---
 

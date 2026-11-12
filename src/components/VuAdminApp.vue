@@ -8,15 +8,20 @@
                 <span v-if="settings.title">{{ translate(settings.title) }}</span>
             </a>
             <vu-admin-nav v-model="auth" :url="settings.nav.url || undefined" :menu="settings.nav.menu || undefined"></vu-admin-nav>
-            <vu-user-button v-model="auth" :panel="'registration'"></vu-user-button>
+            <vu-user-button v-if="!session" v-model="auth" :panel="'registration'"></vu-user-button>
             <vu-user-button v-model="auth" :panel="'login'"></vu-user-button>
         </header>
 
         <main :class="settings.main.class">
+            <!-- stored session is being restored (profile request): instead of an empty, signed-out looking page -->
+            <div v-if="restoring" class="vu-admin-app-loading d-flex justify-content-center align-items-center py-5 text-secondary">
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                <span>{{ translate('Loading...') }}</span>
+            </div>
             <vu-admin :auth="auth"></vu-admin>
         </main>
 
-        <vu-auth v-model="auth" :settings="'auth'"></vu-auth>
+        <vu-auth v-if="!session" v-model="auth" :settings="'auth'"></vu-auth>
 
     </div>
 </template>
@@ -76,15 +81,34 @@ function mergeSettings(defaults, custom) {
     return result;
 }
 
+function hasStoredSession() {
+    try {
+        return !!(localStorage.getItem("vu-user") && localStorage.getItem("vu-header"));
+    } catch (e) {
+        return false;
+    }
+}
+
 const VuAdminApp = {
     name: "VuAdminApp",
+    props: {
+        // a ready session instead of the built-in sign-in (e.g. a demo, or an app that signs in elsewhere):
+        // { success: true, user: {...}, header: {...}, settings: { entities, dashboard } }
+        // the auth modal and the register button are not rendered, nothing is read from / written to localStorage
+        session: {
+            type: Object,
+            default: null,
+        },
+    },
     data() {
         const custom = typeof window !== "undefined" && window.VuSettings && window.VuSettings.app ? window.VuSettings.app : {};
         return {
-            auth: { inputs: {} },
+            auth: this.session || { inputs: {} },
             settings: mergeSettings(DEFAULTS, custom),
             language: getLanguage(),
             hash: typeof window !== "undefined" ? window.location.hash : "",
+            // a stored session exists: VuAuth restores it (profile request) and then sends the auth object
+            restoring: !this.session && hasStoredSession(),
         };
     },
     computed: {
@@ -92,7 +116,7 @@ const VuAdminApp = {
             return safeUrl(this.settings.logo);
         },
         view() {
-            const route = decodeURIComponent(this.hash.replace(/^#\/?/, ""));
+            const route = decodeURIComponent(this.hash.replace(/^#\/?/, "").split("?")[0]);
             const entities = this.auth && this.auth.settings && this.auth.settings.entities ? this.auth.settings.entities : {};
             if (!route || !entities[route]) {
                 return "";
@@ -115,6 +139,15 @@ const VuAdminApp = {
         },
     },
     watch: {
+        // VuAuth sends the auth object after the restore (success or sign out)
+        auth() {
+            this.restoring = false;
+        },
+        session(value) {
+            if (value) {
+                this.auth = value;
+            }
+        },
         documentTitle: {
             immediate: true,
             handler(value) {
@@ -126,6 +159,12 @@ const VuAdminApp = {
     },
     created() {
         this.setFavicon(this.settings.favicon);
+        if (this.restoring) {
+            // never spin forever (e.g. VuAuth missing / misconfigured)
+            this._restoreTimeout = setTimeout(() => {
+                this.restoring = false;
+            }, 15000);
+        }
     },
     mounted() {
         this._onLanguageChange = (event) => {
@@ -140,6 +179,7 @@ const VuAdminApp = {
     beforeUnmount() {
         window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
         window.removeEventListener("hashchange", this._onHashChange);
+        clearTimeout(this._restoreTimeout);
     },
     methods: {
         safeUrl,

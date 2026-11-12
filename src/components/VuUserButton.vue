@@ -67,13 +67,19 @@ const VuUserButton = {
         }
     },
     watch: {
-        modelValue(newValue, oldValue) {
+        // immediate: an auth object that is ready at mount (e.g. VuAdminApp `session`) shows the user menu at once
+        modelValue: {
+            immediate: true,
+            handler(newValue, oldValue) {
 
-            if (newValue != oldValue) {
-                this.auth = newValue;
-                this.$forceUpdate();
-            }
+                if (newValue && newValue != oldValue) {
+                    this.auth = newValue;
+                    if (oldValue !== undefined) {
+                        this.$forceUpdate();
+                    }
+                }
 
+            },
         },
     },
     computed: {

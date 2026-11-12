@@ -200,8 +200,9 @@ const VuAdminNav = {
             if (href.charAt(0) !== "#") {
                 return false;
             }
-            const current = this.hash || "#";
-            return href === current;
+            // "#todos?userId=1" is still the "#todos" view
+            const current = (this.hash || "#").split("?")[0] || "#";
+            return href.split("?")[0] === current;
         },
         hasActiveChild(item) {
             return Array.isArray(item.items) && item.items.some((child) => !child.disabled && this.isActive(child));

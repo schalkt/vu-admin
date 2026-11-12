@@ -36,8 +36,39 @@ const ADMIN_SETTINGS = () => ({
     dashboard: {
         class: 'row g-3',                      // container class
         items: [
+            // counters: number of records (optionally filtered), the card links to the filtered entity view
+            {
+                type: 'count',
+                entity: 'user',
+                title: 'Users',
+                icon: 'bi bi-people',
+                roles: ['admin'],              // only for these roles (the active role of the role switch)
+            },
+            {
+                type: 'count',
+                entity: 'todos',
+                title: 'Open todos',
+                icon: 'bi bi-list-check',
+                filter: { completed: false },  // → link "#todos?completed=false"
+            },
+            {
+                type: 'count',
+                entity: 'todos',
+                title: 'Completed todos',
+                icon: 'bi bi-check2-circle',
+                filter: { completed: true },
+            },
+            {
+                type: 'count',
+                entity: 'product',
+                title: 'Products',
+                icon: 'bi bi-box-seam',
+                // class: 'col-6 col-md-3',    // default
+            },
+            // tables
             {
                 entity: 'user',                // key of `entities`
+                roles: ['admin'],
                 class: 'col-md-6',             // column class
                 title: 'Latest users',         // table title (translation key), default: the entity's own
                 columns: ['image', 'firstName', 'createdAt', '#buttons'],  // visible columns in this order (by `name`, unnamed ones by `title`)
@@ -169,8 +200,10 @@ window.VuSettings = {
             // dashboard
             'Latest users': 'Legújabb felhasználók',
             'Open todos': 'Nyitott teendők',
+            'Completed todos': 'Elvégzett teendők',
             'Created': 'Létrehozva',
             'User': 'Felhasználó',
+            'Age': 'Kor',
             'Yes': 'Igen',
             'No': 'Nem',
         },

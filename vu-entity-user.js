@@ -155,7 +155,7 @@ window.VuEntities.user = (preset) => {
 				},
 				{
 					name: 'age',
-					title: 'Kor',
+					title: 'Age',
 					width: '10%',
 					progressbar: {
 						class: 'bg-info text-dark fw-bold',
@@ -261,7 +261,7 @@ window.VuEntities.user = (preset) => {
 					filter: {
 						type: 'select',
 						options: [
-							{ value: '', label: 'Mind' },
+							{ value: '', label: 'All' },
 							{ value: 'email', label: 'E-mail' },
 							{ value: 'totp', label: 'TOTP' },
 						]
@@ -407,14 +407,12 @@ window.VuEntities.user = (preset) => {
 						// 	action: 'TABLE_ROW_DETAIL',
 						// },
 						{
-							action: (item, params, self) => {
-								// Send a FILTER event to the todos entity, the same as filterLink does
-								const filterValue = item[self.settings.pkey];
-								if (filterValue !== undefined && filterValue !== null) {
-									self.sendEvent('FILTER', 'todos', {
-										field: 'userId',
-										value: filterValue
-									});
+							// opens the todos view filtered to this user ("#todos?userId=1", the link can be shared);
+							// clicking the name instead filters the todos tables on the current page (filterLink)
+							action: (item) => {
+								const userId = item.id;
+								if (userId !== undefined && userId !== null) {
+									window.location.hash = '#todos?userId=' + encodeURIComponent(userId);
 								}
 							},
 							title: 'Todos',

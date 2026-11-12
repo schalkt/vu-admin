@@ -5,21 +5,26 @@
        Empty / unknown hash: auth.settings.dashboard when configured, otherwise every entity -->
   <div v-if="!entity" v-cloak class="vu-admin-views">
     <template v-if="auth && auth.success && auth.user">
-      <div v-if="dashboard" v-show="!activeEntity" class="vu-admin-dashboard" :class="dashboard.class">
-        <template v-if="loaded[DASHBOARD]">
-          <div v-for="(widget, index) in dashboard.items" :key="'dashboard-' + index" class="vu-admin-dashboard-item" :class="widget.class" :data-entity="widget.entity">
-            <vu-admin :entity="widget.entity" :preset="widget.preset" :override="widget.override" :auth="auth"></vu-admin>
+      <!-- outer padding: a gutter row (e.g. 'row g-3') has a negative top margin that would slide under the header -->
+      <div v-if="dashboard" v-show="!activeEntity" class="vu-admin-dashboard py-3">
+        <div v-if="loaded[DASHBOARD]" class="vu-admin-dashboard-grid" :class="dashboard.class">
+          <div v-for="(widget, index) in dashboard.items" :key="'dashboard-' + index" class="vu-admin-dashboard-item" :class="[widget.class, 'vu-admin-dashboard-' + widget.type]"
+            :data-entity="widget.entity">
+            <vu-admin-count v-if="widget.type === 'count'" :entity="widget.entity" :preset="widget.preset" :auth="auth" :filter="widget.filter"
+              :title="widget.title" :icon="widget.icon" :href="widget.link" :card-class="widget.cardClass" :visible="!activeEntity"></vu-admin-count>
+            <vu-admin v-else :entity="widget.entity" :preset="widget.preset" :override="widget.override" :auth="auth"></vu-admin>
           </div>
-        </template>
+        </div>
       </div>
       <div v-for="view in views" :key="view.entity" v-show="isVisible(view.entity)" class="vu-admin-view" :data-entity="view.entity">
-        <vu-admin v-if="loaded[view.entity]" :entity="view.entity" :preset="view.preset" :auth="auth"></vu-admin>
+        <vu-admin v-if="loaded[view.entity]" :entity="view.entity" :preset="view.preset" :auth="auth"
+          :route-filter="activeEntity === view.entity ? routeQuery : null"></vu-admin>
       </div>
     </template>
   </div>
   <div v-cloak v-else-if="settings">
     <div v-if="auth" class="vu-admin" :data-bs-theme="[settings.theme]">
-      <vu-admin-table :settings="settings" :auth="auth"></vu-admin-table>
+      <vu-admin-table :settings="settings" :auth="auth" :route-filter="routeFilter"></vu-admin-table>
     </div>
   </div>
 </template>
@@ -27,6 +32,7 @@
 <script>
 
 import VuAdminTable from "./VuAdminTable.vue";
+import VuAdminCount from "./VuAdminCount.vue";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
 import {
@@ -36,7 +42,8 @@ import {
   getResponseJson,
   getResponseErrors,
   prepareFetchUrl,
-  prepareFetchOptions
+  prepareFetchOptions,
+  loadEntityConfig
 } from "./helpers";
 
 const VuAdmin = {
@@ -53,6 +60,11 @@ const VuAdmin = {
     },
     auth: {
       type: Object,
+    },
+    // URL hash filters of the active view ("#todos?userId=1" → { userId: '1' }), passed to the table
+    routeFilter: {
+      type: Object,
+      default: null,
     },
     // deep-merged over the entity config (e.g. dashboard widget: { table: { pagination: { limit: 5 } } });
     // `table.order` replaces the entity's default sort instead of being merged into it
@@ -109,15 +121,19 @@ const VuAdmin = {
         return null;
       }
       const entities = this.auth.settings.entities || {};
+      const role = this.auth.user ? this.auth.user.role : null;
       const items = config.items
         .filter((item) => item && item.entity && entities[item.entity] && !item.disabled)
-        .map((item) => ({
+        // roles: ['admin', 'editor'] → only for these roles (the active role of the user menu role switch)
+        .filter((item) => !Array.isArray(item.roles) || item.roles.indexOf(role) >= 0)
+        .map((item) => item.type === "count" ? this.countWidget(item) : {
+          type: "table",
           entity: item.entity,
           class: item.class !== undefined ? item.class : "col-12",
           // own preset → own localStorage table state (does not mix with the full entity view)
           preset: item.preset || "dashboard",
           override: this.widgetOverride(item),
-        }));
+        });
       return items.length ? { class: config.class !== undefined ? config.class : "row", items } : null;
     },
     // unknown / empty hash (e.g. "#" = Dashboard) → dashboard, or every entity when there is no dashboard
@@ -130,6 +146,7 @@ const VuAdmin = {
     return {
       settings: undefined,
       route: this.currentRoute(),
+      routeQuery: this.currentQuery(),
       loaded: {},
       // loaded[] key of the dashboard (cannot clash with an entity name)
       DASHBOARD: "#dashboard",
@@ -240,6 +257,7 @@ const VuAdmin = {
     if (!this.entity) {
       this._onHashChange = () => {
         this.route = this.currentRoute();
+        this.routeQuery = this.currentQuery();
         window.scrollTo({ top: 0 });
       };
       window.addEventListener("hashchange", this._onHashChange);
@@ -254,8 +272,29 @@ const VuAdmin = {
   mounted() { },
   methods: {
 
+    // "#todos?userId=1" → "todos" (the query part is routeQuery)
     currentRoute() {
-      return typeof window !== "undefined" ? decodeURIComponent(window.location.hash.replace(/^#\/?/, "")) : "";
+      if (typeof window === "undefined") {
+        return "";
+      }
+      const hash = window.location.hash.replace(/^#\/?/, "");
+      return decodeURIComponent(hash.split("?")[0]);
+    },
+
+    // "#todos?userId=1&completed=false" → { userId: '1', completed: 'false' }
+    currentQuery() {
+      if (typeof window === "undefined") {
+        return {};
+      }
+      const hash = window.location.hash;
+      const index = hash.indexOf("?");
+      const query = {};
+      if (index >= 0) {
+        new URLSearchParams(hash.slice(index + 1)).forEach((value, key) => {
+          query[key] = value;
+        });
+      }
+      return query;
     },
 
     isVisible(entity) {
@@ -263,6 +302,39 @@ const VuAdmin = {
         return !this.dashboard;
       }
       return this.activeEntity === entity;
+    },
+
+    // dashboard counter: { type: 'count', entity, title, icon, filter, link, class, cardClass }
+    // link: the filtered entity view by default ("#todos?completed=false"), false = none, string = another URL
+    countWidget(item) {
+      let link = null;
+      if (item.link !== false) {
+        if (typeof item.link === "string") {
+          link = item.link;
+        } else {
+          const query = new URLSearchParams();
+          Object.keys(item.filter || {}).forEach((field) => {
+            const rule = item.filter[field];
+            const value = rule !== null && typeof rule === "object" ? rule.value : rule;
+            // only plain "=" filters can be expressed in the view URL
+            if ((rule === null || typeof rule !== "object" || !rule.operator || rule.operator === "=") && value !== undefined) {
+              query.append(field, String(value));
+            }
+          });
+          link = "#" + item.entity + (query.toString() ? "?" + query.toString() : "");
+        }
+      }
+      return {
+        type: "count",
+        entity: item.entity,
+        class: item.class !== undefined ? item.class : "col-6 col-md-3",
+        preset: item.preset,
+        title: item.title,
+        icon: item.icon,
+        filter: item.filter || null,
+        link,
+        cardClass: item.cardClass,
+      };
     },
 
     // dashboard widget → config override: { title, link, columns, filters, limit, limits, pages, order, settings }
@@ -360,51 +432,15 @@ const VuAdmin = {
         return;
       }
 
-      const entitiesVariable = this.auth.settings.entitiesVariable ? this.auth.settings.entitiesVariable : 'VuEntities';
+      // shared loader: one script load even when several components (dashboard widget, counter, view) need the
+      // same entity at once — loading it twice would redeclare its top-level variables
+      const entitySettings = await loadEntityConfig(this.auth, this.entity, this.preset);
 
-      // const module = await import(/* @vite-ignore */ this.auth.settings.entities[this.entity]);
-      this.loadScript(this.entityUrl(), () => {
-
-        if (window[entitiesVariable] && window[entitiesVariable][this.entity]) {
-          this.init(window[entitiesVariable][this.entity](this.preset));
-        } else {
-          console.error(`Entity config (${this.entity}) not found`);
-        }
-
-      }, entitiesVariable);
-
-
-    },
-
-    loadScript(path, callback, entitiesVariable) {
-
-      if (window[entitiesVariable] && window[entitiesVariable][this.entity]) {
-
-        // already loaded (e.g. by a dashboard widget of the same entity): still async, like the script onload,
-        // so init() never runs during the component setup
-        if (callback) {
-          this.$nextTick(callback);
-        }
-
-        return;
-
+      if (entitySettings) {
+        this.init(entitySettings);
+      } else {
+        console.error(`Entity config (${this.entity}) not found`);
       }
-
-      const script = document.createElement("script");
-      script.async = true;
-      script.src = path;
-      script.onload = () => {
-
-        if (callback) {
-          callback();
-        }
-
-      };
-      script.onerror = () => {
-        console.error(`[vu-admin] failed to load entity script: ${path}`);
-      };
-
-      document.head.appendChild(script);
 
     },
 
@@ -482,6 +518,7 @@ const VuAdmin = {
   },
   components: {
     VuAdminTable,
+    VuAdminCount,
   },
 };
 
