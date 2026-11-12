@@ -27280,13 +27280,21 @@ var qU = {
 			e && e != t && (this.auth = e, t !== void 0 && this.$forceUpdate());
 		}
 	} },
-	computed: {},
+	computed: {
+		profileEnabled() {
+			let e = window.VuSettings && window.VuSettings.auth;
+			return !(e && e.profile && e.profile.enabled === !1);
+		},
+		visibleDropdowns() {
+			return (Array.isArray(this.settings.dropdowns) ? this.settings.dropdowns : []).filter((e) => e.action === "BUTTON_PROFILE" && !this.profileEnabled ? !1 : !(e.hidden !== void 0 && this.getValueOrFunction(e.hidden)));
+		}
+	},
 	methods: {
 		updateAuth() {
 			this.$emit("update:modelValue", this.auth);
 		},
 		showProfilModal() {
-			this.auth.panel = "profile", this.auth.visible = !0, this.updateAuth();
+			this.profileEnabled && (this.auth.panel = "profile", this.auth.visible = !0, this.updateAuth());
 		},
 		togglePanel() {
 			this.auth.visible = !this.auth.visible, this.auth.panel = this.panel ? this.panel : "login", this.updateAuth();
@@ -27345,11 +27353,11 @@ var qU = {
 	"onClick",
 	"title",
 	"aria-label"
-], iW = { key: 1 }, aW = ["onClick", "innerHTML"], oW = {
+], iW = { key: 1 }, aW = ["innerHTML"], oW = ["onClick", "innerHTML"], sW = {
 	key: 1,
 	class: "d-inline-block"
-}, sW = ["innerHTML"];
-function cW(t, n, o, s, c, l) {
+}, cW = ["innerHTML"];
+function lW(t, n, s, c, l, u) {
 	return (t.panel != "registration" || t.registrationEnabled) && (!t.auth.user && t.panel != "login" || t.panel == "login") ? (_(), i("div", {
 		key: 0,
 		class: "vua-user-button d-inline-block",
@@ -27360,35 +27368,35 @@ function cW(t, n, o, s, c, l) {
 		id: "userDropdown",
 		"data-bs-toggle": "dropdown",
 		"aria-expanded": "false"
-	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, XU)], 2), a("ul", ZU, [(_(!0), i(e, null, y(t.settings.dropdowns, (n) => (_(), i(e, { key: n }, [n.action == "BUTTON_ROLES" ? (_(), i("li", {
+	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, XU)], 2), a("ul", ZU, [(_(!0), i(e, null, y(t.visibleDropdowns, (r) => (_(), i(e, { key: r }, [r.action == "BUTTON_ROLES" ? (_(), i("li", {
 		key: 0,
-		class: m([[n.class], "d-flex items-align-center"])
+		class: m([[r.class], "d-flex items-align-center"])
 	}, [a("span", {
-		innerHTML: t.translate(t.getValueOrFunction(n.label)),
+		innerHTML: t.translate(t.getValueOrFunction(r.label)),
 		class: "me-2"
 	}, null, 8, QU), (_(!0), i(e, null, y(t.auth.user.roles, (e) => (_(), i("button", {
 		key: e,
 		onClick: (n) => t.setSelectedRole(e),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e == t.auth.user.role }])
-	}, S(e), 11, $U))), 128))], 2)) : n.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
+	}, S(e), 11, $U))), 128))], 2)) : r.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
 		key: 1,
-		class: m([[n.class], "d-flex align-items-center"])
+		class: m([[r.class], "d-flex align-items-center"])
 	}, [a("span", {
-		innerHTML: t.translate(t.getValueOrFunction(n.label === void 0 ? "Language" : n.label)),
+		innerHTML: t.translate(t.getValueOrFunction(r.label === void 0 ? "Language" : r.label)),
 		class: "me-2"
-	}, null, 8, eW), (_(!0), i(e, null, y(t.languages(n), (e) => (_(), i("button", {
+	}, null, 8, eW), (_(!0), i(e, null, y(t.languages(r), (e) => (_(), i("button", {
 		key: e.value,
 		type: "button",
 		onClick: j((n) => t.changeLanguage(e.value), ["stop"]),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e.value == t.language }]),
 		title: e.label
-	}, S(e.short || e.value.toUpperCase()), 11, tW))), 128))], 2)) : n.action == "BUTTON_THEME" ? (_(), i("li", {
+	}, S(e.short || e.value.toUpperCase()), 11, tW))), 128))], 2)) : r.action == "BUTTON_THEME" ? (_(), i("li", {
 		key: 2,
-		class: m([[n.class], "d-flex align-items-center"])
+		class: m([[r.class], "d-flex align-items-center"])
 	}, [a("span", {
-		innerHTML: t.translate(t.getValueOrFunction(n.label === void 0 ? "Theme" : n.label)),
+		innerHTML: t.translate(t.getValueOrFunction(r.label === void 0 ? "Theme" : r.label)),
 		class: "me-2"
-	}, null, 8, nW), (_(!0), i(e, null, y(t.themes(n), (e) => (_(), i("button", {
+	}, null, 8, nW), (_(!0), i(e, null, y(t.themes(r), (e) => (_(), i("button", {
 		key: e.value,
 		type: "button",
 		onClick: j((n) => t.changeTheme(e.value), ["stop"]),
@@ -27398,21 +27406,28 @@ function cW(t, n, o, s, c, l) {
 	}, [e.icon ? (_(), i("i", {
 		key: 0,
 		class: m(e.icon)
-	}, null, 2)) : (_(), i("span", iW, S(t.translate(e.label)), 1))], 10, rW))), 128))], 2)) : (_(), i("li", {
+	}, null, 2)) : (_(), i("span", iW, S(t.translate(e.label)), 1))], 10, rW))), 128))], 2)) : r.action == "BUTTON_PROFILE" ? (_(), i("li", {
 		key: 3,
-		class: m([n.class]),
-		onClick: (e) => t.dropdownAction(n),
-		innerHTML: t.translate(t.getValueOrFunction(n.label))
-	}, null, 10, aW))], 64))), 128))])])) : (_(), i("div", oW, [a("button", {
+		class: m([r.class]),
+		onClick: n[0] ||= (e) => t.showProfilModal()
+	}, [r.label === void 0 ? (_(), i(e, { key: 1 }, [n[2] ||= a("i", { class: "bi bi-person me-1" }, null, -1), o(" " + S(t.translate("Profile")), 1)], 64)) : (_(), i("span", {
+		key: 0,
+		innerHTML: t.translate(t.getValueOrFunction(r.label))
+	}, null, 8, aW))], 2)) : (_(), i("li", {
+		key: 4,
+		class: m([r.class]),
+		onClick: (e) => t.dropdownAction(r),
+		innerHTML: t.translate(t.getValueOrFunction(r.label))
+	}, null, 10, oW))], 64))), 128))])])) : (_(), i("div", sW, [a("button", {
 		class: m([t.settings.class]),
 		type: "button",
-		onClick: n[0] ||= (...e) => t.togglePanel && t.togglePanel(...e)
+		onClick: n[1] ||= (...e) => t.togglePanel && t.togglePanel(...e)
 	}, [t.settings.icon ? (_(), i("i", {
 		key: 0,
 		class: m([t.settings.icon])
-	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, sW)], 2)]))], 8, JU)) : r("", !0);
+	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, cW)], 2)]))], 8, JU)) : r("", !0);
 }
-var lW = /*#__PURE__*/ EA(qU, [["render", cW]]), uW = {
+var uW = /*#__PURE__*/ EA(qU, [["render", lW]]), dW = {
 	name: "VuAdminNav",
 	props: {
 		modelValue: Object,
@@ -27542,20 +27557,20 @@ var lW = /*#__PURE__*/ EA(qU, [["render", cW]]), uW = {
 			}
 		}
 	}
-}, dW = {
+}, fW = {
 	key: 0,
 	class: "dropdown-divider"
-}, fW = ["disabled", "onClick"], pW = [
+}, pW = ["disabled", "onClick"], mW = [
 	"aria-current",
 	"target",
 	"rel",
 	"href"
-], mW = ["disabled", "onClick"], hW = [
+], hW = ["disabled", "onClick"], gW = [
 	"aria-current",
 	"target",
 	"rel",
 	"href"
-], gW = {
+], _W = {
 	key: 1,
 	class: "vu-admin-nav-result position-fixed bottom-0 end-0 m-3 shadow",
 	style: {
@@ -27563,14 +27578,14 @@ var lW = /*#__PURE__*/ EA(qU, [["render", cW]]), uW = {
 		"max-width": "640px",
 		width: "calc(100% - 2rem)"
 	}
-}, _W = { class: "d-flex align-items-start gap-2" }, vW = { class: "me-auto" }, yW = {
+}, vW = { class: "d-flex align-items-start gap-2" }, yW = { class: "me-auto" }, bW = {
 	key: 0,
 	class: "spinner-border spinner-border-sm ms-2",
 	"aria-hidden": "true"
-}, bW = {
+}, xW = {
 	key: 1,
 	class: "ms-2"
-}, xW = ["aria-label", "disabled"], SW = {
+}, SW = ["aria-label", "disabled"], CW = {
 	key: 0,
 	class: "mt-2 mb-0 small overflow-auto",
 	style: {
@@ -27578,7 +27593,7 @@ var lW = /*#__PURE__*/ EA(qU, [["render", cW]]), uW = {
 		"white-space": "pre-wrap"
 	}
 };
-function CW(t, n, s, c, l, u) {
+function wW(t, n, s, c, l, u) {
 	return _(), i(e, null, [t.auth && t.auth.success && t.visibleItems.length ? (_(), i("ul", {
 		key: 0,
 		class: m(["navbar-nav flex-grow-1 mb-2 mb-lg-0", t.menuClass])
@@ -27592,7 +27607,7 @@ function CW(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), a("span", null, S(t.translate(n.name)), 1)], 2), a("ul", { class: m(["dropdown-menu", n.menuClass]) }, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [e.divider ? (_(), i("hr", dW)) : e.header ? (_(), i("h6", {
+	}, null, 2)) : r("", !0), a("span", null, S(t.translate(n.name)), 1)], 2), a("ul", { class: m(["dropdown-menu", n.menuClass]) }, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [e.divider ? (_(), i("hr", fW)) : e.header ? (_(), i("h6", {
 		key: 1,
 		class: m(["dropdown-header", e.class])
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
@@ -27607,7 +27622,7 @@ function CW(t, n, s, c, l, u) {
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(e.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, fW)) : (_(), i("a", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, pW)) : (_(), i("a", {
 		key: 3,
 		class: m(["dropdown-item", [e.class, { active: t.isActive(e) }]]),
 		"aria-current": t.isActive(e) ? "page" : null,
@@ -27617,7 +27632,7 @@ function CW(t, n, s, c, l, u) {
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(e.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, pW))]))), 128))], 2)], 2)) : (_(), i("li", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, mW))]))), 128))], 2)], 2)) : (_(), i("li", {
 		key: 1,
 		class: m(["nav-item", n.itemClass])
 	}, [n.api ? (_(), i("button", {
@@ -27629,7 +27644,7 @@ function CW(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, mW)) : (_(), i("a", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, hW)) : (_(), i("a", {
 		key: 1,
 		class: m(["nav-link scrollto", [n.class, { active: t.isActive(n) }]]),
 		"aria-current": t.isActive(n) ? "page" : null,
@@ -27639,18 +27654,18 @@ function CW(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, hW))], 2))], 64))), 128))], 2)) : r("", !0), t.result ? (_(), i("div", gW, [a("div", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, gW))], 2))], 64))), 128))], 2)) : r("", !0), t.result ? (_(), i("div", _W, [a("div", {
 		class: m(["alert mb-0", t.result.running ? "alert-secondary" : t.result.ok ? "alert-success" : "alert-danger"]),
 		role: "status"
-	}, [a("div", _W, [a("strong", vW, [o(S(t.translate(t.result.name)) + " ", 1), t.result.running ? (_(), i("span", yW)) : (_(), i("span", bW, "— " + S(t.result.ok ? t.translate("Done") : t.translate("Error")) + " (" + S(t.result.status) + ")", 1))]), a("button", {
+	}, [a("div", vW, [a("strong", yW, [o(S(t.translate(t.result.name)) + " ", 1), t.result.running ? (_(), i("span", bW)) : (_(), i("span", xW, "— " + S(t.result.ok ? t.translate("Done") : t.translate("Error")) + " (" + S(t.result.status) + ")", 1))]), a("button", {
 		type: "button",
 		class: "btn-close",
 		"aria-label": t.translate("Close"),
 		disabled: t.result.running,
 		onClick: n[0] ||= (e) => t.result = null
-	}, null, 8, xW)]), t.result.running ? r("", !0) : (_(), i("pre", SW, S(t.result.output), 1))], 2)])) : r("", !0)], 64);
+	}, null, 8, SW)]), t.result.running ? r("", !0) : (_(), i("pre", CW, S(t.result.output), 1))], 2)])) : r("", !0)], 64);
 }
-var wW = /*#__PURE__*/ EA(uW, [["render", CW]]), TW = {
+var TW = /*#__PURE__*/ EA(dW, [["render", wW]]), EW = {
 	title: "",
 	documentTitle: "{view} | {title}",
 	logo: "",
@@ -27672,7 +27687,7 @@ var wW = /*#__PURE__*/ EA(uW, [["render", CW]]), TW = {
 		menu: "admin"
 	}
 };
-function EW(e, t) {
+function DW(e, t) {
 	let n = {};
 	return Object.keys(e).forEach((t) => {
 		let r = e[t];
@@ -27682,14 +27697,14 @@ function EW(e, t) {
 		n[e] = r && typeof r == "object" && !Array.isArray(r) && n[e] && typeof n[e] == "object" ? Object.assign(n[e], r) : r;
 	}), n;
 }
-function DW() {
+function OW() {
 	try {
 		return !!(localStorage.getItem("vu-user") && localStorage.getItem("vu-header"));
 	} catch {
 		return !1;
 	}
 }
-var OW = {
+var kW = {
 	name: "VuAdminApp",
 	props: { session: {
 		type: Object,
@@ -27699,10 +27714,10 @@ var OW = {
 		let e = typeof window < "u" && window.VuSettings && window.VuSettings.app ? window.VuSettings.app : {};
 		return {
 			auth: this.session || { inputs: {} },
-			settings: EW(TW, e),
+			settings: DW(EW, e),
 			language: Hc(),
 			hash: typeof window < "u" ? window.location.hash : "",
-			restoring: !this.session && DW(),
+			restoring: !this.session && OW(),
 			themeChoice: KV(),
 			themeTick: 0
 		};
@@ -27771,19 +27786,19 @@ var OW = {
 	components: {
 		VuAdmin: sH,
 		VuAuth: KU,
-		VuUserButton: lW,
-		VuAdminNav: wW
+		VuUserButton: uW,
+		VuAdminNav: TW
 	}
-}, kW = ["data-bs-theme"], AW = ["href"], jW = [
+}, AW = ["data-bs-theme"], jW = ["href"], MW = [
 	"src",
 	"alt",
 	"height",
 	"width"
-], MW = { key: 1 }, NW = {
+], NW = { key: 1 }, PW = {
 	key: 0,
 	class: "vu-admin-app-loading d-flex justify-content-center align-items-center py-5 text-secondary"
 };
-function PW(e, t, o, c, l, u) {
+function FW(e, t, o, c, l, u) {
 	let d = b("vu-admin-nav"), f = b("vu-user-button"), p = b("vu-admin"), h = b("vu-auth");
 	return _(), i("div", { class: m(["vu-admin-app", e.settings.container]) }, [
 		a("header", {
@@ -27801,7 +27816,7 @@ function PW(e, t, o, c, l, u) {
 				height: e.settings.brand.height || null,
 				width: e.settings.brand.width || null,
 				class: m(["d-inline-block", { "me-2": e.settings.title }])
-			}, null, 10, jW)) : r("", !0), e.settings.title ? (_(), i("span", MW, S(e.translate(e.settings.title)), 1)) : r("", !0)], 10, AW)) : r("", !0),
+			}, null, 10, MW)) : r("", !0), e.settings.title ? (_(), i("span", NW, S(e.translate(e.settings.title)), 1)) : r("", !0)], 10, jW)) : r("", !0),
 			s(d, {
 				modelValue: e.auth,
 				"onUpdate:modelValue": t[0] ||= (t) => e.auth = t,
@@ -27823,8 +27838,8 @@ function PW(e, t, o, c, l, u) {
 				"onUpdate:modelValue": t[2] ||= (t) => e.auth = t,
 				panel: "login"
 			}, null, 8, ["modelValue"])
-		], 10, kW),
-		a("main", { class: m(e.settings.main.class) }, [e.restoring ? (_(), i("div", NW, [t[4] ||= a("span", {
+		], 10, AW),
+		a("main", { class: m(e.settings.main.class) }, [e.restoring ? (_(), i("div", PW, [t[4] ||= a("span", {
 			class: "spinner-border spinner-border-sm me-2",
 			"aria-hidden": "true"
 		}, null, -1), a("span", null, S(e.translate("Loading...")), 1)])) : r("", !0), s(p, { auth: e.auth }, null, 8, ["auth"])], 2),
@@ -27836,5 +27851,5 @@ function PW(e, t, o, c, l, u) {
 		}, null, 8, ["modelValue"]))
 	], 2);
 }
-var FW = /*#__PURE__*/ EA(OW, [["render", PW]]);
-export { sH as VuAdmin, FW as VuAdminApp, BV as VuAdminCount, wW as VuAdminNav, KU as VuAuth, lW as VuUserButton, Rc as availableLanguages, WV as availableThemes, Gc as escapeHtml, Hc as getLanguage, KV as getTheme, Kc as safeUrl, Uc as setLanguage, QV as setTheme, _l as translate, Lc as translations };
+var IW = /*#__PURE__*/ EA(kW, [["render", FW]]);
+export { sH as VuAdmin, IW as VuAdminApp, BV as VuAdminCount, TW as VuAdminNav, KU as VuAuth, uW as VuUserButton, Rc as availableLanguages, WV as availableThemes, Gc as escapeHtml, Hc as getLanguage, KV as getTheme, Kc as safeUrl, Uc as setLanguage, QV as setTheme, _l as translate, Lc as translations };

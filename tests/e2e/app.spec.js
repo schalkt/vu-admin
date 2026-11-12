@@ -211,24 +211,43 @@ test.describe('user menu', () => {
       await panel.locator('button[type="submit"]').click();
     };
 
+    // a weak new password is stopped by the form (pattern: lowercase + uppercase + digit), nothing is sent
+    await submit('emilyspass', 'newpass');
+    expect(await panel.locator('#password').evaluate((input) => input.validity.patternMismatch)).toBe(true);
+    await expect(panel.locator('.text-danger, .text-success').filter({ hasText: /changed|incorrect/ })).toHaveCount(0);
+
     // wrong current password: error, the user stays signed in
-    await submit('wrong-password', 'newpass1');
+    await submit('wrong-password', 'Newpass1');
     await expect(panel).toContainText('The current password is incorrect');
     await expect(panel.locator('#password_current')).toHaveValue('wrong-password');
 
-    await submit('emilyspass', 'emilyspass');
-    await expect(panel).toContainText('The new password must differ from the current one');
-
-    await submit('emilyspass', 'newpass1');
+    await submit('emilyspass', 'Newpass1');
     await expect(panel).toContainText('Password changed');
     await expect(panel.locator('#password_current')).toHaveValue('');
 
+    await submit('Newpass1', 'Newpass1');
+    await expect(panel).toContainText('The new password must differ from the current one');
+
     // stored by the mock server; the page is still signed in
     const users = await (await page.request.get('/api/users?limit=0')).json();
-    expect(users.users.find((user) => user.id === 1).password).toBe('newpass1');
+    expect(users.users.find((user) => user.id === 1).password).toBe('Newpass1');
     await panel.locator('button', { hasText: 'Cancel' }).click();
     await expect(panel).toHaveCount(0);
     await expect(widget(page, 'table', 'user')).toBeVisible();
+  });
+
+  test('profile: the menu item can be turned off in the settings', async ({ page }) => {
+    // vu-admin-settings.js with auth.profile.enabled: false
+    await page.route('**/vu-admin-settings.js', async (route) => {
+      const response = await route.fetch();
+      const body = (await response.text()).replace(/profile: \{\s*enabled: true,/, 'profile: { enabled: false,');
+      await route.fulfill({ response, body });
+    });
+    await openDashboard(page);
+    await page.locator('.vua-user-button .dropdown-toggle').click();
+    const menu = page.locator('.vua-user-button .dropdown-menu');
+    await expect(menu).toContainText('Sign out');
+    await expect(menu.locator('li', { hasText: 'Profile' })).toHaveCount(0);
   });
 
   test('language switch translates the page', async ({ page }) => {

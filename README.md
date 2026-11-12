@@ -1029,12 +1029,24 @@ If `api.profile` is set, VuAuth calls it on every mount using the stored token h
 
 ### Profile — password change
 
-The *Profile* item of the user menu (`action: (params, self) => self.showProfilModal()`) opens the `profile` panel of
-VuAuth: the signed-in user (avatar, name, e-mail, role) and a password change form — current password, new password
-and its repeat, with the same `password` rules (pattern, minlength, help) as the registration.
+The built-in `BUTTON_PROFILE` item of the user menu opens the `profile` panel of VuAuth: the signed-in user (avatar,
+name, e-mail, role) and a password change form — current password, new password and its repeat, with the same
+`password` rules (pattern, minlength, help) as the registration.
+
+```js
+window.VuSettings.button.login.dropdowns = [
+  { action: 'BUTTON_PROFILE', class: 'dropdown-item cursor-pointer' },  // optional: label (default: icon + 'Profile')
+  …
+];
+```
+
+Not every site needs it: `auth.profile.enabled: false` hides the item and the panel cannot be opened
+(`self.showProfilModal()` from a custom item does nothing then). Any user menu item can also be hidden with
+`hidden: true` or `hidden: (params, settings, self) => boolean`.
 
 ```js
 auth: {
+  profile: { enabled: true },                              // default
   api: { changePassword: '/api/auth/password' },          // default
   onSuccess: { changePassword: (auth) => { /* … */ } },   // optional
   onError:   { changePassword: (auth) => { /* … */ } },   // optional

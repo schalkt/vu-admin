@@ -7,7 +7,7 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
 
-                <template v-for="dropdown in settings.dropdowns" :key="dropdown">
+                <template v-for="dropdown in visibleDropdowns" :key="dropdown">
                     <li v-if="dropdown.action == 'BUTTON_ROLES'" :class="[dropdown.class]" class="d-flex items-align-center">
                         <span v-html="translate(getValueOrFunction(dropdown.label))" class="me-2"></span>
                         <button v-for="role in auth.user.roles" :key="role" @click="setSelectedRole(role)"                                
@@ -32,6 +32,11 @@
                             <i v-if="item.icon" :class="item.icon"></i>
                             <span v-else>{{ translate(item.label) }}</span>
                         </button>
+                    </li>
+                    <!-- built-in "Profile" item: hidden when window.VuSettings.auth.profile.enabled === false -->
+                    <li v-else-if="dropdown.action == 'BUTTON_PROFILE'" :class="[dropdown.class]" @click="showProfilModal()">
+                        <span v-if="dropdown.label !== undefined" v-html="translate(getValueOrFunction(dropdown.label))"></span>
+                        <template v-else><i class="bi bi-person me-1"></i> {{ translate('Profile') }}</template>
                     </li>
                     <li v-else :class="[dropdown.class]" @click="dropdownAction(dropdown)" v-html="translate(getValueOrFunction(dropdown.label))"></li>
 
@@ -95,6 +100,21 @@ const VuUserButton = {
         },
     },
     computed: {
+        // window.VuSettings.auth.profile.enabled: false → no "Profile" item / profile panel (default: enabled)
+        profileEnabled() {
+            const auth = window.VuSettings && window.VuSettings.auth;
+            return !(auth && auth.profile && auth.profile.enabled === false);
+        },
+        // dropdown items without `hidden` (true or a function returning true) and without a disabled profile item
+        visibleDropdowns() {
+            const dropdowns = Array.isArray(this.settings.dropdowns) ? this.settings.dropdowns : [];
+            return dropdowns.filter((dropdown) => {
+                if (dropdown.action === 'BUTTON_PROFILE' && !this.profileEnabled) {
+                    return false;
+                }
+                return !(dropdown.hidden !== undefined && this.getValueOrFunction(dropdown.hidden));
+            });
+        },
         // user: {
         //     get() {
         //         return this.modelValue;
@@ -112,6 +132,9 @@ const VuUserButton = {
 
         // user menu "Profile": the profile panel of VuAuth (password change)
         showProfilModal() {
+            if (!this.profileEnabled) {
+                return;
+            }
             this.auth.panel = 'profile';
             this.auth.visible = true;
             this.updateAuth();

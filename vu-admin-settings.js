@@ -272,13 +272,10 @@ window.VuSettings = {
                 }, {
                     class: 'dropdown-divider'
                 }, {
+                    // built-in "Profile" item (profile panel: user data, password change);
+                    // hidden with auth.profile.enabled: false
+                    action: 'BUTTON_PROFILE',
                     class: 'dropdown-item cursor-pointer',
-                    label: (params, settings, self) => {
-                        return `<i class='bi bi-person me-1'></i> ${window.VuAdminHelpers.translate('Profile')}`
-                    },
-                    action: (params, self) => {
-                        self.showProfilModal();
-                    }
                 }, {
                     class: 'dropdown-item cursor-pointer',
                     label: (params, settings, self) => {
@@ -293,6 +290,10 @@ window.VuSettings = {
     },
     auth: {
         debug: true,
+        // user menu "Profile" (profile panel: user data, password change); false → no menu item, no panel
+        profile: {
+            enabled: true,
+        },
         registrationEnabled: true,
         captcha: {
             url: '/api/auth/captcha',
@@ -364,7 +365,6 @@ window.VuSettings = {
             help: 'Use at least 1 lowercase letter, 1 uppercase letter and 1 digit. Minimum 4 characters.',
             forgot: 'Forgot your password?',
             pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
-            pattern: '^(?=.*[a-z]).+$',
             minlength: 4,
             hash: 0
         },
