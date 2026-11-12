@@ -45,7 +45,8 @@ import {
   prepareFetchUrl,
   prepareFetchOptions,
   loadEntityConfig,
-  entityColor
+  entityColor,
+  entityAllowed
 } from "./helpers";
 
 const VuAdmin = {
@@ -109,8 +110,9 @@ const VuAdmin = {
     // auth.settings.entities: { user: '/vu-entity-user.js' } or { product: { url: '/vu-entity-product.js', preset: 'dash' } }
     views() {
       const entities = this.auth && this.auth.settings && this.auth.settings.entities ? this.auth.settings.entities : {};
+      // only the entities the user may use (entities[x].roles, disabled)
       return Object.keys(entities)
-        .filter((name) => entities[name] && !entities[name].disabled)
+        .filter((name) => entityAllowed(this.auth, name))
         .map((name) => ({
           entity: name,
           preset: typeof entities[name] === "object" ? entities[name].preset : undefined,
@@ -125,7 +127,8 @@ const VuAdmin = {
       const entities = this.auth.settings.entities || {};
       const role = this.auth.user ? this.auth.user.role : null;
       const items = config.items
-        .filter((item) => item && item.entity && entities[item.entity] && !item.disabled)
+        // widgets of an entity the user may not use are left out (entities[x].roles)
+        .filter((item) => item && item.entity && entities[item.entity] && !item.disabled && entityAllowed(this.auth, item.entity))
         // roles: ['admin', 'editor'] → only for these roles (the active role of the user menu role switch)
         .filter((item) => !Array.isArray(item.roles) || item.roles.indexOf(role) >= 0)
         .map((item) => item.type === "count" ? this.countWidget(item) : {
@@ -447,6 +450,12 @@ const VuAdmin = {
 
       if (!this.auth.settings || !this.auth.settings.entities || !this.auth.settings.entities[this.entity] || !this.entityUrl()) {
         console.error(`Entity config (${this.entity}) not found`);
+        return;
+      }
+
+      // entities[x].roles: no access for the active role → nothing is loaded
+      if (!entityAllowed(this.auth, this.entity)) {
+        this.settings = undefined;
         return;
       }
 

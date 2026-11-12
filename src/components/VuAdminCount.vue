@@ -24,6 +24,7 @@ import {
     getResponseErrors,
     translate,
     cssColor,
+    entityAllowed,
 } from "./helpers";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
@@ -109,7 +110,7 @@ const VuAdminCount = {
             return Object.keys(filter).length ? filter : null;
         },
         async load() {
-            if (!this.auth || !this.auth.success) {
+            if (!this.auth || !this.auth.success || !entityAllowed(this.auth, this.entity)) {
                 return;
             }
 

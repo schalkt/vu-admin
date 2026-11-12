@@ -106,7 +106,7 @@ test.describe('nav source', () => {
     // Dashboard / Content / Users exist on both sides: once each; Documentation only from the backend;
     // the backend's disabled items stay hidden
     expect(await navState(page)).toEqual({
-      top: ['Dashboard', 'Content', 'Users', 'Documentation'],
+      top: ['Dashboard', 'Content', 'Users', 'Tools', 'Documentation'],
       content: ['Products', 'Posts', 'Todos'],
     });
     // entity color on the icon of an entity item
@@ -123,7 +123,7 @@ test.describe('nav source', () => {
     });
     await openDashboard(page);
     const state = await navState(page);
-    expect(state.top).toEqual(['Dashboard', 'Content', 'Documentation']);
+    expect(state.top).toEqual(['Dashboard', 'Content', 'Tools', 'Documentation']);
     expect(state.content).toEqual(['All products', 'Posts', 'Todos']);
   });
 
@@ -143,7 +143,7 @@ test.describe('nav source', () => {
     await withSource(page, 'api');
     await openDashboard(page);
     expect(await navState(page)).toEqual({
-      top: ['Dashboard', 'Content', 'Users', 'Documentation'],
+      top: ['Dashboard', 'Content', 'Users', 'Tools', 'Documentation'],
       content: ['Posts', 'Products', 'Todos'],
     });
   });
@@ -191,18 +191,33 @@ test.describe('dashboard', () => {
     await expect(page.locator('.navbar-nav > li > a', { hasText: 'Users' }).locator('i')).toHaveAttribute('style', /--bs-primary/);
   });
 
-  test('widgets with roles disappear for another role', async ({ page }) => {
-    await openDashboard(page);
-    await expect(widget(page, 'count', 'user')).toHaveCount(1);
-    await expect(widget(page, 'table', 'user')).toHaveCount(1);
+  test('an entity without access (entities.user.roles: admin) disappears everywhere for another role', async ({ page }) => {
+    await page.goto('/#user');
+    await expect(rows(view(page, 'user')).first()).toBeVisible();
+    const toolsItems = async () => {
+      await page.locator('.navbar-nav .dropdown-toggle', { hasText: 'Tools' }).click();
+      const items = await page.locator('.navbar-nav li.dropdown', { hasText: 'Tools' }).locator('.dropdown-menu > li')
+        .evaluateAll((list) => list.map((li) => li.innerText.trim()));
+      await page.keyboard.press('Escape');
+      return items;
+    };
+    expect(await toolsItems()).toEqual(['Migrations', 'Users', 'Posts']);
 
     await userMenuButton(page, 'editor');
+    // view: gone, the "#user" link shows the dashboard
+    await expect(view(page, 'user')).toHaveCount(0);
+    await expect(dashboard(page)).toBeVisible();
+    // dashboard: counter + table of users gone, the others stay
     await expect(widget(page, 'count', 'user')).toHaveCount(0);
     await expect(widget(page, 'table', 'user')).toHaveCount(0);
     await expect(widget(page, 'table', 'todos')).toHaveCount(1);
+    // nav: the Users item and the users migration (API action with entity: 'user') are gone
+    await expect(page.locator('.navbar-nav > li', { hasText: 'Users' })).toHaveCount(0);
+    expect(await toolsItems()).toEqual(['Migrations', 'Posts']);
 
     await userMenuButton(page, 'admin');
     await expect(widget(page, 'table', 'user')).toHaveCount(1);
+    await expect(page.locator('.navbar-nav > li > a', { hasText: 'Users' })).toHaveCount(1);
   });
 
   test('counters refresh after an inline change', async ({ page }) => {

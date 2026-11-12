@@ -1042,6 +1042,25 @@ window.VuSettings.auth = {
 
 Entities (the admin data views) are only loaded when the logged-in user has a `role` assigned. Users without a role can sign in but see an empty admin shell with a warning in the user dropdown. An admin can assign a role via the user form; on the next page load `/me` will return the new role and entities will load automatically.
 
+Per entity: `roles` in `auth.settings.entities` limits an entity to these roles (the user's active role,
+`auth.user.role`, switchable in the user menu). Without access the entity is left out everywhere, at once on a
+role switch:
+
+- its view is not created (`#user` shows the dashboard), a `<vu-admin :entity>` of it loads nothing;
+- its dashboard widgets and counters are hidden (a widget's own `roles` can restrict it further);
+- every nav item linked to it is hidden, from any menu source: an `#<entity>` href, or an `entity` key on any item —
+  e.g. a backend API action: `{ "name": "Users", "api": "/api/tools/migration/user", "method": "POST", "entity": "user" }`.
+  A dropdown header left without items and a dropdown left empty are hidden too.
+
+```js
+entities: {
+  user:  { url: '/vu-entity-user.js',  title: 'Users', roles: ['admin'] },
+  todos: { url: '/vu-entity-todos.js', title: 'Todos' },                    // every role
+}
+```
+
+This is the UI side only: the API must check the permissions as well.
+
 ### Session restore on page load
 
 If `api.profile` is set, VuAuth calls it on every mount using the stored token header. On success the response is merged into `auth.user` and localStorage is refreshed. If the user now has a role but `auth.settings` was not previously set (e.g. role was assigned after first login), `onSuccess.profile` can populate `auth.settings` at this point. On failure (401, network error) the user is logged out automatically.
@@ -1135,8 +1154,8 @@ Where the menu comes from — `VuSettings.app.nav.source`, or the `source` prop 
 
 Entity items: one `#<entity>` link per entity (`title`, `icon`, its `color` on the icon), in config order, plus a
 *Dashboard* (`#`) link first when `auth.settings.dashboard` is set. Entity keys for the menu: `group` (dropdown name;
-the entities of a group keep their config order), `navOrder` (number), `roles` (only for these roles),
-`nav: false` (not in the menu). Group settings: `nav.groups` / the `groups` prop, e.g.
+the entities of a group keep their config order), `navOrder` (number), `nav: false` (not in the menu); an entity
+without access (`roles`, see *Role-based entity access*) is not in the menu. Group settings: `nav.groups` / the `groups` prop, e.g.
 `{ Content: { icon: 'bi bi-folder me-1', class: '', order: 10 } }`.
 
 ```js

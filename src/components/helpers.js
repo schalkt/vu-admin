@@ -710,3 +710,25 @@ export function cssColor(color, variant) {
         ? `var(--bs-${color}-text-emphasis, var(--bs-${color}))`
         : `var(--bs-${color})`;
 }
+
+// may the signed-in user use the entity? auth.settings.entities[entity] exists, is not disabled and — when it has
+// `roles` — the user's active role (auth.user.role, switchable in the user menu) is one of them.
+// Without access the entity is left out everywhere: its view, dashboard widgets, counters and nav items.
+export function entityAllowed(auth, entity) {
+    const entities = auth && auth.settings && auth.settings.entities ? auth.settings.entities : null;
+    const config = entities ? entities[entity] : null;
+    if (!config) {
+        return false;
+    }
+    if (typeof config !== 'object') {
+        return true;
+    }
+    if (config.disabled) {
+        return false;
+    }
+    if (Array.isArray(config.roles)) {
+        const role = auth.user ? auth.user.role : null;
+        return config.roles.indexOf(role) >= 0;
+    }
+    return true;
+}

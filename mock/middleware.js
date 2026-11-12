@@ -454,6 +454,15 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     next();
   });
 
+  // --- Tools (nav API actions): POST /api/tools/migration/:entity ---
+  server.middlewares.use('/api/tools/migration', (req, res, next) => {
+    if (req.method !== 'POST') return next();
+    const entity = (req.url || '/').split('?')[0].replace(/^\//, '').split('/')[0];
+    const items = entity ? readDb(entity + (entity.endsWith('s') ? '' : 's')) : null;
+    if (!items) return send(res, { message: 'Unknown entity' }, 404, delay);
+    return send(res, { ok: true, entity, records: items.length, message: 'Migration finished (mock)' }, 200, delay);
+  });
+
   // --- Navigation: GET /api/navs (VuAdminNav) ---
   server.middlewares.use('/api/navs', (req, res, next) => {
     if (req.method !== 'GET') return next();
@@ -474,6 +483,16 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
           },
           { name: 'Users', href: '#user', icon: 'bi bi-people me-1' },
           // itemClass goes on the <li>: 'ms-auto' moves this item (and the ones after it) to the right
+          {
+            // API actions; `entity` links an item to an entity: hidden without access to it (entities[x].roles)
+            name: 'Tools',
+            icon: 'bi bi-tools me-1',
+            items: [
+              { header: 'Migrations' },
+              { name: 'Users', api: '/api/tools/migration/user', method: 'POST', entity: 'user', confirm: 'Are you sure?' },
+              { name: 'Posts', api: '/api/tools/migration/post', method: 'POST', entity: 'post', confirm: 'Are you sure?' },
+            ],
+          },
           { name: 'Documentation', href: 'https://github.com', target: '_blank', icon: 'bi bi-box-arrow-up-right me-1', itemClass: 'ms-auto' },
           { name: 'Disabled', href: '#', disabled: true },
         ],

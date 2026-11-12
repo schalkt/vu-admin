@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { prepareFetchOptions, safeUrl, translate, entityColor, cssColor } from "./helpers";
+import { prepareFetchOptions, safeUrl, translate, entityColor, cssColor, entityAllowed } from "./helpers";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
 const VuAdminNav = {
@@ -132,7 +132,7 @@ const VuAdminNav = {
                 if (!entities[name] || config.disabled || config.nav === false) {
                     return;
                 }
-                if (Array.isArray(config.roles) && config.roles.indexOf(role) < 0) {
+                if (!entityAllowed(this.auth, name)) {
                     return;
                 }
                 const item = {
@@ -168,7 +168,9 @@ const VuAdminNav = {
             return this.apiItems;
         },
         visibleItems() {
-            return this.ordered(this.menuItems.filter((item) => !item.disabled));
+            return this.ordered(this.menuItems.filter((item) => !item.disabled && this.itemAllowed(item)))
+                // a dropdown whose every item is hidden is left out too
+                .filter((item) => !Array.isArray(item.items) || this.visibleChildren(item).some((child) => !child.header && !child.divider));
         },
     },
     mounted() {
@@ -286,8 +288,49 @@ const VuAdminNav = {
         hasActiveChild(item) {
             return Array.isArray(item.items) && item.items.some((child) => !child.disabled && this.isActive(child));
         },
+        // an item linked to an entity — its href is "#<entity>" or it has an `entity` key (e.g. an API action:
+        // { name: 'Users', api: '/api/tools/migration/user', entity: 'user' }) — is shown only with access to it
+        itemAllowed(item) {
+            const settings = this.auth && this.auth.settings ? this.auth.settings : null;
+            const entities = settings && settings.entities ? settings.entities : null;
+            let entity = item && item.entity;
+            if (!entity) {
+                const key = this.hashKey(item);
+                const name = key ? key.slice(1) : "";
+                entity = name && entities && entities[name] ? name : null;
+            }
+            return !entity || entityAllowed(this.auth, entity);
+        },
+
+        // headers ({ header }) without items under them and extra dividers are dropped
+        tidyGroup(children) {
+            const result = [];
+            children.forEach((child, index) => {
+                if (child.header) {
+                    // kept only when a normal item follows it
+                    const next = children[index + 1];
+                    if (next && !next.header && !next.divider) {
+                        result.push(child);
+                    }
+                    return;
+                }
+                if (child.divider) {
+                    const last = result[result.length - 1];
+                    if (result.length && !last.divider) {
+                        result.push(child);
+                    }
+                    return;
+                }
+                result.push(child);
+            });
+            while (result.length && result[result.length - 1].divider) {
+                result.pop();
+            }
+            return result;
+        },
+
         visibleChildren(item) {
-            const children = Array.isArray(item.items) ? item.items.filter((child) => !child.disabled) : [];
+            const children = this.tidyGroup(Array.isArray(item.items) ? item.items.filter((child) => !child.disabled && this.itemAllowed(child)) : []);
 
             // grouped menu (header / divider) and entity groups: config order is kept, otherwise sorted by name
             if (item.keepOrder || children.some((child) => child.header || child.divider)) {

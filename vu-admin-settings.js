@@ -29,10 +29,12 @@ const ADMIN_SETTINGS = () => ({
     entities: {
         // color: used by the counters, the table header and the nav icons — a Bootstrap color name
         // ('primary', 'success', 'warning', 'danger', 'info', 'purple', 'teal', 'orange', …) or '#hex'
-        // nav (app.nav.source 'entities' / 'merge'): icon, group (dropdown), navOrder, roles, nav: false
+        // nav (app.nav.source 'entities' / 'merge'): icon, group (dropdown), navOrder, nav: false
+        // roles: only these roles may use the entity — without access its view, dashboard widgets, counters and
+        // nav items (also the backend's, linked by href "#entity" or `entity: '…'`) are left out
         product: { url: '/vu-entity-product.js', preset: 'dash', title: 'Products', color: 'info', icon: 'bi bi-box-seam', group: 'Content' },
         post: { url: '/vu-entity-post.js', title: 'Posts', color: 'purple', icon: 'bi bi-newspaper', group: 'Content' },
-        user: { url: '/vu-entity-user.js', title: 'Users', color: 'primary', icon: 'bi bi-people' },
+        user: { url: '/vu-entity-user.js', title: 'Users', color: 'primary', icon: 'bi bi-people', roles: ['admin'] },
         todos: { url: '/vu-entity-todos.js', title: 'Todos', color: 'warning', icon: 'bi bi-check2-square', group: 'Content' },
     },
     // start page (empty hash / "#"): entity tables in a Bootstrap grid; without it every entity is shown
@@ -45,7 +47,7 @@ const ADMIN_SETTINGS = () => ({
                 entity: 'user',
                 title: 'Users',
                 icon: 'bi bi-people',
-                roles: ['admin'],              // only for these roles (the active role of the role switch)
+                // roles: ['admin'],           // extra restriction of a widget; the entity's roles apply anyway
             },
             {
                 type: 'count',
@@ -71,8 +73,7 @@ const ADMIN_SETTINGS = () => ({
             },
             // tables
             {
-                entity: 'user',                // key of `entities`
-                roles: ['admin'],
+                entity: 'user',                // key of `entities` (hidden without access to it: entities.user.roles)
                 class: 'col-md-6',             // column class
                 title: 'Latest users',         // table title (translation key), default: the entity's own
                 columns: ['image', 'firstName', 'createdAt', '#buttons'],  // visible columns in this order (by `name`, unnamed ones by `title`)
