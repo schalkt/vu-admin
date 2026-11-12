@@ -23662,47 +23662,47 @@ var XL = /*#__PURE__*/ EA(fL, [["render", YL]]), ZL = {
 		}
 	},
 	components: {}
-}, QL = ["aria-label"], $L = { class: "d-flex align-items-center" }, eR = { class: "mx-1 small" }, tR = { key: 0 }, nR = {
+}, QL = ["aria-label"], $L = { class: "d-flex align-items-center" }, eR = { class: "mx-1 small" }, tR = { key: 0 }, nR = { key: 1 }, rR = { key: 2 }, iR = {
 	key: 0,
 	class: "dropdown d-none d-md-inline-block m-1"
-}, rR = {
+}, aR = {
 	type: "button",
 	class: "btn btn-sm btn-secondary dropdown-toggle",
 	"data-bs-toggle": "dropdown",
 	"aria-expanded": "false"
-}, iR = { class: "ms-1" }, aR = { class: "dropdown-menu text-end" }, oR = ["onClick"], sR = { class: "ms-2" }, cR = {
+}, oR = { class: "ms-1" }, sR = { class: "dropdown-menu text-end" }, cR = ["onClick"], lR = { class: "ms-2" }, uR = {
 	key: 0,
 	class: "bi bi-check-circle-fill ms-2"
-}, lR = {
+}, dR = {
 	key: 1,
 	class: "bi bi-circle ms-2"
-}, uR = {
+}, fR = {
 	class: "spinner-border spinner-border-sm mx-2",
 	role: "status"
-}, dR = { class: "visually-hidden" }, fR = { class: "pagination pagination-sm m-1" }, pR = { class: "page-item" }, mR = ["aria-label"], hR = ["innerHTML"], gR = { class: "page-item" }, _R = ["aria-label"], vR = ["innerHTML"], yR = ["onClick"], bR = { class: "page-item" }, xR = ["aria-label"], SR = ["innerHTML"], CR = {
+}, pR = { class: "visually-hidden" }, mR = { class: "pagination pagination-sm m-1" }, hR = { class: "page-item" }, gR = ["aria-label"], _R = ["innerHTML"], vR = { class: "page-item" }, yR = ["aria-label"], bR = ["innerHTML"], xR = ["onClick"], SR = { class: "page-item" }, CR = ["aria-label"], wR = ["innerHTML"], TR = {
 	key: 0,
 	class: "page-item"
-}, wR = ["aria-label"], TR = ["innerHTML"];
-function ER(t, n, o, s, c, l) {
+}, ER = ["aria-label"], DR = ["innerHTML"];
+function OR(t, n, o, s, c, l) {
 	return o.config.pagination.hidden ? r("", !0) : (_(), i("nav", {
 		key: 0,
 		"aria-label": l.translate("Page navigation"),
 		class: "mt-2 d-flex flex-wrap align-items-center justify-content-between gap-2"
 	}, [a("div", $L, [
-		k(a("span", eR, [a("strong", null, S(o.config.pagination.from) + "-" + S(o.config.pagination.to), 1), o.config.pagination.total ? (_(), i("span", tR, " / " + S(o.config.pagination.total), 1)) : r("", !0)], 512), [[O, o.config.pagination.from > 0]]),
-		o.config.pagination.limits ? (_(), i("div", nR, [a("button", rR, [a("strong", null, S(o.config.pagination.limit), 1), a("small", iR, S(l.translate("row")) + "/" + S(l.translate("page")), 1)]), a("ul", aR, [a("li", null, [(_(!0), i(e, null, y(o.config.pagination.limits, (e) => (_(), i("span", {
+		k(a("span", eR, [o.config.pagination.from > 0 ? (_(), i("strong", tR, S(o.config.pagination.from) + "-" + S(o.config.pagination.to), 1)) : (_(), i("strong", nR, "0")), o.config.pagination.total !== null && o.config.pagination.total !== void 0 ? (_(), i("span", rR, " / " + S(o.config.pagination.total), 1)) : r("", !0)], 512), [[O, o.config.pagination.from > 0 || o.config.pagination.items === 0]]),
+		o.config.pagination.limits ? (_(), i("div", iR, [a("button", aR, [a("strong", null, S(o.config.pagination.limit), 1), a("small", oR, S(l.translate("row")) + "/" + S(l.translate("page")), 1)]), a("ul", sR, [a("li", null, [(_(!0), i(e, null, y(o.config.pagination.limits, (e) => (_(), i("span", {
 			class: m(["dropdown-item cursor-pointer", { selected: o.config.pagination.limit == e }]),
 			key: e,
 			onClick: (t) => l.setPageLimit(e)
 		}, [
 			a("strong", null, S(e), 1),
-			a("small", sR, S(l.translate("row")) + "/" + S(l.translate("page")), 1),
-			o.config.pagination.limit == e ? (_(), i("i", cR)) : r("", !0),
-			o.config.pagination.limit == e ? r("", !0) : (_(), i("i", lR))
-		], 10, oR))), 128))])])])) : r("", !0),
-		k(a("div", uR, [a("span", dR, S(l.translate("Loading...")), 1)], 512), [[O, o.ui && o.ui.wait.table]])
-	]), a("ul", fR, [
-		a("li", pR, [a("a", {
+			a("small", lR, S(l.translate("row")) + "/" + S(l.translate("page")), 1),
+			o.config.pagination.limit == e ? (_(), i("i", uR)) : r("", !0),
+			o.config.pagination.limit == e ? r("", !0) : (_(), i("i", dR))
+		], 10, cR))), 128))])])])) : r("", !0),
+		k(a("div", fR, [a("span", pR, S(l.translate("Loading...")), 1)], 512), [[O, o.ui && o.ui.wait.table]])
+	]), a("ul", mR, [
+		a("li", hR, [a("a", {
 			class: m(["page-link cursor-pointer", { disabled: l.firstDisabled() }]),
 			onClick: n[0] ||= (e) => l.setPage(1),
 			"aria-label": l.translate("First")
@@ -23710,11 +23710,11 @@ function ER(t, n, o, s, c, l) {
 			"aria-hidden": "true",
 			class: "d-none d-md-inline",
 			innerHTML: l.translate("First")
-		}, null, 8, hR), n[4] ||= a("i", {
+		}, null, 8, _R), n[4] ||= a("i", {
 			"aria-hidden": "true",
 			class: "bi bi-chevron-double-left d-md-none"
-		}, null, -1)], 10, mR)]),
-		a("li", gR, [a("a", {
+		}, null, -1)], 10, gR)]),
+		a("li", vR, [a("a", {
 			class: m(["page-link cursor-pointer", { disabled: l.prevDisabled() }]),
 			onClick: n[1] ||= (e) => l.setPage(o.config.pagination.page - 1),
 			"aria-label": l.translate("Prev")
@@ -23722,10 +23722,10 @@ function ER(t, n, o, s, c, l) {
 			"aria-hidden": "true",
 			class: "d-none d-md-inline",
 			innerHTML: l.translate("Prev")
-		}, null, 8, vR), n[5] ||= a("i", {
+		}, null, 8, bR), n[5] ||= a("i", {
 			"aria-hidden": "true",
 			class: "bi bi-chevron-left d-md-none"
-		}, null, -1)], 10, _R)]),
+		}, null, -1)], 10, yR)]),
 		(_(!0), i(e, null, y(l.visiblePageNumbers(), (e) => (_(), i("li", {
 			key: e,
 			class: "page-item"
@@ -23735,8 +23735,8 @@ function ER(t, n, o, s, c, l) {
 				current: e == o.config.pagination.page
 			}]),
 			onClick: (t) => l.setPage(e)
-		}, S(e), 11, yR)]))), 128)),
-		a("li", bR, [a("a", {
+		}, S(e), 11, xR)]))), 128)),
+		a("li", SR, [a("a", {
 			class: m(["page-link cursor-pointer", { disabled: l.nextDisabled() }]),
 			onClick: n[2] ||= (e) => l.setPage(o.config.pagination.page + 1),
 			"aria-label": l.translate("Next")
@@ -23744,11 +23744,11 @@ function ER(t, n, o, s, c, l) {
 			"aria-hidden": "true",
 			class: "d-none d-md-inline",
 			innerHTML: l.translate("Next")
-		}, null, 8, SR), n[6] ||= a("i", {
+		}, null, 8, wR), n[6] ||= a("i", {
 			"aria-hidden": "true",
 			class: "bi bi-chevron-right d-md-none"
-		}, null, -1)], 10, xR)]),
-		o.config.pagination.total ? (_(), i("li", CR, [a("a", {
+		}, null, -1)], 10, CR)]),
+		o.config.pagination.total ? (_(), i("li", TR, [a("a", {
 			class: m(["page-link cursor-pointer", { disabled: l.lastDisabled() }]),
 			onClick: n[3] ||= (e) => l.setPage(o.config.pagination.pages),
 			"aria-label": l.translate("Last")
@@ -23756,13 +23756,13 @@ function ER(t, n, o, s, c, l) {
 			"aria-hidden": "true",
 			class: "d-none d-md-inline",
 			innerHTML: l.translate("Last")
-		}, null, 8, TR), n[7] ||= a("i", {
+		}, null, 8, DR), n[7] ||= a("i", {
 			"aria-hidden": "true",
 			class: "bi bi-chevron-double-right d-md-none"
-		}, null, -1)], 10, wR)])) : r("", !0)
+		}, null, -1)], 10, ER)])) : r("", !0)
 	])], 8, QL));
 }
-var DR = /*#__PURE__*/ EA(ZL, [["render", ER]]), OR = {
+var kR = /*#__PURE__*/ EA(ZL, [["render", OR]]), AR = {
 	name: "VuAdminTableFilterField",
 	props: {
 		column: Object,
@@ -23805,41 +23805,41 @@ var DR = /*#__PURE__*/ EA(ZL, [["render", ER]]), OR = {
 			typeof e == "object" ? Tl(e) : e.value = null, this.reloadTable();
 		}
 	}
-}, kR = {
+}, jR = {
 	key: 0,
 	class: "input-group input-group-sm my-1"
-}, AR = ["disabled"], jR = {
+}, MR = ["disabled"], NR = {
 	key: 1,
 	class: "input-group input-group-sm my-1"
-}, MR = ["disabled"], NR = { value: "=" }, PR = { value: ">" }, FR = { value: ">=" }, IR = { value: "<" }, LR = { value: "<=" }, RR = ["disabled"], zR = ["value"], BR = [
+}, PR = ["disabled"], FR = { value: "=" }, IR = { value: ">" }, LR = { value: ">=" }, RR = { value: "<" }, zR = { value: "<=" }, BR = ["disabled"], VR = ["value"], HR = [
 	"disabled",
 	"min",
 	"max"
-], VR = ["disabled"], HR = { key: 2 }, UR = {
+], UR = ["disabled"], WR = { key: 2 }, GR = {
 	key: 0,
 	class: "dropdown"
-}, WR = {
+}, KR = {
 	class: "btn btn-sm btn-secondary dropdown-toggle my-1",
 	type: "button",
 	"data-bs-auto-close": "outside",
 	"data-bs-toggle": "dropdown",
 	"aria-expanded": "false"
-}, GR = { class: "dropdown-menu" }, KR = ["onClick"], qR = {
+}, qR = { class: "dropdown-menu" }, JR = ["onClick"], YR = {
 	key: 0,
 	class: "bi bi-check-square"
-}, JR = {
+}, XR = {
 	key: 1,
 	class: "bi bi-square"
-}, YR = { key: 0 }, XR = { key: 1 }, ZR = { key: 2 }, QR = { key: 3 }, $R = {
+}, ZR = { key: 0 }, QR = { key: 1 }, $R = { key: 2 }, ez = { key: 3 }, tz = {
 	key: 1,
 	class: "input-group input-group-sm my-1"
-}, ez = ["multiple"], tz = ["value"], nz = ["disabled"], rz = {
+}, nz = ["multiple"], rz = ["value"], iz = ["disabled"], az = {
 	key: 3,
 	class: "input-group input-group-sm my-1"
-}, iz = { value: "=" }, az = { value: ">" }, oz = { value: ">=" }, sz = { value: "<" }, cz = { value: "<=" }, lz = ["value"], uz = ["type"], dz = ["disabled"], fz = ["disabled", "onClick"];
-function pz(t, n, s, c, l, u) {
+}, oz = { value: "=" }, sz = { value: ">" }, cz = { value: ">=" }, lz = { value: "<" }, uz = { value: "<=" }, dz = ["value"], fz = ["type"], pz = ["disabled"], mz = ["disabled", "onClick"];
+function hz(t, n, s, c, l, u) {
 	return _(), i("div", null, [
-		s.column.filter && s.column.filter.type == "text" ? (_(), i("div", kR, [k(a("input", {
+		s.column.filter && s.column.filter.type == "text" ? (_(), i("div", jR, [k(a("input", {
 			type: "text",
 			class: m([{ fixed: s.column.filter.fixed }, "form-control form-control-sm"]),
 			"onUpdate:modelValue": n[0] ||= (e) => s.column.filter.value = e,
@@ -23851,8 +23851,8 @@ function pz(t, n, s, c, l, u) {
 			onClick: n[2] ||= (e) => {
 				s.column.filter.value = void 0, s.reloadTable();
 			}
-		}, [...n[25] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, AR)) : r("", !0)])) : r("", !0),
-		s.column.filter && s.column.filter.type == "number" ? (_(), i("div", jR, [
+		}, [...n[25] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, MR)) : r("", !0)])) : r("", !0),
+		s.column.filter && s.column.filter.type == "number" ? (_(), i("div", NR, [
 			s.column.filter.operators == 1 ? k((_(), i("select", {
 				key: 0,
 				"onUpdate:modelValue": n[3] ||= (e) => s.column.filter.operator = e,
@@ -23860,12 +23860,12 @@ function pz(t, n, s, c, l, u) {
 				onChange: n[4] ||= (e) => s.reloadTable(),
 				class: "form-select form-select-sm pe-0"
 			}, [
-				a("option", NR, S(u.translate("=")), 1),
-				a("option", PR, S(u.translate(">")), 1),
-				a("option", FR, S(u.translate(">=")), 1),
-				a("option", IR, S(u.translate("<")), 1),
-				a("option", LR, S(u.translate("<=")), 1)
-			], 40, MR)), [[E, s.column.filter.operator]]) : r("", !0),
+				a("option", FR, S(u.translate("=")), 1),
+				a("option", IR, S(u.translate(">")), 1),
+				a("option", LR, S(u.translate(">=")), 1),
+				a("option", RR, S(u.translate("<")), 1),
+				a("option", zR, S(u.translate("<=")), 1)
+			], 40, PR)), [[E, s.column.filter.operator]]) : r("", !0),
 			s.column.filter.operators && s.column.filter.operators.length > 0 ? k((_(), i("select", {
 				key: 1,
 				"onUpdate:modelValue": n[5] ||= (e) => s.column.filter.operator = e,
@@ -23875,7 +23875,7 @@ function pz(t, n, s, c, l, u) {
 			}, [(_(!0), i(e, null, y(s.column.filter.operators, (e) => (_(), i("option", {
 				key: e,
 				value: e.value
-			}, S(u.translate(e.label)), 9, zR))), 128))], 40, RR)), [[E, s.column.filter.operator]]) : r("", !0),
+			}, S(u.translate(e.label)), 9, VR))), 128))], 40, BR)), [[E, s.column.filter.operator]]) : r("", !0),
 			k(a("input", {
 				type: "number",
 				class: m(["form-control", { fixed: s.column.filter.fixed }]),
@@ -23885,7 +23885,7 @@ function pz(t, n, s, c, l, u) {
 				max: s.column.filter.max,
 				onChange: n[8] ||= (e) => s.reloadTable(),
 				onKeyup: n[9] ||= A((e) => s.reloadTable(), ["enter"])
-			}, null, 42, BR), [[D, s.column.filter.value]]),
+			}, null, 42, HR), [[D, s.column.filter.value]]),
 			!s.column.filter.fixed && s.column.filter.buttonx && s.column.filter.buttonx != 0 ? (_(), i("button", {
 				key: 2,
 				class: m(["btn btn-outline-secondary", { "opacity-25": s.column.filter.value == null }]),
@@ -23893,28 +23893,28 @@ function pz(t, n, s, c, l, u) {
 				onClick: n[10] ||= (e) => {
 					s.column.filter.value = void 0, s.reloadTable();
 				}
-			}, [...n[26] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, VR)) : r("", !0)
+			}, [...n[26] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, UR)) : r("", !0)
 		])) : r("", !0),
-		s.column.filter && s.column.filter.type == "select" ? (_(), i("div", HR, [s.column.filter.dropdown ? (_(), i("div", UR, [a("button", WR, S(u.dropdownButtonLabel(s.column.filter)), 1), a("ul", GR, [
+		s.column.filter && s.column.filter.type == "select" ? (_(), i("div", WR, [s.column.filter.dropdown ? (_(), i("div", GR, [a("button", KR, S(u.dropdownButtonLabel(s.column.filter)), 1), a("ul", qR, [
 			a("li", null, [(_(!0), i(e, null, y(s.column.filter.options, (e) => (_(), i("span", {
 				key: e,
 				class: m(["dropdown-item cursor-pointer", { selected: s.column.filter.multiple ? (s.column.filter.value || []).indexOf(e.value) >= 0 : s.column.filter.value === e.value }]),
 				onClick: (t) => u.dropdownSelectToggleOne(s.column.filter, e)
-			}, [(s.column.filter.multiple ? (s.column.filter.value || []).indexOf(e.value) >= 0 : s.column.filter.value === e.value) ? (_(), i("i", qR)) : (_(), i("i", JR)), o(" " + S(u.translate(e.label ? e.label : e.value)), 1)], 10, KR))), 128))]),
-			s.column.filter.multiple ? (_(), i("li", YR, [...n[27] ||= [a("hr", { class: "dropdown-divider" }, null, -1)]])) : r("", !0),
-			s.column.filter.multiple ? (_(), i("li", XR, [a("span", {
+			}, [(s.column.filter.multiple ? (s.column.filter.value || []).indexOf(e.value) >= 0 : s.column.filter.value === e.value) ? (_(), i("i", YR)) : (_(), i("i", XR)), o(" " + S(u.translate(e.label ? e.label : e.value)), 1)], 10, JR))), 128))]),
+			s.column.filter.multiple ? (_(), i("li", ZR, [...n[27] ||= [a("hr", { class: "dropdown-divider" }, null, -1)]])) : r("", !0),
+			s.column.filter.multiple ? (_(), i("li", QR, [a("span", {
 				class: "dropdown-item cursor-pointer",
 				onClick: n[11] ||= (e) => u.dropdownSelectAll(s.column.filter.value, s.column.filter.options)
 			}, S(u.translate("Select all")), 1)])) : r("", !0),
-			s.column.filter.multiple ? (_(), i("li", ZR, [a("span", {
+			s.column.filter.multiple ? (_(), i("li", $R, [a("span", {
 				class: "dropdown-item cursor-pointer",
 				onClick: n[12] ||= (e) => u.dropdownSelectClear(s.column.filter.value)
 			}, S(u.translate("Unselect all")), 1)])) : r("", !0),
-			s.column.filter.multiple ? (_(), i("li", QR, [a("span", {
+			s.column.filter.multiple ? (_(), i("li", ez, [a("span", {
 				class: "dropdown-item cursor-pointer",
 				onClick: n[13] ||= (e) => u.dropdownSelectInvert(s.column.filter.value, s.column.filter.options)
 			}, S(u.translate("Invert all")), 1)])) : r("", !0)
-		])])) : (_(), i("div", $R, [k(a("select", {
+		])])) : (_(), i("div", tz, [k(a("select", {
 			"onUpdate:modelValue": n[14] ||= (e) => s.column.filter.value = e,
 			onChange: n[15] ||= (e) => s.reloadTable(),
 			multiple: s.column.filter.multiple,
@@ -23922,26 +23922,26 @@ function pz(t, n, s, c, l, u) {
 		}, [(_(!0), i(e, null, y(s.column.filter.options, (e) => (_(), i("option", {
 			key: e,
 			value: e.value
-		}, S(u.translate(e.label ? e.label : e.value)), 9, tz))), 128))], 40, ez), [[E, s.column.filter.value]]), s.column.filter.buttonx && s.column.filter.buttonx != 0 ? (_(), i("button", {
+		}, S(u.translate(e.label ? e.label : e.value)), 9, rz))), 128))], 40, nz), [[E, s.column.filter.value]]), s.column.filter.buttonx && s.column.filter.buttonx != 0 ? (_(), i("button", {
 			key: 0,
 			class: m(["btn btn-outline-secondary", { "opacity-25": s.column.filter.value == null }]),
 			disabled: s.column.filter.value == null,
 			onClick: n[16] ||= (e) => {
 				s.column.filter.value = void 0, s.reloadTable();
 			}
-		}, [...n[28] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, nz)) : r("", !0)]))])) : r("", !0),
-		s.column.filter && (s.column.filter.type == "datetime-local" || s.column.filter.type == "date") ? (_(), i("div", rz, [
+		}, [...n[28] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, iz)) : r("", !0)]))])) : r("", !0),
+		s.column.filter && (s.column.filter.type == "datetime-local" || s.column.filter.type == "date") ? (_(), i("div", az, [
 			s.column.filter.operators == 1 ? k((_(), i("select", {
 				key: 0,
 				"onUpdate:modelValue": n[17] ||= (e) => s.column.filter.operator = e,
 				onChange: n[18] ||= (e) => s.reloadTable(),
 				class: "form-select form-select-sm pe-0"
 			}, [
-				a("option", iz, S(u.translate("=")), 1),
-				a("option", az, S(u.translate(">")), 1),
-				a("option", oz, S(u.translate(">=")), 1),
-				a("option", sz, S(u.translate("<")), 1),
-				a("option", cz, S(u.translate("<=")), 1)
+				a("option", oz, S(u.translate("=")), 1),
+				a("option", sz, S(u.translate(">")), 1),
+				a("option", cz, S(u.translate(">=")), 1),
+				a("option", lz, S(u.translate("<")), 1),
+				a("option", uz, S(u.translate("<=")), 1)
 			], 544)), [[E, s.column.filter.operator]]) : r("", !0),
 			s.column.filter.operators && s.column.filter.operators.length > 0 ? k((_(), i("select", {
 				key: 1,
@@ -23951,21 +23951,21 @@ function pz(t, n, s, c, l, u) {
 			}, [(_(!0), i(e, null, y(s.column.filter.operators, (e) => (_(), i("option", {
 				key: e,
 				value: e.value
-			}, S(u.translate(e.label)), 9, lz))), 128))], 544)), [[E, s.column.filter.operator]]) : r("", !0),
+			}, S(u.translate(e.label)), 9, dz))), 128))], 544)), [[E, s.column.filter.operator]]) : r("", !0),
 			k(a("input", {
 				type: s.column.filter.type,
 				class: m([{ fixed: s.column.filter.fixed }, "form-control form-control-sm"]),
 				"onUpdate:modelValue": n[21] ||= (e) => s.column.filter.value = e,
 				onChange: n[22] ||= (e) => s.reloadTable(),
 				onKeyup: n[23] ||= A((e) => s.reloadTable(), ["enter"])
-			}, null, 42, uz), [[T, s.column.filter.value]]),
+			}, null, 42, fz), [[T, s.column.filter.value]]),
 			a("button", {
 				class: m(["btn btn-outline-secondary", { "opacity-25": !s.column.filter.value }]),
 				disabled: !s.column.filter.value,
 				onClick: n[24] ||= (e) => {
 					s.column.filter.value = void 0, s.reloadTable();
 				}
-			}, [...n[29] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, dz)
+			}, [...n[29] ||= [a("i", { class: "bi bi-x" }, null, -1)]], 10, pz)
 		])) : r("", !0),
 		s.column.filter && s.column.filter.buttons ? (_(), i("span", {
 			key: 4,
@@ -23982,10 +23982,10 @@ function pz(t, n, s, c, l, u) {
 			button: e,
 			column: s.column,
 			table: s.table
-		})]) }, null, 2), o(" " + S(u.translate(e.title)), 1)], 10, fz)]))), 128))], 2)) : r("", !0)
+		})]) }, null, 2), o(" " + S(u.translate(e.title)), 1)], 10, mz)]))), 128))], 2)) : r("", !0)
 	]);
 }
-var mz = /*#__PURE__*/ EA(OR, [["render", pz]]), hz = Nc(), gz = {
+var gz = /*#__PURE__*/ EA(AR, [["render", hz]]), _z = Nc(), vz = {
 	name: "VuAdminTable",
 	props: {
 		settings: Object,
@@ -23997,8 +23997,8 @@ var mz = /*#__PURE__*/ EA(OR, [["render", pz]]), hz = Nc(), gz = {
 	},
 	components: {
 		VuAdminForm: XL,
-		VuAdminTablePagination: DR,
-		VuAdminTableFilterField: mz
+		VuAdminTablePagination: kR,
+		VuAdminTableFilterField: gz
 	},
 	data() {
 		return {
@@ -24130,17 +24130,17 @@ var mz = /*#__PURE__*/ EA(OR, [["render", pz]]), hz = Nc(), gz = {
 			return this.settings.initialized && this.auth && this.auth.success && this.settings && this.settings.table;
 		},
 		sendEvent(e, t, n) {
-			hz.emit(e + "-" + t, {
+			_z.emit(e + "-" + t, {
 				from: this.settings.entity,
 				payload: n
 			});
 		},
 		listenEvent() {
-			if (hz.on(`EDIT-${this.settings.entity}`, (e) => {
+			if (_z.on(`EDIT-${this.settings.entity}`, (e) => {
 				this.editItem(e.payload.item);
 			}), this.settings.table && this.settings.table.filterListen) {
 				let e = this.settings.table.filterListen, t = `FILTER-${this.settings.entity}`;
-				this._filterListenerRegistered ||= (hz.on(t, (t) => {
+				this._filterListenerRegistered ||= (_z.on(t, (t) => {
 					if (t.from === e.entity && t.payload) {
 						let { field: e, value: n } = t.payload, r = this.settings.table.columns.find((t) => t.name === e);
 						r && r.filter && (r.filter.value = n, r.filter.operator = r.filter.default_operator || "=", this.reloadTable());
@@ -24211,7 +24211,7 @@ var mz = /*#__PURE__*/ EA(OR, [["render", pz]]), hz = Nc(), gz = {
 					let e = Math.floor((this.config.pagination.size - 1) / 2), t = this.config.pagination.page - e;
 					this.config.pagination.page > this.config.pagination.pages && (this.config.pagination.page = this.config.pagination.pages), this.config.pagination.page < 1 && (this.config.pagination.page = 1), t + this.config.pagination.size > this.config.pagination.pages && (t = this.config.pagination.pages - this.config.pagination.size + 1), t < 1 && (t = 1), this.config.pagination.numbers = Array.from({ length: this.config.pagination.size }, (e, n) => t + n);
 				}
-				this.config.pagination.from = this.config.pagination.skip + 1, this.config.pagination.to = this.config.pagination.skip + (this.config.pagination.items === null ? this.config.pagination.limit : this.config.pagination.items);
+				this.config.pagination.items === 0 ? (this.config.pagination.from = 0, this.config.pagination.to = 0) : (this.config.pagination.from = this.config.pagination.skip + 1, this.config.pagination.to = this.config.pagination.skip + (this.config.pagination.items === null ? this.config.pagination.limit : this.config.pagination.items));
 			}
 		},
 		setPage(e, t) {
@@ -24803,130 +24803,130 @@ var mz = /*#__PURE__*/ EA(OR, [["render", pz]]), hz = Nc(), gz = {
 			for (let n of e) if (n.convert && n.convert.out) for (let e of t) e[n.name] = n.convert.out(e[n.name], e, n);
 		}
 	}
-}, _z = ["data-bs-theme"], vz = { class: "vua-table-title" }, yz = { class: "d-flex align-items-center justify-content-between" }, bz = { class: "d-inline-block" }, xz = {
+}, yz = ["data-bs-theme"], bz = { class: "vua-table-title" }, xz = { class: "d-flex align-items-center justify-content-between" }, Sz = { class: "d-inline-block" }, Cz = {
 	key: 0,
 	class: "card-title d-inline-block mb-2"
-}, Sz = ["href", "title"], Cz = {
+}, wz = ["href", "title"], Tz = {
 	class: "spinner-border spinner-border-sm mx-2",
 	role: "status"
-}, wz = { class: "visually-hidden" }, Tz = {
+}, Ez = { class: "visually-hidden" }, Dz = {
 	key: 0,
 	class: "d-inline-block"
-}, Ez = {
+}, Oz = {
 	key: 0,
 	class: "d-inline-block px-1 mx-1"
-}, Dz = { class: "fw-bold" }, Oz = { class: "dropdown d-inline-block" }, kz = ["innerHTML"], Az = { class: "dropdown-menu text-start" }, jz = { class: "me-2 text-muted" }, Mz = { class: "fw-bold" }, Nz = ["onClick"], Pz = { class: "d-none d-md-inline" }, Fz = {
+}, kz = { class: "fw-bold" }, Az = { class: "dropdown d-inline-block" }, jz = ["innerHTML"], Mz = { class: "dropdown-menu text-start" }, Nz = { class: "me-2 text-muted" }, Pz = { class: "fw-bold" }, Fz = ["onClick"], Iz = { class: "d-none d-md-inline" }, Lz = {
 	key: 1,
 	class: "dropdown d-inline-block"
-}, Iz = { class: "mx-1" }, Lz = { class: "d-none d-md-inline" }, Rz = {
+}, Rz = { class: "mx-1" }, zz = { class: "d-none d-md-inline" }, Bz = {
 	key: 0,
 	class: "badge text-bg-secondary ms-1"
-}, zz = { class: "dropdown-menu" }, Bz = ["onClick"], Vz = {
+}, Vz = { class: "dropdown-menu" }, Hz = ["onClick"], Uz = {
 	key: 0,
 	class: "bi bi-check-square-fill me-2"
-}, Hz = {
+}, Wz = {
 	key: 1,
 	class: "bi bi-x-square me-2 text-danger"
-}, Uz = { class: "badge text-secondary fw-normal" }, Wz = { key: 0 }, Gz = { class: "badge text-bg-secondary ms-1" }, Kz = {
+}, Gz = { class: "badge text-secondary fw-normal" }, Kz = { key: 0 }, qz = { class: "badge text-bg-secondary ms-1" }, Jz = {
 	key: 2,
 	class: "dropdown d-inline-block"
-}, qz = { class: "mx-1" }, Jz = { class: "d-none d-md-inline" }, Yz = { class: "dropdown-menu" }, Xz = ["onClick"], Zz = { class: "d-none d-md-inline" }, Qz = {
+}, Yz = { class: "mx-1" }, Xz = { class: "d-none d-md-inline" }, Zz = { class: "dropdown-menu" }, Qz = ["onClick"], $z = { class: "d-none d-md-inline" }, eB = {
 	key: 0,
 	class: "badge text-bg-secondary ms-1"
-}, $z = { class: "vua-table-header" }, eB = ["data-collapsed", "width"], tB = ["title", "onClick"], nB = ["onClick"], rB = ["innerHTML"], iB = {
+}, tB = { class: "vua-table-header" }, nB = ["data-collapsed", "width"], rB = ["title", "onClick"], iB = ["onClick"], aB = ["innerHTML"], oB = {
 	key: 0,
 	class: "bi bi-arrow-down"
-}, aB = {
+}, sB = {
 	key: 1,
 	class: "bi bi-arrow-up"
-}, oB = { key: 1 }, sB = ["disabled", "onClick"], cB = {
+}, cB = { key: 1 }, lB = ["disabled", "onClick"], uB = {
 	key: 0,
 	class: "vua-table-filter"
-}, lB = ["data-collapsed", "width"], uB = {
+}, dB = ["data-collapsed", "width"], fB = {
 	key: 0,
 	class: "d-inline-block w-100 px-1"
-}, dB = { class: "bi bi-check-all" }, fB = { class: "bi bi-x-lg" }, pB = { class: "align-middle" }, mB = [
+}, pB = { class: "bi bi-check-all" }, mB = { class: "bi bi-x-lg" }, hB = { class: "align-middle" }, gB = [
 	"data-collapsed",
 	"data-label",
 	"width",
 	"onClick"
-], hB = {
+], _B = {
 	key: 0,
 	class: "d-inline-block w-100 px-1"
-}, gB = ["innerHTML"], _B = { key: 1 }, vB = ["innerHTML"], yB = [
+}, vB = ["innerHTML"], yB = { key: 1 }, bB = ["innerHTML"], xB = [
 	"aria-label",
 	"aria-valuenow",
 	"aria-valuemax"
-], bB = { key: 0 }, xB = {
+], SB = { key: 0 }, CB = {
 	key: 4,
 	class: "input-group input-group-sm"
-}, SB = ["innerHTML"], CB = {
+}, wB = ["innerHTML"], TB = {
 	key: 1,
 	class: "input-group-text"
-}, wB = [
+}, EB = [
 	"name",
 	"onUpdate:modelValue",
 	"onChange"
-], TB = [
+], DB = [
 	"type",
 	"onChange",
 	"onUpdate:modelValue"
-], EB = ["onChange", "onUpdate:modelValue"], DB = ["value"], OB = ["innerHTML"], kB = {
+], OB = ["onChange", "onUpdate:modelValue"], kB = ["value"], AB = ["innerHTML"], jB = {
 	key: 5,
 	class: "input-group-text"
-}, AB = [
+}, MB = [
 	"name",
 	"onUpdate:modelValue",
 	"onChange"
-], jB = { key: 5 }, MB = ["disabled", "onClick"], NB = ["innerHTML"], PB = { key: 2 }, FB = { key: 0 }, IB = ["colspan"], LB = { class: "row g-3 align-items-center" }, RB = { class: "col-form-label" }, zB = [
+], NB = { key: 5 }, PB = ["disabled", "onClick"], FB = ["innerHTML"], IB = { key: 2 }, LB = { key: 0 }, RB = ["colspan"], zB = { class: "row g-3 align-items-center" }, BB = { class: "col-form-label" }, VB = [
 	"type",
 	"onUpdate:modelValue",
 	"onChange"
-], BB = ["onUpdate:modelValue", "onChange"], VB = ["onUpdate:modelValue", "onChange"], HB = ["value"], UB = ["innerHTML"], WB = {
+], HB = ["onUpdate:modelValue", "onChange"], UB = ["onUpdate:modelValue", "onChange"], WB = ["value"], GB = ["innerHTML"], KB = {
 	key: 0,
 	class: "bg-light text-dark"
-}, GB = {
+}, qB = {
 	key: 0,
 	class: "vua-table-bulk border-info"
-}, KB = [
+}, JB = [
 	"data-collapsed",
 	"data-label",
 	"width"
-], qB = {
+], YB = {
 	key: 0,
 	class: "d-inline-block w-100 px-1"
-}, JB = {
+}, XB = {
 	key: 1,
 	class: "input-group input-group-sm my-1"
-}, YB = [
+}, ZB = [
 	"type",
 	"disabled",
 	"onChange",
 	"onUpdate:modelValue"
-], XB = [
+], QB = [
 	"disabled",
 	"onChange",
 	"onUpdate:modelValue"
-], ZB = ["value"], QB = ["onClick"], $B = {
+], $B = ["value"], eV = ["onClick"], tV = {
 	key: 0,
 	class: "bi bi-square text-secondary"
-}, eV = {
+}, nV = {
 	key: 1,
 	class: "bi bi-check-square"
-}, tV = { key: 2 }, nV = ["disabled", "onClick"], rV = ["innerHTML"], iV = { key: 2 }, aV = ["id"], oV = { class: "modal-dialog modal-xl" }, sV = { class: "modal-content h-100" }, cV = ["id"], lV = { class: "modal-dialog modal-dialog-scrollable" }, uV = {
+}, rV = { key: 2 }, iV = ["disabled", "onClick"], aV = ["innerHTML"], oV = { key: 2 }, sV = ["id"], cV = { class: "modal-dialog modal-xl" }, lV = { class: "modal-content h-100" }, uV = ["id"], dV = { class: "modal-dialog modal-dialog-scrollable" }, fV = {
 	key: 0,
 	class: "modal-content"
-}, dV = { class: "modal-header" }, fV = { class: "modal-title" }, pV = ["aria-label"], mV = { class: "modal-body" }, hV = { class: "text-secondary text-uppercase small mb-2" }, gV = { class: "form-label small fw-bold mb-1" }, _V = { class: "text-secondary text-uppercase small mb-2" }, vV = { class: "list-group mb-4" }, yV = ["onClick"], bV = ["innerHTML"], xV = {
+}, pV = { class: "modal-header" }, mV = { class: "modal-title" }, hV = ["aria-label"], gV = { class: "modal-body" }, _V = { class: "text-secondary text-uppercase small mb-2" }, vV = { class: "form-label small fw-bold mb-1" }, yV = { class: "text-secondary text-uppercase small mb-2" }, bV = { class: "list-group mb-4" }, xV = ["onClick"], SV = ["innerHTML"], CV = {
 	key: 0,
 	class: "bi bi-arrow-down"
-}, SV = {
+}, wV = {
 	key: 1,
 	class: "bi bi-arrow-up"
-}, CV = { class: "text-secondary text-uppercase small mb-2" }, wV = {
+}, TV = { class: "text-secondary text-uppercase small mb-2" }, EV = {
 	class: "btn-group flex-wrap mb-2",
 	role: "group"
-}, TV = ["onClick"], EV = { class: "modal-footer d-flex justify-content-between" };
-function DV(t, c, l, u, d, f) {
+}, DV = ["onClick"], OV = { class: "modal-footer d-flex justify-content-between" };
+function kV(t, c, l, u, d, f) {
 	let p = b("VuAdminTableFilterField"), g = b("VuAdminTablePagination"), v = b("VuAdminForm");
 	return _(), i("div", null, [
 		f.authAndSettings() ? (_(), i("div", {
@@ -24935,18 +24935,18 @@ function DV(t, c, l, u, d, f) {
 			"data-bs-theme": [l.settings.theme]
 		}, [
 			a("div", { class: m(["vua-overlay", { blocked: d.ui.block.table }]) }, null, 2),
-			a("div", vz, [a("div", yz, [a("div", bz, [l.settings.table.title ? (_(), i("h5", xz, [f.safeUrl(l.settings.table.titleHref) ? (_(), i("a", {
+			a("div", bz, [a("div", xz, [a("div", Sz, [l.settings.table.title ? (_(), i("h5", Cz, [f.safeUrl(l.settings.table.titleHref) ? (_(), i("a", {
 				key: 0,
 				href: f.safeUrl(l.settings.table.titleHref),
 				class: "vua-table-title-link link-body-emphasis text-decoration-none",
 				title: f.translate("Open")
-			}, [o(S(f.translate(l.settings.table.title)), 1), c[10] ||= a("i", { class: "bi bi-arrow-right-short ms-1" }, null, -1)], 8, Sz)) : (_(), i(e, { key: 1 }, [o(S(f.translate(l.settings.table.title)), 1)], 64))])) : r("", !0), k(a("div", Cz, [a("span", wz, S(f.translate("Loading...")), 1)], 512), [[O, d.ui.wait.table && l.settings.table.title]])]), d.messages.table.length ? (_(), i("div", Tz, [d.message.table ? (_(), i("small", Ez, [a("span", { class: m(["text-" + d.message.table.priority]) }, [a("span", Dz, S(d.message.table.msg), 1)], 2)])) : r("", !0), a("div", Oz, [a("button", {
+			}, [o(S(f.translate(l.settings.table.title)), 1), c[10] ||= a("i", { class: "bi bi-arrow-right-short ms-1" }, null, -1)], 8, wz)) : (_(), i(e, { key: 1 }, [o(S(f.translate(l.settings.table.title)), 1)], 64))])) : r("", !0), k(a("div", Tz, [a("span", Ez, S(f.translate("Loading...")), 1)], 512), [[O, d.ui.wait.table && l.settings.table.title]])]), d.messages.table.length ? (_(), i("div", Dz, [d.message.table ? (_(), i("small", Oz, [a("span", { class: m(["text-" + d.message.table.priority]) }, [a("span", kz, S(d.message.table.msg), 1)], 2)])) : r("", !0), a("div", Az, [a("button", {
 				class: m(["btn btn-sm dropdown-toggle", ["btn-" + d.messages.table[0].priority]]),
 				type: "button",
 				"data-bs-toggle": "dropdown",
 				"aria-expanded": "false",
 				innerHTML: d.messages.table.length + " " + (d.messages.table.length > 1 ? f.translate("messages") : f.translate("message"))
-			}, null, 10, kz), a("ul", Az, [(_(!0), i(e, null, y(d.messages.table, (e) => (_(), i("li", { key: e }, [a("span", { class: m(["dropdown-item", ["text-" + e.priority]]) }, [a("small", jz, S(e.datetime), 1), a("span", Mz, S(e.msg), 1)], 2)]))), 128))])])])) : r("", !0)])]),
+			}, null, 10, jz), a("ul", Mz, [(_(!0), i(e, null, y(d.messages.table, (e) => (_(), i("li", { key: e }, [a("span", { class: m(["dropdown-item", ["text-" + e.priority]]) }, [a("small", Nz, S(e.datetime), 1), a("span", Pz, S(e.msg), 1)], 2)]))), 128))])])])) : r("", !0)])]),
 			l.settings.table.control ? (_(), i("div", {
 				key: 0,
 				class: m(["vua-table-control", [l.settings.table.control.class]])
@@ -24962,30 +24962,30 @@ function DV(t, c, l, u, d, f) {
 				}, [a("i", { class: m(f.buttonIconClass(t.icon === void 0 ? f.getButtonIconClassByAction(t.action) : f.getValueOrFunction(t.icon, {
 					button: t,
 					table: this
-				}))) }, null, 2), a("span", Pz, S(f.translate(t.title)), 1)], 10, Nz)) : r("", !0),
-				t.action === "TABLE_COLUMNS" ? (_(), i("div", Fz, [a("button", {
+				}))) }, null, 2), a("span", Iz, S(f.translate(t.title)), 1)], 10, Fz)) : r("", !0),
+				t.action === "TABLE_COLUMNS" ? (_(), i("div", Lz, [a("button", {
 					type: "button",
 					class: m([[t.class ? t.class : f.getButtonClassByAction(t.action)], "dropdown-toggle"]),
 					"data-bs-toggle": "dropdown",
 					"data-bs-auto-close": "outside",
 					"aria-expanded": "false"
-				}, [k(a("span", Iz, [
+				}, [k(a("span", Rz, [
 					a("i", { class: m(f.buttonIconClass(t.icon === void 0 ? f.getButtonIconClassByAction(t.action) : f.getValueOrFunction(t.icon, {
 						button: t,
 						table: this
 					}))) }, null, 2),
-					a("span", Lz, S(f.translate(t.title)), 1),
-					f.countHiddenColumns() ? (_(), i("span", Rz, S(f.countHiddenColumns()), 1)) : r("", !0)
-				], 512), [[O, l.settings.table.columns.length > 0]])], 2), a("ul", zz, [
+					a("span", zz, S(f.translate(t.title)), 1),
+					f.countHiddenColumns() ? (_(), i("span", Bz, S(f.countHiddenColumns()), 1)) : r("", !0)
+				], 512), [[O, l.settings.table.columns.length > 0]])], 2), a("ul", Vz, [
 					(_(!0), i(e, null, y(l.settings.table.columns, (e) => (_(), i("li", { key: e }, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: (t) => f.toggleColumn(e)
 					}, [
-						e.hidden ? r("", !0) : (_(), i("i", Vz)),
-						e.hidden ? (_(), i("i", Hz)) : r("", !0),
+						e.hidden ? r("", !0) : (_(), i("i", Uz)),
+						e.hidden ? (_(), i("i", Wz)) : r("", !0),
 						o(" " + S(f.translate(e.title || e.name)) + " ", 1),
-						a("small", Uz, S(e.name), 1)
-					], 8, Bz)]))), 128)),
+						a("small", Gz, S(e.name), 1)
+					], 8, Hz)]))), 128)),
 					c[11] ||= a("li", null, [a("hr", { class: "dropdown-divider" })], -1),
 					a("li", null, [a("span", {
 						class: "dropdown-item cursor-pointer",
@@ -24995,29 +24995,29 @@ function DV(t, c, l, u, d, f) {
 						class: "dropdown-item cursor-pointer",
 						onClick: c[1] ||= (e) => f.toggleColumn(!1)
 					}, S(f.translate("Hidden all")), 1)]),
-					f.countCollapsedColumns() ? (_(), i("li", Wz, [a("span", {
+					f.countCollapsedColumns() ? (_(), i("li", Kz, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: c[2] ||= (e) => f.expandAllColumns()
-					}, [o(S(f.translate("Expand all")) + " ", 1), a("span", Gz, S(f.countCollapsedColumns()), 1)])])) : r("", !0),
+					}, [o(S(f.translate("Expand all")) + " ", 1), a("span", qz, S(f.countCollapsedColumns()), 1)])])) : r("", !0),
 					a("li", null, [a("span", {
 						class: "dropdown-item cursor-pointer",
 						onClick: c[3] ||= (e) => f.resetColumnState()
 					}, S(f.translate("Reset")), 1)])
 				])])) : r("", !0),
-				t.dropdowns ? (_(), i("div", Kz, [a("button", {
+				t.dropdowns ? (_(), i("div", Jz, [a("button", {
 					type: "button",
 					class: m([[t.class], "dropdown-toggle"]),
 					"data-bs-toggle": "dropdown",
 					"data-bs-auto-close": "outside",
 					"aria-expanded": "false"
-				}, [a("span", qz, [
+				}, [a("span", Yz, [
 					a("i", { class: m(f.buttonIconClass(t.icon === void 0 ? f.getButtonIconClassByAction(t.action) : f.getValueOrFunction(t.icon, {
 						button: t,
 						table: this
 					}))) }, null, 2),
 					c[12] ||= o(),
-					a("span", Jz, S(f.translate(t.title)), 1)
-				])], 2), a("ul", Yz, [(_(!0), i(e, null, y(t.dropdowns, (e) => (_(), i("li", { key: e }, [a("span", {
+					a("span", Xz, S(f.translate(t.title)), 1)
+				])], 2), a("ul", Zz, [(_(!0), i(e, null, y(t.dropdowns, (e) => (_(), i("li", { key: e }, [a("span", {
 					class: m(["dropdown-item cursor-pointer", [e.class]]),
 					onClick: (t) => f.tableAction(e, {
 						items: d.items,
@@ -25026,7 +25026,7 @@ function DV(t, c, l, u, d, f) {
 				}, [e.icon ? (_(), i("i", {
 					key: 0,
 					class: m(f.buttonIconClass(e.icon))
-				}, null, 2)) : r("", !0), o(" " + S(f.translate(e.title)), 1)], 10, Xz)]))), 128))])])) : r("", !0)
+				}, null, 2)) : r("", !0), o(" " + S(f.translate(e.title)), 1)], 10, Qz)]))), 128))])])) : r("", !0)
 			]))), 128)), f.filterableColumns().length || f.sortableColumns().length || d.config.pagination.limits && d.config.pagination.limits.length ? (_(), i("button", {
 				key: 0,
 				type: "button",
@@ -25034,14 +25034,14 @@ function DV(t, c, l, u, d, f) {
 				onClick: c[4] ||= (e) => f.openMobileFilters()
 			}, [
 				c[13] ||= a("i", { class: "bi bi-funnel me-1" }, null, -1),
-				a("span", Zz, S(f.translate("Filter / Sort")), 1),
-				f.countActiveFilters() + f.countActiveSort() > 0 ? (_(), i("span", Qz, S(f.countActiveFilters() + f.countActiveSort()), 1)) : r("", !0)
+				a("span", $z, S(f.translate("Filter / Sort")), 1),
+				f.countActiveFilters() + f.countActiveSort() > 0 ? (_(), i("span", eB, S(f.countActiveFilters() + f.countActiveSort()), 1)) : r("", !0)
 			])) : r("", !0)], 2)) : r("", !0),
 			l.settings.table ? (_(), i("table", {
 				key: 1,
 				class: m(["table vua-table vua-table-responsive mb-0", [l.settings.table.class]])
 			}, [
-				a("thead", null, [a("tr", $z, [(_(!0), i(e, null, y(l.settings.table.columns, (t) => (_(), i("th", {
+				a("thead", null, [a("tr", tB, [(_(!0), i(e, null, y(l.settings.table.columns, (t) => (_(), i("th", {
 					class: m(["", [t.header ? t.header.class : ""]]),
 					style: h([t.hidden ? "display: none" : ""]),
 					"data-collapsed": t.collapsed || null,
@@ -25054,19 +25054,19 @@ function DV(t, c, l, u, d, f) {
 						class: "btn btn-sm vua-col-toggle p-0 me-1",
 						title: f.translate(t.collapsed ? "Expand column" : "Collapse column"),
 						onClick: j((e) => f.toggleCollapseColumn(t), ["stop"])
-					}, [a("i", { class: m(["bi", t.collapsed ? "bi-arrows-expand-vertical" : "bi-arrows-collapse-vertical"]) }, null, 2)], 8, tB)) : r("", !0),
+					}, [a("i", { class: m(["bi", t.collapsed ? "bi-arrows-expand-vertical" : "bi-arrows-collapse-vertical"]) }, null, 2)], 8, rB)) : r("", !0),
 					a("span", {
 						class: m(["d-inline-block no-select text-nowrap", { "cursor-pointer": f.isSortable(t) }]),
 						onClick: (e) => f.sortTable(t)
-					}, [a("span", { innerHTML: t.header && t.header.title !== void 0 ? f.translate(t.header.title) : t.title ? f.translate(t.title) : f.translate(t.name) }, null, 8, rB), d.config.order[t.name] ? (_(), i("span", {
+					}, [a("span", { innerHTML: t.header && t.header.title !== void 0 ? f.translate(t.header.title) : t.title ? f.translate(t.title) : f.translate(t.name) }, null, 8, aB), d.config.order[t.name] ? (_(), i("span", {
 						key: 0,
 						class: m(["badge text-bg-light ms-1 p-badge", { "opacity-50": d.config.order[t.name].fixed }])
 					}, [
-						d.config.order[t.name].dir === "ASC" ? (_(), i("i", iB)) : r("", !0),
-						d.config.order[t.name].dir === "DESC" ? (_(), i("i", aB)) : r("", !0),
+						d.config.order[t.name].dir === "ASC" ? (_(), i("i", oB)) : r("", !0),
+						d.config.order[t.name].dir === "DESC" ? (_(), i("i", sB)) : r("", !0),
 						o(" " + S(d.config.order[t.name].idx + 1), 1)
-					], 2)) : r("", !0)], 10, nB),
-					t.header && t.header.buttons ? (_(), i("span", oB, [(_(!0), i(e, null, y(t.header.buttons, (e) => (_(), i("button", {
+					], 2)) : r("", !0)], 10, iB),
+					t.header && t.header.buttons ? (_(), i("span", cB, [(_(!0), i(e, null, y(t.header.buttons, (e) => (_(), i("button", {
 						key: e.action,
 						type: "button",
 						disabled: e.disabled === void 0 ? null : f.getValueOrFunction(e.disabled),
@@ -25079,17 +25079,17 @@ function DV(t, c, l, u, d, f) {
 						button: e,
 						column: t,
 						table: this
-					}))) }, null, 2), o(" " + S(f.translate(e.title)), 1)], 10, sB))), 128))])) : r("", !0)
-				], 14, eB))), 128))]), f.countFilters() && l.settings.table.filterRow !== !1 ? (_(), i("tr", cB, [(_(!0), i(e, null, y(l.settings.table.columns, (e) => (_(), i("th", {
+					}))) }, null, 2), o(" " + S(f.translate(e.title)), 1)], 10, lB))), 128))])) : r("", !0)
+				], 14, nB))), 128))]), f.countFilters() && l.settings.table.filterRow !== !1 ? (_(), i("tr", uB, [(_(!0), i(e, null, y(l.settings.table.columns, (e) => (_(), i("th", {
 					style: h([e.hidden ? "display: none" : ""]),
 					"data-collapsed": e.collapsed || null,
 					key: e,
 					width: e.collapsed ? null : e.width,
 					class: m([e.filter ? e.filter.class : ""])
-				}, [e.index && e.click ? (_(), i("div", uB, [a("span", {
+				}, [e.index && e.click ? (_(), i("div", fB, [a("span", {
 					class: m(["cursor-pointer badge border badge-index-toggle py-1 px-2 me-1 my-2 w-100", { active: f.haveSelectedRowInPage() }]),
 					onClick: c[5] ||= (e) => f.toggleSelectedRowInPage()
-				}, [k(a("i", dB, null, 512), [[O, !f.haveSelectedRowInPage()]]), k(a("i", fB, null, 512), [[O, f.haveSelectedRowInPage()]])], 2)])) : r("", !0), e.filter ? (_(), n(p, {
+				}, [k(a("i", pB, null, 512), [[O, !f.haveSelectedRowInPage()]]), k(a("i", mB, null, 512), [[O, f.haveSelectedRowInPage()]])], 2)])) : r("", !0), e.filter ? (_(), n(p, {
 					key: 1,
 					column: e,
 					settings: l.settings,
@@ -25103,8 +25103,8 @@ function DV(t, c, l, u, d, f) {
 					"items",
 					"reload-table",
 					"table-action"
-				])) : r("", !0)], 14, lB))), 128))])) : r("", !0)]),
-				a("tbody", null, [(_(!0), i(e, null, y(this.items, (t, n) => (_(), i(e, { key: t.id }, [a("tr", pB, [(_(!0), i(e, null, y(l.settings.table.columns, (o) => (_(), i("td", {
+				])) : r("", !0)], 14, dB))), 128))])) : r("", !0)]),
+				a("tbody", null, [(_(!0), i(e, null, y(this.items, (t, n) => (_(), i(e, { key: t.id }, [a("tr", hB, [(_(!0), i(e, null, y(l.settings.table.columns, (o) => (_(), i("td", {
 					style: h([o.hidden ? "display: none" : ""]),
 					"data-collapsed": o.collapsed || null,
 					key: o.name,
@@ -25120,15 +25120,15 @@ function DV(t, c, l, u, d, f) {
 						$event: e
 					})
 				}, [
-					o.index ? (_(), i("div", hB, [a("span", {
+					o.index ? (_(), i("div", _B, [a("span", {
 						class: m(["cursor-pointer badge border badge-index p-1 w-100", { selected: d.selected.indexOf(t[l.settings.pkey]) >= 0 }]),
 						innerHTML: n + 1 + (d.config.pagination.page - 1) * d.config.pagination.limit
-					}, null, 10, gB)])) : r("", !0),
-					!o.template && !o.input && !o.progressbar ? (_(), i("span", _B, S(f.tableCellValue(o.name, t, n, o)), 1)) : r("", !0),
+					}, null, 10, vB)])) : r("", !0),
+					!o.template && !o.input && !o.progressbar ? (_(), i("span", yB, S(f.tableCellValue(o.name, t, n, o)), 1)) : r("", !0),
 					o.template ? (_(), i("span", {
 						key: 2,
 						innerHTML: f.tableCellTemplate(o.template, t, n, o)
-					}, null, 8, vB)) : r("", !0),
+					}, null, 8, bB)) : r("", !0),
 					o.progressbar ? (_(), i("div", {
 						key: 3,
 						class: "progress",
@@ -25139,8 +25139,8 @@ function DV(t, c, l, u, d, f) {
 					}, [a("div", {
 						class: m(["progress-bar", [o.progressbar.class]]),
 						style: h({ width: Math.round(t[o.name] / o.progressbar.max * 100) + "%" })
-					}, [o.progressbar.value ? (_(), i("span", bB, S(t[o.name]), 1)) : r("", !0)], 6)], 8, yB)) : r("", !0),
-					o.input ? (_(), i("div", xB, [
+					}, [o.progressbar.value ? (_(), i("span", SB, S(t[o.name]), 1)) : r("", !0)], 6)], 8, xB)) : r("", !0),
+					o.input ? (_(), i("div", CB, [
 						o.input.prefix ? (_(), i("span", {
 							key: 0,
 							class: "input-group-text",
@@ -25148,14 +25148,14 @@ function DV(t, c, l, u, d, f) {
 								column: o,
 								item: t
 							})
-						}, null, 8, SB)) : r("", !0),
-						o.input.prefixcheck ? (_(), i("span", CB, [k(a("input", {
+						}, null, 8, wB)) : r("", !0),
+						o.input.prefixcheck ? (_(), i("span", TB, [k(a("input", {
 							class: "form-check p-0 m-0",
 							type: "checkbox",
 							name: o.input.prefixcheck.name,
 							"onUpdate:modelValue": (e) => t[o.input.prefixcheck.name] = e,
 							onChange: (e) => f.onRowInputChange(t[o.input.prefixcheck.name], o, t, n)
-						}, null, 40, wB), [[w, t[o.input.prefixcheck.name]]])])) : r("", !0),
+						}, null, 40, EB), [[w, t[o.input.prefixcheck.name]]])])) : r("", !0),
 						[
 							"text",
 							"number",
@@ -25170,7 +25170,7 @@ function DV(t, c, l, u, d, f) {
 							})]),
 							onChange: (e) => f.onRowInputChange(t[o.name], o, t, n),
 							"onUpdate:modelValue": (e) => t[o.name] = e
-						}, null, 42, TB)), [[T, t[o.name]]]) : r("", !0),
+						}, null, 42, DB)), [[T, t[o.name]]]) : r("", !0),
 						o.input.type == "select" ? k((_(), i("select", {
 							key: 3,
 							class: m(["form-select form-select-sm pe-0", f.getValueOrFunction(o.input.class, {
@@ -25182,7 +25182,7 @@ function DV(t, c, l, u, d, f) {
 						}, [(_(!0), i(e, null, y(o.input.options, (e) => (_(), i("option", {
 							value: e.value,
 							key: e
-						}, S(f.translate(e.label)), 9, DB))), 128))], 42, EB)), [[E, t[o.name]]]) : r("", !0),
+						}, S(f.translate(e.label)), 9, kB))), 128))], 42, OB)), [[E, t[o.name]]]) : r("", !0),
 						o.input.suffix ? (_(), i("span", {
 							key: 4,
 							class: "input-group-text",
@@ -25190,16 +25190,16 @@ function DV(t, c, l, u, d, f) {
 								column: o,
 								item: t
 							})
-						}, null, 8, OB)) : r("", !0),
-						o.input.suffixcheck ? (_(), i("span", kB, [k(a("input", {
+						}, null, 8, AB)) : r("", !0),
+						o.input.suffixcheck ? (_(), i("span", jB, [k(a("input", {
 							class: "form-check p-0 m-0",
 							type: "checkbox",
 							name: o.input.suffixcheck.name,
 							"onUpdate:modelValue": (e) => t[o.input.suffixcheck.name] = e,
 							onChange: (e) => f.onRowInputChange(t[o.input.suffixcheck.name], o, t, n)
-						}, null, 40, AB), [[w, t[o.input.suffixcheck.name]]])])) : r("", !0)
+						}, null, 40, MB), [[w, t[o.input.suffixcheck.name]]])])) : r("", !0)
 					])) : r("", !0),
-					o.buttons ? (_(), i("span", jB, [(_(!0), i(e, null, y(o.buttons, (e) => (_(), i("span", { key: e.action }, [e.hidden ? r("", !0) : (_(), i("button", {
+					o.buttons ? (_(), i("span", NB, [(_(!0), i(e, null, y(o.buttons, (e) => (_(), i("span", { key: e.action }, [e.hidden ? r("", !0) : (_(), i("button", {
 						key: 0,
 						type: "button",
 						disabled: e.disabled === void 0 ? null : f.getValueOrFunction(e.disabled),
@@ -25226,29 +25226,29 @@ function DV(t, c, l, u, d, f) {
 					}, null, 2)), e.template ? (_(), i("span", {
 						key: 1,
 						innerHTML: f.tableCellTemplate(e.template, t, n, o)
-					}, null, 8, NB)) : (_(), i("span", PB, S(f.translate(e.title)), 1))], 10, MB))]))), 128))])) : r("", !0)
-				], 14, mB))), 128))]), l.settings.table.details && d.details.indexOf(t[l.settings.pkey]) >= 0 ? (_(), i("tr", FB, [a("td", {
+					}, null, 8, FB)) : (_(), i("span", IB, S(f.translate(e.title)), 1))], 10, PB))]))), 128))])) : r("", !0)
+				], 14, gB))), 128))]), l.settings.table.details && d.details.indexOf(t[l.settings.pkey]) >= 0 ? (_(), i("tr", LB, [a("td", {
 					class: m([l.settings.table.details.class]),
 					colspan: l.settings.table.columns.length
 				}, [
 					(_(!0), i(e, null, y(l.settings.table.details.fields, (o) => (_(), i("div", {
 						class: "m-0",
 						key: o
-					}, [a("div", LB, [a("div", { class: m(["col-12 col-md text-md-end", [o.class]]) }, [a("label", RB, S(f.translate(o.label)), 1)], 2), a("div", { class: m(["col-12 col-md", [o.input.class]]) }, [
+					}, [a("div", zB, [a("div", { class: m(["col-12 col-md text-md-end", [o.class]]) }, [a("label", BB, S(f.translate(o.label)), 1)], 2), a("div", { class: m(["col-12 col-md", [o.input.class]]) }, [
 						["select", "textarea"].indexOf(o.input.type) < 0 ? k((_(), i("input", {
 							key: 0,
 							type: o.input.type,
 							class: "form-control form-control-sm",
 							"onUpdate:modelValue": (e) => t[o.name] = e,
 							onChange: (e) => f.onRowInputChange(t[o.name], o, t, n)
-						}, null, 40, zB)), [[T, t[o.name]]]) : r("", !0),
+						}, null, 40, VB)), [[T, t[o.name]]]) : r("", !0),
 						o.input.type == "textarea" ? k((_(), i("textarea", {
 							key: 1,
 							class: "form-control form-control-sm",
 							rows: "3",
 							"onUpdate:modelValue": (e) => t[o.name] = e,
 							onChange: (e) => f.onRowInputChange(t[o.name], o, t, n)
-						}, "\r\n                    ", 40, BB)), [[D, t[o.name]]]) : r("", !0),
+						}, "\r\n                    ", 40, HB)), [[D, t[o.name]]]) : r("", !0),
 						o.input.type == "select" ? k((_(), i("select", {
 							key: 2,
 							class: "form-select form-select-sm pe-0",
@@ -25257,12 +25257,12 @@ function DV(t, c, l, u, d, f) {
 						}, [(_(!0), i(e, null, y(o.input.options, (e) => (_(), i("option", {
 							value: e.value,
 							key: e
-						}, S(f.translate(e.label)), 9, HB))), 128))], 40, VB)), [[E, t[o.name]]]) : r("", !0)
+						}, S(f.translate(e.label)), 9, WB))), 128))], 40, UB)), [[E, t[o.name]]]) : r("", !0)
 					], 2)])]))), 128)),
-					a("span", { innerHTML: l.settings.table.details.raw(t) }, null, 8, UB),
-					l.settings.debug > 1 ? (_(), i("pre", WB, "                  " + S(t) + "\n                ", 1)) : r("", !0)
-				], 10, IB)])) : r("", !0)], 64))), 128))]),
-				a("tfoot", null, [d.selected.length > 0 ? (_(), i("tr", GB, [(_(!0), i(e, null, y(l.settings.table.columns, (t) => (_(), i("td", {
+					a("span", { innerHTML: l.settings.table.details.raw(t) }, null, 8, GB),
+					l.settings.debug > 1 ? (_(), i("pre", KB, "                  " + S(t) + "\n                ", 1)) : r("", !0)
+				], 10, RB)])) : r("", !0)], 64))), 128))]),
+				a("tfoot", null, [d.selected.length > 0 ? (_(), i("tr", qB, [(_(!0), i(e, null, y(l.settings.table.columns, (t) => (_(), i("td", {
 					style: h([t.hidden ? "display: none" : ""]),
 					"data-collapsed": t.collapsed || null,
 					key: t.name,
@@ -25270,11 +25270,11 @@ function DV(t, c, l, u, d, f) {
 					width: t.collapsed ? null : t.width,
 					class: m(t.class)
 				}, [
-					t.index ? (_(), i("div", qB, [a("span", {
+					t.index ? (_(), i("div", YB, [a("span", {
 						class: "cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100",
 						onClick: c[6] ||= (e) => f.toggleSelectedAll()
 					}, S(d.selected.length), 1)])) : r("", !0),
-					t.input && t.bulk && t.bulk.enabled ? (_(), i("div", JB, [
+					t.input && t.bulk && t.bulk.enabled ? (_(), i("div", XB, [
 						[
 							"text",
 							"number",
@@ -25287,7 +25287,7 @@ function DV(t, c, l, u, d, f) {
 							disabled: d.bulkinputs.indexOf(t.name) < 0,
 							onChange: (e) => f.onBulkInputChange(d.bulkitem[t.name], d.bulkitem, t),
 							"onUpdate:modelValue": (e) => d.bulkitem[t.name] = e
-						}, null, 42, YB)), [[T, d.bulkitem[t.name]]]) : r("", !0),
+						}, null, 42, ZB)), [[T, d.bulkitem[t.name]]]) : r("", !0),
 						t.input.type == "select" ? k((_(), i("select", {
 							key: 1,
 							class: m(["form-select form-select-sm pe-0", t.input.class]),
@@ -25297,13 +25297,13 @@ function DV(t, c, l, u, d, f) {
 						}, [(_(!0), i(e, null, y(t.input.options, (e) => (_(), i("option", {
 							value: e.value,
 							key: e
-						}, S(f.translate(e.label)), 9, ZB))), 128))], 42, XB)), [[E, d.bulkitem[t.name]]]) : r("", !0),
+						}, S(f.translate(e.label)), 9, $B))), 128))], 42, QB)), [[E, d.bulkitem[t.name]]]) : r("", !0),
 						a("span", {
 							class: "input-group-text cursor-pointer",
 							onClick: (e) => f.ifBulkInputClick(t)
-						}, [d.bulkitem[t.name] === void 0 ? (_(), i("i", $B)) : (_(), i("i", eV))], 8, QB)
+						}, [d.bulkitem[t.name] === void 0 ? (_(), i("i", tV)) : (_(), i("i", nV))], 8, eV)
 					])) : r("", !0),
-					t.bulk ? (_(), i("span", tV, [(_(!0), i(e, null, y(t.bulk.buttons, (e) => (_(), i("span", { key: e.action }, [a("button", {
+					t.bulk ? (_(), i("span", rV, [(_(!0), i(e, null, y(t.bulk.buttons, (e) => (_(), i("span", { key: e.action }, [a("button", {
 						type: "button",
 						class: m([e.class ? e.class : f.getButtonClassByAction(e.action)]),
 						disabled: e.action === "save" && !this.bulkinputs.length,
@@ -25318,8 +25318,8 @@ function DV(t, c, l, u, d, f) {
 					}, null, 2)), e.template ? (_(), i("span", {
 						key: 1,
 						innerHTML: f.tableCellTemplate(e.template, d.bulkitem, null, t)
-					}, null, 8, rV)) : (_(), i("span", iV, S(f.translate(e.title)), 1))], 10, nV)]))), 128))])) : r("", !0)
-				], 14, KB))), 128))])) : r("", !0)])
+					}, null, 8, aV)) : (_(), i("span", oV, S(f.translate(e.title)), 1))], 10, iV)]))), 128))])) : r("", !0)
+				], 14, JB))), 128))])) : r("", !0)])
 			], 2)) : r("", !0),
 			s(g, {
 				settings: l.settings,
@@ -25336,12 +25336,12 @@ function DV(t, c, l, u, d, f) {
 				"onSetPageLimit",
 				"onTranslate"
 			])
-		], 10, _z)) : r("", !0),
+		], 10, yz)) : r("", !0),
 		a("div", {
 			class: "modal shadow",
 			id: d.modalId,
 			tabindex: "-1"
-		}, [a("div", oV, [a("div", sV, [f.authAndSettings() && l.settings.form.visible && l.settings.form.groups ? (_(), n(v, {
+		}, [a("div", cV, [a("div", lV, [f.authAndSettings() && l.settings.form.visible && l.settings.form.groups ? (_(), n(v, {
 			key: 0,
 			modelValue: d.item,
 			"onUpdate:modelValue": c[7] ||= (e) => d.item = e,
@@ -25365,23 +25365,23 @@ function DV(t, c, l, u, d, f) {
 			"reloadTable",
 			"fetchRelation",
 			"saveProgress"
-		])) : r("", !0)])])], 8, aV),
+		])) : r("", !0)])])], 8, sV),
 		a("div", {
 			class: "modal shadow vua-mobile-filter-modal",
 			id: d.mobileFilterModalId,
 			tabindex: "-1"
-		}, [a("div", lV, [f.authAndSettings() ? (_(), i("div", uV, [
-			a("div", dV, [a("h5", fV, S(f.translate("Filter / Sort")), 1), a("button", {
+		}, [a("div", dV, [f.authAndSettings() ? (_(), i("div", fV, [
+			a("div", pV, [a("h5", mV, S(f.translate("Filter / Sort")), 1), a("button", {
 				type: "button",
 				class: "btn-close",
 				"data-bs-dismiss": "modal",
 				"aria-label": f.translate("Close")
-			}, null, 8, pV)]),
-			a("div", mV, [
-				f.filterableColumns().length ? (_(), i(e, { key: 0 }, [a("h6", hV, S(f.translate("Filters")), 1), (_(!0), i(e, null, y(f.filterableColumns(), (e) => (_(), i("div", {
+			}, null, 8, hV)]),
+			a("div", gV, [
+				f.filterableColumns().length ? (_(), i(e, { key: 0 }, [a("h6", _V, S(f.translate("Filters")), 1), (_(!0), i(e, null, y(f.filterableColumns(), (e) => (_(), i("div", {
 					class: "mb-3",
 					key: "filter_" + e.name
-				}, [a("label", gV, S(e.title ? f.translate(e.title) : f.translate(e.name)), 1), s(p, {
+				}, [a("label", vV, S(e.title ? f.translate(e.title) : f.translate(e.name)), 1), s(p, {
 					column: e,
 					settings: l.settings,
 					items: d.items,
@@ -25395,27 +25395,27 @@ function DV(t, c, l, u, d, f) {
 					"reload-table",
 					"table-action"
 				])]))), 128))], 64)) : r("", !0),
-				f.sortableColumns().length ? (_(), i(e, { key: 1 }, [a("h6", _V, S(f.translate("Sort")), 1), a("div", vV, [(_(!0), i(e, null, y(f.sortableColumns(), (e) => (_(), i("button", {
+				f.sortableColumns().length ? (_(), i(e, { key: 1 }, [a("h6", yV, S(f.translate("Sort")), 1), a("div", bV, [(_(!0), i(e, null, y(f.sortableColumns(), (e) => (_(), i("button", {
 					type: "button",
 					key: "sort_" + e.name,
 					class: "list-group-item list-group-item-action d-flex align-items-center justify-content-between",
 					onClick: (t) => f.sortTable(e)
-				}, [a("span", { innerHTML: e.header && e.header.title !== void 0 ? f.translate(e.header.title) : e.title ? f.translate(e.title) : f.translate(e.name) }, null, 8, bV), d.config.order[e.name] ? (_(), i("span", {
+				}, [a("span", { innerHTML: e.header && e.header.title !== void 0 ? f.translate(e.header.title) : e.title ? f.translate(e.title) : f.translate(e.name) }, null, 8, SV), d.config.order[e.name] ? (_(), i("span", {
 					key: 0,
 					class: m(["badge text-bg-light p-badge", { "opacity-50": d.config.order[e.name].fixed }])
 				}, [
-					d.config.order[e.name].dir === "ASC" ? (_(), i("i", xV)) : r("", !0),
-					d.config.order[e.name].dir === "DESC" ? (_(), i("i", SV)) : r("", !0),
+					d.config.order[e.name].dir === "ASC" ? (_(), i("i", CV)) : r("", !0),
+					d.config.order[e.name].dir === "DESC" ? (_(), i("i", wV)) : r("", !0),
 					o(" " + S(d.config.order[e.name].idx + 1), 1)
-				], 2)) : r("", !0)], 8, yV))), 128))])], 64)) : r("", !0),
-				d.config.pagination.limits && d.config.pagination.limits.length ? (_(), i(e, { key: 2 }, [a("h6", CV, S(f.translate("Rows per page")), 1), a("div", wV, [(_(!0), i(e, null, y(d.config.pagination.limits, (e) => (_(), i("button", {
+				], 2)) : r("", !0)], 8, xV))), 128))])], 64)) : r("", !0),
+				d.config.pagination.limits && d.config.pagination.limits.length ? (_(), i(e, { key: 2 }, [a("h6", TV, S(f.translate("Rows per page")), 1), a("div", EV, [(_(!0), i(e, null, y(d.config.pagination.limits, (e) => (_(), i("button", {
 					type: "button",
 					key: "limit_" + e,
 					class: m(["btn btn-sm", d.config.pagination.limit == e ? "btn-secondary" : "btn-outline-secondary"]),
 					onClick: (t) => f.setPageLimit(e)
-				}, S(e), 11, TV))), 128))])], 64)) : r("", !0)
+				}, S(e), 11, DV))), 128))])], 64)) : r("", !0)
 			]),
-			a("div", EV, [a("button", {
+			a("div", OV, [a("button", {
 				type: "button",
 				class: "btn btn-outline-secondary",
 				onClick: c[8] ||= (e) => {
@@ -25427,10 +25427,10 @@ function DV(t, c, l, u, d, f) {
 				"data-bs-dismiss": "modal",
 				onClick: c[9] ||= (e) => f.applyMobileFilters()
 			}, [c[15] ||= a("i", { class: "bi bi-check-lg me-1" }, null, -1), o(" " + S(f.translate("Apply")), 1)])])
-		])) : r("", !0)])], 8, cV)
+		])) : r("", !0)])], 8, uV)
 	]);
 }
-var OV = /*#__PURE__*/ EA(gz, [["render", DV]]), kV = {
+var AV = /*#__PURE__*/ EA(vz, [["render", kV]]), jV = {
 	name: "VuAdminCount",
 	props: {
 		entity: {
@@ -25526,25 +25526,25 @@ var OV = /*#__PURE__*/ EA(gz, [["render", DV]]), kV = {
 			}
 		}
 	}
-}, AV = { class: "card-body d-flex align-items-center gap-3" }, jV = { class: "flex-grow-1 min-w-0" }, MV = { class: "vu-admin-count-value fs-3 fw-semibold lh-1" }, NV = {
+}, MV = { class: "card-body d-flex align-items-center gap-3" }, NV = { class: "flex-grow-1 min-w-0" }, PV = { class: "vu-admin-count-value fs-3 fw-semibold lh-1" }, FV = {
 	key: 0,
 	class: "spinner-border spinner-border-sm text-secondary",
 	"aria-hidden": "true"
-}, PV = ["title"], FV = { key: 2 }, IV = { class: "vu-admin-count-title text-secondary small text-truncate mt-1" };
-function LV(e, t, o, s, c, l) {
+}, IV = ["title"], LV = { key: 2 }, RV = { class: "vu-admin-count-title text-secondary small text-truncate mt-1" };
+function zV(e, t, o, s, c, l) {
 	return _(), n(x(e.href ? "a" : "div"), {
 		href: e.href || null,
 		class: m(["vu-admin-count card text-decoration-none", e.cardClass]),
 		title: e.href ? e.translate("Open") : null
 	}, {
-		default: te(() => [a("div", AV, [e.icon ? (_(), i("i", {
+		default: te(() => [a("div", MV, [e.icon ? (_(), i("i", {
 			key: 0,
 			class: m(["vu-admin-count-icon fs-2", e.icon])
-		}, null, 2)) : r("", !0), a("div", jV, [a("div", MV, [e.count === null && !e.error ? (_(), i("span", NV)) : e.error ? (_(), i("span", {
+		}, null, 2)) : r("", !0), a("div", NV, [a("div", PV, [e.count === null && !e.error ? (_(), i("span", FV)) : e.error ? (_(), i("span", {
 			key: 1,
 			class: "text-danger",
 			title: e.error
-		}, "–", 8, PV)) : (_(), i("span", FV, S(e.formatted), 1))]), a("div", IV, S(e.translate(e.title || e.entity)), 1)])])]),
+		}, "–", 8, IV)) : (_(), i("span", LV, S(e.formatted), 1))]), a("div", RV, S(e.translate(e.title || e.entity)), 1)])])]),
 		_: 1
 	}, 8, [
 		"href",
@@ -25552,7 +25552,7 @@ function LV(e, t, o, s, c, l) {
 		"title"
 	]);
 }
-var RV = /*#__PURE__*/ EA(kV, [["render", LV]]), zV = "vu-theme", BV = "vu-theme-change", VV = [
+var BV = /*#__PURE__*/ EA(jV, [["render", zV]]), VV = "vu-theme", HV = "vu-theme-change", UV = [
 	{
 		value: "light",
 		label: "Light",
@@ -25569,64 +25569,64 @@ var RV = /*#__PURE__*/ EA(kV, [["render", LV]]), zV = "vu-theme", BV = "vu-theme
 		icon: "bi bi-circle-half"
 	}
 ];
-function HV() {
-	let e = typeof window < "u" && window.VuSettings && window.VuSettings.themes;
-	return Array.isArray(e) && e.length ? e : VV;
-}
-function UV(e) {
-	return HV().some((t) => t.value === e);
-}
 function WV() {
+	let e = typeof window < "u" && window.VuSettings && window.VuSettings.themes;
+	return Array.isArray(e) && e.length ? e : UV;
+}
+function GV(e) {
+	return WV().some((t) => t.value === e);
+}
+function KV() {
 	try {
-		let e = localStorage.getItem(zV);
-		return e && UV(e) ? e : null;
+		let e = localStorage.getItem(VV);
+		return e && GV(e) ? e : null;
 	} catch {
 		return null;
 	}
 }
-function GV() {
+function qV() {
 	try {
 		return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 	} catch {
 		return "light";
 	}
 }
-function KV(e) {
-	return e ? e === "auto" ? GV() : e : null;
+function JV(e) {
+	return e ? e === "auto" ? qV() : e : null;
 }
-function qV(e) {
-	return KV(WV()) || e || "light";
+function YV(e) {
+	return JV(KV()) || e || "light";
 }
-function JV() {
-	let e = KV(WV());
+function XV() {
+	let e = JV(KV());
 	e && typeof document < "u" && document.documentElement.setAttribute("data-bs-theme", e);
 }
-function YV() {
-	if (JV(), typeof window < "u") {
-		let e = WV();
-		window.dispatchEvent(new CustomEvent(BV, { detail: {
+function ZV() {
+	if (XV(), typeof window < "u") {
+		let e = KV();
+		window.dispatchEvent(new CustomEvent(HV, { detail: {
 			theme: e,
-			resolved: KV(e)
+			resolved: JV(e)
 		} }));
 	}
 }
-function XV(e) {
-	if (UV(e)) {
+function QV(e) {
+	if (GV(e)) {
 		try {
-			localStorage.setItem(zV, e);
+			localStorage.setItem(VV, e);
 		} catch {}
-		YV();
+		ZV();
 	}
 }
 if (typeof window < "u") {
-	JV();
+	XV();
 	try {
 		window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-			WV() === "auto" && YV();
+			KV() === "auto" && ZV();
 		});
 	} catch {}
 }
-var ZV = {
+var $V = {
 	name: "VuAdmin",
 	props: {
 		entity: {
@@ -25763,13 +25763,13 @@ var ZV = {
 		this._onLanguageChange = (e) => {
 			this.settings && !this.languagePinned && (this.settings.language = e.detail.language);
 		}, window.addEventListener(Fc, this._onLanguageChange), this._onThemeChange = () => {
-			this.settings && (this.settings.theme = qV(this.configuredTheme));
-		}, window.addEventListener(BV, this._onThemeChange), this.entity || (this._onHashChange = () => {
+			this.settings && (this.settings.theme = YV(this.configuredTheme));
+		}, window.addEventListener(HV, this._onThemeChange), this.entity || (this._onHashChange = () => {
 			this.route = this.currentRoute(), this.routeQuery = this.currentQuery(), window.scrollTo({ top: 0 });
 		}, window.addEventListener("hashchange", this._onHashChange));
 	},
 	beforeUnmount() {
-		window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(BV, this._onThemeChange), this._onHashChange && window.removeEventListener("hashchange", this._onHashChange);
+		window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(HV, this._onThemeChange), this._onHashChange && window.removeEventListener("hashchange", this._onHashChange);
 	},
 	mounted() {},
 	methods: {
@@ -25862,25 +25862,25 @@ var ZV = {
 					let t = JSON.parse(JSON.stringify(this.override)), n = t.table && t.table.order, r = t.table && t.table.columns, i = t.table && t.table.pagination, a = !!i && i.limits !== void 0, o = a ? i.limits : void 0;
 					a && delete i.limits, r && delete t.table.columns, e = qc(e, t), n && (e.table.order = n), a && (e.table.pagination = Object.assign({}, e.table.pagination, { limits: o })), Array.isArray(r) && e.table && Array.isArray(e.table.columns) && (e.table.columns = this.visibleColumns(e.table.columns, r));
 				}
-				this.languagePinned = !!e.language, this.settings = qc(this.defaults, e), this.settings.entity = this.entity, this.settings.preset = this.preset ? this.preset : "default", this.configuredTheme = this.settings.theme || document.documentElement.getAttribute("data-bs-theme") || "light", this.settings.theme = qV(this.configuredTheme), this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && console.log(`[vu-admin] entity "${this.entity}" initialized`, this.settings.debug > 1 ? this.settings : "");
+				this.languagePinned = !!e.language, this.settings = qc(this.defaults, e), this.settings.entity = this.entity, this.settings.preset = this.preset ? this.preset : "default", this.configuredTheme = this.settings.theme || document.documentElement.getAttribute("data-bs-theme") || "light", this.settings.theme = YV(this.configuredTheme), this.settings.events.afterSettingsInit && this.settings.events.afterSettingsInit(this.settings), this.settings.debug && console.log(`[vu-admin] entity "${this.entity}" initialized`, this.settings.debug > 1 ? this.settings : "");
 			} else console.error(`Entity config (${this.entity}) not found`);
 			this.$forceUpdate();
 		}
 	},
 	components: {
-		VuAdminTable: OV,
-		VuAdminCount: RV
+		VuAdminTable: AV,
+		VuAdminCount: BV
 	}
-}, QV = {
+}, eH = {
 	key: 0,
 	class: "vu-admin-views"
-}, $V = {
+}, tH = {
 	key: 0,
 	class: "vu-admin-dashboard py-3"
-}, eH = ["data-entity"], tH = ["data-entity"], nH = { key: 1 }, rH = ["data-bs-theme"];
-function iH(t, a, o, c, l, u) {
+}, nH = ["data-entity"], rH = ["data-entity"], iH = { key: 1 }, aH = ["data-bs-theme"];
+function oH(t, a, o, c, l, u) {
 	let d = b("vu-admin-count"), f = b("vu-admin", !0), p = b("vu-admin-table");
-	return t.entity ? t.settings ? (_(), i("div", nH, [t.auth ? (_(), i("div", {
+	return t.entity ? t.settings ? (_(), i("div", iH, [t.auth ? (_(), i("div", {
 		key: 0,
 		class: "vu-admin",
 		"data-bs-theme": [t.settings.theme]
@@ -25892,7 +25892,7 @@ function iH(t, a, o, c, l, u) {
 		"settings",
 		"auth",
 		"route-filter"
-	])], 8, rH)) : r("", !0)])) : r("", !0) : (_(), i("div", QV, [t.auth && t.auth.success && t.auth.user ? (_(), i(e, { key: 0 }, [t.dashboard ? k((_(), i("div", $V, [t.loaded[t.DASHBOARD] ? (_(), i("div", {
+	])], 8, aH)) : r("", !0)])) : r("", !0) : (_(), i("div", eH, [t.auth && t.auth.success && t.auth.user ? (_(), i(e, { key: 0 }, [t.dashboard ? k((_(), i("div", tH, [t.loaded[t.DASHBOARD] ? (_(), i("div", {
 		key: 0,
 		class: m(["vu-admin-dashboard-grid", t.dashboard.class])
 	}, [(_(!0), i(e, null, y(t.dashboard.items, (e, r) => (_(), i("div", {
@@ -25931,7 +25931,7 @@ function iH(t, a, o, c, l, u) {
 		"preset",
 		"override",
 		"auth"
-	]))], 10, eH))), 128))], 2)) : r("", !0)], 512)), [[O, !t.activeEntity]]) : r("", !0), (_(!0), i(e, null, y(t.views, (e) => k((_(), i("div", {
+	]))], 10, nH))), 128))], 2)) : r("", !0)], 512)), [[O, !t.activeEntity]]) : r("", !0), (_(!0), i(e, null, y(t.views, (e) => k((_(), i("div", {
 		key: e.entity,
 		class: "vu-admin-view",
 		"data-entity": e.entity
@@ -25946,9 +25946,9 @@ function iH(t, a, o, c, l, u) {
 		"preset",
 		"auth",
 		"route-filter"
-	])) : r("", !0)], 8, tH)), [[O, t.isVisible(e.entity)]])), 128))], 64)) : r("", !0)]));
+	])) : r("", !0)], 8, rH)), [[O, t.isVisible(e.entity)]])), 128))], 64)) : r("", !0)]));
 }
-var aH = /*#__PURE__*/ EA(ZV, [["render", iH]]), oH = (/* @__PURE__ */ re(((e, t) => {
+var sH = /*#__PURE__*/ EA($V, [["render", oH]]), cH = (/* @__PURE__ */ re(((e, t) => {
 	(function() {
 		var e = "input is invalid type", n = typeof window == "object", r = n ? window : {};
 		r.JS_SHA512_NO_WINDOW && (n = !1);
@@ -26342,7 +26342,7 @@ var aH = /*#__PURE__*/ EA(ZV, [["render", iH]]), oH = (/* @__PURE__ */ re(((e, t
 })))();
 // src/components/VuAuth.vue
 Nc();
-var sH = {
+var lH = {
 	name: "VuAuth",
 	props: { modelValue: Object },
 	data() {
@@ -26640,7 +26640,7 @@ var sH = {
 		},
 		async generateHash(e, t) {
 			let n = e;
-			for (let e = 0; e < t; e++) n = (0, oH.sha512)(n);
+			for (let e = 0; e < t; e++) n = (0, cH.sha512)(n);
 			return n;
 		},
 		authUpdate() {
@@ -26679,7 +26679,7 @@ var sH = {
 		}
 	},
 	created() {
-		window.VuSettings && window.VuSettings.auth && (this.settings = window.VuSettings.auth), this.theme = qV(window.VuSettings && window.VuSettings.theme);
+		window.VuSettings && window.VuSettings.auth && (this.settings = window.VuSettings.auth), this.theme = YV(window.VuSettings && window.VuSettings.theme);
 		let e = ll(1e5);
 		this.formId = "form_profil_" + e, this.modalId = "modal_profil_" + e;
 	},
@@ -26687,8 +26687,8 @@ var sH = {
 		if (window.addEventListener("keydown", this.handleEscapeKey), this._onLanguageChange = (e) => {
 			this.language = e.detail.language;
 		}, window.addEventListener(Fc, this._onLanguageChange), this._onThemeChange = () => {
-			this.theme = qV(window.VuSettings && window.VuSettings.theme);
-		}, window.addEventListener(BV, this._onThemeChange), this.recaptchaSiteKey && !document.querySelector("script[src=\"https://www.google.com/recaptcha/api.js\"]")) {
+			this.theme = YV(window.VuSettings && window.VuSettings.theme);
+		}, window.addEventListener(HV, this._onThemeChange), this.recaptchaSiteKey && !document.querySelector("script[src=\"https://www.google.com/recaptcha/api.js\"]")) {
 			let e = document.createElement("script");
 			e.src = "https://www.google.com/recaptcha/api.js", e.async = !0, e.defer = !0, document.head.appendChild(e);
 		}
@@ -26705,84 +26705,84 @@ var sH = {
 		}, this.auth.roleHeader = this.settings.roleHeader || null, this.checkStorage(), this.reset(), this.updateInputs(), this.$forceUpdate(), this.detectQuery(), this.captchaRequired && this.fetchCaptcha();
 	},
 	beforeUnmount() {
-		window.removeEventListener("keydown", this.handleEscapeKey), window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(BV, this._onThemeChange);
+		window.removeEventListener("keydown", this.handleEscapeKey), window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(HV, this._onThemeChange);
 	}
-}, cH = ["data-bs-theme"], lH = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, uH = { class: "position-absolute top-0 end-0 p-0 m-2" }, dH = {
+}, uH = ["data-bs-theme"], dH = { class: "col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto" }, fH = { class: "position-absolute top-0 end-0 p-0 m-2" }, pH = {
 	key: 0,
 	class: "spinner-border spinner-border-sm text-primary"
-}, fH = { class: "text-center mt-2 mb-4" }, pH = {
+}, mH = { class: "text-center mt-2 mb-4" }, hH = {
 	key: 0,
 	class: "mb-3"
-}, mH = {
+}, gH = {
 	for: "email",
 	class: "form-label text-primary"
-}, hH = { class: "input-group" }, gH = [
+}, _H = { class: "input-group" }, vH = [
 	"type",
 	"placeholder",
 	"disabled"
-], _H = ["innerHTML"], vH = { class: "mb-3" }, yH = {
+], yH = ["innerHTML"], bH = { class: "mb-3" }, xH = {
 	key: 0,
 	for: "password",
 	class: "form-label text-primary"
-}, bH = { class: "input-group" }, xH = [
+}, SH = { class: "input-group" }, CH = [
 	"type",
 	"placeholder",
 	"pattern",
 	"minlength",
 	"disabled"
-], SH = {
+], wH = {
 	key: 0,
 	class: "bi bi-eye"
-}, CH = {
+}, TH = {
 	key: 1,
 	class: "bi bi-eye-slash"
-}, wH = ["innerHTML"], TH = {
+}, EH = ["innerHTML"], DH = {
 	key: 0,
 	class: "mb-4"
-}, EH = {
+}, OH = {
 	for: "password_again",
 	class: "form-label text-primary"
-}, DH = ["innerHTML"], OH = { class: "input-group" }, kH = [
+}, kH = ["innerHTML"], AH = { class: "input-group" }, jH = [
 	"type",
 	"placeholder",
 	"minlength",
 	"disabled"
-], AH = {
+], MH = {
 	key: 0,
 	class: "bi bi-eye"
-}, jH = {
+}, NH = {
 	key: 1,
 	class: "bi bi-eye-slash"
-}, MH = ["innerHTML"], NH = {
+}, PH = ["innerHTML"], FH = {
 	key: 2,
 	class: "mb-3"
-}, PH = {
+}, IH = {
 	key: 0,
 	class: "text-center py-2"
-}, FH = { key: 1 }, IH = ["innerHTML"], LH = { class: "d-flex justify-content-center gap-2 flex-wrap" }, RH = ["onClick"], zH = {
+}, LH = { key: 1 }, RH = ["innerHTML"], zH = { class: "d-flex justify-content-center gap-2 flex-wrap" }, BH = ["onClick"], VH = {
 	key: 3,
 	class: "text-danger text-center small mt-2 mb-3 fw-semibold"
-}, BH = {
+}, HH = {
 	key: 4,
 	class: "mb-3"
-}, VH = ["innerHTML"], HH = { class: "form-label text-primary" }, UH = { class: "input-group" }, WH = ["placeholder", "disabled"], GH = {
+}, UH = ["innerHTML"], WH = { class: "form-label text-primary" }, GH = { class: "input-group" }, KH = ["placeholder", "disabled"], qH = {
 	key: 0,
 	class: "mt-3"
-}, KH = {
+}, JH = {
 	for: "twofa_trust",
 	class: "form-label text-primary"
-}, qH = ["disabled"], JH = ["value"], YH = ["innerHTML"], XH = { class: "text-end mt-2" }, ZH = ["disabled"], QH = {
+}, YH = ["disabled"], XH = ["value"], ZH = ["innerHTML"], QH = { class: "text-end mt-2" }, $H = ["disabled"], eU = {
 	key: 5,
 	class: "mb-4 text-center"
-}, $H = ["innerHTML"], eU = {
+}, tU = ["innerHTML"], nU = {
 	key: 6,
 	class: "d-flex mb-4"
-}, tU = ["innerHTML"], nU = { class: "row" }, rU = { class: "mb-3" }, iU = ["for", "innerHTML"], aU = { class: "input-group" }, oU = ["innerHTML"], sU = [
+}, rU = ["innerHTML"], iU = { class: "row" }, aU = { class: "mb-3" }, oU = ["for", "innerHTML"], sU = { class: "input-group" }, cU = ["innerHTML"], lU = [
 	"disabled",
 	"required",
 	"onUpdate:modelValue",
 	"multiple"
-], cU = ["value", "innerHTML"], lU = [
+], uU = ["value", "innerHTML"], dU = [
 	"id",
 	"name",
 	"type",
@@ -26790,29 +26790,29 @@ var sH = {
 	"placeholder",
 	"required",
 	"disabled"
-], uU = ["innerHTML"], dU = ["innerHTML"], fU = {
+], fU = ["innerHTML"], pU = ["innerHTML"], mU = {
 	key: 0,
 	class: "form-check"
-}, pU = [
+}, hU = [
 	"id",
 	"name",
 	"onUpdate:modelValue",
 	"required",
 	"disabled"
-], mU = ["for", "innerHTML"], hU = {
+], gU = ["for", "innerHTML"], _U = {
 	key: 7,
 	class: "mt-4"
-}, gU = ["innerHTML"], _U = {
+}, vU = ["innerHTML"], yU = {
 	key: 8,
 	class: "mt-3 text-center"
-}, vU = { class: "mt-4 d-flex justify-content-between" }, yU = ["disabled"], bU = ["disabled"], xU = ["disabled"], SU = {
+}, bU = { class: "mt-4 d-flex justify-content-between" }, xU = ["disabled"], SU = ["disabled"], CU = ["disabled"], wU = {
 	key: 0,
 	class: "bi bi-person-plus mx-1"
-}, CU = {
+}, TU = {
 	key: 1,
 	class: "bi bi-arrow-right-square mx-1"
-}, wU = { class: "mt-2 text-end" }, TU = ["disabled"], EU = ["id"], DU = { class: "modal-dialog modal-xl" }, OU = { class: "modal-content h-100" };
-function kU(t, s, c, l, u, d) {
+}, EU = { class: "mt-2 text-end" }, DU = ["disabled"], OU = ["id"], kU = { class: "modal-dialog modal-xl" }, AU = { class: "modal-content h-100" };
+function jU(t, s, c, l, u, d) {
 	let f = b("VuAdminForm");
 	return t.auth && t.auth.visible ? (_(), i("div", {
 		key: 0,
@@ -26821,23 +26821,23 @@ function kU(t, s, c, l, u, d) {
 	}, [a("div", {
 		class: "row d-flex justify-content-center align-items-center min-vh-100",
 		onClick: s[18] ||= j((...e) => t.close && t.close(...e), ["stop"])
-	}, [a("div", lH, [a("div", {
+	}, [a("div", dH, [a("div", {
 		class: "card shadow p-4 position-relative",
 		onClick: s[17] ||= j(() => {}, ["stop"])
 	}, [
-		a("div", uH, [t.loading ? (_(), i("i", dH)) : r("", !0), a("button", {
+		a("div", fH, [t.loading ? (_(), i("i", pH)) : r("", !0), a("button", {
 			type: "button",
 			class: "btn p-2",
 			onClick: s[0] ||= j((...e) => t.close && t.close(...e), ["stop"])
 		}, [...s[20] ||= [a("i", { class: "bi bi-x px-1 text-muted" }, null, -1)]])]),
-		a("h1", fH, S(t.translate(t.settings.title[t.auth.panel])), 1),
+		a("h1", mH, S(t.translate(t.settings.title[t.auth.panel])), 1),
 		a("form", {
 			onSubmit: s[15] ||= j((e) => t.handleSubmit(), ["prevent"]),
 			onClick: s[16] ||= j(() => {}, ["stop"])
 		}, [
-			t.auth.panel != "activation" && t.auth.panel != "password" && t.auth.panel != "twofa" ? (_(), i("div", pH, [
-				a("label", mH, S(t.translate(t.settings.username.label)), 1),
-				a("div", hH, [t.settings.username.icon ? (_(), i("span", {
+			t.auth.panel != "activation" && t.auth.panel != "password" && t.auth.panel != "twofa" ? (_(), i("div", hH, [
+				a("label", gH, S(t.translate(t.settings.username.label)), 1),
+				a("div", _H, [t.settings.username.icon ? (_(), i("span", {
 					key: 0,
 					class: m(["input-group-text", { "rounded-bottom-0": t.settings.username.help }])
 				}, [a("i", { class: m([t.settings.username.icon]) }, null, 2)], 2)) : r("", !0), k(a("input", {
@@ -26849,16 +26849,16 @@ function kU(t, s, c, l, u, d) {
 					placeholder: t.translate(t.settings.username.placeholder),
 					required: "",
 					disabled: t.loading
-				}, null, 10, gH), [[T, t.username]])]),
+				}, null, 10, vH), [[T, t.username]])]),
 				t.settings.username.help ? (_(), i("small", {
 					key: 0,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.settings.username.help)
-				}, null, 8, _H)) : r("", !0)
+				}, null, 8, yH)) : r("", !0)
 			])) : r("", !0),
-			t.auth.panel != "forgot" && t.auth.panel != "activation" && t.auth.panel != "twofa" ? (_(), i(e, { key: 1 }, [a("div", vH, [
-				t.settings.password.label ? (_(), i("label", yH, S(t.translate(t.settings.password.label)), 1)) : r("", !0),
-				a("div", bH, [
+			t.auth.panel != "forgot" && t.auth.panel != "activation" && t.auth.panel != "twofa" ? (_(), i(e, { key: 1 }, [a("div", bH, [
+				t.settings.password.label ? (_(), i("label", xH, S(t.translate(t.settings.password.label)), 1)) : r("", !0),
+				a("div", SH, [
 					t.settings.password.icon ? (_(), i("span", {
 						key: 0,
 						class: m(["input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help }])
@@ -26874,7 +26874,7 @@ function kU(t, s, c, l, u, d) {
 						minlength: t.auth.panel == "registration" ? t.settings.password.minlength : 1,
 						required: "",
 						disabled: t.loading
-					}, null, 10, xH), [[T, t.password]]),
+					}, null, 10, CH), [[T, t.password]]),
 					t.auth.panel == "registration" || t.auth.panel == "password" ? (_(), i("span", {
 						key: 1,
 						class: m(["input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help }])
@@ -26885,20 +26885,20 @@ function kU(t, s, c, l, u, d) {
 					a("span", {
 						class: m(["cursor-pointer input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help }]),
 						onClick: s[3] ||= j((e) => t.toggleType("password"), ["stop"])
-					}, [t.settings.password.type == "password" ? (_(), i("i", SH)) : (_(), i("i", CH))], 2)
+					}, [t.settings.password.type == "password" ? (_(), i("i", wH)) : (_(), i("i", TH))], 2)
 				]),
 				(t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password.help ? (_(), i("small", {
 					key: 1,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.settings.password.help)
-				}, null, 8, wH)) : r("", !0)
-			]), t.auth.panel === "registration" || t.auth.panel === "password" ? (_(), i("div", TH, [
-				a("label", EH, [o(S(t.translate(t.settings.password_again.label)) + " ", 1), t.password_again.length > 0 && t.password_again != t.password ? (_(), i("small", {
+				}, null, 8, EH)) : r("", !0)
+			]), t.auth.panel === "registration" || t.auth.panel === "password" ? (_(), i("div", DH, [
+				a("label", OH, [o(S(t.translate(t.settings.password_again.label)) + " ", 1), t.password_again.length > 0 && t.password_again != t.password ? (_(), i("small", {
 					key: 0,
 					class: "text-danger",
 					innerHTML: t.translate(t.settings.password_again.nomatch)
-				}, null, 8, DH)) : r("", !0)]),
-				a("div", OH, [
+				}, null, 8, kH)) : r("", !0)]),
+				a("div", AH, [
 					t.settings.password.icon ? (_(), i("span", {
 						key: 0,
 						class: m(["input-group-text", { "rounded-bottom-0": t.settings.password_again.help }])
@@ -26913,7 +26913,7 @@ function kU(t, s, c, l, u, d) {
 						minlength: t.settings.password.minlength,
 						required: "",
 						disabled: t.loading
-					}, null, 10, kH), [[T, t.password_again]]),
+					}, null, 10, jH), [[T, t.password_again]]),
 					a("span", { class: m(["input-group-text", { "rounded-bottom-0": t.settings.password_again.help }]) }, [a("small", { class: m(["", {
 						"text-success": t.password_again.length >= t.settings.password.minlength,
 						"text-danger": t.password_again.length < t.settings.password.minlength
@@ -26921,18 +26921,18 @@ function kU(t, s, c, l, u, d) {
 					a("span", {
 						class: m(["cursor-pointer input-group-text", { "rounded-bottom-0": (t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password_again.help }]),
 						onClick: s[5] ||= j((e) => t.toggleType("password_again"), ["stop"])
-					}, [t.settings.password_again.type == "password" ? (_(), i("i", AH)) : (_(), i("i", jH))], 2)
+					}, [t.settings.password_again.type == "password" ? (_(), i("i", MH)) : (_(), i("i", NH))], 2)
 				]),
 				(t.auth.panel == "registration" || t.auth.panel == "password") && t.settings.password_again.help ? (_(), i("small", {
 					key: 0,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.settings.password_again.help)
-				}, null, 8, MH)) : r("", !0)
+				}, null, 8, PH)) : r("", !0)
 			])) : r("", !0)], 64)) : r("", !0),
-			t.captchaRequired ? (_(), i("div", NH, [t.captcha.loading ? (_(), i("div", PH, [...s[21] ||= [a("span", { class: "spinner-border spinner-border-sm text-secondary" }, null, -1)]])) : t.captcha.items.length ? (_(), i("div", FH, [a("div", {
+			t.captchaRequired ? (_(), i("div", FH, [t.captcha.loading ? (_(), i("div", IH, [...s[21] ||= [a("span", { class: "spinner-border spinner-border-sm text-secondary" }, null, -1)]])) : t.captcha.items.length ? (_(), i("div", LH, [a("div", {
 				class: "text-center small mb-2",
 				innerHTML: t.captchaQuestion
-			}, null, 8, IH), a("div", LH, [(_(!0), i(e, null, y(t.captcha.items, (e) => (_(), i("button", {
+			}, null, 8, RH), a("div", zH, [(_(!0), i(e, null, y(t.captcha.items, (e) => (_(), i("button", {
 				key: e.id,
 				type: "button",
 				class: m(["btn btn-outline-secondary px-2 py-1", { "btn-primary border-primary": t.captcha.answers.includes(e.id) }]),
@@ -26945,15 +26945,15 @@ function kU(t, s, c, l, u, d) {
 					"font-size": "1.2rem",
 					display: "block"
 				}
-			}, null, 2)], 10, RH))), 128))])])) : r("", !0)])) : r("", !0),
-			t.captchaError ? (_(), i("p", zH, S(t.translate(t.settings.captcha.error)), 1)) : r("", !0),
-			t.auth.panel === "twofa" && t.settings.twofa ? (_(), i("div", BH, [
+			}, null, 2)], 10, BH))), 128))])])) : r("", !0)])) : r("", !0),
+			t.captchaError ? (_(), i("p", VH, S(t.translate(t.settings.captcha.error)), 1)) : r("", !0),
+			t.auth.panel === "twofa" && t.settings.twofa ? (_(), i("div", HH, [
 				a("p", {
 					class: "text-center small text-muted mb-3",
 					innerHTML: t.translate(t.settings.twofa.info)
-				}, null, 8, VH),
-				a("label", HH, S(t.translate(t.settings.twofa.label)), 1),
-				a("div", UH, [s[22] ||= a("span", { class: "input-group-text" }, [a("i", { class: "bi bi-shield-lock" })], -1), k(a("input", {
+				}, null, 8, UH),
+				a("label", WH, S(t.translate(t.settings.twofa.label)), 1),
+				a("div", GH, [s[22] ||= a("span", { class: "input-group-text" }, [a("i", { class: "bi bi-shield-lock" })], -1), k(a("input", {
 					type: "text",
 					inputmode: "numeric",
 					pattern: "[0-9]{6}",
@@ -26964,9 +26964,9 @@ function kU(t, s, c, l, u, d) {
 					required: "",
 					disabled: t.loading,
 					autocomplete: "one-time-code"
-				}, null, 40, WH), [[D, t.twofaCode]])]),
-				t.twofaTrustOptions.length ? (_(), i("div", GH, [
-					a("label", KH, S(t.translate(t.settings.twofa.trust.label)), 1),
+				}, null, 40, KH), [[D, t.twofaCode]])]),
+				t.twofaTrustOptions.length ? (_(), i("div", qH, [
+					a("label", JH, S(t.translate(t.settings.twofa.trust.label)), 1),
 					k(a("select", {
 						id: "twofa_trust",
 						class: "form-select",
@@ -26975,7 +26975,7 @@ function kU(t, s, c, l, u, d) {
 					}, [(_(!0), i(e, null, y(t.twofaTrustOptions, (e) => (_(), i("option", {
 						key: e.value,
 						value: e.value
-					}, S(t.translate(e.label)), 9, JH))), 128))], 8, qH), [[
+					}, S(t.translate(e.label)), 9, XH))), 128))], 8, YH), [[
 						E,
 						t.twofaTrustDays,
 						void 0,
@@ -26985,14 +26985,14 @@ function kU(t, s, c, l, u, d) {
 						key: 0,
 						class: "d-block text-muted mt-1",
 						innerHTML: t.translate(t.settings.twofa.trust.help)
-					}, null, 8, YH)) : r("", !0)
+					}, null, 8, ZH)) : r("", !0)
 				])) : r("", !0),
-				a("div", XH, [a("button", {
+				a("div", QH, [a("button", {
 					type: "button",
 					class: "btn btn-link btn-sm p-0 text-decoration-none",
 					onClick: s[9] ||= j((...e) => t.resendTwofa && t.resendTwofa(...e), ["stop"]),
 					disabled: t.loading
-				}, [s[23] ||= a("i", { class: "bi bi-arrow-repeat me-1" }, null, -1), o(S(t.translate(t.settings.submit.resend)), 1)], 8, ZH)])
+				}, [s[23] ||= a("i", { class: "bi bi-arrow-repeat me-1" }, null, -1), o(S(t.translate(t.settings.submit.resend)), 1)], 8, $H)])
 			])) : r("", !0),
 			k(a("input", {
 				type: "text",
@@ -27009,32 +27009,32 @@ function kU(t, s, c, l, u, d) {
 					opacity: "0"
 				}
 			}, null, 512), [[D, t.honeypot]]),
-			t.auth.panel == "login" && t.settings.password.forgot ? (_(), i("div", QH, [a("button", {
+			t.auth.panel == "login" && t.settings.password.forgot ? (_(), i("div", eU, [a("button", {
 				type: "button",
 				class: "btn btn-link p-0 text-decoration-none text-nowrap",
 				onClick: s[11] ||= j((...e) => t.toggleForgotPassword && t.toggleForgotPassword(...e), ["stop"]),
 				innerHTML: t.translate(t.settings.password.forgot)
-			}, null, 8, $H)])) : r("", !0),
-			t.auth.panel == "forgot" && t.settings.help && t.settings.help.forgot ? (_(), i("div", eU, [a("small", {
+			}, null, 8, tU)])) : r("", !0),
+			t.auth.panel == "forgot" && t.settings.help && t.settings.help.forgot ? (_(), i("div", nU, [a("small", {
 				class: "text-muted",
 				innerHTML: t.translate(t.settings.help.forgot)
-			}, null, 8, tU)])) : r("", !0),
-			a("div", nU, [(_(!0), i(e, null, y(t.settings.inputs, (n, o) => (_(), i(e, { key: o }, [n.panels.indexOf(t.auth.panel) >= 0 && !n.hidden ? (_(), i("div", {
+			}, null, 8, rU)])) : r("", !0),
+			a("div", iU, [(_(!0), i(e, null, y(t.settings.inputs, (n, o) => (_(), i(e, { key: o }, [n.panels.indexOf(t.auth.panel) >= 0 && !n.hidden ? (_(), i("div", {
 				key: 0,
 				class: m([n.colclass ? n.colclass : "col-md-12"])
-			}, [a("div", rU, [
+			}, [a("div", aU, [
 				n.label ? (_(), i("label", {
 					key: 0,
 					for: o,
 					class: m(["form-label text-primary", { required: n.required }]),
 					innerHTML: t.translate(t.getValueOrFunction(n.label))
-				}, null, 10, iU)) : r("", !0),
-				a("div", aU, [
+				}, null, 10, oU)) : r("", !0),
+				a("div", sU, [
 					n.prefix ? (_(), i("span", {
 						key: 0,
 						class: m(["input-group-text", { "rounded-bottom-0": n.help }]),
 						innerHTML: t.translate(t.getValueOrFunction(n.prefix))
-					}, null, 10, oU)) : r("", !0),
+					}, null, 10, cU)) : r("", !0),
 					n.type == "select" ? k((_(), i("select", {
 						key: 1,
 						class: "form-select",
@@ -27046,7 +27046,7 @@ function kU(t, s, c, l, u, d) {
 						key: e,
 						value: e.value,
 						innerHTML: t.translate(t.getValueOrFunction(e.label))
-					}, null, 8, cU))), 128))], 8, sU)), [[E, t.inputs[o]]]) : k((_(), i("input", {
+					}, null, 8, uU))), 128))], 8, lU)), [[E, t.inputs[o]]]) : k((_(), i("input", {
 						key: 2,
 						id: o,
 						name: o,
@@ -27056,20 +27056,20 @@ function kU(t, s, c, l, u, d) {
 						placeholder: t.translate(n.placeholder),
 						required: n.required,
 						disabled: t.loading
-					}, null, 10, lU)), [[T, t.inputs[o]]]),
+					}, null, 10, dU)), [[T, t.inputs[o]]]),
 					n.suffix ? (_(), i("span", {
 						key: 3,
 						class: m(["input-group-text", { "rounded-bottom-0": n.help }]),
 						innerHTML: t.translate(t.getValueOrFunction(n.suffix))
-					}, null, 10, uU)) : r("", !0)
+					}, null, 10, fU)) : r("", !0)
 				]),
 				n.help ? (_(), i("small", {
 					key: 1,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.getValueOrFunction(n.help))
-				}, null, 8, dU)) : r("", !0)
+				}, null, 8, pU)) : r("", !0)
 			])], 2)) : r("", !0)], 64))), 128))]),
-			(_(!0), i(e, null, y(t.settings.accepts, (e) => (_(), i("div", { key: e }, [e.panels.indexOf(t.auth.panel) >= 0 ? (_(), i("div", fU, [k(a("input", {
+			(_(!0), i(e, null, y(t.settings.accepts, (e) => (_(), i("div", { key: e }, [e.panels.indexOf(t.auth.panel) >= 0 ? (_(), i("div", mU, [k(a("input", {
 				type: "checkbox",
 				class: "form-check-input",
 				id: "accept_" + e.name,
@@ -27077,35 +27077,35 @@ function kU(t, s, c, l, u, d) {
 				"onUpdate:modelValue": (n) => t.accepts[e.name] = n,
 				required: e.required,
 				disabled: t.loading
-			}, null, 8, pU), [[w, t.accepts[e.name]]]), e.label ? (_(), i("label", {
+			}, null, 8, hU), [[w, t.accepts[e.name]]]), e.label ? (_(), i("label", {
 				key: 0,
 				class: "form-check-label",
 				for: "accept_" + e.name,
 				innerHTML: t.translate(t.getValueOrFunction(e.label))
-			}, null, 8, mU)) : r("", !0)])) : r("", !0)]))), 128)),
-			t.auth.panel == "registration" && t.settings.help && t.settings.help.registration ? (_(), i("div", hU, [a("div", { innerHTML: t.translate(t.getValueOrFunction(t.settings.help.registration)) }, null, 8, gU)])) : r("", !0),
-			t.auth.response.message ? (_(), i("div", _U, [a("div", {
+			}, null, 8, gU)) : r("", !0)])) : r("", !0)]))), 128)),
+			t.auth.panel == "registration" && t.settings.help && t.settings.help.registration ? (_(), i("div", _U, [a("div", { innerHTML: t.translate(t.getValueOrFunction(t.settings.help.registration)) }, null, 8, vU)])) : r("", !0),
+			t.auth.response.message ? (_(), i("div", yU, [a("div", {
 				class: m({
 					"text-danger": !t.auth.response.ok,
 					"text-success": t.auth.response.ok
 				}),
 				style: { "white-space": "pre-line" }
 			}, S(t.translate(t.auth.response.message)), 3)])) : r("", !0),
-			a("div", vU, [
+			a("div", bU, [
 				t.auth.panel != "login" && t.auth.panel != "activation" ? (_(), i("button", {
 					key: 0,
 					type: "button",
 					onClick: s[12] ||= j((...e) => t.toggleClear && t.toggleClear(...e), ["stop"]),
 					class: "btn btn-secondary w-100 me-2 text-nowrap",
 					disabled: t.loading
-				}, [s[25] ||= a("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.login)), 1)], 8, yU)) : r("", !0),
+				}, [s[25] ||= a("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.login)), 1)], 8, xU)) : r("", !0),
 				t.auth.panel == "login" && t.settings.registrationEnabled !== !1 ? (_(), i("button", {
 					key: 1,
 					type: "button",
 					class: "btn btn-warning w-100 me-2 text-nowrap",
 					onClick: s[13] ||= j((...e) => t.toggleNewRegistration && t.toggleNewRegistration(...e), ["stop"]),
 					disabled: t.loading
-				}, [s[26] ||= a("i", { class: "bi bi-person-plus mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.registration)), 1)], 8, bU)) : r("", !0),
+				}, [s[26] ||= a("i", { class: "bi bi-person-plus mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.registration)), 1)], 8, SU)) : r("", !0),
 				a("button", {
 					type: "submit",
 					class: m(["btn w-100 text-nowrap", {
@@ -27113,20 +27113,20 @@ function kU(t, s, c, l, u, d) {
 						"btn-warning": t.auth.panel == "registration"
 					}]),
 					disabled: t.loading
-				}, [o(S(t.translate(t.settings.submit[t.auth.panel])) + " ", 1), t.auth.panel == "registration" ? (_(), i("i", SU)) : (_(), i("i", CU))], 10, xU)
+				}, [o(S(t.translate(t.settings.submit[t.auth.panel])) + " ", 1), t.auth.panel == "registration" ? (_(), i("i", wU)) : (_(), i("i", TU))], 10, CU)
 			]),
-			a("div", wU, [a("button", {
+			a("div", EU, [a("button", {
 				type: "button",
 				onClick: s[14] ||= j((...e) => t.close && t.close(...e), ["stop"]),
 				class: "btn btn-light border w-100 me-1",
 				disabled: t.loading
-			}, [o(S(t.translate(t.settings.submit.cancel)) + " ", 1), s[27] ||= a("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, TU)])
+			}, [o(S(t.translate(t.settings.submit.cancel)) + " ", 1), s[27] ||= a("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, DU)])
 		], 32)
 	])])]), a("div", {
 		class: "modal shadow",
 		id: t.modalId,
 		tabindex: "-1"
-	}, [a("div", DU, [a("div", OU, [t.settings.form && t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
+	}, [a("div", kU, [a("div", AU, [t.settings.form && t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
 		key: 0,
 		modelValue: t.item,
 		"onUpdate:modelValue": s[19] ||= (e) => t.item = e,
@@ -27148,12 +27148,12 @@ function kU(t, s, c, l, u, d) {
 		"deleteItem",
 		"reloadTable",
 		"fetchRelation"
-	])) : r("", !0)])])], 8, EU)], 8, cH)) : r("", !0);
+	])) : r("", !0)])])], 8, OU)], 8, uH)) : r("", !0);
 }
-var AU = /*#__PURE__*/ EA(sH, [["render", kU]]);
+var MU = /*#__PURE__*/ EA(lH, [["render", jU]]);
 // src/components/VuUserButton.vue
 Nc();
-var jU = {
+var NU = {
 	name: "VuUserButton",
 	props: {
 		modelValue: Object,
@@ -27166,7 +27166,7 @@ var jU = {
 			settings: {},
 			registrationEnabled: !0,
 			language: Hc(),
-			themeChoice: WV()
+			themeChoice: KV()
 		};
 	},
 	watch: { modelValue: {
@@ -27202,10 +27202,10 @@ var jU = {
 			Uc(e);
 		},
 		themes(e) {
-			return Array.isArray(e.themes) && e.themes.length ? e.themes : HV();
+			return Array.isArray(e.themes) && e.themes.length ? e.themes : WV();
 		},
 		changeTheme(e) {
-			XV(e);
+			QV(e);
 		},
 		translate(e) {
 			return typeof e == "string" ? _l(e, this.settings.translate, null, this.language) : e;
@@ -27215,72 +27215,72 @@ var jU = {
 		}
 	},
 	created() {
-		this.theme = qV(window.VuSettings && window.VuSettings.theme), window.VuSettings && window.VuSettings.button && window.VuSettings.button[this.panel] && (this.settings = window.VuSettings.button[this.panel]), window.VuSettings && window.VuSettings.auth && window.VuSettings.auth.registrationEnabled === !1 && (this.registrationEnabled = !1);
+		this.theme = YV(window.VuSettings && window.VuSettings.theme), window.VuSettings && window.VuSettings.button && window.VuSettings.button[this.panel] && (this.settings = window.VuSettings.button[this.panel]), window.VuSettings && window.VuSettings.auth && window.VuSettings.auth.registrationEnabled === !1 && (this.registrationEnabled = !1);
 	},
 	mounted() {
 		this._onLanguageChange = (e) => {
 			this.language = e.detail.language;
 		}, window.addEventListener(Fc, this._onLanguageChange), this._onThemeChange = (e) => {
-			this.themeChoice = e.detail.theme, this.theme = qV(window.VuSettings && window.VuSettings.theme);
-		}, window.addEventListener(BV, this._onThemeChange);
+			this.themeChoice = e.detail.theme, this.theme = YV(window.VuSettings && window.VuSettings.theme);
+		}, window.addEventListener(HV, this._onThemeChange);
 	},
 	beforeUnmount() {
-		window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(BV, this._onThemeChange);
+		window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(HV, this._onThemeChange);
 	}
-}, MU = ["data-bs-theme"], NU = {
+}, PU = ["data-bs-theme"], FU = {
 	key: 0,
 	class: "dropdown"
-}, PU = ["innerHTML"], FU = {
+}, IU = ["innerHTML"], LU = {
 	class: "dropdown-menu dropdown-menu-end",
 	"aria-labelledby": "userDropdown"
-}, IU = ["innerHTML"], LU = ["onClick"], RU = ["innerHTML"], zU = ["onClick", "title"], BU = ["innerHTML"], VU = [
+}, RU = ["innerHTML"], zU = ["onClick"], BU = ["innerHTML"], VU = ["onClick", "title"], HU = ["innerHTML"], UU = [
 	"onClick",
 	"title",
 	"aria-label"
-], HU = { key: 1 }, UU = ["onClick", "innerHTML"], WU = {
+], WU = { key: 1 }, GU = ["onClick", "innerHTML"], KU = {
 	key: 1,
 	class: "d-inline-block"
-}, GU = ["innerHTML"];
-function KU(t, n, o, s, c, l) {
+}, qU = ["innerHTML"];
+function JU(t, n, o, s, c, l) {
 	return (t.panel != "registration" || t.registrationEnabled) && (!t.auth.user && t.panel != "login" || t.panel == "login") ? (_(), i("div", {
 		key: 0,
 		class: "vua-user-button d-inline-block",
 		"data-bs-theme": [t.theme]
-	}, [t.auth.user ? (_(), i("div", NU, [a("button", {
+	}, [t.auth.user ? (_(), i("div", FU, [a("button", {
 		class: m(["dropdown-toggle", [t.settings.class]]),
 		type: "button",
 		id: "userDropdown",
 		"data-bs-toggle": "dropdown",
 		"aria-expanded": "false"
-	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, PU)], 2), a("ul", FU, [(_(!0), i(e, null, y(t.settings.dropdowns, (n) => (_(), i(e, { key: n }, [n.action == "BUTTON_ROLES" ? (_(), i("li", {
+	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, IU)], 2), a("ul", LU, [(_(!0), i(e, null, y(t.settings.dropdowns, (n) => (_(), i(e, { key: n }, [n.action == "BUTTON_ROLES" ? (_(), i("li", {
 		key: 0,
 		class: m([[n.class], "d-flex items-align-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(n.label)),
 		class: "me-2"
-	}, null, 8, IU), (_(!0), i(e, null, y(t.auth.user.roles, (e) => (_(), i("button", {
+	}, null, 8, RU), (_(!0), i(e, null, y(t.auth.user.roles, (e) => (_(), i("button", {
 		key: e,
 		onClick: (n) => t.setSelectedRole(e),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e == t.auth.user.role }])
-	}, S(e), 11, LU))), 128))], 2)) : n.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
+	}, S(e), 11, zU))), 128))], 2)) : n.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
 		key: 1,
 		class: m([[n.class], "d-flex align-items-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(n.label === void 0 ? "Language" : n.label)),
 		class: "me-2"
-	}, null, 8, RU), (_(!0), i(e, null, y(t.languages(n), (e) => (_(), i("button", {
+	}, null, 8, BU), (_(!0), i(e, null, y(t.languages(n), (e) => (_(), i("button", {
 		key: e.value,
 		type: "button",
 		onClick: j((n) => t.changeLanguage(e.value), ["stop"]),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e.value == t.language }]),
 		title: e.label
-	}, S(e.short || e.value.toUpperCase()), 11, zU))), 128))], 2)) : n.action == "BUTTON_THEME" ? (_(), i("li", {
+	}, S(e.short || e.value.toUpperCase()), 11, VU))), 128))], 2)) : n.action == "BUTTON_THEME" ? (_(), i("li", {
 		key: 2,
 		class: m([[n.class], "d-flex align-items-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(n.label === void 0 ? "Theme" : n.label)),
 		class: "me-2"
-	}, null, 8, BU), (_(!0), i(e, null, y(t.themes(n), (e) => (_(), i("button", {
+	}, null, 8, HU), (_(!0), i(e, null, y(t.themes(n), (e) => (_(), i("button", {
 		key: e.value,
 		type: "button",
 		onClick: j((n) => t.changeTheme(e.value), ["stop"]),
@@ -27290,21 +27290,21 @@ function KU(t, n, o, s, c, l) {
 	}, [e.icon ? (_(), i("i", {
 		key: 0,
 		class: m(e.icon)
-	}, null, 2)) : (_(), i("span", HU, S(t.translate(e.label)), 1))], 10, VU))), 128))], 2)) : (_(), i("li", {
+	}, null, 2)) : (_(), i("span", WU, S(t.translate(e.label)), 1))], 10, UU))), 128))], 2)) : (_(), i("li", {
 		key: 3,
 		class: m([n.class]),
 		onClick: (e) => t.dropdownAction(n),
 		innerHTML: t.translate(t.getValueOrFunction(n.label))
-	}, null, 10, UU))], 64))), 128))])])) : (_(), i("div", WU, [a("button", {
+	}, null, 10, GU))], 64))), 128))])])) : (_(), i("div", KU, [a("button", {
 		class: m([t.settings.class]),
 		type: "button",
 		onClick: n[0] ||= (...e) => t.togglePanel && t.togglePanel(...e)
 	}, [t.settings.icon ? (_(), i("i", {
 		key: 0,
 		class: m([t.settings.icon])
-	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, GU)], 2)]))], 8, MU)) : r("", !0);
+	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, qU)], 2)]))], 8, PU)) : r("", !0);
 }
-var qU = /*#__PURE__*/ EA(jU, [["render", KU]]), JU = {
+var YU = /*#__PURE__*/ EA(NU, [["render", JU]]), XU = {
 	name: "VuAdminNav",
 	props: {
 		modelValue: Object,
@@ -27434,20 +27434,20 @@ var qU = /*#__PURE__*/ EA(jU, [["render", KU]]), JU = {
 			}
 		}
 	}
-}, YU = {
+}, ZU = {
 	key: 0,
 	class: "dropdown-divider"
-}, XU = ["disabled", "onClick"], ZU = [
+}, QU = ["disabled", "onClick"], $U = [
 	"aria-current",
 	"target",
 	"rel",
 	"href"
-], QU = ["disabled", "onClick"], $U = [
+], eW = ["disabled", "onClick"], tW = [
 	"aria-current",
 	"target",
 	"rel",
 	"href"
-], eW = {
+], nW = {
 	key: 1,
 	class: "vu-admin-nav-result position-fixed bottom-0 end-0 m-3 shadow",
 	style: {
@@ -27455,14 +27455,14 @@ var qU = /*#__PURE__*/ EA(jU, [["render", KU]]), JU = {
 		"max-width": "640px",
 		width: "calc(100% - 2rem)"
 	}
-}, tW = { class: "d-flex align-items-start gap-2" }, nW = { class: "me-auto" }, rW = {
+}, rW = { class: "d-flex align-items-start gap-2" }, iW = { class: "me-auto" }, aW = {
 	key: 0,
 	class: "spinner-border spinner-border-sm ms-2",
 	"aria-hidden": "true"
-}, iW = {
+}, oW = {
 	key: 1,
 	class: "ms-2"
-}, aW = ["aria-label", "disabled"], oW = {
+}, sW = ["aria-label", "disabled"], cW = {
 	key: 0,
 	class: "mt-2 mb-0 small overflow-auto",
 	style: {
@@ -27470,7 +27470,7 @@ var qU = /*#__PURE__*/ EA(jU, [["render", KU]]), JU = {
 		"white-space": "pre-wrap"
 	}
 };
-function sW(t, n, s, c, l, u) {
+function lW(t, n, s, c, l, u) {
 	return _(), i(e, null, [t.auth && t.auth.success && t.visibleItems.length ? (_(), i("ul", {
 		key: 0,
 		class: m(["navbar-nav flex-grow-1 mb-2 mb-lg-0", t.menuClass])
@@ -27484,7 +27484,7 @@ function sW(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), a("span", null, S(t.translate(n.name)), 1)], 2), a("ul", { class: m(["dropdown-menu", n.menuClass]) }, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [e.divider ? (_(), i("hr", YU)) : e.header ? (_(), i("h6", {
+	}, null, 2)) : r("", !0), a("span", null, S(t.translate(n.name)), 1)], 2), a("ul", { class: m(["dropdown-menu", n.menuClass]) }, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [e.divider ? (_(), i("hr", ZU)) : e.header ? (_(), i("h6", {
 		key: 1,
 		class: m(["dropdown-header", e.class])
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
@@ -27499,7 +27499,7 @@ function sW(t, n, s, c, l, u) {
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(e.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, XU)) : (_(), i("a", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, QU)) : (_(), i("a", {
 		key: 3,
 		class: m(["dropdown-item", [e.class, { active: t.isActive(e) }]]),
 		"aria-current": t.isActive(e) ? "page" : null,
@@ -27509,7 +27509,7 @@ function sW(t, n, s, c, l, u) {
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(e.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, ZU))]))), 128))], 2)], 2)) : (_(), i("li", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, $U))]))), 128))], 2)], 2)) : (_(), i("li", {
 		key: 1,
 		class: m(["nav-item", n.itemClass])
 	}, [n.api ? (_(), i("button", {
@@ -27521,7 +27521,7 @@ function sW(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, QU)) : (_(), i("a", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, eW)) : (_(), i("a", {
 		key: 1,
 		class: m(["nav-link scrollto", [n.class, { active: t.isActive(n) }]]),
 		"aria-current": t.isActive(n) ? "page" : null,
@@ -27531,18 +27531,18 @@ function sW(t, n, s, c, l, u) {
 	}, [t.iconClass(n.icon) ? (_(), i("i", {
 		key: 0,
 		class: m(t.iconClass(n.icon))
-	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, $U))], 2))], 64))), 128))], 2)) : r("", !0), t.result ? (_(), i("div", eW, [a("div", {
+	}, null, 2)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, tW))], 2))], 64))), 128))], 2)) : r("", !0), t.result ? (_(), i("div", nW, [a("div", {
 		class: m(["alert mb-0", t.result.running ? "alert-secondary" : t.result.ok ? "alert-success" : "alert-danger"]),
 		role: "status"
-	}, [a("div", tW, [a("strong", nW, [o(S(t.translate(t.result.name)) + " ", 1), t.result.running ? (_(), i("span", rW)) : (_(), i("span", iW, "— " + S(t.result.ok ? t.translate("Done") : t.translate("Error")) + " (" + S(t.result.status) + ")", 1))]), a("button", {
+	}, [a("div", rW, [a("strong", iW, [o(S(t.translate(t.result.name)) + " ", 1), t.result.running ? (_(), i("span", aW)) : (_(), i("span", oW, "— " + S(t.result.ok ? t.translate("Done") : t.translate("Error")) + " (" + S(t.result.status) + ")", 1))]), a("button", {
 		type: "button",
 		class: "btn-close",
 		"aria-label": t.translate("Close"),
 		disabled: t.result.running,
 		onClick: n[0] ||= (e) => t.result = null
-	}, null, 8, aW)]), t.result.running ? r("", !0) : (_(), i("pre", oW, S(t.result.output), 1))], 2)])) : r("", !0)], 64);
+	}, null, 8, sW)]), t.result.running ? r("", !0) : (_(), i("pre", cW, S(t.result.output), 1))], 2)])) : r("", !0)], 64);
 }
-var cW = /*#__PURE__*/ EA(JU, [["render", sW]]), lW = {
+var uW = /*#__PURE__*/ EA(XU, [["render", lW]]), dW = {
 	title: "",
 	documentTitle: "{view} | {title}",
 	logo: "",
@@ -27564,7 +27564,7 @@ var cW = /*#__PURE__*/ EA(JU, [["render", sW]]), lW = {
 		menu: "admin"
 	}
 };
-function uW(e, t) {
+function fW(e, t) {
 	let n = {};
 	return Object.keys(e).forEach((t) => {
 		let r = e[t];
@@ -27574,14 +27574,14 @@ function uW(e, t) {
 		n[e] = r && typeof r == "object" && !Array.isArray(r) && n[e] && typeof n[e] == "object" ? Object.assign(n[e], r) : r;
 	}), n;
 }
-function dW() {
+function pW() {
 	try {
 		return !!(localStorage.getItem("vu-user") && localStorage.getItem("vu-header"));
 	} catch {
 		return !1;
 	}
 }
-var fW = {
+var mW = {
 	name: "VuAdminApp",
 	props: { session: {
 		type: Object,
@@ -27591,17 +27591,17 @@ var fW = {
 		let e = typeof window < "u" && window.VuSettings && window.VuSettings.app ? window.VuSettings.app : {};
 		return {
 			auth: this.session || { inputs: {} },
-			settings: uW(lW, e),
+			settings: fW(dW, e),
 			language: Hc(),
 			hash: typeof window < "u" ? window.location.hash : "",
-			restoring: !this.session && dW(),
-			themeChoice: WV(),
+			restoring: !this.session && pW(),
+			themeChoice: KV(),
 			themeTick: 0
 		};
 	},
 	computed: {
 		headerTheme() {
-			return this.themeTick, KV(this.themeChoice) || this.settings.header.theme || null;
+			return this.themeTick, JV(this.themeChoice) || this.settings.header.theme || null;
 		},
 		logo() {
 			return Kc(this.settings.logo);
@@ -27643,10 +27643,10 @@ var fW = {
 			this.hash = window.location.hash;
 		}, this._onThemeChange = (e) => {
 			this.themeChoice = e.detail.theme, this.themeTick++;
-		}, window.addEventListener(Fc, this._onLanguageChange), window.addEventListener(BV, this._onThemeChange), window.addEventListener("hashchange", this._onHashChange);
+		}, window.addEventListener(Fc, this._onLanguageChange), window.addEventListener(HV, this._onThemeChange), window.addEventListener("hashchange", this._onHashChange);
 	},
 	beforeUnmount() {
-		window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(BV, this._onThemeChange), window.removeEventListener("hashchange", this._onHashChange), clearTimeout(this._restoreTimeout);
+		window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(HV, this._onThemeChange), window.removeEventListener("hashchange", this._onHashChange), clearTimeout(this._restoreTimeout);
 	},
 	methods: {
 		safeUrl: Kc,
@@ -27661,21 +27661,21 @@ var fW = {
 		}
 	},
 	components: {
-		VuAdmin: aH,
-		VuAuth: AU,
-		VuUserButton: qU,
-		VuAdminNav: cW
+		VuAdmin: sH,
+		VuAuth: MU,
+		VuUserButton: YU,
+		VuAdminNav: uW
 	}
-}, pW = ["data-bs-theme"], mW = ["href"], hW = [
+}, hW = ["data-bs-theme"], gW = ["href"], _W = [
 	"src",
 	"alt",
 	"height",
 	"width"
-], gW = { key: 1 }, _W = {
+], vW = { key: 1 }, yW = {
 	key: 0,
 	class: "vu-admin-app-loading d-flex justify-content-center align-items-center py-5 text-secondary"
 };
-function vW(e, t, o, c, l, u) {
+function bW(e, t, o, c, l, u) {
 	let d = b("vu-admin-nav"), f = b("vu-user-button"), p = b("vu-admin"), h = b("vu-auth");
 	return _(), i("div", { class: m(["vu-admin-app", e.settings.container]) }, [
 		a("header", {
@@ -27693,7 +27693,7 @@ function vW(e, t, o, c, l, u) {
 				height: e.settings.brand.height || null,
 				width: e.settings.brand.width || null,
 				class: m(["d-inline-block", { "me-2": e.settings.title }])
-			}, null, 10, hW)) : r("", !0), e.settings.title ? (_(), i("span", gW, S(e.translate(e.settings.title)), 1)) : r("", !0)], 10, mW)) : r("", !0),
+			}, null, 10, _W)) : r("", !0), e.settings.title ? (_(), i("span", vW, S(e.translate(e.settings.title)), 1)) : r("", !0)], 10, gW)) : r("", !0),
 			s(d, {
 				modelValue: e.auth,
 				"onUpdate:modelValue": t[0] ||= (t) => e.auth = t,
@@ -27715,8 +27715,8 @@ function vW(e, t, o, c, l, u) {
 				"onUpdate:modelValue": t[2] ||= (t) => e.auth = t,
 				panel: "login"
 			}, null, 8, ["modelValue"])
-		], 10, pW),
-		a("main", { class: m(e.settings.main.class) }, [e.restoring ? (_(), i("div", _W, [t[4] ||= a("span", {
+		], 10, hW),
+		a("main", { class: m(e.settings.main.class) }, [e.restoring ? (_(), i("div", yW, [t[4] ||= a("span", {
 			class: "spinner-border spinner-border-sm me-2",
 			"aria-hidden": "true"
 		}, null, -1), a("span", null, S(e.translate("Loading...")), 1)])) : r("", !0), s(p, { auth: e.auth }, null, 8, ["auth"])], 2),
@@ -27728,5 +27728,5 @@ function vW(e, t, o, c, l, u) {
 		}, null, 8, ["modelValue"]))
 	], 2);
 }
-var yW = /*#__PURE__*/ EA(fW, [["render", vW]]);
-export { aH as VuAdmin, yW as VuAdminApp, RV as VuAdminCount, cW as VuAdminNav, AU as VuAuth, qU as VuUserButton, Rc as availableLanguages, HV as availableThemes, Gc as escapeHtml, Hc as getLanguage, WV as getTheme, Kc as safeUrl, Uc as setLanguage, XV as setTheme, _l as translate, Lc as translations };
+var xW = /*#__PURE__*/ EA(mW, [["render", bW]]);
+export { sH as VuAdmin, xW as VuAdminApp, BV as VuAdminCount, uW as VuAdminNav, MU as VuAuth, YU as VuUserButton, Rc as availableLanguages, WV as availableThemes, Gc as escapeHtml, Hc as getLanguage, KV as getTheme, Kc as safeUrl, Uc as setLanguage, QV as setTheme, _l as translate, Lc as translations };

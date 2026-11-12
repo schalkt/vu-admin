@@ -1073,6 +1073,13 @@ export default {
       //     this.config.pagination.from + this.items.length - 1;
       // }
 
+      // empty result: no range (the pagination shows "0 / 0")
+      if (this.config.pagination.items === 0) {
+        this.config.pagination.from = 0;
+        this.config.pagination.to = 0;
+        return;
+      }
+
       this.config.pagination.from = this.config.pagination.skip + 1;
 
       this.config.pagination.to =

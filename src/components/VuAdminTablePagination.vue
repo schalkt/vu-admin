@@ -2,9 +2,11 @@
   <nav v-if="!config.pagination.hidden" :aria-label="translate('Page navigation')" class="mt-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
 
     <div class="d-flex align-items-center">
-      <span v-cloak v-show="config.pagination.from > 0" class="mx-1 small">
-        <strong>{{ config.pagination.from }}-{{ config.pagination.to }}</strong>
-        <span v-if="config.pagination.total">
+      <!-- "1-10 / 20"; an empty result (e.g. a filter without matches) shows "0 / 0" instead of "1-0" -->
+      <span v-cloak v-show="config.pagination.from > 0 || config.pagination.items === 0" class="mx-1 small">
+        <strong v-if="config.pagination.from > 0">{{ config.pagination.from }}-{{ config.pagination.to }}</strong>
+        <strong v-else>0</strong>
+        <span v-if="config.pagination.total !== null && config.pagination.total !== undefined">
           / {{ config.pagination.total }}
         </span>
       </span>
