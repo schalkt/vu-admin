@@ -44,7 +44,8 @@ import {
   getResponseErrors,
   prepareFetchUrl,
   prepareFetchOptions,
-  loadEntityConfig
+  loadEntityConfig,
+  entityColor
 } from "./helpers";
 
 const VuAdmin = {
@@ -135,7 +136,8 @@ const VuAdmin = {
           preset: item.preset || "dashboard",
           override: this.widgetOverride(item),
         });
-      // counters without a `color` get the next one of a default palette (in order)
+      // counter color: its own `color`, else the entity's color (entities[x].color), else the next one of a
+      // default palette (in order)
       const palette = ["primary", "warning", "success", "info", "danger", "secondary"];
       items.filter((item) => item.type === "count" && !item.color).forEach((item, index) => {
         item.color = palette[index % palette.length];
@@ -349,7 +351,7 @@ const VuAdmin = {
         filter: item.filter || null,
         link,
         cardClass: item.cardClass,
-        color: item.color,
+        color: item.color || entityColor(this.auth, item.entity),
       };
     },
 
@@ -494,6 +496,10 @@ const VuAdmin = {
         this.settings = deepMerge(this.defaults, entitySettings);
         this.settings.entity = this.entity;
         this.settings.preset = this.preset ? this.preset : "default";
+        // accent color of the table header: the entity config's own `color`, else entities[x].color
+        if (!this.settings.color) {
+          this.settings.color = entityColor(this.auth, this.entity);
+        }
 
         // configured: the entity's own theme, else the page's; the user's choice (theme switch) overrides it
         this.configuredTheme = this.settings.theme || document.documentElement.getAttribute("data-bs-theme") || "light";

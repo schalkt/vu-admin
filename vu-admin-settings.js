@@ -27,10 +27,12 @@ const REGISTRATION_HELP = `<div class='text-muted p-2 rounded shadow-sm'>After s
 const ADMIN_SETTINGS = () => ({
     entitiesVariable: 'VuEntities',
     entities: {
-        product: { url: '/vu-entity-product.js', preset: 'dash', title: 'Products' },
-        post: { url: '/vu-entity-post.js', title: 'Posts' },
-        user: { url: '/vu-entity-user.js', title: 'Users' },
-        todos: { url: '/vu-entity-todos.js', title: 'Todos' },
+        // color: used by the counters, the table header and the nav icons — a Bootstrap color name
+        // ('primary', 'success', 'warning', 'danger', 'info', 'purple', 'teal', 'orange', …) or '#hex'
+        product: { url: '/vu-entity-product.js', preset: 'dash', title: 'Products', color: 'info' },
+        post: { url: '/vu-entity-post.js', title: 'Posts', color: 'purple' },
+        user: { url: '/vu-entity-user.js', title: 'Users', color: 'primary' },
+        todos: { url: '/vu-entity-todos.js', title: 'Todos', color: 'warning' },
     },
     // start page (empty hash / "#"): entity tables in a Bootstrap grid; without it every entity is shown
     dashboard: {
@@ -42,7 +44,6 @@ const ADMIN_SETTINGS = () => ({
                 entity: 'user',
                 title: 'Users',
                 icon: 'bi bi-people',
-                color: 'primary',              // number + icon: Bootstrap color name or '#hex' (default: palette)
                 roles: ['admin'],              // only for these roles (the active role of the role switch)
             },
             {
@@ -50,7 +51,6 @@ const ADMIN_SETTINGS = () => ({
                 entity: 'todos',
                 title: 'Open todos',
                 icon: 'bi bi-list-check',
-                color: 'warning',
                 filter: { completed: false },  // → link "#todos?completed=false"
             },
             {
@@ -58,7 +58,7 @@ const ADMIN_SETTINGS = () => ({
                 entity: 'todos',
                 title: 'Completed todos',
                 icon: 'bi bi-check2-circle',
-                color: 'success',
+                color: 'success',              // own color instead of the entity's (todos: warning)
                 filter: { completed: true },
             },
             {
@@ -66,7 +66,6 @@ const ADMIN_SETTINGS = () => ({
                 entity: 'product',
                 title: 'Products',
                 icon: 'bi bi-box-seam',
-                color: 'info',
                 // class: 'col-6 col-md-3',    // default
             },
             // tables

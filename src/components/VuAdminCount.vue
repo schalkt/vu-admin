@@ -2,12 +2,12 @@
     <component :is="href ? 'a' : 'div'" :href="href || null" class="vu-admin-count card text-decoration-none" :class="cardClass"
         :title="href ? translate('Open') : null">
         <div class="card-body d-flex align-items-center gap-3">
-            <i v-if="icon" class="vu-admin-count-icon fs-2" :class="[icon, colorClass]" :style="colorStyle"></i>
+            <i v-if="icon" class="vu-admin-count-icon fs-2" :class="[icon, { 'vu-admin-count-colored': colorStyle }]" :style="colorStyle"></i>
             <div class="flex-grow-1 min-w-0">
                 <div class="vu-admin-count-value fs-3 fw-semibold lh-1">
                     <span v-if="count === null && !error" class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
                     <span v-else-if="error" class="text-danger" :title="error">–</span>
-                    <span v-else :class="colorClass" :style="colorStyle">{{ formatted }}</span>
+                    <span v-else :style="colorStyle">{{ formatted }}</span>
                 </div>
                 <div class="vu-admin-count-title text-secondary small text-truncate mt-1">{{ translate(title || entity) }}</div>
             </div>
@@ -23,6 +23,7 @@ import {
     getResponseJson,
     getResponseErrors,
     translate,
+    cssColor,
 } from "./helpers";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
@@ -54,11 +55,9 @@ const VuAdminCount = {
         };
     },
     computed: {
-        colorClass() {
-            return this.color && /^[a-z][a-z0-9-]*$/.test(this.color) ? "text-" + this.color : null;
-        },
         colorStyle() {
-            return this.color && /^#[0-9a-fA-F]{3,8}$/.test(this.color) ? { color: this.color } : null;
+            const color = cssColor(this.color);
+            return color ? { color } : null;
         },
         formatted() {
             try {
@@ -180,8 +179,7 @@ export { VuAdminCount };
     .vu-admin-count-icon {
         opacity: 0.6;
 
-        &[class*="text-"],
-        &[style*="color"] {
+        &.vu-admin-count-colored {
             opacity: 0.85;
         }
     }

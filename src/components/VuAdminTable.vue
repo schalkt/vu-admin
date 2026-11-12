@@ -1,7 +1,8 @@
 <template>
   <div>
 
-    <div v-cloak v-if="authAndSettings()" class="vua-table-container" :class="[settings.class]" :data-bs-theme="[settings.theme]">
+    <div v-cloak v-if="authAndSettings()" class="vua-table-container" :class="[settings.class, { 'vua-accent': accentStyle }]" :style="accentStyle"
+      :data-bs-theme="[settings.theme]">
       <div class="vua-overlay" :class="{ blocked: ui.block.table }"></div>
       <div class="vua-table-title">
         <div class="d-flex align-items-center justify-content-between">
@@ -539,7 +540,8 @@ import {
   executeFunctions,
   secureRandomInt,
   secureRandomString,
-  safeUrl
+  safeUrl,
+  cssColor
 } from "./helpers";
 import {
   getSeparateUploadFieldsMap,
@@ -721,6 +723,13 @@ export default {
     window.removeEventListener('beforeunload', this._handleBeforeUnload);
   },
 
+  computed: {
+    // settings.color (entity color): colored top line and title of the table
+    accentStyle() {
+      const accent = cssColor(this.settings && this.settings.color);
+      return accent ? { '--vua-accent': accent, '--vua-accent-text': cssColor(this.settings.color, 'text') } : null;
+    },
+  },
   methods: {
     safeUrl,
 
@@ -3069,6 +3078,16 @@ export default {
       flex-wrap: wrap;
       row-gap: 0.5rem;
     }
+  }
+}
+
+// entity color (settings.color): top line and title
+.vua-table-container.vua-accent {
+  border-top: 3px solid var(--vua-accent);
+
+  .vua-table-title .card-title,
+  .vua-table-title .vua-table-title-link {
+    color: var(--vua-accent-text) !important;
   }
 }
 </style>

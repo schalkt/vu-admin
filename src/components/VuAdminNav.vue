@@ -4,7 +4,7 @@
         <template v-for="(item, index) in visibleItems" :key="index">
             <li v-if="item.items && item.items.length" class="nav-item dropdown" :class="item.itemClass">
                 <button class="btn dropdown-toggle" :class="[item.class, { active: hasActiveChild(item) }]" type="button" data-bs-toggle="dropdown">
-                    <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
+                    <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)" :style="iconStyle(item)"></i>
                     <span>{{ translate(item.name) }}</span>
                 </button>
                 <ul class="dropdown-menu" :class="item.menuClass">
@@ -12,15 +12,15 @@
                         <!-- grouping: { "header": "Title" } = group header, { "divider": true } = divider -->
                         <hr v-if="subitem.divider" class="dropdown-divider">
                         <h6 v-else-if="subitem.header" class="dropdown-header" :class="subitem.class">
-                            <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)"></i>
+                            <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)" :style="iconStyle(subitem)"></i>
                             {{ translate(subitem.header) }}
                         </h6>
                         <button v-else-if="subitem.api" type="button" class="dropdown-item" :class="subitem.class" :disabled="running" @click="runAction(subitem)">
-                            <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)"></i>
+                            <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)" :style="iconStyle(subitem)"></i>
                             {{ translate(subitem.name) }}
                         </button>
                         <a v-else class="dropdown-item" :class="[subitem.class, { active: isActive(subitem) }]" :aria-current="isActive(subitem) ? 'page' : null" :target="subitem.target || ''" :rel="subitem.target === '_blank' ? 'noopener noreferrer' : null" :href="safeUrl(subitem.href)">
-                            <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)"></i>
+                            <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)" :style="iconStyle(subitem)"></i>
                             {{ translate(subitem.name) }}
                         </a>
                     </li>
@@ -28,11 +28,11 @@
             </li>
             <li v-else class="nav-item" :class="item.itemClass">
                 <button v-if="item.api" type="button" class="nav-link btn btn-link" :class="item.class" :disabled="running" @click="runAction(item)">
-                    <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
+                    <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)" :style="iconStyle(item)"></i>
                     {{ translate(item.name) }}
                 </button>
                 <a v-else class="nav-link scrollto" :class="[item.class, { active: isActive(item) }]" :aria-current="isActive(item) ? 'page' : null" :target="item.target || ''" :rel="item.target === '_blank' ? 'noopener noreferrer' : null" :href="safeUrl(item.href)">
-                    <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
+                    <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)" :style="iconStyle(item)"></i>
                     {{ translate(item.name) }}
                 </a>
             </li>
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { prepareFetchOptions, safeUrl, translate } from "./helpers";
+import { prepareFetchOptions, safeUrl, translate, entityColor, cssColor } from "./helpers";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
 const VuAdminNav = {
@@ -193,6 +193,15 @@ const VuAdminNav = {
             } finally {
                 this.running = false;
             }
+        },
+        // icon color: the item's own `color`, else the color of the entity its "#entity" href opens
+        iconStyle(item) {
+            let color = item && item.color;
+            if (!color && item && typeof item.href === "string" && item.href.charAt(0) === "#") {
+                color = entityColor(this.auth, item.href.slice(1).split("?")[0]);
+            }
+            const css = cssColor(color);
+            return css ? { color: css } : null;
         },
         // active: the item's hash href ("#user") equals the current hash; "#" is active only for an empty hash
         isActive(item) {

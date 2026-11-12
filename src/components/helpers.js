@@ -686,3 +686,27 @@ export function loadEntityConfig(auth, entity, preset) {
 
     return entityScripts[url].then(() => factory());
 }
+
+// color of an entity: auth.settings.entities[entity].color (used by the counters, the table header and the nav)
+export function entityColor(auth, entity) {
+    const config = auth && auth.settings && auth.settings.entities ? auth.settings.entities[entity] : null;
+    return config && typeof config === 'object' && config.color ? config.color : null;
+}
+
+// CSS value of a color: a Bootstrap color name ('primary', 'warning', 'purple', 'teal', …) → its CSS variable,
+// '#hex' → itself, anything else → null. variant 'text': the readable text shade of a theme color
+// (--bs-*-text-emphasis, light / dark aware), with the plain color as fallback
+export function cssColor(color, variant) {
+    if (!color || typeof color !== 'string') {
+        return null;
+    }
+    if (/^#[0-9a-fA-F]{3,8}$/.test(color)) {
+        return color;
+    }
+    if (!/^[a-z][a-z0-9-]*$/.test(color)) {
+        return null;
+    }
+    return variant === 'text'
+        ? `var(--bs-${color}-text-emphasis, var(--bs-${color}))`
+        : `var(--bs-${color})`;
+}

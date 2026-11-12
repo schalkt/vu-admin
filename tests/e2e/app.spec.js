@@ -90,9 +90,9 @@ test.describe('dashboard', () => {
     await openDashboard(page);
     expect(await counters(page)).toEqual(['15 Users', '13 Open todos', '7 Completed todos', '15 Products']);
     await expect(page.locator('.vu-admin-count').nth(1)).toHaveAttribute('href', '#todos?completed=false');
-    // color: number and icon
-    await expect(page.locator('.vu-admin-count').nth(1).locator('.vu-admin-count-value span')).toHaveClass(/text-warning/);
-    await expect(page.locator('.vu-admin-count').nth(2).locator('.vu-admin-count-icon')).toHaveClass(/text-success/);
+    // color: the entity's color (todos: warning), or the counter's own (Completed todos: success)
+    await expect(page.locator('.vu-admin-count').nth(1).locator('.vu-admin-count-value span')).toHaveAttribute('style', /--bs-warning/);
+    await expect(page.locator('.vu-admin-count').nth(2).locator('.vu-admin-count-icon')).toHaveAttribute('style', /--bs-success/);
 
     await page.locator('.vu-admin-count').nth(1).click();
     await expect(range(view(page, 'todos'))).toHaveText('1-10 / 13');
@@ -120,6 +120,11 @@ test.describe('dashboard', () => {
     await expect(users.locator('nav .dropdown-menu .dropdown-item')).toHaveText(['5', '10', '20', '50'].map((v) => new RegExp(v)));
 
     await expect(users.locator('.vua-table-title-link')).toHaveAttribute('href', '#user');
+
+    // entity color (entities.user.color: 'primary'): table top line + title, nav icon
+    await expect(users.locator('.vua-table-container')).toHaveClass(/vua-accent/);
+    await expect(users.locator('.vua-table-container')).toHaveAttribute('style', /--vua-accent: var\(--bs-primary\)/);
+    await expect(page.locator('.navbar-nav > li > a', { hasText: 'Users' }).locator('i')).toHaveAttribute('style', /--bs-primary/);
   });
 
   test('widgets with roles disappear for another role', async ({ page }) => {

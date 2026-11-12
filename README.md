@@ -188,8 +188,26 @@ window.VuSettings = {
 
 The `profile` callback is optional. If omitted, the `/me` response is merged into `auth.user` automatically.
 
-An `entities` value is either the config script URL or `{ url, preset, title }` (`preset` is passed to the entity
-factory function, `title` is used in the browser tab title), e.g. `product: { url: '/vu-entity-product.js', preset: 'dash' }`.
+An `entities` value is either the config script URL or `{ url, preset, title, color }` (`preset` is passed to the
+entity factory function, `title` is used in the browser tab title), e.g. `product: { url: '/vu-entity-product.js', preset: 'dash' }`.
+
+**Entity color** — `color` is the entity's color across the page, set once here:
+
+- dashboard counters of the entity: the number and the icon (a counter's own `color` overrides it);
+- tables of the entity (its view and the dashboard widgets): a colored top line and title (the readable
+  `--bs-*-text-emphasis` shade of a theme color, light / dark aware); an entity config's own `color` overrides it;
+- nav items opening the entity (`href: '#user'`): the icon (a nav item's own `color` overrides it).
+
+A Bootstrap color name — theme colors (`primary`, `secondary`, `success`, `info`, `warning`, `danger`) or base colors
+(`blue`, `indigo`, `purple`, `pink`, `red`, `orange`, `yellow`, `green`, `teal`, `cyan`) — or `'#hex'`.
+
+```js
+entities: {
+  user:  { url: '/vu-entity-user.js',  title: 'Users', color: 'primary' },
+  todos: { url: '/vu-entity-todos.js', title: 'Todos', color: 'warning' },
+  post:  { url: '/vu-entity-post.js',  title: 'Posts', color: 'purple' },
+}
+```
 
 #### All entities without listing them in the HTML
 
@@ -255,7 +273,7 @@ Counter items (`type: 'count'`, `VuAdminCount`): the number of records of an ent
 |---|---|
 | `entity` | key of `entities` (required) |
 | `title`, `icon` | card text (translation key) and icon class, e.g. `'bi bi-people'` |
-| `color` | color of the number and the icon: Bootstrap color name (`primary`, `success`, `warning`, `danger`, `info`, …) or `'#hex'`; default: the next one of a palette (primary, warning, success, info, danger, secondary) |
+| `color` | color of the number and the icon (Bootstrap color name or `'#hex'`); default: the entity's color (`entities[x].color`), else the next one of a palette (primary, warning, success, info, danger, secondary) |
 | `filter` | `{ completed: false }` (`=`) or `{ price: { value: 100, operator: '>' } }` |
 | `link` | default: the filtered view (`#todos?completed=false`, only `=` filters); `false` = no link, a string = another URL |
 | `class` | column class (default: `col-6 col-md-3`) |
