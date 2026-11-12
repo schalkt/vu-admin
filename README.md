@@ -255,6 +255,7 @@ Counter items (`type: 'count'`, `VuAdminCount`): the number of records of an ent
 |---|---|
 | `entity` | key of `entities` (required) |
 | `title`, `icon` | card text (translation key) and icon class, e.g. `'bi bi-people'` |
+| `color` | color of the number and the icon: Bootstrap color name (`primary`, `success`, `warning`, `danger`, `info`, …) or `'#hex'`; default: the next one of a palette (primary, warning, success, info, danger, secondary) |
 | `filter` | `{ completed: false }` (`=`) or `{ price: { value: 100, operator: '>' } }` |
 | `link` | default: the filtered view (`#todos?completed=false`, only `=` filters); `false` = no link, a string = another URL |
 | `class` | column class (default: `col-6 col-md-3`) |

@@ -2,12 +2,12 @@
     <component :is="href ? 'a' : 'div'" :href="href || null" class="vu-admin-count card text-decoration-none" :class="cardClass"
         :title="href ? translate('Open') : null">
         <div class="card-body d-flex align-items-center gap-3">
-            <i v-if="icon" class="vu-admin-count-icon fs-2" :class="icon"></i>
+            <i v-if="icon" class="vu-admin-count-icon fs-2" :class="[icon, colorClass]" :style="colorStyle"></i>
             <div class="flex-grow-1 min-w-0">
                 <div class="vu-admin-count-value fs-3 fw-semibold lh-1">
                     <span v-if="count === null && !error" class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
                     <span v-else-if="error" class="text-danger" :title="error">–</span>
-                    <span v-else>{{ formatted }}</span>
+                    <span v-else :class="colorClass" :style="colorStyle">{{ formatted }}</span>
                 </div>
                 <div class="vu-admin-count-title text-secondary small text-truncate mt-1">{{ translate(title || entity) }}</div>
             </div>
@@ -38,6 +38,9 @@ const VuAdminCount = {
         filter: Object,
         title: String,
         icon: String,
+        // color of the number and the icon: a Bootstrap color name ('primary', 'success', 'warning', 'danger',
+        // 'info', 'secondary', …) or a hex color ('#e15759')
+        color: String,
         href: String,
         cardClass: { type: [String, Array, Object], default: "border-0 shadow-sm" },
         // false while hidden (e.g. another view is shown): refreshes when it becomes visible again
@@ -51,6 +54,12 @@ const VuAdminCount = {
         };
     },
     computed: {
+        colorClass() {
+            return this.color && /^[a-z][a-z0-9-]*$/.test(this.color) ? "text-" + this.color : null;
+        },
+        colorStyle() {
+            return this.color && /^#[0-9a-fA-F]{3,8}$/.test(this.color) ? { color: this.color } : null;
+        },
         formatted() {
             try {
                 return Number(this.count).toLocaleString(this.language);
@@ -170,6 +179,11 @@ export { VuAdminCount };
 
     .vu-admin-count-icon {
         opacity: 0.6;
+
+        &[class*="text-"],
+        &[style*="color"] {
+            opacity: 0.85;
+        }
     }
 }
 </style>

@@ -42,6 +42,7 @@ const ADMIN_SETTINGS = () => ({
                 entity: 'user',
                 title: 'Users',
                 icon: 'bi bi-people',
+                color: 'primary',              // number + icon: Bootstrap color name or '#hex' (default: palette)
                 roles: ['admin'],              // only for these roles (the active role of the role switch)
             },
             {
@@ -49,6 +50,7 @@ const ADMIN_SETTINGS = () => ({
                 entity: 'todos',
                 title: 'Open todos',
                 icon: 'bi bi-list-check',
+                color: 'warning',
                 filter: { completed: false },  // → link "#todos?completed=false"
             },
             {
@@ -56,6 +58,7 @@ const ADMIN_SETTINGS = () => ({
                 entity: 'todos',
                 title: 'Completed todos',
                 icon: 'bi bi-check2-circle',
+                color: 'success',
                 filter: { completed: true },
             },
             {
@@ -63,6 +66,7 @@ const ADMIN_SETTINGS = () => ({
                 entity: 'product',
                 title: 'Products',
                 icon: 'bi bi-box-seam',
+                color: 'info',
                 // class: 'col-6 col-md-3',    // default
             },
             // tables

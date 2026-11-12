@@ -90,6 +90,9 @@ test.describe('dashboard', () => {
     await openDashboard(page);
     expect(await counters(page)).toEqual(['15 Users', '13 Open todos', '7 Completed todos', '15 Products']);
     await expect(page.locator('.vu-admin-count').nth(1)).toHaveAttribute('href', '#todos?completed=false');
+    // color: number and icon
+    await expect(page.locator('.vu-admin-count').nth(1).locator('.vu-admin-count-value span')).toHaveClass(/text-warning/);
+    await expect(page.locator('.vu-admin-count').nth(2).locator('.vu-admin-count-icon')).toHaveClass(/text-success/);
 
     await page.locator('.vu-admin-count').nth(1).click();
     await expect(range(view(page, 'todos'))).toHaveText('1-10 / 13');

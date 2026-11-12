@@ -11,7 +11,7 @@
           <div v-for="(widget, index) in dashboard.items" :key="'dashboard-' + index" class="vu-admin-dashboard-item" :class="[widget.class, 'vu-admin-dashboard-' + widget.type]"
             :data-entity="widget.entity">
             <vu-admin-count v-if="widget.type === 'count'" :entity="widget.entity" :preset="widget.preset" :auth="auth" :filter="widget.filter"
-              :title="widget.title" :icon="widget.icon" :href="widget.link" :card-class="widget.cardClass" :visible="!activeEntity"></vu-admin-count>
+              :title="widget.title" :icon="widget.icon" :href="widget.link" :card-class="widget.cardClass" :color="widget.color" :visible="!activeEntity"></vu-admin-count>
             <vu-admin v-else :entity="widget.entity" :preset="widget.preset" :override="widget.override" :auth="auth"></vu-admin>
           </div>
         </div>
@@ -135,6 +135,11 @@ const VuAdmin = {
           preset: item.preset || "dashboard",
           override: this.widgetOverride(item),
         });
+      // counters without a `color` get the next one of a default palette (in order)
+      const palette = ["primary", "warning", "success", "info", "danger", "secondary"];
+      items.filter((item) => item.type === "count" && !item.color).forEach((item, index) => {
+        item.color = palette[index % palette.length];
+      });
       return items.length ? { class: config.class !== undefined ? config.class : "row", items } : null;
     },
     // unknown / empty hash (e.g. "#" = Dashboard) → dashboard, or every entity when there is no dashboard
@@ -344,6 +349,7 @@ const VuAdmin = {
         filter: item.filter || null,
         link,
         cardClass: item.cardClass,
+        color: item.color,
       };
     },
 
