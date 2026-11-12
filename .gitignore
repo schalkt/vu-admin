@@ -2,5 +2,6 @@
 /temp
 /mock/db
 /mock/uploads
-/.claude/test-results
+/.claude
+/test-results
 /playwright-report
