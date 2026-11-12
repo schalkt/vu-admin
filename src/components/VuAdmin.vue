@@ -8,12 +8,26 @@
       <!-- outer padding: a gutter row (e.g. 'row g-3') has a negative top margin that would slide under the header -->
       <div v-if="dashboard" v-show="!activeEntity" class="vu-admin-dashboard py-3">
         <div v-if="loaded[DASHBOARD]" class="vu-admin-dashboard-grid" :class="dashboard.class">
-          <div v-for="(widget, index) in dashboard.items" :key="'dashboard-' + index" class="vu-admin-dashboard-item" :class="[widget.class, 'vu-admin-dashboard-' + widget.type]"
-            :data-entity="widget.entity">
-            <vu-admin-count v-if="widget.type === 'count'" :entity="widget.entity" :preset="widget.preset" :auth="auth" :filter="widget.filter"
-              :title="widget.title" :icon="widget.icon" :href="widget.link" :card-class="widget.cardClass" :color="widget.color" :visible="!activeEntity"></vu-admin-count>
-            <vu-admin v-else :entity="widget.entity" :preset="widget.preset" :override="widget.override" :auth="auth"></vu-admin>
-          </div>
+          <template v-for="(cell, index) in dashboard.items" :key="'dashboard-' + index">
+            <!-- group: an own column of the dashboard row with an own row for its widgets -->
+            <div v-if="cell.type === 'group'" class="vu-admin-dashboard-group" :class="cell.class">
+              <h6 v-if="cell.title" class="vu-admin-dashboard-group-title text-secondary text-uppercase small mb-2">{{ translate(cell.title) }}</h6>
+              <div class="vu-admin-dashboard-group-row" :class="cell.rowClass">
+                <div v-for="(widget, childIndex) in cell.items" :key="'dashboard-' + index + '-' + childIndex" class="vu-admin-dashboard-item"
+                  :class="[widget.class, 'vu-admin-dashboard-' + widget.type]" :data-entity="widget.entity">
+                  <vu-admin-count v-if="widget.type === 'count'" :entity="widget.entity" :preset="widget.preset" :auth="auth" :filter="widget.filter"
+                    :title="widget.title" :icon="widget.icon" :href="widget.link" :card-class="widget.cardClass" :color="widget.color" :visible="!activeEntity"></vu-admin-count>
+                  <vu-admin v-else :entity="widget.entity" :preset="widget.preset" :override="widget.override" :auth="auth"></vu-admin>
+                </div>
+              </div>
+            </div>
+            <!-- a widget directly in the dashboard row -->
+            <div v-else class="vu-admin-dashboard-item" :class="[cell.class, 'vu-admin-dashboard-' + cell.type]" :data-entity="cell.entity">
+              <vu-admin-count v-if="cell.type === 'count'" :entity="cell.entity" :preset="cell.preset" :auth="auth" :filter="cell.filter"
+                :title="cell.title" :icon="cell.icon" :href="cell.link" :card-class="cell.cardClass" :color="cell.color" :visible="!activeEntity"></vu-admin-count>
+              <vu-admin v-else :entity="cell.entity" :preset="cell.preset" :override="cell.override" :auth="auth"></vu-admin>
+            </div>
+          </template>
         </div>
       </div>
       <div v-for="view in views" :key="view.entity" v-show="isVisible(view.entity)" class="vu-admin-view" :data-entity="view.entity">
@@ -126,25 +140,62 @@ const VuAdmin = {
       }
       const entities = this.auth.settings.entities || {};
       const role = this.auth.user ? this.auth.user.role : null;
-      const items = config.items
-        // widgets of an entity the user may not use are left out (entities[x].roles)
-        .filter((item) => item && item.entity && entities[item.entity] && !item.disabled && entityAllowed(this.auth, item.entity))
-        // roles: ['admin', 'editor'] → only for these roles (the active role of the user menu role switch)
-        .filter((item) => !Array.isArray(item.roles) || item.roles.indexOf(role) >= 0)
-        .map((item) => item.type === "count" ? this.countWidget(item) : {
+      // roles: ['admin', 'editor'] → only for these roles (the active role of the user menu role switch)
+      const roleAllowed = (item) => !Array.isArray(item.roles) || item.roles.indexOf(role) >= 0;
+
+      // a widget (counter / table); null when hidden — widgets of an entity the user may not use are left out
+      // (entities[x].roles). defaultClass: the column class when the widget has none
+      const widget = (item, defaultClass) => {
+        if (!item || !item.entity || !entities[item.entity] || item.disabled || !entityAllowed(this.auth, item.entity) || !roleAllowed(item)) {
+          return null;
+        }
+        const result = item.type === "count" ? this.countWidget(item) : {
           type: "table",
           entity: item.entity,
           class: item.class !== undefined ? item.class : "col-12",
           // own preset → own localStorage table state (does not mix with the full entity view)
           preset: item.preset || "dashboard",
           override: this.widgetOverride(item),
-        });
+        };
+        if (item.class === undefined && defaultClass) {
+          result.class = defaultClass;
+        }
+        return result;
+      };
+
+      // { type: 'group', class: 'col-12', rowClass: 'row g-3', itemClass: 'col', title, roles, items: [...] }:
+      // an own column of the dashboard row with an own row inside; its widgets without a `class` get `itemClass`
+      // (default 'col': equal widths — one counter fills the row, four share it). Empty groups are left out.
+      const items = config.items
+        .map((item) => {
+          if (!item || item.type !== "group") {
+            return widget(item);
+          }
+          if (item.disabled || !roleAllowed(item)) {
+            return null;
+          }
+          const children = (Array.isArray(item.items) ? item.items : [])
+            .filter((child) => child && child.type !== "group")
+            .map((child) => widget(child, item.itemClass !== undefined ? item.itemClass : "col"))
+            .filter(Boolean);
+          return children.length ? {
+            type: "group",
+            class: item.class !== undefined ? item.class : "col-12",
+            rowClass: item.rowClass !== undefined ? item.rowClass : "row g-3",
+            title: item.title,
+            items: children,
+          } : null;
+        })
+        .filter(Boolean);
+
       // counter color: its own `color`, else the entity's color (entities[x].color), else the next one of a
-      // default palette (in order)
+      // default palette (in order, groups included)
       const palette = ["primary", "warning", "success", "info", "danger", "secondary"];
-      items.filter((item) => item.type === "count" && !item.color).forEach((item, index) => {
-        item.color = palette[index % palette.length];
-      });
+      items.flatMap((item) => (item.type === "group" ? item.items : [item]))
+        .filter((item) => item.type === "count" && !item.color)
+        .forEach((item, index) => {
+          item.color = palette[index % palette.length];
+        });
       return items.length ? { class: config.class !== undefined ? config.class : "row", items } : null;
     },
     // unknown / empty hash (e.g. "#" = Dashboard) → dashboard, or every entity when there is no dashboard
@@ -156,6 +207,8 @@ const VuAdmin = {
   data() {
     return {
       settings: undefined,
+      // UI language of the multi-entity mode's own texts (dashboard group titles)
+      uiLanguage: getLanguage(),
       route: this.currentRoute(),
       routeQuery: this.currentQuery(),
       loaded: {},
@@ -258,6 +311,7 @@ const VuAdmin = {
   created() {
     // the user menu language switch updates every table / form on the page
     this._onLanguageChange = (event) => {
+      this.uiLanguage = event.detail.language;
       if (this.settings && !this.languagePinned) {
         this.settings.language = event.detail.language;
       }
@@ -291,6 +345,10 @@ const VuAdmin = {
   },
   mounted() { },
   methods: {
+
+    translate(key) {
+      return translate(key, null, null, this.uiLanguage);
+    },
 
     // "#todos?userId=1" → "todos" (the query part is routeQuery)
     currentRoute() {

@@ -41,59 +41,85 @@ const ADMIN_SETTINGS = () => ({
     dashboard: {
         class: 'row g-3',                      // container class
         items: [
-            // counters: number of records (optionally filtered), the card links to the filtered entity view
+            // group: an own column of the dashboard row with an own row inside (rowClass, default 'row g-3');
+            // its widgets without a `class` get itemClass (default 'col': equal widths — one counter fills the
+            // row, four share it); optional title, roles; a group left without widgets is hidden
             {
-                type: 'count',
-                entity: 'user',
-                title: 'Users',
-                icon: 'bi bi-people',
-                // roles: ['admin'],           // extra restriction of a widget; the entity's roles apply anyway
+                type: 'group',
+                class: 'col-12',
+                items: [
+                    // counters: number of records (optionally filtered), the card links to the filtered view
+                    {
+                        type: 'count',
+                        entity: 'user',
+                        title: 'Users',
+                        icon: 'bi bi-people',
+                        // roles: ['admin'],   // extra restriction of a widget; the entity's roles apply anyway
+                    },
+                    {
+                        type: 'count',
+                        entity: 'todos',
+                        title: 'Open todos',
+                        icon: 'bi bi-list-check',
+                        filter: { completed: false },  // → link "#todos?completed=false"
+                    },
+                    {
+                        type: 'count',
+                        entity: 'todos',
+                        title: 'Completed todos',
+                        icon: 'bi bi-check2-circle',
+                        color: 'success',      // own color instead of the entity's (todos: warning)
+                        filter: { completed: true },
+                    },
+                    {
+                        type: 'count',
+                        entity: 'product',
+                        title: 'Products',
+                        icon: 'bi bi-box-seam',
+                    },
+                ],
             },
+            // tables: three columns side by side from lg
             {
-                type: 'count',
-                entity: 'todos',
-                title: 'Open todos',
-                icon: 'bi bi-list-check',
-                filter: { completed: false },  // → link "#todos?completed=false"
-            },
-            {
-                type: 'count',
-                entity: 'todos',
-                title: 'Completed todos',
-                icon: 'bi bi-check2-circle',
-                color: 'success',              // own color instead of the entity's (todos: warning)
-                filter: { completed: true },
-            },
-            {
-                type: 'count',
-                entity: 'product',
-                title: 'Products',
-                icon: 'bi bi-box-seam',
-                // class: 'col-6 col-md-3',    // default
-            },
-            // tables
-            {
-                entity: 'user',                // key of `entities` (hidden without access to it: entities.user.roles)
-                class: 'col-md-6',             // column class
-                title: 'Latest users',         // table title (translation key), default: the entity's own
-                columns: ['image', 'firstName', 'createdAt', '#buttons'],  // visible columns in this order (by `name`, unnamed ones by `title`)
-                filters: false,                // hide the filter row (default: shown)
-                limit: 10,                     // initial rows per page, the page size selector stays
-                limits: [5, 10, 20, 50],       // page size options (null hides the selector), default: the entity's own
-                pages: 5,                      // number of page buttons in the pagination, default: the entity's own
-                order: { createdAt: 'DESC' },  // sort, replaces the entity default: { field: 'ASC' | 'DESC', ... }
-            },
-            {
-                entity: 'todos',
-                class: 'col-md-6',
-                title: 'Open todos',
-                columns: ['todo', 'userId', 'completed', '#buttons'],
-                filters: true,
-                limit: 10,
-                limits: [5, 10, 20, 50],
-                order: { completed: 'ASC', id: 'DESC' },
-                // settings: { ... }           // any further entity config override (deep-merged)
-                // preset: 'dashboard'         // passed to the entity function; also the localStorage state key
+                type: 'group',
+                class: 'col-12',
+                title: 'Latest',
+                itemClass: 'col-lg-4',
+                items: [
+                    {
+                        entity: 'user',        // key of `entities` (hidden without access to it: entities.user.roles)
+                        title: 'Latest users', // table title (translation key), default: the entity's own
+                        columns: ['image', 'firstName', 'createdAt', '#buttons'],  // visible columns in this order (by `name`, unnamed ones by `title`)
+                        filters: false,        // hide the filter row (default: shown)
+                        limit: 10,             // initial rows per page, the page size selector stays
+                        limits: [5, 10, 20, 50],  // page size options (null hides the selector), default: the entity's own
+                        pages: 5,              // number of page buttons in the pagination, default: the entity's own
+                        order: { createdAt: 'DESC' },  // sort, replaces the entity default: { field: 'ASC' | 'DESC', ... }
+                    },
+                    {
+                        entity: 'todos',
+                        title: 'Open todos',
+                        columns: ['todo', 'userId', 'completed', '#buttons'],
+                        filters: true,
+                        limit: 10,
+                        limits: [5, 10, 20, 50],
+                        pages: 5,
+                        order: { completed: 'ASC', id: 'DESC' },
+                        // settings: { ... }   // any further entity config override (deep-merged)
+                        // preset: 'dashboard' // passed to the entity function; also the localStorage state key
+                    },
+                    {
+                        entity: 'post',
+                        title: 'Latest posts',
+                        columns: ['title', 'reactions.likes', '#buttons'],
+                        filters: false,
+                        limit: 10,
+                        limits: [5, 10, 20, 50],
+                        pages: 5,
+                        order: { id: 'DESC' },
+                        // class: 'col-lg-4',  // default: the group's itemClass
+                    },
+                ],
             },
         ],
     },
@@ -213,6 +239,8 @@ window.VuSettings = {
             'Latest users': 'Legújabb felhasználók',
             'Open todos': 'Nyitott teendők',
             'Completed todos': 'Elvégzett teendők',
+            'Latest': 'Legutóbbiak',
+            'Latest posts': 'Legújabb bejegyzések',
             'Created': 'Létrehozva',
             'User': 'Felhasználó',
             'Age': 'Kor',

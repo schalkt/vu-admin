@@ -162,6 +162,33 @@ test.describe('dashboard', () => {
     await expect(range(view(page, 'todos'))).toHaveText('1-10 / 13');
   });
 
+  test('groups: own column, own row, item class, title; hidden widgets leave the group', async ({ page }) => {
+    await openDashboard(page);
+    const groups = page.locator('.vu-admin-dashboard-group');
+    await expect(groups).toHaveCount(2);
+
+    // counters: a col-12 group, the counters share its row (itemClass default 'col')
+    await expect(groups.nth(0)).toHaveClass(/col-12/);
+    await expect(groups.nth(0).locator('.vu-admin-dashboard-group-row')).toHaveClass(/row g-3/);
+    await expect(groups.nth(0).locator('.vu-admin-dashboard-count')).toHaveCount(4);
+    await expect(groups.nth(0).locator('.vu-admin-dashboard-count').first()).toHaveClass(/(^|\s)col(\s|$)/);
+    const widths = await groups.nth(0).locator('.vu-admin-dashboard-count').evaluateAll((items) => items.map((item) => Math.round(item.getBoundingClientRect().width)));
+    expect(new Set(widths).size).toBe(1);
+
+    // tables: titled group, three col-lg-4 tables side by side
+    await expect(groups.nth(1).locator('.vu-admin-dashboard-group-title')).toHaveText('Latest');
+    const tables = groups.nth(1).locator('.vu-admin-dashboard-table');
+    await expect(tables).toHaveCount(3);
+    await expect(tables.nth(2)).toHaveClass(/col-lg-4/);
+    const tops = await tables.evaluateAll((items) => items.map((item) => Math.round(item.getBoundingClientRect().top)));
+    expect(new Set(tops).size).toBe(1);
+
+    // without access to users: one counter and one table less, the others fill the rows
+    await userMenuButton(page, 'editor');
+    await expect(groups.nth(0).locator('.vu-admin-dashboard-count')).toHaveCount(3);
+    await expect(groups.nth(1).locator('.vu-admin-dashboard-table')).toHaveCount(2);
+  });
+
   test('table widgets: columns, rows, sort, filter row, pagination, title link', async ({ page }) => {
     await openDashboard(page);
     const users = widget(page, 'table', 'user');

@@ -247,6 +247,35 @@ auth.settings = {
 };
 ```
 
+Groups (`type: 'group'`): an own column of the dashboard row with an own row inside, so the widgets can be laid out
+in blocks — e.g. one counter over the full width and three tables in a row under it:
+
+```js
+dashboard: {
+  class: 'row g-3',
+  items: [
+    { type: 'group', class: 'col-12', items: [                    // full width
+      { type: 'count', entity: 'user', title: 'Users' },           // alone: fills the row
+    ] },
+    { type: 'group', class: 'col-12', title: 'Latest', itemClass: 'col-lg-4', items: [
+      { entity: 'user',  title: 'Latest users', limit: 10 },
+      { entity: 'todos', title: 'Open todos',   limit: 10 },
+      { entity: 'post',  title: 'Latest posts', limit: 10 },
+    ] },
+  ],
+},
+```
+
+| Group key | Description |
+|---|---|
+| `class` | the group's column in the dashboard row (default: `col-12`) |
+| `rowClass` | the group's own row (default: `row g-3`) |
+| `itemClass` | column class of its widgets without an own `class` (default: `col` — equal widths: one widget fills the row, four share it) |
+| `title` | heading above the group (translation key) |
+| `roles`, `disabled` | as for the widgets; a group left without visible widgets (e.g. no access to their entities) is hidden |
+
+Groups are one level deep (no group in a group); widgets and groups can be mixed in the dashboard row.
+
 Table items (default `type`):
 
 | Item key | Description |
