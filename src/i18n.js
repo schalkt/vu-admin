@@ -30,6 +30,7 @@ export const translations = {
     Export: "Exportálás",
     Insert: "Beszúrás",
     "Loading...": "Betöltés...",
+    Open: "Megnyitás",
     More: "Továbbiak",
     New: "Új",
     Reload: "Újratöltés",

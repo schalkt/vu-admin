@@ -172,6 +172,45 @@ factory function, `title` is used in the browser tab title), e.g. `product: { ur
 
 `<vu-admin :entity="'user'" :auth="auth">` still renders a single entity.
 
+#### Dashboard (start page)
+
+`auth.settings.dashboard` configures what the empty hash (`#`, the start page) shows: entity tables in a Bootstrap
+grid, each with its own column class, row count and sort. Without it the start page shows every entity.
+
+```js
+auth.settings = {
+  entities: { user: '/vu-entity-user.js', todos: '/vu-entity-todos.js' },
+  dashboard: {
+    class: 'row g-3',                        // container class (default: 'row')
+    items: [
+      { entity: 'user',  class: 'col-md-6', title: 'Latest users', limit: 10, order: { createdAt: 'DESC' },
+        columns: ['image', 'firstName', 'createdAt', '#buttons'] },
+      { entity: 'todos', class: 'col-md-6', title: 'Open todos',   limit: 10, order: { completed: 'ASC', id: 'DESC' },
+        columns: ['todo', 'userId', 'completed', '#buttons'] },
+    ],
+  },
+};
+```
+
+| Item key | Description |
+|---|---|
+| `entity` | key of `entities` (required) |
+| `class` | column class, e.g. `col-md-6`, `col-lg-4` (default: `col-12`) |
+| `title` | table title (translation key), default: the entity's own |
+| `link` | the table title links to the full entity view (`#<entity>`) by default; `false` turns it off, a string sets another URL |
+| `columns` | visible columns in this order, e.g. `['image', 'firstName', '#buttons']`; matched by `name`, an unnamed column (e.g. the `#` row select) by its `title`. The others stay hidden in the table — the column toggle button can still show them |
+| `filters` | `false` hides the filter row (default: shown); fixed / default filters of the entity still apply |
+| `limit` | initial rows per page; the page size selector stays, the user's choice is stored per widget |
+| `pages` | number of page buttons in the pagination (default: the entity's own) |
+| `limits` | page size options, e.g. `[5, 10, 20]`; `null` hides the selector (default: the entity's own) |
+| `order` | default sort, replaces the entity's own: `{ field: 'ASC' \| 'DESC' }` in priority order, or the full `{ field: { dir, idx, fixed } }` form |
+| `settings` | any further entity config override, deep-merged (e.g. `{ table: { control: { buttons: [] } } }`) |
+| `preset` | passed to the entity function (default: `'dashboard'`); also the localStorage table state key, so the widget's paging / sort does not mix with the full entity view — give two widgets of the same entity different presets |
+| `disabled` | `true` hides the widget |
+
+The dashboard tables are created only when the start page is first shown, like the entity views. A table wider than
+its column scrolls horizontally.
+
 #### Whole admin page — `<vu-admin-app>`
 
 `<vu-admin-app></vu-admin-app>` renders the complete page: header (brand, `VuAdminNav`, user buttons), every entity
@@ -957,6 +996,15 @@ child is highlighted too.
 ```json
 { "name": "Dashboard", "href": "#", "icon": "bi bi-speedometer2 me-1" },
 { "name": "Users", "href": "#user", "icon": "bi bi-people me-1" }
+```
+
+`class` goes on the link / button, `itemClass` on its `<li>`, `menuClass` on a dropdown's `<ul class="dropdown-menu">`.
+The menu list fills the free header space, so `itemClass: 'ms-auto'` moves an item — and every item after it — to the
+right side; on a right-side dropdown use `menuClass: 'dropdown-menu-end'` so it opens inwards.
+
+```json
+{ "name": "Documentation", "href": "https://github.com", "target": "_blank", "itemClass": "ms-auto" },
+{ "name": "Tools", "itemClass": "ms-auto", "menuClass": "dropdown-menu-end", "items": [ … ] }
 ```
 
 Dropdown items can be grouped: `{ "header": "Migrations" }` renders a group heading (`dropdown-header`, translated,

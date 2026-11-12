@@ -3,6 +3,32 @@ window.VuEntities = window.VuEntities ? window.VuEntities : {};
 
 window.VuEntities.todos = (preset) => {
 
+	// templates that build HTML must escape every data value (XSS)
+	const { escapeHtml, safeUrl } = window.VuAdminHelpers;
+
+	// user filter options: every user by name (with the stored login header, like the tables)
+	const loadUserOptions = async (column) => {
+		try {
+			let headers = {};
+			try {
+				headers = JSON.parse(localStorage.getItem('vu-header')) || {};
+			} catch (e) {
+				// no stored header
+			}
+			const response = await fetch('/api/users?limit=0', { headers });
+			if (!response.ok) {
+				return;
+			}
+			const data = await response.json();
+			const users = Array.isArray(data.users) ? data.users : [];
+			column.filter.options = users
+				.map((user) => ({ value: user.id, label: [user.firstName, user.lastName].join(' ').trim() || '#' + user.id }))
+				.sort((a, b) => a.label.localeCompare(b.label));
+		} catch (e) {
+			console.error('[todos] user filter options', e);
+		}
+	};
+
 	return {
 		pkey: 'id',
 		debug: false,
@@ -19,17 +45,30 @@ window.VuEntities.todos = (preset) => {
 			}
 		},
 		events: {
-			beforeItemsLoad: (urlParams, settings) => {
-				// Find the userId column and its filter value
-				const userIdColumn = settings.table.columns.find(col => col.name === 'userId');
-				if (userIdColumn && userIdColumn.filter && userIdColumn.filter.value !== undefined && userIdColumn.filter.value !== null) {
-					// Change the API URL to include the user ID
-					settings.table.api.url = '/api/todos/user/' + userIdColumn.filter.value;
-				} else {
-					// Without a userId filter, restore the original URL
-					settings.table.api.url = '/api/todos';
+			// the related user (relation) is only for display, it is not saved into the todo
+			beforeItemSave: (item) => {
+				delete item.user;
+			},
+			afterSettingsInit: (settings) => {
+				const userColumn = settings.table.columns.find((column) => column.name === 'userId');
+				if (userColumn && userColumn.filter) {
+					loadUserOptions(userColumn);
 				}
-			}
+			},
+		},
+		relations: {
+			// userId → user (name, avatar); one request for the users of the current page
+			user: {
+				entity: 'user',
+				local: 'userId',
+				foreign: 'id',
+				api: {
+					url: '/api/users',
+					input: {
+						items: 'users',
+					},
+				},
+			},
 		},
 		table: {
 			title: 'Todos',
@@ -76,13 +115,17 @@ window.VuEntities.todos = (preset) => {
 				{
 					name: 'completed',
 					title: 'Completed',
-					width: '10%',
+					width: '12%',
 					class: 'text-center',
-					template: (value) => {
-						if (value) {
-							return '<i class="bi bi-check-circle-fill text-success"></i> <span class="text-success">Yes</span>';
-						}
-						return '<i class="bi bi-x-circle-fill text-danger"></i> <span class="text-danger">No</span>';
+					// editable in the row: saved right after the change
+					input: {
+						type: 'select',
+						autosave: true,
+						class: (params) => (params.item && params.item.completed ? 'text-success' : 'text-danger'),
+						options: [
+							{ value: false, label: 'No' },
+							{ value: true, label: 'Yes' },
+						],
 					},
 					filter: {
 						type: 'select',
@@ -100,13 +143,28 @@ window.VuEntities.todos = (preset) => {
 				},
 				{
 					name: 'userId',
-					title: 'User ID',
-					class: 'text-end',
-					width: '10%',
+					title: 'User',
+					class: 'text-nowrap',
+					width: '16%',
+					relation: {
+						config: 'user',
+						params: {
+							limit: 0,
+						},
+					},
+					template: (userId, item) => {
+						if (!item.user) {
+							return '<span class="text-muted">#' + escapeHtml(userId) + '</span>';
+						}
+						const name = [item.user.firstName, item.user.lastName].join(' ').trim();
+						return '<img src="' + escapeHtml(safeUrl(item.user.image)) + '" height="20" width="20" class="rounded-circle border me-1">' + escapeHtml(name);
+					},
+					// select by user name; the options are loaded in afterSettingsInit
+					// (the user table's "Todos" button sets this filter too: filterListen)
 					filter: {
-						type: 'number',
-						operator: '=',
-						buttonx: true
+						type: 'select',
+						options: [],
+						buttonx: true,
 					}
 				},
 				{

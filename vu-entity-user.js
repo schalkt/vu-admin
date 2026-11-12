@@ -138,6 +138,22 @@ window.VuEntities.user = (preset) => {
 					},
 				},
 				{
+					// set by the API on create (read-only); hidden here, shown on the dashboard (columns of the widget)
+					name: 'createdAt',
+					title: 'Created',
+					class: 'text-nowrap',
+					hidden: true,
+					template: (value) => {
+						const date = value ? new Date(value) : null;
+						if (!date || isNaN(date.getTime())) {
+							return '';
+						}
+						return '<small>' + escapeHtml(date.toLocaleString(undefined, {
+							year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+						})) + '</small>';
+					},
+				},
+				{
 					name: 'age',
 					title: 'Kor',
 					width: '10%',

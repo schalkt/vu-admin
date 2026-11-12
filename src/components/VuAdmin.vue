@@ -1,9 +1,17 @@
 <template>
   <!-- multi-entity mode: <vu-admin :auth="auth"> without entity → every entity of auth.settings.entities,
        switched by the URL hash (#user, #product); a table is created (and calls its API) only when it first
-       becomes visible, afterwards v-show just hides it, so its state is kept -->
+       becomes visible, afterwards v-show just hides it, so its state is kept.
+       Empty / unknown hash: auth.settings.dashboard when configured, otherwise every entity -->
   <div v-if="!entity" v-cloak class="vu-admin-views">
     <template v-if="auth && auth.success && auth.user">
+      <div v-if="dashboard" v-show="!activeEntity" class="vu-admin-dashboard" :class="dashboard.class">
+        <template v-if="loaded[DASHBOARD]">
+          <div v-for="(widget, index) in dashboard.items" :key="'dashboard-' + index" class="vu-admin-dashboard-item" :class="widget.class" :data-entity="widget.entity">
+            <vu-admin :entity="widget.entity" :preset="widget.preset" :override="widget.override" :auth="auth"></vu-admin>
+          </div>
+        </template>
+      </div>
       <div v-for="view in views" :key="view.entity" v-show="isVisible(view.entity)" class="vu-admin-view" :data-entity="view.entity">
         <vu-admin v-if="loaded[view.entity]" :entity="view.entity" :preset="view.preset" :auth="auth"></vu-admin>
       </div>
@@ -45,7 +53,13 @@ const VuAdmin = {
     },
     auth: {
       type: Object,
-    }
+    },
+    // deep-merged over the entity config (e.g. dashboard widget: { table: { pagination: { limit: 5 } } });
+    // `table.order` replaces the entity's default sort instead of being merged into it
+    override: {
+      type: Object,
+      required: false,
+    },
   },
   init: (params) => {
     if (!params) {
@@ -73,6 +87,9 @@ const VuAdmin = {
     views() {
       this.markVisibleLoaded();
     },
+    dashboard() {
+      this.markVisibleLoaded();
+    },
   },
   computed: {
     // auth.settings.entities: { user: '/vu-entity-user.js' } or { product: { url: '/vu-entity-product.js', preset: 'dash' } }
@@ -85,7 +102,25 @@ const VuAdmin = {
           preset: typeof entities[name] === "object" ? entities[name].preset : undefined,
         }));
     },
-    // unknown / empty hash (e.g. "#" = Dashboard) → every entity is visible
+    // auth.settings.dashboard: { class: 'row', items: [{ entity: 'user', class: 'col-md-6', limit: 5, order: { id: 'DESC' } }] }
+    dashboard() {
+      const config = this.auth && this.auth.settings ? this.auth.settings.dashboard : null;
+      if (!config || !Array.isArray(config.items)) {
+        return null;
+      }
+      const entities = this.auth.settings.entities || {};
+      const items = config.items
+        .filter((item) => item && item.entity && entities[item.entity] && !item.disabled)
+        .map((item) => ({
+          entity: item.entity,
+          class: item.class !== undefined ? item.class : "col-12",
+          // own preset → own localStorage table state (does not mix with the full entity view)
+          preset: item.preset || "dashboard",
+          override: this.widgetOverride(item),
+        }));
+      return items.length ? { class: config.class !== undefined ? config.class : "row", items } : null;
+    },
+    // unknown / empty hash (e.g. "#" = Dashboard) → dashboard, or every entity when there is no dashboard
     activeEntity() {
       return this.views.some((view) => view.entity === this.route) ? this.route : null;
     },
@@ -96,6 +131,8 @@ const VuAdmin = {
       settings: undefined,
       route: this.currentRoute(),
       loaded: {},
+      // loaded[] key of the dashboard (cannot clash with an entity name)
+      DASHBOARD: "#dashboard",
       defaults: {
         // primary id field name
         // required, default : undefined
@@ -222,7 +259,57 @@ const VuAdmin = {
     },
 
     isVisible(entity) {
-      return !this.activeEntity || this.activeEntity === entity;
+      if (!this.activeEntity) {
+        return !this.dashboard;
+      }
+      return this.activeEntity === entity;
+    },
+
+    // dashboard widget → config override: { title, link, columns, filters, limit, limits, pages, order, settings }
+    // order: { id: 'DESC', name: 'ASC' } (shorthand) or { id: { dir: 'DESC', idx: 0, fixed: false } }
+    widgetOverride(item) {
+      const override = item.settings ? JSON.parse(JSON.stringify(item.settings)) : {};
+      const table = override.table = override.table || {};
+
+      if (item.title !== undefined) {
+        table.title = item.title;
+      }
+      // the widget title links to the full entity view; `link: false` turns it off, a string sets another URL
+      if (item.link !== false) {
+        table.titleHref = typeof item.link === "string" ? item.link : "#" + item.entity;
+      }
+      if (item.filters !== undefined) {
+        table.filterRow = !!item.filters;
+      }
+      if (Array.isArray(item.columns)) {
+        table.columns = item.columns.slice();
+      }
+      // limit: initial rows per page, the page size selector stays (the choice is stored per widget);
+      // limits: the selector's options, null hides it
+      // pages: number of page buttons in the pagination
+      if (item.limit || item.limits !== undefined || item.pages) {
+        table.pagination = Object.assign({}, table.pagination);
+        if (item.pages) {
+          table.pagination.size = item.pages;
+        }
+        if (item.limit) {
+          table.pagination.limit = item.limit;
+        }
+        if (item.limits !== undefined) {
+          table.pagination.limits = item.limits;
+        }
+      }
+      if (item.order) {
+        table.order = {};
+        Object.keys(item.order).forEach((field, idx) => {
+          const value = item.order[field];
+          table.order[field] = typeof value === "object"
+            ? Object.assign({ idx, fixed: false }, value)
+            : { dir: String(value).toUpperCase() === "DESC" ? "DESC" : "ASC", idx, fixed: false };
+        });
+      }
+
+      return override;
     },
 
     markVisibleLoaded() {
@@ -234,6 +321,25 @@ const VuAdmin = {
           this.loaded[view.entity] = true;
         }
       });
+      if (this.dashboard && !this.activeEntity) {
+        this.loaded[this.DASHBOARD] = true;
+      }
+    },
+
+    // override `table.columns: ['#', 'id', 'firstName', '#buttons']`: only these columns are visible, in this order;
+    // the others stay in the table hidden (the column toggle can show them). A column is matched by its `name`,
+    // an unnamed one (e.g. the '#' row select column) by its `title`
+    visibleColumns(columns, visible) {
+      const keyOf = (column) => (column.name !== undefined ? column.name : column.title);
+      const listed = [];
+      visible.forEach((key) => {
+        const column = columns.find((col) => keyOf(col) === key);
+        if (column && listed.indexOf(column) < 0) {
+          listed.push(Object.assign(column, { hidden: false }));
+        }
+      });
+      const rest = columns.filter((column) => listed.indexOf(column) < 0).map((column) => Object.assign(column, { hidden: true }));
+      return listed.concat(rest);
     },
 
     // the entity config script URL: a string or { url, preset }
@@ -274,8 +380,10 @@ const VuAdmin = {
 
       if (window[entitiesVariable] && window[entitiesVariable][this.entity]) {
 
+        // already loaded (e.g. by a dashboard widget of the same entity): still async, like the script onload,
+        // so init() never runs during the component setup
         if (callback) {
-          callback();
+          this.$nextTick(callback);
         }
 
         return;
@@ -303,6 +411,32 @@ const VuAdmin = {
     init(entitySettings) {
 
       if (entitySettings) {
+
+        if (this.override) {
+          const override = JSON.parse(JSON.stringify(this.override));
+          const order = override.table && override.table.order;
+          const columns = override.table && override.table.columns;
+          // deepMerge merges arrays index by index: the page size options must replace the entity's own
+          const pagination = override.table && override.table.pagination;
+          const hasLimits = !!pagination && pagination.limits !== undefined;
+          const limits = hasLimits ? pagination.limits : undefined;
+          if (hasLimits) {
+            delete pagination.limits;
+          }
+          if (columns) {
+            delete override.table.columns;
+          }
+          entitySettings = deepMerge(entitySettings, override);
+          if (order) {
+            entitySettings.table.order = order;
+          }
+          if (hasLimits) {
+            entitySettings.table.pagination = Object.assign({}, entitySettings.table.pagination, { limits });
+          }
+          if (Array.isArray(columns) && entitySettings.table && Array.isArray(entitySettings.table.columns)) {
+            entitySettings.table.columns = this.visibleColumns(entitySettings.table.columns, columns);
+          }
+        }
 
         this.languagePinned = !!entitySettings.language;
         this.settings = deepMerge(this.defaults, entitySettings);
@@ -406,5 +540,11 @@ export { VuAdmin };
     padding: 0.15em 0.30em;
   }
 
+}
+
+// dashboard widget: a table wider than its column scrolls horizontally instead of overlapping the next column
+.vu-admin-dashboard-item {
+  min-width: 0;
+  overflow-x: auto;
 }
 </style>

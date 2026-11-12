@@ -371,6 +371,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
         email: body.username,
         image: '/mock/avatar/' + (body.username || 'NU').slice(0, 2).toUpperCase(),
         ...inputData,
+        createdAt: new Date().toISOString(),
       };
       users.push(newUser);
       writeDb('users', users);
@@ -439,7 +440,8 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
             ],
           },
           { name: 'Users', href: '#user', icon: 'bi bi-people me-1' },
-          { name: 'Documentation', href: 'https://github.com', target: '_blank', icon: 'bi bi-box-arrow-up-right me-1' },
+          // itemClass goes on the <li>: 'ms-auto' moves this item (and the ones after it) to the right
+          { name: 'Documentation', href: 'https://github.com', target: '_blank', icon: 'bi bi-box-arrow-up-right me-1', itemClass: 'ms-auto' },
           { name: 'Disabled', href: '#', disabled: true },
         ],
       },
@@ -550,6 +552,10 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
 
       const body = await readBody(req);
       const newItem = { id: nextId(items), ...body };
+      // entities that track the creation time (e.g. users) get it on create
+      if (!newItem.createdAt && items.some(i => i && i.createdAt)) {
+        newItem.createdAt = new Date().toISOString();
+      }
       items.push(newItem);
       writeDb(entity, items);
       return send(res, newItem, 201, delay);

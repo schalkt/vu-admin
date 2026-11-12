@@ -32,6 +32,35 @@ const ADMIN_SETTINGS = () => ({
         user: { url: '/vu-entity-user.js', title: 'Users' },
         todos: { url: '/vu-entity-todos.js', title: 'Todos' },
     },
+    // start page (empty hash / "#"): entity tables in a Bootstrap grid; without it every entity is shown
+    dashboard: {
+        class: 'row g-3',                      // container class
+        items: [
+            {
+                entity: 'user',                // key of `entities`
+                class: 'col-md-6',             // column class
+                title: 'Latest users',         // table title (translation key), default: the entity's own
+                columns: ['image', 'firstName', 'createdAt', '#buttons'],  // visible columns in this order (by `name`, unnamed ones by `title`)
+                filters: false,                // hide the filter row (default: shown)
+                limit: 10,                     // initial rows per page, the page size selector stays
+                limits: [5, 10, 20, 50],       // page size options (null hides the selector), default: the entity's own
+                pages: 5,                      // number of page buttons in the pagination, default: the entity's own
+                order: { createdAt: 'DESC' },  // sort, replaces the entity default: { field: 'ASC' | 'DESC', ... }
+            },
+            {
+                entity: 'todos',
+                class: 'col-md-6',
+                title: 'Open todos',
+                columns: ['todo', 'userId', 'completed', '#buttons'],
+                filters: true,
+                limit: 10,
+                limits: [5, 10, 20, 50],
+                order: { completed: 'ASC', id: 'DESC' },
+                // settings: { ... }           // any further entity config override (deep-merged)
+                // preset: 'dashboard'         // passed to the entity function; also the localStorage state key
+            },
+        ],
+    },
 });
 
 window.VuSettings = {
@@ -136,6 +165,14 @@ window.VuSettings = {
             'Documentation': 'Dokumentáció',
             'Hidden menu item': 'Rejtett menüpont',
             'Disabled': 'Letiltott',
+
+            // dashboard
+            'Latest users': 'Legújabb felhasználók',
+            'Open todos': 'Nyitott teendők',
+            'Created': 'Létrehozva',
+            'User': 'Felhasználó',
+            'Yes': 'Igen',
+            'No': 'Nem',
         },
     },
     button: {
@@ -433,7 +470,9 @@ window.VuSettings = {
                     auth.user.token = data.accessToken;
                 }
 
-                if (auth.user.role && !auth.settings) {
+                // always from the current ADMIN_SETTINGS, so a config change applies on the next page load
+                // (the copy restored from localStorage may be outdated)
+                if (auth.user.role) {
                     auth.settings = ADMIN_SETTINGS();
                 }
 

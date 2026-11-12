@@ -1,12 +1,13 @@
 <template>
-    <ul v-cloak v-if="auth && auth.success && visibleItems.length" class="navbar-nav me-auto mb-2 mb-lg-0" :class="menuClass">
+    <!-- the list fills the free header space, so an item with `itemClass: "ms-auto"` (and the ones after it) sit on the right -->
+    <ul v-cloak v-if="auth && auth.success && visibleItems.length" class="navbar-nav flex-grow-1 mb-2 mb-lg-0" :class="menuClass">
         <template v-for="(item, index) in visibleItems" :key="index">
-            <li v-if="item.items && item.items.length" class="nav-item dropdown">
+            <li v-if="item.items && item.items.length" class="nav-item dropdown" :class="item.itemClass">
                 <button class="btn dropdown-toggle" :class="[item.class, { active: hasActiveChild(item) }]" type="button" data-bs-toggle="dropdown">
                     <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
                     <span>{{ translate(item.name) }}</span>
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu" :class="item.menuClass">
                     <li v-for="(subitem, subindex) in visibleChildren(item)" :key="subindex">
                         <!-- grouping: { "header": "Title" } = group header, { "divider": true } = divider -->
                         <hr v-if="subitem.divider" class="dropdown-divider">
@@ -25,7 +26,7 @@
                     </li>
                 </ul>
             </li>
-            <li v-else class="nav-item">
+            <li v-else class="nav-item" :class="item.itemClass">
                 <button v-if="item.api" type="button" class="nav-link btn btn-link" :class="item.class" :disabled="running" @click="runAction(item)">
                     <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
                     {{ translate(item.name) }}

@@ -7,7 +7,12 @@
         <div class="d-flex align-items-center justify-content-between">
           <div class="d-inline-block">
             <h5 class="card-title d-inline-block mb-2" v-if="settings.table.title">
-              {{ translate(settings.table.title) }}
+              <!-- table.titleHref: the title links to a page, e.g. a dashboard widget → its full entity view ("#user") -->
+              <a v-if="safeUrl(settings.table.titleHref)" :href="safeUrl(settings.table.titleHref)" class="vua-table-title-link link-body-emphasis text-decoration-none"
+                :title="translate('Open')">
+                {{ translate(settings.table.title) }}<i class="bi bi-arrow-right-short ms-1"></i>
+              </a>
+              <template v-else>{{ translate(settings.table.title) }}</template>
             </h5>
 
             <div v-show="ui.wait.table && settings.table.title" class="spinner-border spinner-border-sm mx-2" role="status">
@@ -190,7 +195,8 @@
               </span>
             </th>
           </tr>
-          <tr v-if="countFilters()" class="vua-table-filter">
+          <!-- table.filterRow: false hides the filter row (fixed / default filters still apply) -->
+          <tr v-if="countFilters() && settings.table.filterRow !== false" class="vua-table-filter">
             <th v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :data-collapsed="column.collapsed || null" :key="column" :width="column.collapsed ? null : column.width"
               :class="[column.filter ? column.filter.class : '']">
               <div class="d-inline-block w-100 px-1" v-if="column.index && column.click">
@@ -532,7 +538,8 @@ import {
   arraySelectClear,
   executeFunctions,
   secureRandomInt,
-  secureRandomString
+  secureRandomString,
+  safeUrl
 } from "./helpers";
 import {
   getSeparateUploadFieldsMap,
@@ -702,6 +709,7 @@ export default {
   },
 
   methods: {
+    safeUrl,
 
     init() {
 
