@@ -407,11 +407,16 @@ window.VuEntities.user = (preset) => {
 						// 	action: 'TABLE_ROW_DETAIL',
 						// },
 						{
-							// opens the todos view filtered to this user ("#todos?userId=1", the link can be shared);
-							// clicking the name instead filters the todos tables on the current page (filterLink)
-							action: (item) => {
+							// on the dashboard: filters the todos widget next to it in place (FILTER event, like filterLink);
+							// in the users view: opens the todos view filtered to this user ("#todos?userId=1", shareable)
+							action: (item, params, self) => {
 								const userId = item.id;
-								if (userId !== undefined && userId !== null) {
+								if (userId === undefined || userId === null) {
+									return;
+								}
+								if (self.settings.preset === 'dashboard') {
+									self.sendEvent('FILTER', 'todos', { field: 'userId', value: userId });
+								} else {
 									window.location.hash = '#todos?userId=' + encodeURIComponent(userId);
 								}
 							},

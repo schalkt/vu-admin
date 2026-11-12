@@ -157,6 +157,19 @@ test.describe('dashboard', () => {
     await expect(page.locator('.vu-admin-count').nth(1)).toContainText('13');
   });
 
+  test('the "Todos" button of the users widget filters the todos widget in place', async ({ page }) => {
+    await openDashboard(page);
+    const users = widget(page, 'table', 'user');
+    const todos = widget(page, 'table', 'todos');
+
+    await rows(users).filter({ hasText: 'Emily Johnson' }).locator('button', { hasText: 'Todos' }).click();
+    await expect(range(todos)).toHaveText('1-3 / 3');
+    await expect(rows(todos).first()).toContainText('Emily Johnson');
+    // stays on the dashboard
+    await expect(page).toHaveURL(/#$/);
+    await expect(todos).toBeVisible();
+  });
+
   test('an empty result shows "0 / 0"', async ({ page }) => {
     await openDashboard(page);
     const todos = widget(page, 'table', 'todos');
