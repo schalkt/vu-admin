@@ -2877,13 +2877,13 @@ export default {
     }
 
     .vua-table-title {
-      color: var(--bs-dark);
+      color: var(--bs-body-color);
     }
 
     .vua-table-control {
       user-select: none;
-      background-color: var(--bs-light);
-      color: var(--bs-dark);
+      background-color: var(--bs-tertiary-bg);
+      color: var(--bs-body-color);
     }
 
     .vua-table-bulk {
@@ -2893,7 +2893,7 @@ export default {
 
     .vua-table-filter {
       input {
-        color: var(--bs-dark);
+        color: var(--bs-body-color);
       }
     }
 
@@ -2928,13 +2928,13 @@ export default {
     }
 
     .vua-table-title {
-      color: var(--bs-light);
+      color: var(--bs-body-color);
     }
 
     .vua-table-control {
       user-select: none;
-      background-color: var(--bs-secondary);
-      color: var(--bs-light);
+      background-color: var(--bs-tertiary-bg);
+      color: var(--bs-body-color);
     }
 
     .modal-title {

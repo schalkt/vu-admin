@@ -26656,6 +26656,7 @@ var pH = {
 			if (this.auth.response = {}, !this.username || !this.password) return;
 			let e = await fetch(this.settings.api.login, {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					username: this.username,
@@ -26770,6 +26771,7 @@ var pH = {
 			this.auth.response = {};
 			let e = await fetch(this.settings.api.twofa, {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					twofaSession: this.twofaSession,
@@ -26785,6 +26787,7 @@ var pH = {
 				try {
 					let e = await fetch(this.settings.api.twofaResend, {
 						method: "POST",
+						credentials: "include",
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({ twofaSession: this.twofaSession })
 					});

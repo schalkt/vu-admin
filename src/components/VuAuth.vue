@@ -720,6 +720,7 @@ const VuAuth = {
 
             const response = await fetch(this.settings.api.login, {
                 method: "POST",
+                credentials: 'include',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     username: this.username,
@@ -925,8 +926,9 @@ const VuAuth = {
 
             const response = await fetch(this.settings.api.twofa, {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
-                // the trust cookie (HttpOnly) is set by the server on this answer; same-origin fetch stores it
+                // trust cookie (HttpOnly): credentials include so the browser stores / sends it reliably
                 body: JSON.stringify({
                     twofaSession: this.twofaSession,
                     code: this.twofaCode,
@@ -956,6 +958,7 @@ const VuAuth = {
             try {
                 const response = await fetch(this.settings.api.twofaResend, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ twofaSession: this.twofaSession }),
                 });
