@@ -100,7 +100,7 @@
                                 <span class="spinner-border spinner-border-sm text-secondary"></span>
                             </div>
                             <div v-else-if="captcha.items.length">
-                                <div class="text-center small mb-2" v-html="captcha.question"></div>
+                                <div class="text-center small mb-2" v-html="captchaQuestion"></div>
                                 <div class="d-flex justify-content-center gap-2 flex-wrap">
                                     <button v-for="item in captcha.items" :key="item.id" type="button"
                                         class="btn btn-outline-secondary px-2 py-1"
@@ -121,10 +121,21 @@
                             <label class="form-label text-primary">{{ translate(settings.twofa.label) }}</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
-                                <input type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
-                                    v-model="twofaCode" class="form-control text-center fw-bold fs-5"
+                                <input type="text" inputmode="numeric" pattern="[0-9]{6}"
+                                    v-model="twofaCode" @input="twofaCode = twofaCode.replace(/\D/g, '').slice(0, 6)"
+                                    class="form-control text-center fw-bold fs-5"
                                     :placeholder="translate(settings.twofa.placeholder)" required :disabled="loading"
                                     autocomplete="one-time-code" />
+                            </div>
+                            <!-- "trust this device": no code on this browser for the chosen days (server caps it) -->
+                            <div v-if="twofaTrustOptions.length" class="mt-3">
+                                <label for="twofa_trust" class="form-label text-primary">{{ translate(settings.twofa.trust.label) }}</label>
+                                <select id="twofa_trust" class="form-select" v-model.number="twofaTrustDays" :disabled="loading">
+                                    <option v-for="option in twofaTrustOptions" :key="option.value" :value="option.value">
+                                        {{ translate(option.label) }}
+                                    </option>
+                                </select>
+                                <small v-if="settings.twofa.trust.help" class="d-block text-muted mt-1" v-html="translate(settings.twofa.trust.help)"></small>
                             </div>
                             <div class="text-end mt-2">
                                 <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none"
@@ -258,6 +269,7 @@ import {
     getResponseJson,
     getResponseErrors,
     isApiResponseOk,
+    escapeHtml,
 } from "./helpers";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 
@@ -284,11 +296,15 @@ const VuAuth = {
             twofaCode: '',
             twofaSession: '',
             twofaMethod: '',
+            twofaTrustDays: 0,
+            twofaTrustMaxDays: null,
             captchaError: false,
             captcha: {
                 loading: false,
                 items: [],
                 question: '',
+                label: '',
+                request: 0,
                 token: '',
                 answers: [],
             },
@@ -321,6 +337,28 @@ const VuAuth = {
             const panel = this.auth && this.auth.panel;
             if (!this.settings || !this.settings.captcha || !this.settings.captcha.panels) return false;
             return this.settings.captcha.panels.includes(panel);
+        },
+        // settings.twofa.trust.options, without the ones over the server's limit (202 `trustMaxDays`; 0 = none)
+        twofaTrustOptions() {
+            const trust = this.settings && this.settings.twofa ? this.settings.twofa.trust : null;
+            if (!trust || !Array.isArray(trust.options)) return [];
+            const max = this.twofaTrustMaxDays;
+            if (max === 0) return [];
+            const options = trust.options.filter((option) => max == null || Number(option.value) <= max);
+            // only "no" left → nothing to choose
+            return options.some((option) => Number(option.value) > 0) ? options : [];
+        },
+        // settings.captcha.question ('Click the <strong>{label}</strong> icon!') is translated, with the translated
+        // label of the server; without it (or without a label) the server's question text is shown
+        captchaQuestion() {
+            const template = this.settings && this.settings.captcha ? this.settings.captcha.question : null;
+            if (template && this.captcha.label) {
+                // eslint-disable-next-line no-unused-expressions
+                this.language;
+                // the label comes from the server: escaped, the question template is v-html
+                return this.translate(template, { label: escapeHtml(this.translate(this.captcha.label)) });
+            }
+            return this.captcha.question;
         },
     },
 
@@ -446,6 +484,8 @@ const VuAuth = {
             this.twofaCode = "";
             this.twofaSession = "";
             this.twofaMethod = "";
+            this.twofaTrustDays = 0;
+            this.twofaTrustMaxDays = null;
             this.auth.response = {};
         },
 
@@ -592,7 +632,7 @@ const VuAuth = {
                 return;
             }
 
-            // Captcha check — need exactly 2 selected
+            // Captcha check — exactly 1 icon selected
             if (this.captchaRequired) {
                 if (this.captcha.answers.length !== 1) {
                     this.captchaError = true;
@@ -657,6 +697,13 @@ const VuAuth = {
             if (response.status === 202 && this.isTwofaPanel('login')) {
                 this.twofaSession = this.auth.response.data.twofaSession;
                 this.twofaMethod = this.auth.response.data.twofa;
+                const maxDays = this.auth.response.data.trustMaxDays;
+                this.twofaTrustMaxDays = Number.isFinite(Number(maxDays)) && maxDays !== null && maxDays !== undefined ? Number(maxDays) : null;
+                this.twofaTrustDays = this.settings.twofa && this.settings.twofa.trust && this.settings.twofa.trust.default
+                    ? Number(this.settings.twofa.trust.default) : 0;
+                if (this.twofaTrustMaxDays !== null && this.twofaTrustDays > this.twofaTrustMaxDays) {
+                    this.twofaTrustDays = 0;
+                }
                 this.auth.panel = 'twofa';
                 return;
             }
@@ -730,7 +777,7 @@ const VuAuth = {
                         username: this.username,
                         honeypot: this.honeypot,
                         captchaToken: this.captcha.token,
-                        captchaAnswer: this.captcha.answer,
+                        captchaAnswer: this.captcha.answers,
                     }),
                 });
 
@@ -784,7 +831,12 @@ const VuAuth = {
             const response = await fetch(this.settings.api.twofa, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ twofaSession: this.twofaSession, code: this.twofaCode }),
+                // the trust cookie (HttpOnly) is set by the server on this answer; same-origin fetch stores it
+                body: JSON.stringify({
+                    twofaSession: this.twofaSession,
+                    code: this.twofaCode,
+                    trustDays: this.twofaTrustOptions.length ? this.twofaTrustDays : 0,
+                }),
             });
 
             await this.getStatusAndJson(response);
@@ -792,13 +844,19 @@ const VuAuth = {
             if (this.auth.response.ok) {
                 this.onSuccess('login');
                 this.close();
+            } else if (response.status === 401) {
+                this.twofaExpired();
             } else {
+                this.twofaCode = '';
                 this.onError('twofa');
             }
         },
 
         async resendTwofa() {
             if (!this.settings.api.twofaResend) return;
+
+            this.loading = true;
+            this.auth.response = {};
 
             try {
                 const response = await fetch(this.settings.api.twofaResend, {
@@ -808,12 +866,31 @@ const VuAuth = {
                 });
                 await this.getStatusAndJson(response);
                 if (this.auth.response.ok) {
+                    this.twofaCode = '';
                     this.auth.response.message = this.auth.response.data?.message || '';
                     this.$forceUpdate();
+                } else if (response.status === 401) {
+                    this.twofaExpired();
+                } else {
+                    this.onError('twofa');
                 }
             } catch (e) {
                 console.error('[auth] resend twofa error', e);
+            } finally {
+                this.loading = false;
             }
+        },
+
+        // 401 on the twofa panel: the 2FA session is gone (expired, too many wrong codes / resends) →
+        // back to the login panel, keeping the server message
+        twofaExpired() {
+            this.onError('twofa');
+            this.auth.response.ok = false;
+            this.twofaCode = '';
+            this.twofaSession = '';
+            this.twofaMethod = '';
+            this.password = '';
+            this.auth.panel = 'login';
         },
 
         async hashPassword(password) {
@@ -858,19 +935,33 @@ const VuAuth = {
 
         async fetchCaptcha() {
             if (!this.settings.captcha || !this.settings.captcha.url) return;
+            // only the latest request applies (a submit and a panel switch can both ask for a new challenge)
+            const request = ++this.captcha.request;
             this.captcha.loading = true;
             this.captcha.answers = [];
             this.captchaError = false;
             try {
-                const res = await fetch(this.settings.captcha.url);
+                const res = await fetch(this.settings.captcha.url, { cache: 'no-store' });
                 const data = await res.json();
-                this.captcha.items = data.items;
-                this.captcha.question = data.question;
-                this.captcha.token = data.token;
+                if (request !== this.captcha.request) return;
+                const ok = res.ok && data && Array.isArray(data.items);
+                this.captcha.items = ok ? data.items : [];
+                this.captcha.question = ok ? (data.question || '') : '';
+                this.captcha.label = ok ? (data.label || '') : '';
+                this.captcha.token = ok ? (data.token || '') : '';
+                if (!ok) {
+                    console.error('[captcha] load failed', res.status, data);
+                }
             } catch (e) {
+                if (request === this.captcha.request) {
+                    this.captcha.items = [];
+                    this.captcha.token = '';
+                }
                 console.error('[captcha] load failed', e);
             } finally {
-                this.captcha.loading = false;
+                if (request === this.captcha.request) {
+                    this.captcha.loading = false;
+                }
             }
         },
 

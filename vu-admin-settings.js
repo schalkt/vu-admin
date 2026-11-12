@@ -21,8 +21,33 @@ var handleError = function (response) {
 // and an entity config's own `translate` overrides them again for that entity.
 const REGISTRATION_HELP = `<div class='text-muted p-2 rounded shadow-sm'>After submitting the registration you will receive a <strong>confirmation e-mail</strong>; <strong>click</strong> the activation link in it to validate your registration. After the click our website opens, where you can enter <strong>further details</strong>.</div>`;
 
+// entities: <vu-admin :auth="auth"> (without entity) renders these, in this order.
+// value: the config script URL, or { url, preset, title } (preset: passed to the entity function, title: used in the browser tab title)
+// a nav item with href "#<entity>" (e.g. "#user") → only that table is shown
+const ADMIN_SETTINGS = () => ({
+    entitiesVariable: 'VuEntities',
+    entities: {
+        product: { url: '/vu-entity-product.js', preset: 'dash', title: 'Products' },
+        post: { url: '/vu-entity-post.js', title: 'Posts' },
+        user: { url: '/vu-entity-user.js', title: 'Users' },
+        todos: { url: '/vu-entity-todos.js', title: 'Todos' },
+    },
+});
+
 window.VuSettings = {
     theme: 'dark',
+
+    // <vu-admin-app>: the page layout (header, brand, nav, views) – every key is optional
+    app: {
+        title: 'VU Admin',                     // brand text + browser tab title (translation key)
+        documentTitle: '{view} | {title}',     // tab title, {view} = active view; can be a function: (title, view) => ...
+        logo: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/icons/grid-3x3-gap-fill.svg',
+        favicon: '',                           // empty → the one in the HTML stays
+        brand: { href: '#', height: 24 },
+        container: 'container-fluid',
+        header: { class: 'sticky-top navbar navbar-expand p-2 border shadow bg-light' },
+        nav: { url: '/api/navs', menu: 'admin' },
+    },
 
     // languages offered in the user menu (default: English, Magyar)
     languages: [
@@ -94,6 +119,12 @@ window.VuSettings = {
             'User not found': 'A felhasználó nem található',
             'Cannot resend': 'Nem lehet újraküldeni',
             'Code sent': 'Kód elküldve',
+            'Trust this device?': 'Megbízol ebben az eszközben?',
+            'Only on your own device! The password is still required.': 'Csak saját eszközön válaszd! A jelszót ekkor is meg kell adni.',
+            'No, always ask for a code': 'Nem, mindig kérjen kódot',
+            'Do not ask for 1 day': '1 napig ne kérjen kódot',
+            'Do not ask for 7 days': '7 napig ne kérjen kódot',
+            'Do not ask for 30 days': '30 napig ne kérjen kódot',
 
             // navigation (/api/navs)
             'Dashboard': 'Vezérlőpult',
@@ -191,6 +222,19 @@ window.VuSettings = {
             placeholder: '6-digit code',
             info: 'Enter the 6-digit code sent to your e-mail address. The code is valid for 5 minutes.',
             error: 'Invalid code, please try again!',
+            // "trust this device": no code on this browser for the chosen days (the server may cap it with the
+            // 202 answer's `trustMaxDays`; options over it are hidden)
+            trust: {
+                label: 'Trust this device?',
+                help: 'Only on your own device! The password is still required.',
+                default: 0,
+                options: [
+                    { value: 0, label: 'No, always ask for a code' },
+                    { value: 1, label: 'Do not ask for 1 day' },
+                    { value: 7, label: 'Do not ask for 7 days' },
+                    { value: 30, label: 'Do not ask for 30 days' },
+                ],
+            },
         },
         title: {
             login: 'Sign in',
@@ -390,15 +434,7 @@ window.VuSettings = {
                 }
 
                 if (auth.user.role && !auth.settings) {
-                    auth.settings = {
-                        entitiesVariable: 'VuEntities',
-                        entities: {
-                            post: '/vu-entity-post.js',
-                            product: '/vu-entity-product.js',
-                            user: '/vu-entity-user.js',
-                            todos: '/vu-entity-todos.js',
-                        }
-                    };
+                    auth.settings = ADMIN_SETTINGS();
                 }
 
             },
@@ -420,15 +456,7 @@ window.VuSettings = {
                 auth.user.token = auth.response.data.accessToken;
 
                 if (auth.user.role) {
-                    auth.settings = {
-                        entitiesVariable: 'VuEntities',
-                        entities: {
-                            post: '/vu-entity-post.js',
-                            product: '/vu-entity-product.js',
-                            user: '/vu-entity-user.js',
-                            todos: '/vu-entity-todos.js',
-                        }
-                    };
+                    auth.settings = ADMIN_SETTINGS();
                 }
             },
             activation: (auth) => {
@@ -439,15 +467,7 @@ window.VuSettings = {
                 auth.user.token = auth.response.data.accessToken;
 
                 if (auth.user.role) {
-                    auth.settings = {
-                        entitiesVariable: 'VuEntities',
-                        entities: {
-                            post: '/vu-entity-post.js',
-                            product: '/vu-entity-product.js',
-                            user: '/vu-entity-user.js',
-                            todos: '/vu-entity-todos.js',
-                        }
-                    };
+                    auth.settings = ADMIN_SETTINGS();
                 }
             },
             forgot: (auth) => {

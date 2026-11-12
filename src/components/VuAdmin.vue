@@ -1,5 +1,15 @@
 <template>
-  <div v-cloak v-if="entity && settings">
+  <!-- multi-entity mode: <vu-admin :auth="auth"> without entity → every entity of auth.settings.entities,
+       switched by the URL hash (#user, #product); a table is created (and calls its API) only when it first
+       becomes visible, afterwards v-show just hides it, so its state is kept -->
+  <div v-if="!entity" v-cloak class="vu-admin-views">
+    <template v-if="auth && auth.success && auth.user">
+      <div v-for="view in views" :key="view.entity" v-show="isVisible(view.entity)" class="vu-admin-view" :data-entity="view.entity">
+        <vu-admin v-if="loaded[view.entity]" :entity="view.entity" :preset="view.preset" :auth="auth"></vu-admin>
+      </div>
+    </template>
+  </div>
+  <div v-cloak v-else-if="settings">
     <div v-if="auth" class="vu-admin" :data-bs-theme="[settings.theme]">
       <vu-admin-table :settings="settings" :auth="auth"></vu-admin-table>
     </div>
@@ -24,9 +34,10 @@ import {
 const VuAdmin = {
   name: "VuAdmin",
   props: {
+    // empty → multi-entity mode (see template)
     entity: {
       type: String,
-      required: true,
+      required: false,
     },
     preset: {
       type: String,
@@ -46,17 +57,45 @@ const VuAdmin = {
       immediate: true,
       handler(newValue, oldValue) {
 
-        if (newValue != oldValue) {
+        if (this.entity && newValue != oldValue) {
           this.loadSettings();
         }
 
       }
-    }
+    },
+    // multi-entity mode: mark the currently visible entities as loaded (they exist from then on)
+    activeEntity: {
+      immediate: true,
+      handler() {
+        this.markVisibleLoaded();
+      },
+    },
+    views() {
+      this.markVisibleLoaded();
+    },
+  },
+  computed: {
+    // auth.settings.entities: { user: '/vu-entity-user.js' } or { product: { url: '/vu-entity-product.js', preset: 'dash' } }
+    views() {
+      const entities = this.auth && this.auth.settings && this.auth.settings.entities ? this.auth.settings.entities : {};
+      return Object.keys(entities)
+        .filter((name) => entities[name] && !entities[name].disabled)
+        .map((name) => ({
+          entity: name,
+          preset: typeof entities[name] === "object" ? entities[name].preset : undefined,
+        }));
+    },
+    // unknown / empty hash (e.g. "#" = Dashboard) → every entity is visible
+    activeEntity() {
+      return this.views.some((view) => view.entity === this.route) ? this.route : null;
+    },
   },
 
   data() {
     return {
       settings: undefined,
+      route: this.currentRoute(),
+      loaded: {},
       defaults: {
         // primary id field name
         // required, default : undefined
@@ -159,12 +198,49 @@ const VuAdmin = {
       }
     };
     window.addEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+
+    // multi-entity mode: hash navigation (VuAdminNav "#user" hrefs), without a page reload
+    if (!this.entity) {
+      this._onHashChange = () => {
+        this.route = this.currentRoute();
+        window.scrollTo({ top: 0 });
+      };
+      window.addEventListener("hashchange", this._onHashChange);
+    }
   },
   beforeUnmount() {
     window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+    if (this._onHashChange) {
+      window.removeEventListener("hashchange", this._onHashChange);
+    }
   },
   mounted() { },
   methods: {
+
+    currentRoute() {
+      return typeof window !== "undefined" ? decodeURIComponent(window.location.hash.replace(/^#\/?/, "")) : "";
+    },
+
+    isVisible(entity) {
+      return !this.activeEntity || this.activeEntity === entity;
+    },
+
+    markVisibleLoaded() {
+      if (this.entity) {
+        return;
+      }
+      this.views.forEach((view) => {
+        if (this.isVisible(view.entity)) {
+          this.loaded[view.entity] = true;
+        }
+      });
+    },
+
+    // the entity config script URL: a string or { url, preset }
+    entityUrl() {
+      const config = this.auth.settings.entities[this.entity];
+      return typeof config === "object" ? config.url : config;
+    },
 
     async loadSettings() {
 
@@ -173,7 +249,7 @@ const VuAdmin = {
         return;
       }
 
-      if (!this.auth.settings || !this.auth.settings.entities || !this.auth.settings.entities[this.entity]) {
+      if (!this.auth.settings || !this.auth.settings.entities || !this.auth.settings.entities[this.entity] || !this.entityUrl()) {
         console.error(`Entity config (${this.entity}) not found`);
         return;
       }
@@ -181,7 +257,7 @@ const VuAdmin = {
       const entitiesVariable = this.auth.settings.entitiesVariable ? this.auth.settings.entitiesVariable : 'VuEntities';
 
       // const module = await import(/* @vite-ignore */ this.auth.settings.entities[this.entity]);
-      this.loadScript(this.auth.settings.entities[this.entity], () => {
+      this.loadScript(this.entityUrl(), () => {
 
         if (window[entitiesVariable] && window[entitiesVariable][this.entity]) {
           this.init(window[entitiesVariable][this.entity](this.preset));

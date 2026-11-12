@@ -155,6 +155,44 @@ window.VuSettings = {
 
 The `profile` callback is optional. If omitted, the `/me` response is merged into `auth.user` automatically.
 
+An `entities` value is either the config script URL or `{ url, preset, title }` (`preset` is passed to the entity
+factory function, `title` is used in the browser tab title), e.g. `product: { url: '/vu-entity-product.js', preset: 'dash' }`.
+
+#### All entities without listing them in the HTML
+
+`<vu-admin :auth="auth">` **without** `entity` renders every entity of `auth.settings.entities` (in config order):
+
+- **hash navigation** – `#user` shows only the `user` table, an empty / unknown hash (e.g. `#`) shows all of them;
+  nav items with `href: '#user'` (VuAdminNav) switch views without a page reload and get the `active` class;
+- **lazy loading** – a table is created (and calls its API) only when it first becomes visible; afterwards it is
+  just hidden (`v-show`), so filters / paging are kept and switching back does not reload.
+
+`<vu-admin :entity="'user'" :auth="auth">` still renders a single entity.
+
+#### Whole admin page — `<vu-admin-app>`
+
+`<vu-admin-app></vu-admin-app>` renders the complete page: header (brand, `VuAdminNav`, user buttons), every entity
+(`<vu-admin :auth>` above) and the auth modal. It is configured by `window.VuSettings.app` (every key is optional):
+
+```js
+window.VuSettings = {
+  app: {
+    title: 'VU Admin',                  // brand text + browser tab title (translation key)
+    documentTitle: '{view} | {title}',  // tab title, {view} = active entity's `title`; or (title, view) => string
+    logo: '/img/logo.svg',              // brand logo URL (relative, http(s) or data:image)
+    favicon: '/favicon.ico',            // empty → the one in the HTML stays
+    brand: { href: '#', height: 28, class: '' },
+    container: 'container-fluid',
+    header: { class: 'sticky-top navbar navbar-expand p-2 border shadow bg-light', theme: '' },
+    main: { class: '' },
+    nav: { url: '/api/navs', menu: 'admin' },
+  },
+};
+```
+
+The `{view}` of the tab title is the entity's `title` (`entities: { user: { url: '/vu-entity-user.js', title: 'Users' } }`),
+or the capitalized entity name.
+
 ### 2. Mount components — `index.html`
 
 ```html
@@ -896,6 +934,20 @@ Nav items come from the API (`/api/navs`). `icon` is a **CSS class string** (`'b
 the legacy `'<i class="…">'` form still works (the class is extracted), any other HTML is dropped. `href` goes
 through `safeUrl()`, `target: '_blank'` links get `rel="noopener noreferrer"`.
 
+Dropdown items can be grouped: `{ "header": "Migrations" }` renders a group heading (`dropdown-header`, translated,
+optional `icon` / `class`), `{ "divider": true }` a separator. A dropdown that contains a header or divider keeps the
+configured order; without them the children are sorted by name (as before).
+
+```json
+{ "name": "Admin tools", "class": "btn btn-sm btn-outline-danger", "items": [
+  { "header": "Cache" },
+  { "name": "Clear cache", "api": "/api/tools/cache", "method": "POST", "confirm": "Are you sure?" },
+  { "divider": true },
+  { "header": "Migrations" },
+  { "name": "Posts", "api": "/api/tools/migration/post", "method": "POST" }
+] }
+```
+
 ### Still open (not solvable in the library alone)
 
 - The token (`X-Auth-Token`) is stored in `localStorage` (`vu-user`, `vu-header`) — readable by any XSS. Prefer an
@@ -1010,6 +1062,33 @@ VU Admin supports **email OTP** as a second factor — no authenticator app or e
 3. The auth modal switches to the `twofa` panel where the user enters the code.
 4. The browser posts the code + session token to `/api/auth/twofa`. On success the server returns the normal user + access token response.
 5. A **Resend** button calls `/api/auth/twofa-resend` to generate a fresh code (resets the 5-minute TTL).
+6. A **401** answer from `twofa` / `twofa-resend` means the 2FA session is gone (expired, too many wrong codes or
+   resends): the modal goes back to the `login` panel and shows the server message. Other errors (e.g. 400 / 422 wrong
+   code) stay on the `twofa` panel and clear the code input.
+
+The code input accepts digits only (spaces / dashes of a pasted code are removed, max 6 digits).
+
+**Trust this device** (optional, `auth.twofa.trust`): a select on the `twofa` panel; the chosen value is sent as
+`trustDays` with the code. The server sets an HttpOnly cookie on the success answer and does not ask for a code on
+that browser for that many days (the password is still required). If the 202 answer has `trustMaxDays`, options
+above it are hidden (`0` hides the select).
+
+```js
+window.VuSettings.auth.twofa.trust = {
+  label: 'Trust this device?',
+  help: 'Only on your own device!',
+  default: 0,
+  options: [
+    { value: 0, label: 'No, always ask for a code' },
+    { value: 7, label: 'Do not ask for 7 days' },
+    { value: 30, label: 'Do not ask for 30 days' },
+  ],
+};
+```
+
+**supercms-engine** implements this flow for every user (`/auth/login` → 202, `/auth/twofa`, `/auth/twofa-resend`;
+switch: `AUTH_TWOFA` in `.env`, on by default). There set `auth.api.twofa` / `auth.api.twofaResend` to `/auth/twofa`
+and `/auth/twofa-resend`.
 
 ### Enabling 2FA on a user (mock DB)
 
@@ -1079,10 +1158,21 @@ window.VuSettings.auth.captcha = {
   url:    '/api/auth/captcha',                    // endpoint that issues challenges
   panels: ['login', 'registration', 'forgot'],    // panels where captcha is shown
   error:  'Please select 1 icon to continue.',    // validation message
+  // optional: translated question; {label} = the server's `label` (translated, HTML-escaped).
+  // Without it the server's `question` text is shown as is.
+  question: 'Click the <strong>{label}</strong> icon!',
 };
 ```
 
 Set `captcha: false` (or omit the key) to disable completely.
+
+The challenge response may contain a `label` (the name of the correct icon, a translation key) next to `question`.
+Only the latest challenge request applies; a failed load (e.g. 429) shows no icons, so the form cannot be submitted
+until a new challenge loads (on the next submit / panel switch).
+
+**supercms-engine** implements a stronger variant: `GET /auth/captcha` (switch: `AUTH_CAPTCHA` in `.env`, on by
+default) gives random per-challenge icon ids, keeps the answer server side and the token is single use; login /
+register / forgot reject a wrong or missing captcha and a filled honeypot with 400 (field `captcha`).
 
 ### Backend — Node.js / mock reference implementation
 

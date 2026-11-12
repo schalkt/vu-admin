@@ -330,6 +330,7 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     res.setHeader('Cache-Control', 'no-store');
     res.end(JSON.stringify({
       items,
+      label: picked[0].label,
       question: `Click the <strong>${picked[0].label}</strong> icon!`,
       token,
     }));

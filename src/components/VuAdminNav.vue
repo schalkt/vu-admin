@@ -2,17 +2,23 @@
     <ul v-cloak v-if="auth && auth.success && visibleItems.length" class="navbar-nav me-auto mb-2 mb-lg-0" :class="menuClass">
         <template v-for="(item, index) in visibleItems" :key="index">
             <li v-if="item.items && item.items.length" class="nav-item dropdown">
-                <button class="btn dropdown-toggle" :class="item.class" type="button" data-bs-toggle="dropdown">
+                <button class="btn dropdown-toggle" :class="[item.class, { active: hasActiveChild(item) }]" type="button" data-bs-toggle="dropdown">
                     <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
                     <span>{{ translate(item.name) }}</span>
                 </button>
                 <ul class="dropdown-menu">
                     <li v-for="(subitem, subindex) in visibleChildren(item)" :key="subindex">
-                        <button v-if="subitem.api" type="button" class="dropdown-item" :class="subitem.class" :disabled="running" @click="runAction(subitem)">
+                        <!-- grouping: { "header": "Title" } = group header, { "divider": true } = divider -->
+                        <hr v-if="subitem.divider" class="dropdown-divider">
+                        <h6 v-else-if="subitem.header" class="dropdown-header" :class="subitem.class">
+                            <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)"></i>
+                            {{ translate(subitem.header) }}
+                        </h6>
+                        <button v-else-if="subitem.api" type="button" class="dropdown-item" :class="subitem.class" :disabled="running" @click="runAction(subitem)">
                             <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)"></i>
                             {{ translate(subitem.name) }}
                         </button>
-                        <a v-else class="dropdown-item" :class="subitem.class" :target="subitem.target || ''" :rel="subitem.target === '_blank' ? 'noopener noreferrer' : null" :href="safeUrl(subitem.href)">
+                        <a v-else class="dropdown-item" :class="[subitem.class, { active: isActive(subitem) }]" :aria-current="isActive(subitem) ? 'page' : null" :target="subitem.target || ''" :rel="subitem.target === '_blank' ? 'noopener noreferrer' : null" :href="safeUrl(subitem.href)">
                             <i v-if="iconClass(subitem.icon)" :class="iconClass(subitem.icon)"></i>
                             {{ translate(subitem.name) }}
                         </a>
@@ -24,14 +30,14 @@
                     <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
                     {{ translate(item.name) }}
                 </button>
-                <a v-else class="nav-link scrollto" :class="item.class" :target="item.target || ''" :rel="item.target === '_blank' ? 'noopener noreferrer' : null" :href="safeUrl(item.href)">
+                <a v-else class="nav-link scrollto" :class="[item.class, { active: isActive(item) }]" :aria-current="isActive(item) ? 'page' : null" :target="item.target || ''" :rel="item.target === '_blank' ? 'noopener noreferrer' : null" :href="safeUrl(item.href)">
                     <i v-if="iconClass(item.icon)" :class="iconClass(item.icon)"></i>
                     {{ translate(item.name) }}
                 </a>
             </li>
         </template>
     </ul>
-    <!-- API action menüpont eredménye -->
+    <!-- result of an API action menu item -->
     <div v-if="result" class="vu-admin-nav-result position-fixed bottom-0 end-0 m-3 shadow" style="z-index: 1080; max-width: 640px; width: calc(100% - 2rem);">
         <div class="alert mb-0" :class="result.running ? 'alert-secondary' : (result.ok ? 'alert-success' : 'alert-danger')" role="status">
             <div class="d-flex align-items-start gap-2">
@@ -72,6 +78,7 @@ const VuAdminNav = {
             language: getLanguage(),
             running: false,
             result: null,
+            hash: typeof window !== "undefined" ? window.location.hash : "",
         };
     },
     computed: {
@@ -98,9 +105,15 @@ const VuAdminNav = {
             this.language = event.detail.language;
         };
         window.addEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+        // hash navigation (#product, #user): track the active menu item without a page reload
+        this._onHashChange = () => {
+            this.hash = window.location.hash;
+        };
+        window.addEventListener("hashchange", this._onHashChange);
     },
     beforeUnmount() {
         window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+        window.removeEventListener("hashchange", this._onHashChange);
     },
     watch: {
         modelValue: {
@@ -135,7 +148,7 @@ const VuAdminNav = {
             const match = icon.match(/class\s*=\s*["']([^"']*)["']/i);
             return match ? match[1] : "";
         },
-        // "API action" menüpont URL-je: a `api` az admin prefixhez relatív ("/api/tools/cache"), csak azonos origin
+        // URL of an "API action" menu item: `api` is relative to the admin prefix ("/api/tools/cache"), same origin only
         actionUrl(item) {
             const api = String(item.api || "");
             if (api.charAt(0) !== "/" || api.charAt(1) === "/") {
@@ -144,7 +157,7 @@ const VuAdminNav = {
             const prefix = (typeof window !== "undefined" && window.__VU_ADMIN_PREFIX__) || "/admin";
             return api.indexOf(prefix + "/") === 0 ? api : prefix + api;
         },
-        // menüpont {"api": "/api/tools/cache", "method": "POST", "body": {...}, "confirm": "..."} – fetch a login tokennel
+        // menu item {"api": "/api/tools/cache", "method": "POST", "body": {...}, "confirm": "..."} – fetch with the login token
         async runAction(item) {
             const url = this.actionUrl(item);
             if (!url || this.running) {
@@ -171,7 +184,7 @@ const VuAdminNav = {
                 try {
                     output = JSON.stringify(JSON.parse(text), null, 2);
                 } catch (e) {
-                    // nem JSON válasz: szövegként
+                    // not a JSON response: shown as text
                 }
                 this.result = { name: item.name, running: false, ok: response.ok, status: response.status, output };
             } catch (e) {
@@ -180,8 +193,26 @@ const VuAdminNav = {
                 this.running = false;
             }
         },
+        // active: the item's hash href ("#user") equals the current hash; "#" is active only for an empty hash
+        isActive(item) {
+            const href = item && typeof item.href === "string" ? item.href : "";
+            if (href.charAt(0) !== "#") {
+                return false;
+            }
+            const current = this.hash || "#";
+            return href === current;
+        },
+        hasActiveChild(item) {
+            return Array.isArray(item.items) && item.items.some((child) => !child.disabled && this.isActive(child));
+        },
         visibleChildren(item) {
             const children = Array.isArray(item.items) ? item.items.filter((child) => !child.disabled) : [];
+
+            // grouped menu (header / divider): config order is kept, otherwise sorted by name
+            if (children.some((child) => child.header || child.divider)) {
+                return children;
+            }
+
             return children.slice().sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
         },
         async load() {

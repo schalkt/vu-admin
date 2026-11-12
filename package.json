@@ -1,6 +1,6 @@
 {
   "name": "vu-admin",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "VU Admin",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -25,29 +25,29 @@
   "license": "MIT",
   "devDependencies": {
     "@popperjs/core": "^2.11.8",
-    "@tiptap/core": "3.32.1",
-    "@tiptap/extension-image": "3.32.1",
-    "@tiptap/extension-link": "3.32.1",
-    "@tiptap/extension-placeholder": "3.32.1",
-    "@tiptap/extension-text-align": "3.32.1",
-    "@tiptap/extension-underline": "3.32.1",
-    "@tiptap/pm": "3.32.1",
-    "@tiptap/starter-kit": "3.32.1",
-    "@tiptap/vue-3": "3.32.1",
-    "@vitejs/plugin-vue": "^6.0.10",
-    "bootstrap": "^5.3.8",
+    "@tiptap/core": "3.33.1",
+    "@tiptap/extension-image": "3.33.1",
+    "@tiptap/extension-link": "3.33.1",
+    "@tiptap/extension-placeholder": "3.33.1",
+    "@tiptap/extension-text-align": "3.33.1",
+    "@tiptap/extension-underline": "3.33.1",
+    "@tiptap/pm": "3.33.1",
+    "@tiptap/starter-kit": "3.33.1",
+    "@tiptap/vue-3": "3.33.1",
+    "@vitejs/plugin-vue": "^6.0.11",
+    "bootstrap": "^5.3.9",
     "js-sha512": "^0.9.0",
     "mitt": "^3.0.1",
-    "sass": "^1.107.0",
-    "vite": "^8.3.5",
-    "vue": "^3.5.44"
+    "sass": "^1.108.2",
+    "vite": "^8.3.8",
+    "vue": "^3.5.45"
   },
   "peerDependencies": {
     "vue": "^3.4.31"
   },
   "overrides": {
-    "@tiptap/core": "3.32.1",
-    "@tiptap/pm": "3.32.1"
+    "@tiptap/core": "3.33.1",
+    "@tiptap/pm": "3.33.1"
   },
   "allowScripts": {
     "@parcel/watcher@2.6.0": true
