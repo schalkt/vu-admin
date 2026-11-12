@@ -302,7 +302,7 @@ window.VuSettings = {
     container: 'container-fluid',
     header: { class: 'sticky-top navbar navbar-expand p-2 border shadow bg-body-tertiary', theme: '' },
     main: { class: '' },
-    nav: { url: '/api/navs', menu: 'admin' },
+    nav: { source: 'api', url: '/api/navs', menu: 'admin', groups: null },  // source: see "Menu source" below
   },
 };
 ```
@@ -1123,7 +1123,45 @@ leading/trailing whitespace are quoted (`"` doubled). Objects are exported as JS
 
 ### VuAdminNav
 
-Nav items come from the API (`/api/navs`). `icon` is a **CSS class string** (`'bi bi-people me-1'`), not HTML —
+#### Menu source
+
+Where the menu comes from — `VuSettings.app.nav.source`, or the `source` prop of `<vu-admin-nav>`:
+
+| `source` | Menu |
+|---|---|
+| `'api'` (default) | the backend's answer (`GET url` → `[menu]`), as before |
+| `'entities'` | built from `auth.settings.entities`, no backend request |
+| `'merge'` | the entity items first, then the backend's |
+
+Entity items: one `#<entity>` link per entity (`title`, `icon`, its `color` on the icon), in config order, plus a
+*Dashboard* (`#`) link first when `auth.settings.dashboard` is set. Entity keys for the menu: `group` (dropdown name;
+the entities of a group keep their config order), `navOrder` (number), `roles` (only for these roles),
+`nav: false` (not in the menu). Group settings: `nav.groups` / the `groups` prop, e.g.
+`{ Content: { icon: 'bi bi-folder me-1', class: '', order: 10 } }`.
+
+```js
+entities: {
+  user:  { url: '/vu-entity-user.js',  title: 'Users', icon: 'bi bi-people', color: 'primary' },
+  todos: { url: '/vu-entity-todos.js', title: 'Todos', icon: 'bi bi-check2-square', group: 'Content' },
+  log:   { url: '/vu-entity-log.js',   title: 'Log', nav: false },
+}
+```
+
+`'merge'` rules:
+
+1. the entity items come first, the backend's extra items (links, API actions) after them;
+2. a backend item with the same `#<entity>` href replaces the entity item in its place — the backend can rename it
+   or hide it (`disabled: true`); a bare `#` only matches the Dashboard link when it is an enabled top-level item
+   (it is also used as a placeholder href);
+3. a backend group with the same name as an entity group is merged into it (the backend's group settings win, its
+   children follow the same rules);
+4. a numeric `order` on any item (or `navOrder` on an entity) sorts it among its siblings; the rest keep their order.
+
+With `'api'` the dropdown children are sorted by name as before (unless they use `header` / `divider` or `order`).
+
+#### Items
+
+Nav items come from the API (`/api/navs`) and / or the entity list (see above). `icon` is a **CSS class string** (`'bi bi-people me-1'`), not HTML —
 the legacy `'<i class="…">'` form still works (the class is extracted), any other HTML is dropped. `href` goes
 through `safeUrl()`, `target: '_blank'` links get `rel="noopener noreferrer"`.
 

@@ -85,6 +85,70 @@ test.describe('hash navigation', () => {
   });
 });
 
+test.describe('nav source', () => {
+  // top-level items and the Content dropdown's items, as shown
+  const navState = async (page) => {
+    const nav = page.locator('.navbar-nav').first();
+    await expect(nav).toBeVisible();
+    const top = await nav.locator(':scope > li').evaluateAll((items) => items.map((li) => li.querySelector('a, button').innerText.trim()));
+    const content = await nav.locator(':scope > li.dropdown').filter({ hasText: 'Content' }).locator('.dropdown-item')
+      .evaluateAll((items) => items.map((item) => item.innerText.trim()));
+    return { top, content };
+  };
+  const withSource = (page, source) => page.route('**/vu-admin-settings.js', async (route) => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace("source: 'merge'", `source: '${source}'`);
+    await route.fulfill({ response, body });
+  });
+
+  test("'merge': entity items first, backend items with the same href win, extra ones appended", async ({ page }) => {
+    await openDashboard(page);
+    // Dashboard / Content / Users exist on both sides: once each; Documentation only from the backend;
+    // the backend's disabled items stay hidden
+    expect(await navState(page)).toEqual({
+      top: ['Dashboard', 'Content', 'Users', 'Documentation'],
+      content: ['Products', 'Posts', 'Todos'],
+    });
+    // entity color on the icon of an entity item
+    await expect(page.locator('.navbar-nav > li > a', { hasText: 'Users' }).locator('i')).toHaveAttribute('style', /--bs-primary/);
+  });
+
+  test("'merge': the backend can rename or disable an entity item", async ({ page }) => {
+    await page.route('**/api/navs', async (route) => {
+      const response = await route.fetch();
+      const data = await response.json();
+      data.admin.items = data.admin.items.map((item) => (item.href === '#user' ? { ...item, disabled: true } : item));
+      data.admin.items.push({ name: 'Content', items: [{ name: 'All products', href: '#product' }] });
+      await route.fulfill({ response, json: data });
+    });
+    await openDashboard(page);
+    const state = await navState(page);
+    expect(state.top).toEqual(['Dashboard', 'Content', 'Documentation']);
+    expect(state.content).toEqual(['All products', 'Posts', 'Todos']);
+  });
+
+  test("'entities': only the entity list, no backend request", async ({ page }) => {
+    await withSource(page, 'entities');
+    let navRequests = 0;
+    page.on('request', (request) => { if (request.url().includes('/api/navs')) navRequests++; });
+    await openDashboard(page);
+    expect(await navState(page)).toEqual({
+      top: ['Dashboard', 'Content', 'Users'],
+      content: ['Products', 'Posts', 'Todos'],
+    });
+    expect(navRequests).toBe(0);
+  });
+
+  test("'api': the backend menu as before (dropdown items sorted by name)", async ({ page }) => {
+    await withSource(page, 'api');
+    await openDashboard(page);
+    expect(await navState(page)).toEqual({
+      top: ['Dashboard', 'Content', 'Users', 'Documentation'],
+      content: ['Posts', 'Products', 'Todos'],
+    });
+  });
+});
+
 test.describe('dashboard', () => {
   test('counters show the totals and link to the filtered views', async ({ page }) => {
     await openDashboard(page);

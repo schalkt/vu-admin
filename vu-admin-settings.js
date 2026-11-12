@@ -29,10 +29,11 @@ const ADMIN_SETTINGS = () => ({
     entities: {
         // color: used by the counters, the table header and the nav icons — a Bootstrap color name
         // ('primary', 'success', 'warning', 'danger', 'info', 'purple', 'teal', 'orange', …) or '#hex'
-        product: { url: '/vu-entity-product.js', preset: 'dash', title: 'Products', color: 'info' },
-        post: { url: '/vu-entity-post.js', title: 'Posts', color: 'purple' },
-        user: { url: '/vu-entity-user.js', title: 'Users', color: 'primary' },
-        todos: { url: '/vu-entity-todos.js', title: 'Todos', color: 'warning' },
+        // nav (app.nav.source 'entities' / 'merge'): icon, group (dropdown), navOrder, roles, nav: false
+        product: { url: '/vu-entity-product.js', preset: 'dash', title: 'Products', color: 'info', icon: 'bi bi-box-seam', group: 'Content' },
+        post: { url: '/vu-entity-post.js', title: 'Posts', color: 'purple', icon: 'bi bi-newspaper', group: 'Content' },
+        user: { url: '/vu-entity-user.js', title: 'Users', color: 'primary', icon: 'bi bi-people' },
+        todos: { url: '/vu-entity-todos.js', title: 'Todos', color: 'warning', icon: 'bi bi-check2-square', group: 'Content' },
     },
     // start page (empty hash / "#"): entity tables in a Bootstrap grid; without it every entity is shown
     dashboard: {
@@ -109,7 +110,14 @@ window.VuSettings = {
         brand: { href: '#', height: 24 },
         container: 'container-fluid',
         header: { class: 'sticky-top navbar navbar-expand p-2 border shadow bg-body-tertiary' },
-        nav: { url: '/api/navs', menu: 'admin' },
+        // menu source: 'api' (backend /api/navs, default) | 'entities' (the entities above) | 'merge' (both: entity
+        // items first, a backend item with the same "#entity" href wins, extra backend items are appended)
+        nav: {
+            source: 'merge',
+            url: '/api/navs',
+            menu: 'admin',
+            groups: { Content: { icon: 'bi bi-file-earmark-text me-1' } },
+        },
     },
 
     // languages offered in the user menu (default: English, Magyar)

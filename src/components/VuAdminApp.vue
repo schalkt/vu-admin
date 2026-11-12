@@ -7,7 +7,8 @@
                     :width="settings.brand.width || null" class="d-inline-block" :class="{ 'me-2': settings.title }">
                 <span v-if="settings.title">{{ translate(settings.title) }}</span>
             </a>
-            <vu-admin-nav v-model="auth" :url="settings.nav.url || undefined" :menu="settings.nav.menu || undefined"></vu-admin-nav>
+            <vu-admin-nav v-model="auth" :url="settings.nav.url || undefined" :menu="settings.nav.menu || undefined"
+                :source="settings.nav.source || undefined" :groups="settings.nav.groups || undefined"></vu-admin-nav>
             <vu-user-button v-if="!session" v-model="auth" :panel="'registration'"></vu-user-button>
             <vu-user-button v-model="auth" :panel="'login'"></vu-user-button>
         </header>
@@ -62,9 +63,13 @@ const DEFAULTS = {
         class: "",
     },
     nav: {
+        // 'api' (backend, default) | 'entities' (auth.settings.entities) | 'merge' (both)
+        source: "api",
         // VuAdminNav: empty → `${__VU_ADMIN_PREFIX__}/api/navs`
         url: "",
         menu: "admin",
+        // dropdown groups of the entity menu: { Content: { icon, class, order } }
+        groups: null,
     },
 };
 

@@ -70,6 +70,20 @@ const VuAdminNav = {
             type: String,
             default: "",
         },
+        // where the menu comes from:
+        // 'api'      — the backend (GET url → [menu]), as before (default)
+        // 'entities' — built from auth.settings.entities (title, icon, color, group, roles, nav: false), no request
+        // 'merge'    — the entity items first, then the backend's; a backend item with the same "#entity" href
+        //              replaces the entity item (and can disable it), a backend group with the same name is merged
+        source: {
+            type: String,
+            default: "api",
+        },
+        // dropdown groups of the entity menu: { Content: { icon: 'bi bi-folder me-1', class: '', order: 10 } }
+        groups: {
+            type: Object,
+            default: null,
+        },
     },
     data() {
         return {
@@ -96,9 +110,65 @@ const VuAdminNav = {
         menuClass() {
             return this.payload && this.payload.class ? this.payload.class : "";
         },
+        apiItems() {
+            return this.payload && Array.isArray(this.payload.items) ? this.payload.items : [];
+        },
+        // auth.settings.entities → menu items: "#entity" links, grouped into dropdowns by `group`;
+        // a "Dashboard" link first when auth.settings.dashboard is configured
+        entityItems() {
+            const settings = this.auth && this.auth.settings ? this.auth.settings : null;
+            const entities = settings && settings.entities ? settings.entities : {};
+            const role = this.auth && this.auth.user ? this.auth.user.role : null;
+            const groupSettings = this.groups || {};
+            const items = [];
+            const groups = {};
+
+            if (settings && settings.dashboard) {
+                items.push({ name: "Dashboard", href: "#", icon: "bi bi-speedometer2 me-1" });
+            }
+
+            Object.keys(entities).forEach((name) => {
+                const config = entities[name] && typeof entities[name] === "object" ? entities[name] : { url: entities[name] };
+                if (!entities[name] || config.disabled || config.nav === false) {
+                    return;
+                }
+                if (Array.isArray(config.roles) && config.roles.indexOf(role) < 0) {
+                    return;
+                }
+                const item = {
+                    name: config.title || name.charAt(0).toUpperCase() + name.slice(1),
+                    href: "#" + name,
+                    icon: config.icon ? config.icon + (/\bme-\d\b/.test(config.icon) ? "" : " me-1") : "",
+                };
+                if (config.navOrder !== undefined) {
+                    item.order = config.navOrder;
+                }
+                if (!config.group) {
+                    items.push(item);
+                    return;
+                }
+                if (!groups[config.group]) {
+                    const group = Object.assign({ name: config.group, items: [], keepOrder: true }, groupSettings[config.group] || {});
+                    group.items = [];
+                    groups[config.group] = group;
+                    items.push(group);
+                }
+                groups[config.group].items.push(item);
+            });
+
+            return items;
+        },
+        menuItems() {
+            if (this.source === "entities") {
+                return this.entityItems;
+            }
+            if (this.source === "merge") {
+                return this.mergeItems(this.entityItems, this.apiItems);
+            }
+            return this.apiItems;
+        },
         visibleItems() {
-            const items = this.payload && Array.isArray(this.payload.items) ? this.payload.items : [];
-            return items.filter((item) => !item.disabled);
+            return this.ordered(this.menuItems.filter((item) => !item.disabled));
         },
     },
     mounted() {
@@ -219,15 +289,95 @@ const VuAdminNav = {
         visibleChildren(item) {
             const children = Array.isArray(item.items) ? item.items.filter((child) => !child.disabled) : [];
 
-            // grouped menu (header / divider): config order is kept, otherwise sorted by name
-            if (children.some((child) => child.header || child.divider)) {
-                return children;
+            // grouped menu (header / divider) and entity groups: config order is kept, otherwise sorted by name
+            if (item.keepOrder || children.some((child) => child.header || child.divider)) {
+                return this.ordered(children);
             }
 
-            return children.slice().sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+            return this.ordered(children.slice().sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""))));
+        },
+
+        // items with a numeric `order` first (ascending), the others after them in their current order
+        ordered(items) {
+            if (!items.some((item) => typeof item.order === "number")) {
+                return items;
+            }
+            return items
+                .map((item, index) => ({ item, key: typeof item.order === "number" ? item.order : Number.MAX_SAFE_INTEGER, index }))
+                .sort((a, b) => a.key - b.key || a.index - b.index)
+                .map((entry) => entry.item);
+        },
+
+        // "#todos?userId=1" → "#todos"; null for other links
+        hashKey(item) {
+            const href = item && typeof item.href === "string" ? item.href : "";
+            return href.charAt(0) === "#" ? href.split("?")[0] : null;
+        },
+
+        // source 'merge': entity items first, then the backend's. A backend item with the same "#entity" href
+        // replaces the entity item in its place (so the backend can rename / disable it); a backend group with the
+        // same name as an entity group is merged into it (its children likewise); everything else is appended.
+        mergeItems(entityItems, apiItems) {
+            const result = entityItems.map((item) => (Array.isArray(item.items) ? Object.assign({}, item, { items: item.items.slice() }) : item));
+
+            // topLevel: the backend item is not inside a group. A bare "#" is also a placeholder href (e.g. disabled
+            // or "coming soon" items): it only replaces the Dashboard link when it is an enabled top-level item
+            const replace = (apiItem, topLevel) => {
+                const key = this.hashKey(apiItem);
+                if (!key || (key === "#" && (!topLevel || apiItem.disabled))) {
+                    return false;
+                }
+                for (let i = 0; i < result.length; i++) {
+                    if (this.hashKey(result[i]) === key) {
+                        result[i] = apiItem;
+                        return true;
+                    }
+                    const children = result[i].items;
+                    if (Array.isArray(children)) {
+                        const index = children.findIndex((child) => this.hashKey(child) === key);
+                        if (index >= 0) {
+                            children[index] = apiItem;
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+
+            apiItems.forEach((apiItem) => {
+                if (Array.isArray(apiItem.items)) {
+                    const group = result.find((item) => Array.isArray(item.items) && item.name === apiItem.name);
+                    if (group) {
+                        // the backend group's settings (icon, class, disabled, …) win, the children are merged
+                        Object.keys(apiItem).forEach((key) => {
+                            if (key !== "items") {
+                                group[key] = apiItem[key];
+                            }
+                        });
+                        apiItem.items.forEach((child) => {
+                            if (!replace(child, false)) {
+                                group.items.push(child);
+                            }
+                        });
+                        return;
+                    }
+                }
+                if (!replace(apiItem, true)) {
+                    result.push(apiItem);
+                }
+            });
+
+            return result;
         },
         async load() {
             if (this.loaded || !this.auth || !this.auth.success) {
+                return;
+            }
+
+            // the menu comes only from auth.settings.entities: no backend request
+            if (this.source === "entities") {
+                this.payload = { items: [] };
+                this.loaded = true;
                 return;
             }
 

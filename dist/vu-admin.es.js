@@ -27476,6 +27476,14 @@ var dW = /*#__PURE__*/ OA(JU, [["render", uW]]), fW = {
 		url: {
 			type: String,
 			default: ""
+		},
+		source: {
+			type: String,
+			default: "api"
+		},
+		groups: {
+			type: Object,
+			default: null
 		}
 	},
 	data() {
@@ -27496,8 +27504,42 @@ var dW = /*#__PURE__*/ OA(JU, [["render", uW]]), fW = {
 		menuClass() {
 			return this.payload && this.payload.class ? this.payload.class : "";
 		},
+		apiItems() {
+			return this.payload && Array.isArray(this.payload.items) ? this.payload.items : [];
+		},
+		entityItems() {
+			let e = this.auth && this.auth.settings ? this.auth.settings : null, t = e && e.entities ? e.entities : {}, n = this.auth && this.auth.user ? this.auth.user.role : null, r = this.groups || {}, i = [], a = {};
+			return e && e.dashboard && i.push({
+				name: "Dashboard",
+				href: "#",
+				icon: "bi bi-speedometer2 me-1"
+			}), Object.keys(t).forEach((e) => {
+				let o = t[e] && typeof t[e] == "object" ? t[e] : { url: t[e] };
+				if (!t[e] || o.disabled || o.nav === !1 || Array.isArray(o.roles) && o.roles.indexOf(n) < 0) return;
+				let s = {
+					name: o.title || e.charAt(0).toUpperCase() + e.slice(1),
+					href: "#" + e,
+					icon: o.icon ? o.icon + (/\bme-\d\b/.test(o.icon) ? "" : " me-1") : ""
+				};
+				if (o.navOrder !== void 0 && (s.order = o.navOrder), !o.group) i.push(s);
+				else {
+					if (!a[o.group]) {
+						let e = Object.assign({
+							name: o.group,
+							items: [],
+							keepOrder: !0
+						}, r[o.group] || {});
+						e.items = [], a[o.group] = e, i.push(e);
+					}
+					a[o.group].items.push(s);
+				}
+			}), i;
+		},
+		menuItems() {
+			return this.source === "entities" ? this.entityItems : this.source === "merge" ? this.mergeItems(this.entityItems, this.apiItems) : this.apiItems;
+		},
 		visibleItems() {
-			return (this.payload && Array.isArray(this.payload.items) ? this.payload.items : []).filter((e) => !e.disabled);
+			return this.ordered(this.menuItems.filter((e) => !e.disabled));
 		}
 	},
 	mounted() {
@@ -27586,10 +27628,54 @@ var dW = /*#__PURE__*/ OA(JU, [["render", uW]]), fW = {
 		},
 		visibleChildren(e) {
 			let t = Array.isArray(e.items) ? e.items.filter((e) => !e.disabled) : [];
-			return t.some((e) => e.header || e.divider) ? t : t.slice().sort((e, t) => String(e.name || "").localeCompare(String(t.name || "")));
+			return e.keepOrder || t.some((e) => e.header || e.divider) ? this.ordered(t) : this.ordered(t.slice().sort((e, t) => String(e.name || "").localeCompare(String(t.name || ""))));
+		},
+		ordered(e) {
+			return e.some((e) => typeof e.order == "number") ? e.map((e, t) => ({
+				item: e,
+				key: typeof e.order == "number" ? e.order : 2 ** 53 - 1,
+				index: t
+			})).sort((e, t) => e.key - t.key || e.index - t.index).map((e) => e.item) : e;
+		},
+		hashKey(e) {
+			let t = e && typeof e.href == "string" ? e.href : "";
+			return t.charAt(0) === "#" ? t.split("?")[0] : null;
+		},
+		mergeItems(e, t) {
+			let n = e.map((e) => Array.isArray(e.items) ? Object.assign({}, e, { items: e.items.slice() }) : e), r = (e, t) => {
+				let r = this.hashKey(e);
+				if (!r || r === "#" && (!t || e.disabled)) return !1;
+				for (let t = 0; t < n.length; t++) {
+					if (this.hashKey(n[t]) === r) return n[t] = e, !0;
+					let i = n[t].items;
+					if (Array.isArray(i)) {
+						let t = i.findIndex((e) => this.hashKey(e) === r);
+						if (t >= 0) return i[t] = e, !0;
+					}
+				}
+				return !1;
+			};
+			return t.forEach((e) => {
+				if (Array.isArray(e.items)) {
+					let t = n.find((t) => Array.isArray(t.items) && t.name === e.name);
+					if (t) {
+						Object.keys(e).forEach((n) => {
+							n !== "items" && (t[n] = e[n]);
+						}), e.items.forEach((e) => {
+							r(e, !1) || t.items.push(e);
+						});
+						return;
+					}
+				}
+				r(e, !0) || n.push(e);
+			}), n;
 		},
 		async load() {
 			if (this.loaded || !this.auth || !this.auth.success) return;
+			if (this.source === "entities") {
+				this.payload = { items: [] }, this.loaded = !0;
+				return;
+			}
 			let e = dl("GET", { options: { headers: {} } }, {}, this.auth);
 			try {
 				let t = await fetch(this.navUrl, e);
@@ -27733,8 +27819,10 @@ var EW = /*#__PURE__*/ OA(fW, [["render", TW]]), DW = {
 	},
 	main: { class: "" },
 	nav: {
+		source: "api",
 		url: "",
-		menu: "admin"
+		menu: "admin",
+		groups: null
 	}
 };
 function OW(e, t) {
@@ -27871,11 +27959,15 @@ function IW(e, t, o, c, l, u) {
 				modelValue: e.auth,
 				"onUpdate:modelValue": t[0] ||= (t) => e.auth = t,
 				url: e.settings.nav.url || void 0,
-				menu: e.settings.nav.menu || void 0
+				menu: e.settings.nav.menu || void 0,
+				source: e.settings.nav.source || void 0,
+				groups: e.settings.nav.groups || void 0
 			}, null, 8, [
 				"modelValue",
 				"url",
-				"menu"
+				"menu",
+				"source",
+				"groups"
 			]),
 			e.session ? r("", !0) : (_(), n(f, {
 				key: 1,
