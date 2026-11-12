@@ -272,6 +272,7 @@ import {
     escapeHtml,
 } from "./helpers";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
+import { effectiveTheme, THEME_CHANGE_EVENT } from "../theme.js";
 
 
 const eventBus = mitt();
@@ -978,9 +979,10 @@ const VuAuth = {
 
     created() {
         if (window.VuSettings && window.VuSettings.auth) {
-            this.theme = window.VuSettings.theme ? window.VuSettings.theme : "light";
             this.settings = window.VuSettings.auth;
         }
+        // the user's choice (theme switch) wins over window.VuSettings.theme
+        this.theme = effectiveTheme(window.VuSettings && window.VuSettings.theme);
 
         let uid = secureRandomInt(100000);
 
@@ -996,6 +998,11 @@ const VuAuth = {
             this.language = event.detail.language;
         };
         window.addEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+
+        this._onThemeChange = () => {
+            this.theme = effectiveTheme(window.VuSettings && window.VuSettings.theme);
+        };
+        window.addEventListener(THEME_CHANGE_EVENT, this._onThemeChange);
 
         // Load the reCAPTCHA script if it is not available yet
         if (this.recaptchaSiteKey && !document.querySelector('script[src="https://www.google.com/recaptcha/api.js"]')) {
@@ -1049,6 +1056,7 @@ const VuAuth = {
     beforeUnmount() {
         window.removeEventListener("keydown", this.handleEscapeKey);
         window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+        window.removeEventListener(THEME_CHANGE_EVENT, this._onThemeChange);
     },
 };
 

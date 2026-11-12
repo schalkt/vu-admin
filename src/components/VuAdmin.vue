@@ -34,6 +34,7 @@
 import VuAdminTable from "./VuAdminTable.vue";
 import VuAdminCount from "./VuAdminCount.vue";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
+import { effectiveTheme, THEME_CHANGE_EVENT } from "../theme.js";
 
 import {
   translate,
@@ -253,6 +254,14 @@ const VuAdmin = {
     };
     window.addEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
 
+    // the user menu theme switch: the user's choice wins over the configured theme
+    this._onThemeChange = () => {
+      if (this.settings) {
+        this.settings.theme = effectiveTheme(this.configuredTheme);
+      }
+    };
+    window.addEventListener(THEME_CHANGE_EVENT, this._onThemeChange);
+
     // multi-entity mode: hash navigation (VuAdminNav "#user" hrefs), without a page reload
     if (!this.entity) {
       this._onHashChange = () => {
@@ -265,6 +274,7 @@ const VuAdmin = {
   },
   beforeUnmount() {
     window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+    window.removeEventListener(THEME_CHANGE_EVENT, this._onThemeChange);
     if (this._onHashChange) {
       window.removeEventListener("hashchange", this._onHashChange);
     }
@@ -479,10 +489,9 @@ const VuAdmin = {
         this.settings.entity = this.entity;
         this.settings.preset = this.preset ? this.preset : "default";
 
-        if (!this.settings.theme) {
-          const theme = document.documentElement.getAttribute("data-bs-theme");
-          this.settings.theme = theme ? theme : "light";
-        }
+        // configured: the entity's own theme, else the page's; the user's choice (theme switch) overrides it
+        this.configuredTheme = this.settings.theme || document.documentElement.getAttribute("data-bs-theme") || "light";
+        this.settings.theme = effectiveTheme(this.configuredTheme);
 
         // if (!this.settings.translate) {
         //   this.settings.translate = {};

@@ -1,7 +1,7 @@
 <template>
     <div v-cloak class="vu-admin-app" :class="settings.container">
 
-        <header :class="settings.header.class" :data-bs-theme="settings.header.theme || null">
+        <header :class="settings.header.class" :data-bs-theme="headerTheme">
             <a v-if="logo || settings.title" class="navbar-brand d-flex align-items-center me-3" :class="settings.brand.class" :href="safeUrl(settings.brand.href)">
                 <img v-if="logo" :src="logo" :alt="translate(settings.title || '')" :height="settings.brand.height || null"
                     :width="settings.brand.width || null" class="d-inline-block" :class="{ 'me-2': settings.title }">
@@ -33,6 +33,7 @@ import VuUserButton from "./VuUserButton.vue";
 import VuAdminNav from "./VuAdminNav.vue";
 import { safeUrl, translate } from "./helpers";
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
+import { getTheme, resolveTheme, THEME_CHANGE_EVENT } from "../theme.js";
 
 // window.VuSettings.app – every key is optional
 const DEFAULTS = {
@@ -52,7 +53,8 @@ const DEFAULTS = {
     },
     container: "container-fluid",
     header: {
-        class: "sticky-top navbar navbar-expand p-2 border shadow bg-light",
+        // bg-body-tertiary follows the light / dark theme (bg-light would stay light in dark mode)
+        class: "sticky-top navbar navbar-expand p-2 border shadow bg-body-tertiary",
         // Bootstrap theme of the header only (e.g. 'dark'), empty → inherited
         theme: "",
     },
@@ -109,9 +111,17 @@ const VuAdminApp = {
             hash: typeof window !== "undefined" ? window.location.hash : "",
             // a stored session exists: VuAuth restores it (profile request) and then sends the auth object
             restoring: !this.session && hasStoredSession(),
+            themeChoice: getTheme(),
+            // bumped on every theme event: 'auto' resolves again when the OS switches
+            themeTick: 0,
         };
     },
     computed: {
+        // the user's theme choice wins over header.theme
+        headerTheme() {
+            this.themeTick;
+            return resolveTheme(this.themeChoice) || this.settings.header.theme || null;
+        },
         logo() {
             return safeUrl(this.settings.logo);
         },
@@ -173,11 +183,17 @@ const VuAdminApp = {
         this._onHashChange = () => {
             this.hash = window.location.hash;
         };
+        this._onThemeChange = (event) => {
+            this.themeChoice = event.detail.theme;
+            this.themeTick++;
+        };
         window.addEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+        window.addEventListener(THEME_CHANGE_EVENT, this._onThemeChange);
         window.addEventListener("hashchange", this._onHashChange);
     },
     beforeUnmount() {
         window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+        window.removeEventListener(THEME_CHANGE_EVENT, this._onThemeChange);
         window.removeEventListener("hashchange", this._onHashChange);
         clearTimeout(this._restoreTimeout);
     },

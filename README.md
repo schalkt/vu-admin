@@ -15,7 +15,7 @@
 - **Relations** — automatic join of related entities, displayed inline in table and form
 - **Events** — lifecycle hooks: `beforeItemSave`, `afterItemSave`, `beforeItemDelete`, `afterItemDelete`, `afterItemsLoad`, `beforeItemsLoad`, etc.
 - **i18n** — built-in Hungarian translations, browser language detection, language switch in the user menu (stored in localStorage), overridable per entity
-- **Themes** — Bootstrap `light` / `dark` per entity
+- **Themes** — Bootstrap `light` / `dark` per entity, light / dark / system switch in the user menu (stored in localStorage)
 - **Mock server** — zero-backend dev environment with seed data, full CRUD, auth, SVG avatars
 
 ---
@@ -265,7 +265,7 @@ window.VuSettings = {
     favicon: '/favicon.ico',            // empty → the one in the HTML stays
     brand: { href: '#', height: 28, class: '' },
     container: 'container-fluid',
-    header: { class: 'sticky-top navbar navbar-expand p-2 border shadow bg-light', theme: '' },
+    header: { class: 'sticky-top navbar navbar-expand p-2 border shadow bg-body-tertiary', theme: '' },
     main: { class: '' },
     nav: { url: '/api/navs', menu: 'admin' },
   },
@@ -381,6 +381,25 @@ window.VuSettings.button.login.dropdowns = [
 Switching stores the choice and updates every vu-admin table / form / user menu on the page immediately
 (`vu-language-change` window event). An entity config with its own `language: 'hu'` is pinned to that language.
 From code: `setLanguage('hu')`, `getLanguage()` (exported, and on `window.VuAdminHelpers`).
+
+### Light / dark theme switch
+
+The built-in `BUTTON_THEME` dropdown item adds a light / dark / system switch to the user menu:
+
+```js
+window.VuSettings.button.login.dropdowns = [
+  { action: 'BUTTON_THEME', class: 'dropdown-item', label: 'Theme' },  // optional: themes: [{ value, label, icon }]
+  …
+];
+```
+
+The choice is stored in localStorage (`vu-theme`) and wins over `window.VuSettings.theme`, an entity config's own
+`theme` and `VuSettings.app.header.theme`: every table, form, counter, the header, the auth modal and the page itself
+(`<html data-bs-theme>`) switch at once (`vu-theme-change` window event). *System* follows the operating system,
+also when it switches later. Without a choice everything works as configured (e.g. a dark users table on a light page).
+Options: `[{ value: 'light', … }, { value: 'dark', … }, { value: 'auto', … }]`, override with `window.VuSettings.themes`.
+From code: `setTheme('dark')`, `getTheme()` (exported). Use theme-aware Bootstrap classes in your own markup
+(`bg-body`, `bg-body-tertiary`, `text-body`) instead of `bg-light` / `bg-white`.
 
 User menu labels are translated when they are dictionary keys (`label: 'Language'`); labels built by functions can use
 `window.VuAdminHelpers.translate('Sign out')`.

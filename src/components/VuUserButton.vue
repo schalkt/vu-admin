@@ -24,6 +24,15 @@
                             {{ item.short || item.value.toUpperCase() }}
                         </button>
                     </li>
+                    <li v-else-if="dropdown.action == 'BUTTON_THEME'" :class="[dropdown.class]" class="d-flex align-items-center">
+                        <span v-html="translate(getValueOrFunction(dropdown.label !== undefined ? dropdown.label : 'Theme'))" class="me-2"></span>
+                        <button v-for="item in themes(dropdown)" :key="item.value" type="button" @click.stop="changeTheme(item.value)"
+                                class="btn btn-sm btn-secondary p-0 px-1 me-1"
+                                :class="{ 'bg-primary text-light': item.value == themeChoice }" :title="translate(item.label)" :aria-label="translate(item.label)">
+                            <i v-if="item.icon" :class="item.icon"></i>
+                            <span v-else>{{ translate(item.label) }}</span>
+                        </button>
+                    </li>
                     <li v-else :class="[dropdown.class]" @click="dropdownAction(dropdown)" v-html="translate(getValueOrFunction(dropdown.label))"></li>
 
                 </template>
@@ -48,6 +57,7 @@ import {
     translate,
 } from "./helpers";
 import { getLanguage, setLanguage, availableLanguages, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
+import { getTheme, setTheme, availableThemes, effectiveTheme, THEME_CHANGE_EVENT } from "../theme.js";
 
 const eventBus = mitt();
 
@@ -64,6 +74,8 @@ const VuUserButton = {
             settings: {},
             registrationEnabled: true,
             language: getLanguage(),
+            // the user's theme choice ('light' | 'dark' | 'auto' | null), highlighted in BUTTON_THEME
+            themeChoice: getTheme(),
         }
     },
     watch: {
@@ -151,6 +163,15 @@ const VuUserButton = {
             setLanguage(language);
         },
 
+        // Theme: dropdown.themes ([{ value, label, icon? }]) or the available themes (light, dark, system)
+        themes(dropdown) {
+            return Array.isArray(dropdown.themes) && dropdown.themes.length ? dropdown.themes : availableThemes();
+        },
+
+        changeTheme(theme) {
+            setTheme(theme);
+        },
+
         // labels are translated when they are a key of the built-in / settings dictionary (reactive to language)
         translate(value) {
             if (typeof value !== "string") {
@@ -165,9 +186,10 @@ const VuUserButton = {
         },
     },
     created() {
-        if (window.VuSettings && window.VuSettings.button) {
+        // the user's choice (theme switch) wins over window.VuSettings.theme
+        this.theme = effectiveTheme(window.VuSettings && window.VuSettings.theme);
 
-            this.theme = window.VuSettings.theme ? window.VuSettings.theme : "light";
+        if (window.VuSettings && window.VuSettings.button) {
 
             if (window.VuSettings.button[this.panel]) {
                 this.settings = window.VuSettings.button[this.panel];
@@ -184,10 +206,17 @@ const VuUserButton = {
             this.language = event.detail.language;
         };
         window.addEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+
+        this._onThemeChange = (event) => {
+            this.themeChoice = event.detail.theme;
+            this.theme = effectiveTheme(window.VuSettings && window.VuSettings.theme);
+        };
+        window.addEventListener(THEME_CHANGE_EVENT, this._onThemeChange);
     },
 
     beforeUnmount() {
         window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
+        window.removeEventListener(THEME_CHANGE_EVENT, this._onThemeChange);
     }
 };
 

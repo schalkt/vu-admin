@@ -239,6 +239,11 @@ export const translations = {
     "A role is required to view and edit data.": "Az adatok megtekintéséhez és szerkesztéséhez szerepkör szükséges.",
     // API action menüpontok (VuAdminNav)
     Done: "Kész",
+    // theme switch (user menu)
+    Theme: "Téma",
+    Light: "Világos",
+    Dark: "Sötét",
+    System: "Rendszer",
     Error: "Hiba",
   },
 };

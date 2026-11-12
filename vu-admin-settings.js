@@ -105,7 +105,7 @@ window.VuSettings = {
         favicon: '',                           // empty → the one in the HTML stays
         brand: { href: '#', height: 24 },
         container: 'container-fluid',
-        header: { class: 'sticky-top navbar navbar-expand p-2 border shadow bg-light' },
+        header: { class: 'sticky-top navbar navbar-expand p-2 border shadow bg-body-tertiary' },
         nav: { url: '/api/navs', menu: 'admin' },
     },
 
@@ -256,6 +256,11 @@ window.VuSettings = {
                     action: 'BUTTON_LANGUAGE',
                     class: 'dropdown-item',
                     label: 'Language',
+                }, {
+                    // built-in theme switch: light / dark / system (stored in localStorage, wins over every `theme`)
+                    action: 'BUTTON_THEME',
+                    class: 'dropdown-item',
+                    label: 'Theme',
                 }, {
                     class: 'dropdown-divider'
                 }, {
