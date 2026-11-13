@@ -69,7 +69,8 @@ rows, sort, filter row, pagination, title link), role-based widgets, stored tabl
 result, theme and language switch.
 
 Mock server environment variables (also usable with `npm run dev` / `npm run mock:seed`): `MOCK_DB_DIR` — another
-db folder, `MOCK_DELAY` — simulated delay in ms (default 500).
+db folder, `MOCK_DELAY` — simulated delay in ms (default 500), `MOCK_RATE_LIMIT=0` — no rate limit,
+`MOCK_CAPTCHA=1` — the auth endpoints require the captcha (see "Sign in protection").
 
 ---
 
@@ -1460,23 +1461,53 @@ The in-memory store (`twoFaStore`) maps session tokens to `{ userId, code, expir
 
 ---
 
-## Captcha (self-hosted, no external service)
+## Sign in protection
 
-VU Admin includes a built-in **click-captcha** and **honeypot** — no Google reCAPTCHA or third-party service needed.
+What stops bots is the **backend**: the browser side can only make automation a bit more costly.
 
-### How it works
+### Backend (required)
+
+- **Rate limit per client IP and action** — login, register, forgot, reset, password change, 2FA. Over the limit:
+  `429 Too Many Requests` with a `Retry-After` header (seconds).
+- **Lock of a username after failed sign ins** — e.g. 5 failures, then a lock growing with every further failure
+  (30 s, 60 s, … at most 15 min); during the lock no password check at all (also 429 + `Retry-After`). Count unknown
+  usernames too, so the lock does not reveal which ones exist. A successful sign in clears the counter.
+- **2FA** — a limited number of wrong codes per 2FA session, then a new sign in.
+- **The same answer** for a known and an unknown address on forgot password (no user enumeration).
+- **Password rules** (length, pattern, leaked passwords) on registration / reset / change — the browser does not check
+  them on sign in, so the form does not reveal them.
+
+The mock server implements all of these as a reference (`mock/middleware.js`, in memory; limits: `RATE_LIMITS`,
+`LOGIN_FREE_FAILS`, `LOGIN_LOCK_BASE`, `LOGIN_LOCK_MAX`; `MOCK_RATE_LIMIT=0` turns them off). Behind a proxy use the
+real client IP (`X-Forwarded-For` of a trusted proxy), and in production a shared store (Redis) instead of memory.
+
+### VuAuth
+
+- **429** — the submit of the panel is disabled and a countdown is shown ("Too many attempts. Please try again in
+  0:42."), from `Retry-After` (default 60 s). The `onError` handlers still run; the countdown replaces their message.
+- **Honeypot** — a hidden `website` field (off screen, `autocomplete="off"`, hidden from screen readers), sent as
+  `honeypot` on login / register / forgot; reject the request when it is not empty. A filled honeypot is dropped in the
+  browser too (no request).
+- **`formToken`** — a hidden `form_token` field with a new random value on every panel and submit, sent along on
+  login / register / forgot. It needs no server check.
+
+### Captcha (optional, off in the example settings)
+
+The built-in **click-captcha** (self-hosted, no third-party service) is optional. As it is, it does not stop a bot
+written for the site (the icon names are readable, the mock token is reusable within its time window) while every user
+has to solve it, so the example settings have `captcha: false` and rely on the rate limit. Turn it on with the object
+below (mock: `MOCK_CAPTCHA=1`); prefer the stronger supercms-engine variant (single use tokens, random ids).
+
+#### How it works
 
 1. The browser calls `GET /api/auth/captcha` and receives 8 shuffled Bootstrap Icons + a question + a **signed token**.
 2. The user clicks the **1 correct icon** highlighted in the question.
 3. On form submit the browser sends `captchaAnswer` (array with 1 icon id) and `captchaToken` (the signed token from step 1).
 4. The backend recomputes the HMAC for the submitted id and compares — no session or database required.
-5. A hidden **honeypot** field (`name="website"`, off screen, `autocomplete="off"`, hidden from screen readers) is
-   sent alongside as `honeypot` on login / register / forgot; bots that fill it in are rejected server-side.
-   A filled honeypot is dropped in the browser too (no request).
 
 Time-limited to **5-minute windows** (two consecutive windows accepted to avoid boundary failures).
 
-### Frontend config (`vu-admin-settings.js`)
+#### Frontend config (`vu-admin-settings.js`)
 
 ```js
 window.VuSettings.auth.captcha = {
@@ -1499,7 +1530,7 @@ until a new challenge loads (on the next submit / panel switch).
 default) gives random per-challenge icon ids, keeps the answer server side and the token is single use; login /
 register / forgot reject a wrong or missing captcha and a filled honeypot with 400 (field `captcha`).
 
-### Backend — Node.js / mock reference implementation
+#### Backend — Node.js / mock reference implementation
 
 ```js
 import crypto from 'crypto';
@@ -1528,7 +1559,7 @@ if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) {
 }
 ```
 
-### Backend — PHP
+#### Backend — PHP
 
 ```php
 <?php
@@ -1568,14 +1599,14 @@ if (!verify_captcha($answers, $token, $bucket, $secret)) {
 
 > **Important:** `hash_equals()` is used instead of `===` to prevent timing attacks.
 
-### Security notes
+#### Captcha security notes
 
 - `CAPTCHA_SECRET` must be a long random string stored only on the server (env variable). Never send it to the client.
 - The token proves the challenge was issued by your server; even if an attacker reads the JS source, they cannot forge a valid token without the secret.
 - The honeypot catches primitive bots that fill every visible field.
-- For high-security endpoints consider adding rate limiting alongside the captcha.
+- The captcha does not replace the rate limit (see "Sign in protection" above).
 
-### Generating a secret
+#### Generating a secret
 
 ```bash
 # Linux / macOS

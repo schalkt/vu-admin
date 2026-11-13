@@ -9,7 +9,8 @@ const dbDir = process.env.MOCK_DB_DIR ? path.resolve(process.env.MOCK_DB_DIR) : 
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-// --- Captcha ---
+// --- Captcha (optional): checked only with MOCK_CAPTCHA=1 (the example settings have captcha: false) ---
+const CAPTCHA_REQUIRED = ['1', 'true'].includes(String(process.env.MOCK_CAPTCHA || '').toLowerCase());
 const CAPTCHA_SECRET = process.env.CAPTCHA_SECRET || 'vu-admin-dev-secret-change-in-prod';
 const CAPTCHA_BUCKET = 300; // seconds per time window (5 min)
 const CAPTCHA_ICONS = [
@@ -37,6 +38,7 @@ function signCaptcha(answers, bucket) {
 }
 
 function verifyCaptcha(answers, token) {
+  if (!CAPTCHA_REQUIRED) return true;
   if (!answers || !token) return false;
   const list = Array.isArray(answers) ? answers : String(answers).split(',').map(s => s.trim());
   if (list.length !== 1) return false;
@@ -72,6 +74,84 @@ function tokenUserId(token) {
   } catch (e) {
     return null;
   }
+}
+
+// --- Rate limit (in-memory; MOCK_RATE_LIMIT=0 turns it off) ---
+// A reference of what the backend has to do: limits per client IP and action, and a growing lock of a username after
+// failed sign ins. Over the limit: 429 + Retry-After (seconds); VuAuth shows a countdown and disables the submit.
+const RATE_LIMIT = String(process.env.MOCK_RATE_LIMIT || '') !== '0';
+const RATE_WINDOW = 15 * 60 * 1000;
+// requests per client IP in RATE_WINDOW
+const RATE_LIMITS = { login: 30, register: 10, forgot: 10, reset: 10, password: 10, twofa: 20, 'twofa-resend': 5, activate: 10 };
+// failed sign ins of a username before the lock; the lock: 30 s, doubled by every further failure, at most 15 min
+const LOGIN_FREE_FAILS = 5;
+const LOGIN_LOCK_BASE = 30;
+const LOGIN_LOCK_MAX = 15 * 60;
+const rateStore = new Map();
+const loginFailStore = new Map();
+
+function clientIp(req) {
+  return req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : 'unknown';
+}
+
+// counts the request; returns the seconds to wait when over the limit, else 0
+function rateHit(req, action) {
+  const max = RATE_LIMITS[action];
+  if (!RATE_LIMIT || !max) return 0;
+  const key = action + ':' + clientIp(req);
+  const now = Date.now();
+  let entry = rateStore.get(key);
+  if (!entry || entry.reset <= now) {
+    entry = { count: 0, reset: now + RATE_WINDOW };
+    rateStore.set(key, entry);
+  }
+  entry.count++;
+  return entry.count > max ? Math.ceil((entry.reset - now) / 1000) : 0;
+}
+
+function loginKey(username) {
+  return String(username || '').trim().toLowerCase();
+}
+
+// seconds left of the lock of a username, 0 when not locked
+function loginLocked(username) {
+  if (!RATE_LIMIT) return 0;
+  const entry = loginFailStore.get(loginKey(username));
+  return entry && entry.lockedUntil > Date.now() ? Math.ceil((entry.lockedUntil - Date.now()) / 1000) : 0;
+}
+
+// a failed sign in (unknown usernames too, so the lock does not reveal which ones exist); returns the new lock in seconds
+function loginFailed(username) {
+  if (!RATE_LIMIT) return 0;
+  const key = loginKey(username);
+  const entry = loginFailStore.get(key) || { fails: 0, lockedUntil: 0 };
+  entry.fails++;
+  let lock = 0;
+  if (entry.fails >= LOGIN_FREE_FAILS) {
+    lock = Math.min(LOGIN_LOCK_BASE * 2 ** (entry.fails - LOGIN_FREE_FAILS), LOGIN_LOCK_MAX);
+    entry.lockedUntil = Date.now() + lock * 1000;
+  }
+  loginFailStore.set(key, entry);
+  return lock;
+}
+
+function tooMany(res, seconds, delay) {
+  res.setHeader('Retry-After', String(seconds));
+  return send(res, { message: 'Too many attempts, please try again later' }, 429, delay);
+}
+
+// the sent password: as it is, or hashed by VuAuth (settings.password.hash: n rounds of sha512, hex)
+function passwordMatches(sent, stored) {
+  if (stored === undefined) return true;
+  if (typeof sent !== 'string' || !sent) return false;
+  if (sent === stored) return true;
+  if (!/^[0-9a-f]{128}$/.test(sent)) return false;
+  let hash = stored;
+  for (let i = 0; i < 50; i++) {
+    hash = crypto.createHash('sha512').update(hash).digest('hex');
+    if (hash === sent) return true;
+  }
+  return false;
 }
 
 // --- password reset tokens (in-memory, TTL 1 hour): forgot → e-mailed link → reset ---
@@ -357,13 +437,27 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
   server.middlewares.use('/api/auth', async (req, res, next) => {
     const action = (req.url || '/').split('?')[0].replace(/^\//, '').split('/')[0];
 
+    // rate limit per client IP of every auth action (see RATE_LIMITS)
+    if (req.method === 'POST') {
+      const wait = rateHit(req, action);
+      if (wait) return tooMany(res, wait, delay);
+    }
+
     if (action === 'login' && req.method === 'POST') {
       const body = await readBody(req);
       if (body.honeypot) return send(res, { message: 'Invalid username or password' }, 401, delay);
       if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) return send(res, { message: 'Invalid captcha answer' }, 422, delay);
+      // a locked username: no password check at all until the lock ends
+      const locked = loginLocked(body.username);
+      if (locked) return tooMany(res, locked, delay);
       const users = readDb('users') || [];
       const user = users.find(u => u.username === body.username || u.email === body.username);
-      if (!user) return send(res, { message: 'Invalid username or password' }, 401, delay);
+      if (!user || !passwordMatches(body.password, user.password)) {
+        const lock = loginFailed(body.username);
+        if (lock) return tooMany(res, lock, delay);
+        return send(res, { message: 'Invalid username or password' }, 401, delay);
+      }
+      loginFailStore.delete(loginKey(body.username));
       if (user.twofa) {
         const { session, code } = twoFaCreate(user.id);
         console.log(`[mock 2FA] OTP for ${user.email}: ${code}`);
@@ -471,7 +565,15 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       const body = await readBody(req);
       const entry = twoFaStore.get(body.twofaSession);
       if (!entry || Date.now() > entry.expires) return send(res, { message: 'The session has expired, please sign in again' }, 401, delay);
-      if (entry.code !== String(body.code).trim()) return send(res, { message: 'Invalid code' }, 422, delay);
+      if (entry.code !== String(body.code).trim()) {
+        // at most 5 wrong codes per session, then a new sign in is needed
+        entry.fails = (entry.fails || 0) + 1;
+        if (entry.fails >= 5) {
+          twoFaStore.delete(body.twofaSession);
+          return send(res, { message: 'The session has expired, please sign in again' }, 401, delay);
+        }
+        return send(res, { message: 'Invalid code' }, 422, delay);
+      }
       twoFaStore.delete(body.twofaSession);
       const users = readDb('users') || [];
       const user = users.find(u => u.id === entry.userId);

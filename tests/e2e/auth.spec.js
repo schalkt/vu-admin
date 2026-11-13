@@ -27,7 +27,6 @@ test.describe('signed out page', () => {
     await page.locator('.vu-admin-landing-sign-in').click();
     const form = page.locator('form').filter({ has: page.locator('#password') });
     await form.locator('#password').fill('emilyspass');
-    await form.locator('button.btn-outline-secondary:has(i.bi)').first().click();
     await page.route('**/api/auth/login', (route) => route.fulfill({ status: 200, json: {
       id: 1, username: 'emilys', firstName: 'Emily', lastName: 'Johnson', role: 'admin', roles: ['admin'], accessToken: 'e2e',
     } }));
@@ -80,11 +79,10 @@ test.describe('sign in form', () => {
     await expect(honeypot.locator('xpath=..')).toHaveAttribute('aria-hidden', 'true');
     await expect(form.locator('input[name="vu_b4t"]')).toHaveCount(0);
 
-    // a filled honeypot sends no request (one captcha icon is selected, so only the honeypot can stop it)
+    // a filled honeypot sends no request (the form is valid otherwise, so only the honeypot can stop it)
     let requests = 0;
     page.on('request', (request) => { if (request.url().includes('/api/auth/login')) requests++; });
     await password.fill('x');
-    await form.locator('button.btn-outline-secondary:has(i.bi)').first().click();
     await honeypot.fill('http://spam.example', { force: true });
     await form.locator('button[type="submit"]').click();
     await page.waitForTimeout(300);
@@ -105,9 +103,69 @@ test.describe('sign in form', () => {
       const response = await request.post('/api/auth/' + action, { data: { username: 'emilys', password: 'x', honeypot: 'x' } });
       expect(response.status(), action).toBeGreaterThanOrEqual(400);
     }
-    // forgot without honeypot but without captcha: captcha error, not "unknown user"
-    const response = await request.post('/api/auth/forgot', { data: { username: 'nobody@example.com' } });
-    expect(response.status()).toBe(422);
+    // forgot: the same answer for an unknown address as for a known one
+    const unknown = await request.post('/api/auth/forgot', { data: { username: 'nobody@example.com' } });
+    const known = await request.post('/api/auth/forgot', { data: { username: 'emilys' } });
+    expect(unknown.status()).toBe(200);
+    expect(await unknown.json()).toEqual(await known.json());
+  });
+
+  test('a hidden form_token field with a new random value on every submit, sent as formToken', async ({ page }) => {
+    const sent = [];
+    await page.route('**/api/auth/login', async (route) => {
+      sent.push(route.request().postDataJSON().formToken);
+      await route.fulfill({ status: 401, json: { message: 'Invalid username or password' } });
+    });
+    await page.goto('/');
+    await page.locator('.vu-admin-landing-sign-in').click();
+    const form = page.locator('form').filter({ has: page.locator('#password') });
+    const field = form.locator('input[type="hidden"][name="form_token"]');
+    const first = await field.inputValue();
+    expect(first).toMatch(/^[0-9a-f]{32}$/);
+
+    await form.locator('#password').fill('x');
+    await form.locator('button[type="submit"]').click();
+    await expect.poll(() => sent.length).toBe(1);
+    expect(sent[0]).toBe(first);
+    await expect(field).not.toHaveValue(first);
+  });
+});
+
+test.describe('rate limit', () => {
+  test('the mock locks a username after failed sign ins: 429 + Retry-After', async ({ request }) => {
+    const statuses = [];
+    let retryAfter = null;
+    for (let i = 0; i < 6; i++) {
+      const response = await request.post('/api/auth/login', { data: { username: 'nobody-api@example.com', password: 'wrong' } });
+      statuses.push(response.status());
+      if (response.status() === 429) retryAfter = response.headers()['retry-after'];
+    }
+    // 4 plain failures, then the lock (unknown usernames too: the lock does not reveal which ones exist)
+    expect(statuses).toEqual([401, 401, 401, 401, 429, 429]);
+    expect(Number(retryAfter)).toBeGreaterThan(0);
+    // another username is not affected
+    // (a seed user whose password no other test changes)
+    const other = await request.post('/api/auth/login', { data: { username: 'michaelw', password: 'michaelwpass' } });
+    expect(other.status()).toBe(200);
+  });
+
+  test('VuAuth: countdown and disabled submit after a 429', async ({ page }) => {
+    await page.route('**/api/auth/login', (route) => route.fulfill({
+      status: 429, headers: { 'Retry-After': '3' }, json: { message: 'Too many attempts, please try again later' },
+    }));
+    await page.goto('/');
+    await page.locator('.vu-admin-landing-sign-in').click();
+    const form = page.locator('form').filter({ has: page.locator('#password') });
+    await form.locator('#password').fill('x');
+    const submit = form.locator('button[type="submit"]');
+    await submit.click();
+
+    const retry = form.locator('.vua-auth-retry');
+    await expect(retry).toContainText(/Too many attempts\. Please try again in 0:0[1-3]\./);
+    await expect(submit).toBeDisabled();
+    // the countdown ends: the message goes, the submit is enabled again
+    await expect(retry).toHaveCount(0, { timeout: 6000 });
+    await expect(submit).toBeEnabled();
   });
 });
 

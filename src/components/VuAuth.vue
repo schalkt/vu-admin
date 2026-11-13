@@ -172,6 +172,7 @@
                         <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;opacity:0">
                             <input type="text" id="vua-website" name="website" tabindex="-1" autocomplete="off" v-model="honeypot" />
                         </div>
+                        <input type="hidden" name="form_token" :value="formToken" />
 
                         <div class="mb-4 text-center" v-if="auth.panel == 'login' && settings.password.forgot">
                             <button type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleForgotPassword" v-html="translate(settings.password.forgot)">
@@ -230,6 +231,10 @@
                             <div v-html="translate(getValueOrFunction(settings.help.registration))"></div>
                         </div>
 
+                        <div v-if="retryRemaining > 0" class="vua-auth-retry mt-3 text-center text-danger" role="status">
+                            {{ translate('Too many attempts. Please try again in {time}.', { time: retryTime }) }}
+                        </div>
+
                         <div class="mt-3 text-center" v-if="auth.response.message">
                             <div :class="{ 'text-danger': !auth.response.ok, 'text-success': auth.response.ok }" style="white-space: pre-line">{{ translate(auth.response.message) }}</div>
                         </div>
@@ -244,7 +249,7 @@
                                 <i class="bi bi-person-plus mx-1"></i> {{ translate(settings.submit.registration) }}
                             </button>
                             <button type="submit" class="btn w-100 text-nowrap"
-                                :class="{ 'btn-primary': auth.panel != 'registration', 'btn-warning': auth.panel == 'registration' }" :disabled="loading">
+                                :class="{ 'btn-primary': auth.panel != 'registration', 'btn-warning': auth.panel == 'registration' }" :disabled="loading || retryRemaining > 0">
                                 {{ translate(panelText('submit')) }}
                                 <i v-if="auth.panel == 'registration'" class="bi bi-person-plus mx-1"></i>
                                 <i v-else class="bi bi-arrow-right-square mx-1"></i>
@@ -299,6 +304,13 @@ import {
 import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 import { effectiveTheme, THEME_CHANGE_EVENT } from "../theme.js";
 
+// 32 random hex characters
+function randomToken() {
+    const bytes = new Uint8Array(16);
+    (globalThis.crypto || window.crypto).getRandomValues(bytes);
+    return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
 
 const eventBus = mitt();
 
@@ -326,6 +338,13 @@ const VuAuth = {
             // recognize it; autocomplete off so browsers / password managers do not fill it in (that would block real
             // users); the wrapper hides it from screen readers (aria-hidden on a focusable input is invalid)
             honeypot: '',
+            // a hidden field with a new random value on every panel / submit, sent as `formToken`. It protects nothing
+            // and the backend ignores it: it only costs the time of whoever automates the form
+            formToken: randomToken(),
+            // 429 Too Many Requests: { panel: timestamp } until the submit of the panel waits (Retry-After), and the
+            // clock of the countdown
+            retryUntil: {},
+            now: Date.now(),
             twofaCode: '',
             twofaSession: '',
             twofaMethod: '',
@@ -359,6 +378,7 @@ const VuAuth = {
             }
         },
         'auth.panel'() {
+            this.formToken = randomToken();
             if (this.captchaRequired) {
                 this.fetchCaptcha();
             }
@@ -366,6 +386,16 @@ const VuAuth = {
     },
 
     computed: {
+        // seconds the submit of the current panel still waits after a 429 response
+        retryRemaining() {
+            const until = this.auth && this.retryUntil[this.auth.panel];
+            return until ? Math.max(0, Math.ceil((until - this.now) / 1000)) : 0;
+        },
+        // the wait as m:ss
+        retryTime() {
+            const seconds = this.retryRemaining;
+            return Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0');
+        },
         // panels with a "new password" field (strength help, length counter, repeat)
         newPasswordPanel() {
             return ['registration', 'password', 'profile'].indexOf(this.auth && this.auth.panel) >= 0;
@@ -558,6 +588,12 @@ const VuAuth = {
         async getStatusAndJson(response) {
             this.auth.response.code = response ? response.status : 0;
 
+            // too many requests: the submit of this panel waits Retry-After seconds (default 60)
+            if (response && response.status === 429) {
+                const seconds = parseInt(response.headers.get('Retry-After'), 10);
+                this.startRetry(this.auth.panel, Number.isFinite(seconds) && seconds > 0 ? seconds : 60);
+            }
+
             const json = await getResponseJson(response);
             this.auth.response.data = json.data ?? null;
 
@@ -636,6 +672,11 @@ const VuAuth = {
                 }
             }
 
+            // 429: the countdown under the form tells it instead
+            if (this.auth.response.code === 429) {
+                this.auth.response.message = null;
+            }
+
             setTimeout(() => {
                 this.authUpdate();
                 this.$forceUpdate();
@@ -666,7 +707,26 @@ const VuAuth = {
             }, 0);
         },
 
+        startRetry(panel, seconds) {
+            this.retryUntil = Object.assign({}, this.retryUntil, { [panel]: Date.now() + seconds * 1000 });
+            this.now = Date.now();
+            if (!this._retryTimer) {
+                this._retryTimer = setInterval(() => {
+                    this.now = Date.now();
+                    if (!Object.values(this.retryUntil).some((until) => until > this.now)) {
+                        clearInterval(this._retryTimer);
+                        this._retryTimer = null;
+                        this.retryUntil = {};
+                    }
+                }, 1000);
+            }
+        },
+
         async handleSubmit() {
+            if (this.retryRemaining > 0) {
+                return;
+            }
+
             // Honeypot check — skip for twofa (no honeypot field on that panel)
             if (this.auth.panel !== 'twofa' && this.honeypot) {
                 return;
@@ -711,6 +771,7 @@ const VuAuth = {
                 console.error('[auth] submit error', e);
             } finally {
                 this.loading = false;
+                this.formToken = randomToken();
                 if (this.captchaRequired && this.auth.panel !== 'twofa') this.fetchCaptcha();
             }
         },
@@ -731,6 +792,7 @@ const VuAuth = {
                     password: await this.hashPassword(this.password),
                     accept: this.accepts,
                     honeypot: this.honeypot,
+                    formToken: this.formToken,
                     captchaToken: this.captcha.token,
                     captchaAnswer: this.captcha.answers,
                 }),
@@ -776,6 +838,7 @@ const VuAuth = {
                     accept: this.accepts,
                     input: this.inputs,
                     honeypot: this.honeypot,
+                    formToken: this.formToken,
                     captchaToken: this.captcha.token,
                     captchaAnswer: this.captcha.answers,
                 }),
@@ -820,6 +883,7 @@ const VuAuth = {
                     body: JSON.stringify({
                         username: this.username,
                         honeypot: this.honeypot,
+                        formToken: this.formToken,
                         captchaToken: this.captcha.token,
                         captchaAnswer: this.captcha.answers,
                     }),
@@ -1155,6 +1219,7 @@ const VuAuth = {
 
     },
     beforeUnmount() {
+        clearInterval(this._retryTimer);
         window.removeEventListener("keydown", this.handleEscapeKey);
         window.removeEventListener(LANGUAGE_CHANGE_EVENT, this._onLanguageChange);
         window.removeEventListener(THEME_CHANGE_EVENT, this._onThemeChange);

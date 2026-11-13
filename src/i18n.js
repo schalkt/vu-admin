@@ -233,6 +233,8 @@ export const translations = {
     "Sign in": "Bejelentkezés",
     Register: "Regisztráció",
     "Don't have an account?": "Még nincs fiókod?",
+    "Too many attempts. Please try again in {time}.": "Túl sok próbálkozás. Próbáld újra {time} múlva.",
+    "Too many attempts, please try again later": "Túl sok próbálkozás, próbáld újra később",
     "Sign out": "Kijelentkezés",
     Profile: "Profil",
     "Switch role": "Szerepkör váltás",

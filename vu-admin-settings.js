@@ -340,11 +340,14 @@ window.VuSettings = {
             enabled: true,
         },
         registrationEnabled: true,
-        captcha: {
-            url: '/api/auth/captcha',
-            panels: ['login', 'registration', 'forgot'],
-            error: 'Please select 1 icon to continue!',
-        },
+        // the icon captcha is off: it bothers the users more than the bots (see README "Sign in protection");
+        // the rate limit of the backend stops the bots. Turn it on with the object below (mock: MOCK_CAPTCHA=1)
+        captcha: false,
+        // captcha: {
+        //     url: '/api/auth/captcha',
+        //     panels: ['login', 'registration', 'forgot'],
+        //     error: 'Please select 1 icon to continue!',
+        // },
         twofa: {
             panels: ['login'],
             label: 'Verification code',
