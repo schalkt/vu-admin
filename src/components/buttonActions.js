@@ -82,5 +82,5 @@ export function getButtonIconClassByAction(action) {
     default:
       icon = 'bi bi-question';
   }
-  return withButtonIconMe1(icon);
+  return icon;
 }

@@ -224,6 +224,11 @@ test.describe('dashboard', () => {
     await expect(users.locator('tr.vua-table-filter')).toHaveCount(0);
     await expect(todos.locator('tr.vua-table-filter')).toHaveCount(1);
 
+    // the icon only buttons of the filter row (clear ×): no margin after the icon
+    const filterIcons = todos.locator('tr.vua-table-filter button i');
+    await expect(filterIcons.first()).toBeVisible();
+    expect(await filterIcons.evaluateAll((items) => items.filter((i) => /\bme-/.test(i.className)).length)).toBe(0);
+
     // pages: 5 → 5 page number buttons, limits: [5, 10, 20, 50]
     await expect(users.locator('.pagination .page-item').filter({ hasText: /^\d+$/ })).toHaveCount(5);
     await users.locator('nav .dropdown-toggle').click();

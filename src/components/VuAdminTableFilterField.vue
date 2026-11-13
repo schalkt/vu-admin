@@ -154,7 +154,7 @@
           items: items,
           $event: $event
         })">
-          <i :class="[
+          <i :class="buttonIconClass(
             button.icon !== undefined
               ? getValueOrFunction(button.icon, {
                 button: button,
@@ -162,8 +162,8 @@
                 table: table,
               })
               : getButtonIconClassByAction(button.action),
-          ]"></i>
-          {{ translate(button.title) }}
+            !!button.title)"></i>
+          <template v-if="button.title">{{ translate(button.title) }}</template>
         </button>
       </span>
     </span>
@@ -182,6 +182,7 @@ import {
 import {
   getButtonClassByAction as resolveButtonClass,
   getButtonIconClassByAction as resolveButtonIcon,
+  withButtonIconMe1,
 } from "./buttonActions";
 
 export default {
@@ -221,6 +222,11 @@ export default {
 
     getButtonIconClassByAction(action) {
       return resolveButtonIcon(action);
+    },
+
+    // label: the button has a text after the icon (false → an icon only button, the icon stays in the middle)
+    buttonIconClass(icon, label) {
+      return withButtonIconMe1(icon, label);
     },
 
     dropdownSelectToggleOne(filter, option) {

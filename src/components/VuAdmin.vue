@@ -54,11 +54,6 @@ import {
   translate,
   deepMerge,
   overrideMerge,
-  getValueOrFunction,
-  getResponseJson,
-  getResponseErrors,
-  prepareFetchUrl,
-  prepareFetchOptions,
   loadEntityConfig,
   entityColor,
   entityAllowed

@@ -292,34 +292,17 @@
                 </div>
             </div>
         </div>
-
-        <div v-cloak class="modal shadow" :id="modalId" tabindex="-1">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content h-100">
-                    <VuAdminForm v-cloak v-if="settings.form && settings.form.visible && settings.form.groups" v-model="item" :formid="formId" :settings="settings"
-                        :modalWindow="modalWindow" :auth="auth" :saveItem="saveItem" :deleteItem="deleteItem" :reloadTable="reloadTable" :fetchRelation="fetchRelation">
-                    </VuAdminForm>
-                </div>
-            </div>
-        </div>
-
     </div>
-
-
 
 </template>
 
 <script>
 
-import mitt from 'mitt';
-import VuAdminForm from "./VuAdminForm.vue";
 import VuAuthProfile from "./VuAuthProfile.vue";
 import { sha512 } from "js-sha512";
-import { Modal } from "bootstrap";
 import {
     translate,
     getValueOrFunction,
-    secureRandomInt,
     getResponseJson,
     getResponseErrors,
     isApiResponseOk,
@@ -335,9 +318,6 @@ function randomToken() {
     (globalThis.crypto || window.crypto).getRandomValues(bytes);
     return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
-
-
-const eventBus = mitt();
 
 const VuAuth = {
     name: "VuAuth",
@@ -389,13 +369,9 @@ const VuAuth = {
                 answers: [],
             },
             loading: false,
-            modalId: null,
-            modalElement: null,
-            modalWindow: null,
         };
     },
     components: {
-        VuAdminForm,
         VuAuthProfile,
     },
     watch: {
@@ -1254,12 +1230,6 @@ const VuAuth = {
         }
         // the user's choice (theme switch) wins over window.VuSettings.theme
         this.theme = effectiveTheme(window.VuSettings && window.VuSettings.theme);
-
-        let uid = secureRandomInt(100000);
-
-        this.formId = "form_profil_" + uid;
-        this.modalId = "modal_profil_" + uid;
-
     },
     mounted() {
 
@@ -1274,15 +1244,6 @@ const VuAuth = {
             this.theme = effectiveTheme(window.VuSettings && window.VuSettings.theme);
         };
         window.addEventListener(THEME_CHANGE_EVENT, this._onThemeChange);
-
-        // Load the reCAPTCHA script if it is not available yet
-        if (this.recaptchaSiteKey && !document.querySelector('script[src="https://www.google.com/recaptcha/api.js"]')) {
-            const script = document.createElement("script");
-            script.src = "https://www.google.com/recaptcha/api.js";
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-        }
 
         if (this.settings.username.value) {
             this.username = this.settings.username.value;
@@ -1310,19 +1271,6 @@ const VuAuth = {
         this.$forceUpdate();
         this.detectQuery();
         if (this.captchaRequired) this.fetchCaptcha();
-
-        // this.modalElement = document.getElementById(this.modalId);
-        // this.modalWindow = new Modal(this.modalElement);
-
-        // this.modalElement.addEventListener('hidden.bs.modal', event => {
-        //     this.settings.form.visible = false;
-        // });
-
-        // this.modalElement.addEventListener('show.bs.modal', event => {
-        //     this.settings.form.visible = true;
-        // });
-
-
     },
     beforeUnmount() {
         clearInterval(this._retryTimer);

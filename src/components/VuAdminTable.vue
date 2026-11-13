@@ -525,7 +525,6 @@ import {
   prepareFetchUrl,
   prepareFetchOptions,
   flattenArrayObjects,
-  flattenObject,
   unflattenObject,
   translate,
   convertToCSV,

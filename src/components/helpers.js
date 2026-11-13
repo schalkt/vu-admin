@@ -494,14 +494,6 @@ export function unflattenObject(data) {
 
 }
 
-export function isModified(original, current) {
-
-    let originalString = JSON.stringify(original);
-    let currentString = JSON.stringify(current);
-
-    return originalString !== currentString;
-
-}
 
 export function translate(key, translates, vars, language) {
 

@@ -1064,11 +1064,6 @@ const HtmlEditor = {
       const node = view.state.doc.nodeAt(pos);
       return node && node.type.name === "videoEmbed" ? pos : null;
     },
-    applyImageAttrsAt(pos) {
-      if (!this.editor || pos == null) return;
-      const attrs = this.getImageAttrsFromForm();
-      this.editor.chain().focus().setNodeSelection(pos).updateAttributes("image", attrs).run();
-    },
     deleteSelectedImageAt(pos) {
       if (!this.editor || pos == null) return;
       this.editor.chain().focus().setNodeSelection(pos).deleteSelection().run();

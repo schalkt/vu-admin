@@ -55,16 +55,12 @@
 
 <script>
 
-import mitt from 'mitt';
 import {
-    deepMerge,
     getValueOrFunction,
     translate,
 } from "./helpers";
 import { getLanguage, setLanguage, availableLanguages, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 import { getTheme, setTheme, availableThemes, effectiveTheme, THEME_CHANGE_EVENT } from "../theme.js";
-
-const eventBus = mitt();
 
 const VuUserButton = {
     name: "VuUserButton",
@@ -115,14 +111,6 @@ const VuUserButton = {
                 return !(dropdown.hidden !== undefined && this.getValueOrFunction(dropdown.hidden));
             });
         },
-        // user: {
-        //     get() {
-        //         return this.modelValue;
-        //     },
-        //     set(newValue) {
-        //         this.$emit("update:modelValue", newValue);
-        //     },
-        // },
     },
     methods: {
         // Auth state management
