@@ -3,8 +3,8 @@
 ## Next
 
 - **Profile settings of the signed-in user** (user menu → *Profile*, the `profile` panel of VuAuth — password change
-  is done), the rest of the usual account self-service:
-  - edit own data (name, e-mail with re-confirmation, phone, avatar upload);
+  and own data (name, e-mail with re-confirmation, phone, avatar) are done), the rest of the usual account
+  self-service:
   - two-factor authentication: turn on / off, change the method, list / revoke the trusted devices;
   - active sessions / devices, "sign out everywhere";
   - preferences stored on the server too (language, theme, default start page);

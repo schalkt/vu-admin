@@ -195,3 +195,17 @@ test.describe('password reset', () => {
     expect(response.status()).toBe(400);
   });
 });
+
+test.describe('e-mail change link', () => {
+  test('signed out: the result is shown on the sign in panel', async ({ page }) => {
+    await page.route('**/api/auth/email-confirm', (route) => route.fulfill({
+      status: 400, json: { message: 'The link is invalid or has expired' },
+    }));
+    await page.goto('/?vuparams=' + encodeURIComponent(JSON.stringify({ panel: 'emailConfirm', inputs: { token: 'old' } })));
+    const panel = page.locator('.vua-auth');
+    await expect(panel.locator('#password')).toBeVisible();
+    await expect(panel.locator('.text-danger', { hasText: 'The link is invalid or has expired' })).toBeVisible();
+    // the parameter is removed from the address
+    expect(page.url()).not.toContain('vuparams');
+  });
+});

@@ -53,6 +53,7 @@ import { effectiveTheme, THEME_CHANGE_EVENT } from "../theme.js";
 import {
   translate,
   deepMerge,
+  overrideMerge,
   getValueOrFunction,
   getResponseJson,
   getResponseErrors,
@@ -432,6 +433,10 @@ const VuAdmin = {
       if (item.filters !== undefined) {
         table.filterRow = !!item.filters;
       }
+      // toolbar: false → no table toolbar (Columns, Reload, New, Export, ...) on the widget
+      if (item.toolbar === false) {
+        table.control = false;
+      }
       if (Array.isArray(item.columns)) {
         table.columns = item.columns.slice();
       }
@@ -537,22 +542,14 @@ const VuAdmin = {
           const override = JSON.parse(JSON.stringify(this.override));
           const order = override.table && override.table.order;
           const columns = override.table && override.table.columns;
-          // deepMerge merges arrays index by index: the page size options must replace the entity's own
-          const pagination = override.table && override.table.pagination;
-          const hasLimits = !!pagination && pagination.limits !== undefined;
-          const limits = hasLimits ? pagination.limits : undefined;
-          if (hasLimits) {
-            delete pagination.limits;
-          }
           if (columns) {
             delete override.table.columns;
           }
-          entitySettings = deepMerge(entitySettings, override);
+          // arrays of the override replace the entity's own (buttons: [] empties a list, limits: [...] replaces)
+          entitySettings = overrideMerge(entitySettings, override);
+          // the sort order replaces the entity's own too (not merged field by field)
           if (order) {
             entitySettings.table.order = order;
-          }
-          if (hasLimits) {
-            entitySettings.table.pagination = Object.assign({}, entitySettings.table.pagination, { limits });
           }
           if (Array.isArray(columns) && entitySettings.table && Array.isArray(entitySettings.table.columns)) {
             entitySettings.table.columns = this.visibleColumns(entitySettings.table.columns, columns);
@@ -616,6 +613,32 @@ export { VuAdmin };
 </script>
 
 <style lang="scss">
+// a user's initials in a small circle (window.VuAdminHelpers.monogramBadge): header user button, tables, ...
+.vua-monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2em;
+  height: 2.2em;
+  padding: 0;
+  font-size: 0.68em;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  vertical-align: 0.15em;
+}
+
+// the bi-x glyph is small in its box: a bit bigger in every vu-admin button / field (the button keeps its size)
+.vu-admin,
+.vu-admin-views,
+.vua-auth,
+.vua-table-container,
+.vu-admin-app {
+  .bi-x::before {
+    transform: scale(1.35);
+  }
+}
+
 .vu-admin {
   [v-cloak] {
     display: none !important;

@@ -82,7 +82,7 @@ function tokenUserId(token) {
 const RATE_LIMIT = String(process.env.MOCK_RATE_LIMIT || '') !== '0';
 const RATE_WINDOW = 15 * 60 * 1000;
 // requests per client IP in RATE_WINDOW
-const RATE_LIMITS = { login: 30, register: 10, forgot: 10, reset: 10, password: 10, twofa: 20, 'twofa-resend': 5, activate: 10 };
+const RATE_LIMITS = { login: 30, register: 10, forgot: 10, reset: 10, password: 10, twofa: 20, 'twofa-resend': 5, activate: 10, profile: 30, 'email-confirm': 10 };
 // failed sign ins of a username before the lock; the lock: 30 s, doubled by every further failure, at most 15 min
 const LOGIN_FREE_FAILS = 5;
 const LOGIN_LOCK_BASE = 30;
@@ -154,6 +154,13 @@ function passwordMatches(sent, stored) {
   return false;
 }
 
+// --- e-mail change tokens (in-memory, TTL 24 hours): profile → e-mailed link → email-confirm ---
+const emailStore = new Map();
+
+const PROFILE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PROFILE_PHONE = /^\+?[0-9 ()\-/]{6,30}$/;
+const AVATAR_MAX = 2 * 1024 * 1024;
+
 // --- password reset tokens (in-memory, TTL 1 hour): forgot → e-mailed link → reset ---
 const resetStore = new Map();
 
@@ -173,12 +180,6 @@ function pickColor(text) {
   let h = 0;
   for (let i = 0; i < text.length; i++) h = text.charCodeAt(i) + ((h << 5) - h);
   return PALETTE[Math.abs(h) % PALETTE.length];
-}
-
-function avatarSvg(initials, size = 128) {
-  const bg = pickColor(initials);
-  const fs2 = Math.round(size * 0.38);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${size/2}" fill="${bg}"/><text x="${size/2}" y="${size/2}" text-anchor="middle" dy=".35em" font-family="sans-serif" font-size="${fs2}" font-weight="bold" fill="white">${initials.toUpperCase()}</text></svg>`;
 }
 
 function thumbSvg(label, size = 200) {
@@ -400,14 +401,6 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
     });
   });
 
-  // --- Local SVG avatar: GET /mock/avatar/:initials ---
-  server.middlewares.use('/mock/avatar', (req, res, next) => {
-    const initials = (req.url || '/').split('?')[0].replace(/^\//, '') || '?';
-    res.setHeader('Content-Type', 'image/svg+xml');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
-    res.end(avatarSvg(initials));
-  });
-
   // --- Local SVG product thumbnail: GET /mock/thumb/:label ---
   server.middlewares.use('/mock/thumb', (req, res, next) => {
     const label = decodeURIComponent((req.url || '/').split('?')[0].replace(/^\//, '')) || '?';
@@ -480,7 +473,6 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
         id: nextId(users),
         username: body.username,
         email: body.username,
-        image: '/mock/avatar/' + (body.username || 'NU').slice(0, 2).toUpperCase(),
         ...inputData,
         createdAt: new Date().toISOString(),
       };
@@ -547,8 +539,102 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
 
     if (action === 'me' && req.method === 'GET') {
       const users = readDb('users') || [];
-      const { password: _, ...safeUser } = users[0] || {};
+      // the user of the token, else the first one (the e2e / demo sessions have no real token)
+      const user = users.find(u => String(u.id) === tokenUserId(req.headers['x-auth-token'])) || users[0] || {};
+      const { password: _, ...safeUser } = user;
       return send(res, safeUser, 200, delay);
+    }
+
+    // own data of the signed-in user: { firstName, lastName, email, phone, image (data:image/... URL) } — only the
+    // changed ones. A new e-mail address is stored as pendingEmail until its confirmation link is opened.
+    if (action === 'profile' && req.method === 'POST') {
+      const body = await readBody(req);
+      const users = readDb('users') || [];
+      const user = users.find(u => String(u.id) === tokenUserId(req.headers['x-auth-token'])) || users[0];
+      if (!user) return send(res, { message: 'User not found' }, 404, delay);
+
+      const errors = {};
+      const text = (value, max) => typeof value === 'string' && value.trim().length > 0 && value.trim().length <= max;
+      if (body.firstName !== undefined && !text(body.firstName, 50)) errors.firstName = 'Required field';
+      if (body.lastName !== undefined && !text(body.lastName, 50)) errors.lastName = 'Required field';
+      if (body.phone !== undefined && body.phone !== '' && !PROFILE_PHONE.test(String(body.phone))) errors.phone = 'Invalid phone number';
+      let newEmail = null;
+      if (body.email !== undefined) {
+        const email = String(body.email).trim();
+        if (!PROFILE_EMAIL.test(email) || email.length > 100) {
+          errors.email = 'Invalid e-mail address';
+        } else if (email.toLowerCase() !== String(user.email).toLowerCase()) {
+          const taken = users.some(u => u.id !== user.id && (String(u.email).toLowerCase() === email.toLowerCase() || u.username === email));
+          if (taken) errors.email = 'This e-mail address is already taken';
+          else newEmail = email;
+        }
+      }
+      let image = null;
+      if (body.image !== undefined) {
+        const match = /^data:image\/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/=]+)$/.exec(String(body.image));
+        const bytes = match ? Buffer.from(match[2], 'base64') : null;
+        if (!bytes || !bytes.length || bytes.length > AVATAR_MAX) errors.image = 'Invalid image';
+        else image = { ext: match[1] === 'jpeg' ? 'jpg' : match[1], bytes };
+      }
+      // further own fields (profile.fields of the settings): short texts / numbers; never the protected ones.
+      // A real backend must list the editable fields (a whitelist) instead.
+      const PROTECTED = ['id', 'username', 'password', 'role', 'roles', 'email', 'image', 'pendingEmail', 'createdAt',
+        'firstName', 'lastName', 'phone', 'twofa', 'accessToken'];
+      const extra = {};
+      Object.keys(body).filter(key => !PROTECTED.includes(key)).forEach((key) => {
+        const value = body[key];
+        if (value === null || ['string', 'number', 'boolean'].includes(typeof value)) {
+          if (typeof value === 'string' && value.length > 500) errors[key] = 'Invalid value';
+          else extra[key] = typeof value === 'string' ? value.trim() : value;
+        }
+      });
+      if (Object.keys(errors).length) {
+        return send(res, { message: 'Please check the marked fields', errors }, 422, delay);
+      }
+      Object.assign(user, extra);
+
+      if (body.firstName !== undefined) user.firstName = body.firstName.trim();
+      if (body.lastName !== undefined) user.lastName = body.lastName.trim();
+      if (body.phone !== undefined) user.phone = String(body.phone).trim();
+      if (image) {
+        const filename = 'avatar-' + user.id + '-' + Date.now() + '.' + image.ext;
+        fs.writeFileSync(path.join(uploadsDir, filename), image.bytes);
+        user.image = '/mock/uploads/' + filename;
+      }
+      if (newEmail) {
+        // the "e-mail" to the new address: the link confirms it
+        const token = crypto.randomBytes(32).toString('hex');
+        emailStore.set(token, { userId: user.id, email: newEmail, expires: Date.now() + 24 * 60 * 60 * 1000 });
+        user.pendingEmail = newEmail;
+        const params = encodeURIComponent(JSON.stringify({ panel: 'emailConfirm', inputs: { token } }));
+        console.log(`[mock profile] e-mail confirmation link for ${newEmail}: /?vuparams=${params}`);
+      } else if (body.email !== undefined && user.pendingEmail) {
+        // back to the current address: the pending change is dropped
+        delete user.pendingEmail;
+      }
+      writeDb('users', users);
+      const { password: _, ...safeUser } = user;
+      return send(res, { ...safeUser, message: 'Profile saved' }, 200, delay);
+    }
+
+    // the link of an e-mail change: { token } → the new address replaces the old one (single use token)
+    if (action === 'email-confirm' && req.method === 'POST') {
+      const body = await readBody(req);
+      const entry = body.token ? emailStore.get(body.token) : null;
+      if (body.token) emailStore.delete(body.token);
+      if (!entry || entry.expires < Date.now()) {
+        return send(res, { message: 'The link is invalid or has expired' }, 400, delay);
+      }
+      const users = readDb('users') || [];
+      const user = users.find(u => u.id === entry.userId);
+      if (!user) return send(res, { message: 'The link is invalid or has expired' }, 400, delay);
+      if (users.some(u => u.id !== user.id && String(u.email).toLowerCase() === entry.email.toLowerCase())) {
+        return send(res, { message: 'This e-mail address is already taken' }, 409, delay);
+      }
+      user.email = entry.email;
+      if (user.pendingEmail === entry.email) delete user.pendingEmail;
+      writeDb('users', users);
+      return send(res, { email: user.email, message: 'Your e-mail address has been changed.' }, 200, delay);
     }
 
     if (action === 'activate' && req.method === 'POST') {

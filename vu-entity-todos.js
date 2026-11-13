@@ -57,7 +57,7 @@ window.VuEntities.todos = (preset) => {
 			},
 		},
 		relations: {
-			// userId → user (name, avatar); one request for the users of the current page
+			// userId → user (name, monogram); one request for the users of the current page
 			user: {
 				entity: 'user',
 				local: 'userId',
@@ -157,7 +157,7 @@ window.VuEntities.todos = (preset) => {
 							return '<span class="text-muted">#' + escapeHtml(userId) + '</span>';
 						}
 						const name = [item.user.firstName, item.user.lastName].join(' ').trim();
-						return '<img src="' + escapeHtml(safeUrl(item.user.image)) + '" height="20" width="20" class="rounded-circle border me-1">' + escapeHtml(name);
+						return window.VuAdminHelpers.monogramBadge(item.user, { class: 'me-1' }) + escapeHtml(name);
 					},
 					// select by user name; the options are loaded in afterSettingsInit
 					// (the user table's "Todos" button sets this filter too: filterListen)

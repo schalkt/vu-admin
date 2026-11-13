@@ -3,7 +3,8 @@
     <div v-if="auth && auth.visible" class="vua-auth" :data-bs-theme="[theme]">
 
         <div class="row d-flex justify-content-center align-items-center min-vh-100" @click.stop="close">
-            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto">
+            <!-- the profile panel is wider (its fields stand in two columns from md) -->
+            <div class="col-12 mx-auto" :class="auth.panel == 'profile' ? 'col-md-10 col-lg-8 col-xl-6' : 'col-sm-10 col-md-8 col-lg-6 col-xl-4'">
                 <div class="card shadow p-4 position-relative" @click.stop="">
 
                     <div class="position-absolute top-0 end-0 p-0 m-2">
@@ -13,22 +14,45 @@
                         </button>
                     </div>
 
-                    <h1 class="text-center mt-2 mb-4">
-                        {{ translate(panelText('title')) }}
-                    </h1>
-
-                    <!-- profile: the signed-in user, then the password change -->
-                    <div v-if="auth.panel == 'profile' && auth.user" class="vua-auth-profile d-flex align-items-center gap-3 border rounded p-3 mb-4">
-                        <img v-if="auth.user.image" :src="safeUrl(auth.user.image)" width="48" height="48" class="rounded-circle border" alt="">
-                        <div class="min-w-0">
-                            <div class="fw-semibold">{{ [auth.user.firstName, auth.user.lastName].join(' ').trim() || auth.user.username }}</div>
-                            <div class="small text-secondary text-truncate">{{ auth.user.email }}</div>
-                            <span v-if="auth.user.role" class="badge text-bg-secondary mt-1">{{ auth.user.role }}</span>
+                    <!-- profile: the signed-in user's name as the title, the username / role under it -->
+                    <div v-if="auth.panel == 'profile' && auth.user" class="vua-auth-profile text-center mt-2 mb-4">
+                        <h1 class="mb-1">{{ profileName }}</h1>
+                        <div class="small text-secondary">
+                            <span v-if="auth.user.username" class="me-2"><i class="bi bi-person me-1"></i>{{ auth.user.username }}</span>
+                            <span v-if="auth.user.role" class="badge text-bg-secondary">{{ auth.user.role }}</span>
                         </div>
                     </div>
-                    <h2 v-if="auth.panel == 'profile'" class="h6 text-secondary text-uppercase mb-3">{{ translate('Change password') }}</h2>
+                    <h1 v-else class="text-center mt-2 mb-4">
+                        {{ translate(panelText('title')) }}
+                    </h1>
+                    <!-- profile tabs: own data (profile.data !== false) and the password change -->
+                    <ul v-if="auth.panel == 'profile' && profileDataEnabled" class="nav nav-tabs mb-3 vua-auth-profile-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button type="button" class="nav-link" :class="{ active: profileTab == 'data' }" role="tab"
+                                :aria-selected="profileTab == 'data' ? 'true' : 'false'" @click.stop="profileTab = 'data'">
+                                <i class="bi bi-person-vcard me-1"></i>{{ translate('Personal data') }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button type="button" class="nav-link" :class="{ active: profileTab == 'password' }" role="tab"
+                                :aria-selected="profileTab == 'password' ? 'true' : 'false'" @click.stop="profileTab = 'password'">
+                                <i class="bi bi-key me-1"></i>{{ translate('Password') }}
+                            </button>
+                        </li>
+                    </ul>
+                    <h2 v-else-if="auth.panel == 'profile'" class="h6 text-secondary text-uppercase mb-3">{{ translate('Change password') }}</h2>
 
-                    <form @submit.prevent="handleSubmit()" @click.stop="">
+                    <template v-if="profileDataShown">
+                        <vu-auth-profile :auth="auth" :settings="settings" :translate="translate" :notice="profileNotice"
+                            @saved="authUpdate"></vu-auth-profile>
+                        <div class="mt-2 text-end">
+                            <button type="button" @click.stop="close" class="w-100 me-1" :class="cancelClass">
+                                {{ translate(settings.submit.cancel) }} <i class="bi bi-x-square mx-1"></i>
+                            </button>
+                        </div>
+                    </template>
+
+                    <form v-else @submit.prevent="handleSubmit()" @click.stop="">
 
                         <div class="mb-3" v-if="auth.panel != 'activation' && auth.panel != 'password' && auth.panel != 'twofa' && auth.panel != 'profile'">
                             <label for="email" class="form-label text-primary">{{ translate(settings.username.label) }}</label>
@@ -258,7 +282,7 @@
 
 
                         <div class="mt-2 text-end">
-                            <button type="button" @click.stop="close" class="btn btn-light border w-100 me-1" :disabled="loading">
+                            <button type="button" @click.stop="close" class="w-100 me-1" :class="cancelClass" :disabled="loading">
                                 {{ translate(settings.submit.cancel) }} <i class="bi bi-x-square mx-1"></i>
                             </button>
                         </div>
@@ -289,6 +313,7 @@
 
 import mitt from 'mitt';
 import VuAdminForm from "./VuAdminForm.vue";
+import VuAuthProfile from "./VuAuthProfile.vue";
 import { sha512 } from "js-sha512";
 import { Modal } from "bootstrap";
 import {
@@ -337,6 +362,9 @@ const VuAuth = {
             // not in the template, so the page source does not reveal it. An ordinary field name so targeted bots do not
             // recognize it; autocomplete off so browsers / password managers do not fill it in (that would block real
             // users); the wrapper hides it from screen readers (aria-hidden on a focusable input is invalid)
+            // profile panel: the active tab ('data' | 'password') and a message for the data tab (e-mail confirmation)
+            profileTab: 'data',
+            profileNotice: null,
             honeypot: '',
             // a hidden field with a new random value on every panel / submit, sent as `formToken`. It protects nothing
             // and the backend ignores it: it only costs the time of whoever automates the form
@@ -367,7 +395,8 @@ const VuAuth = {
         };
     },
     components: {
-        VuAdminForm
+        VuAdminForm,
+        VuAuthProfile,
     },
     watch: {
         modelValue(newValue, oldValue) {
@@ -377,8 +406,12 @@ const VuAuth = {
                 this.$forceUpdate();
             }
         },
-        'auth.panel'() {
+        'auth.panel'(panel) {
             this.formToken = randomToken();
+            if (panel !== 'profile') {
+                this.profileTab = 'data';
+                this.profileNotice = null;
+            }
             if (this.captchaRequired) {
                 this.fetchCaptcha();
             }
@@ -386,6 +419,22 @@ const VuAuth = {
     },
 
     computed: {
+        // the Cancel button: light in the light theme, a dark one in the dark theme (btn-light would stand out)
+        cancelClass() {
+            return this.theme === 'dark' ? 'btn btn-secondary' : 'btn btn-light border';
+        },
+        // the title of the profile panel: the user's name, else the username, else 'Profile'
+        profileName() {
+            const user = this.auth && this.auth.user ? this.auth.user : {};
+            return [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.username || this.translate('Profile');
+        },
+        // profile.data: false → the profile panel has the password change only (no tabs)
+        profileDataEnabled() {
+            return !(this.settings.profile && this.settings.profile.data === false);
+        },
+        profileDataShown() {
+            return this.auth.panel == 'profile' && this.profileDataEnabled && this.profileTab == 'data';
+        },
         // seconds the submit of the current panel still waits after a 429 response
         retryRemaining() {
             const until = this.auth && this.retryUntil[this.auth.panel];
@@ -443,9 +492,17 @@ const VuAuth = {
 
                 if (vuparams) {
 
-                    let params = JSON.parse(vuparams);
+                    let params = {};
+                    try {
+                        params = JSON.parse(vuparams) || {};
+                    } catch (e) {
+                        params = {};
+                    }
 
-                    if (params.panel) {
+                    // the link of an e-mail change: confirmed right away, the result is shown
+                    if (params.panel === 'emailConfirm') {
+                        this.confirmEmail(params.inputs && params.inputs.token);
+                    } else if (params.panel) {
                         this.auth.panel = params.panel
                         this.auth.visible = true;
                         this.auth.inputs = params.inputs ? params.inputs : null;
@@ -459,6 +516,54 @@ const VuAuth = {
 
             }
 
+        },
+
+        // POST api.confirmEmail { token } → { email, message }; signed in: the profile panel shows the result,
+        // signed out: the sign in panel
+        async confirmEmail(token) {
+            const url = (this.settings.api && this.settings.api.confirmEmail) || '/api/auth/email-confirm';
+            if (this._profileLoading) {
+                try {
+                    await this._profileLoading;
+                } catch (e) {
+                    // the session restore failed: handled there
+                }
+            }
+            let ok = false;
+            let data = {};
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, this.auth.header || {}),
+                    body: JSON.stringify({ token: token || '' }),
+                });
+                const json = await getResponseJson(response);
+                data = json && json.data && typeof json.data === 'object' ? json.data : {};
+                ok = isApiResponseOk(response, json);
+            } catch (e) {
+                ok = false;
+            }
+            const message = data.message || (ok ? 'Your e-mail address has been changed.' : 'The link is invalid or has expired');
+
+            if (this.auth.user) {
+                if (ok && data.email) {
+                    this.auth.user.email = data.email;
+                    delete this.auth.user.pendingEmail;
+                    try {
+                        localStorage.setItem('vu-user', JSON.stringify(this.auth.user));
+                    } catch (e) {
+                        // storage blocked
+                    }
+                }
+                this.auth.panel = 'profile';
+                this.profileTab = 'data';
+                this.profileNotice = { ok, message };
+            } else {
+                this.auth.panel = 'login';
+                this.auth.response = { ok, message };
+            }
+            this.auth.visible = true;
+            this.authUpdate();
         },
 
         updateInputs() {
@@ -494,7 +599,8 @@ const VuAuth = {
             if (!this.auth.user || !this.auth.header) {
                 this.logout();
             } else if (this.settings.api && this.settings.api.profile) {
-                this.loadProfile();
+                // kept: the e-mail confirmation link waits for it (its answer must not overwrite the new address)
+                this._profileLoading = this.loadProfile();
             } else {
                 this.auth.success = true;
                 this.authUpdate();

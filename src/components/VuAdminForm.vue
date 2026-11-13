@@ -92,8 +92,8 @@
                   item: item,
                   form: this,
                 })
-                : getButtonIconClassByAction(button.action))"></i>
-            {{ translate(button.title) }}
+                : getButtonIconClassByAction(button.action), !!button.title)"></i>
+            <template v-if="button.title">{{ translate(button.title) }}</template>
           </button>
 
           <div class="dropdown d-inline-block" v-cloak v-if="button.dropdowns">
@@ -105,7 +105,7 @@
                       button: button,
                       table: this,
                     })
-                    : getButtonIconClassByAction(button.action))"></i> {{ translate(button.title) }}
+                    : getButtonIconClassByAction(button.action), !!button.title)"></i><template v-if="button.title">{{ translate(button.title) }}</template>
               </span>
             </button>
             <ul class="dropdown-menu px-2">
@@ -297,8 +297,9 @@ const VuAdminForm = {
       return resolveButtonIcon(action);
     },
 
-    buttonIconClass(icon) {
-      return withButtonIconMe1(icon);
+    // label: the button has a text after the icon (false → an icon only button, the icon stays in the middle)
+    buttonIconClass(icon, label) {
+      return withButtonIconMe1(icon, label);
     },
 
     formWait(block) {

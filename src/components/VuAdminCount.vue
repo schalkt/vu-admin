@@ -172,6 +172,11 @@ export { VuAdminCount };
     color: inherit;
     transition: box-shadow 0.15s ease-in-out, transform 0.15s ease-in-out;
 
+    // dark theme: the card would have the page's own background (the shadow does not show) → a lighter surface
+    [data-bs-theme="dark"] & {
+        --bs-card-bg: var(--bs-tertiary-bg);
+    }
+
     &[href]:hover {
         transform: translateY(-1px);
         box-shadow: var(--bs-box-shadow) !important;

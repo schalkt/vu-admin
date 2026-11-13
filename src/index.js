@@ -5,13 +5,13 @@ import VuAdminNav from './components/VuAdminNav.vue';
 import VuAdminApp from './components/VuAdminApp.vue';
 import VuAdminCount from './components/VuAdminCount.vue';
 
-import { escapeHtml, safeUrl, translate } from './components/helpers.js';
+import { escapeHtml, safeUrl, monogram, monogramBadge, translate } from './components/helpers.js';
 import { getLanguage, setLanguage, availableLanguages, translations } from './i18n.js';
 import { getTheme, setTheme, availableThemes } from './theme.js';
 
 export {
     VuAdmin, VuAuth, VuUserButton, VuAdminNav, VuAdminApp, VuAdminCount,
-    escapeHtml, safeUrl, translate,
+    escapeHtml, safeUrl, monogram, monogramBadge, translate,
     getLanguage, setLanguage, availableLanguages, translations,
     getTheme, setTheme, availableThemes,
 };

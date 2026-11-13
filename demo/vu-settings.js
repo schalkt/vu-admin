@@ -67,7 +67,7 @@ window.VuSettings = {
 
 				const { escapeHtml, safeUrl } = window.VuAdminHelpers;
 				let fullName = escapeHtml([self.auth.user.firstName, self.auth.user.lastName].join(' '));
-				let img = `<img class='img-fluid rounded me-2' width='22' src='${escapeHtml(safeUrl(self.auth.user.image))}' />`;
+				let img = window.VuAdminHelpers.monogramBadge(self.auth.user, { color: 'primary', class: 'me-2' });
 
 				return img + `<span class='d-none d-md-inline'>${fullName}</span>`;
 
@@ -109,8 +109,8 @@ window.VuSettings = {
 			placeholder: 'Enter your password',
 			type: 'password',
 			help: 'Use at least 1 lowercase letter, 1 uppercase letter and 1 digit. Minimum 4 characters.',
-			_pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
-			pattern: '^(?=.*[a-z]).+$',
+			// checked on registration / new password only (not on sign in), see the help text above
+			pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
 			minlength: 4,
 			hash: 11
 		},

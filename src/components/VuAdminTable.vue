@@ -58,8 +58,8 @@
                   button: button,
                   table: this,
                 })
-                : getButtonIconClassByAction(button.action))"></i>
-            <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
+                : getButtonIconClassByAction(button.action), button.title ? 'md' : false)"></i>
+            <span v-if="button.title" class="d-none d-md-inline">{{ translate(button.title) }}</span>
           </button>
 
           <div class="dropdown d-inline-block" v-if="button.action === 'TABLE_COLUMNS'">
@@ -74,8 +74,8 @@
                       button: button,
                       table: this,
                     })
-                    : getButtonIconClassByAction(button.action))"></i>
-                <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
+                    : getButtonIconClassByAction(button.action), button.title ? 'md' : false)"></i>
+                <span v-if="button.title" class="d-none d-md-inline">{{ translate(button.title) }}</span>
                 <span class="badge text-bg-secondary ms-1" v-if="countHiddenColumns()">
                   {{ countHiddenColumns() }}
                 </span>
@@ -119,7 +119,7 @@
                       button: button,
                       table: this,
                     })
-                    : getButtonIconClassByAction(button.action))"></i> <span class="d-none d-md-inline">{{ translate(button.title) }}</span>
+                    : getButtonIconClassByAction(button.action), button.title ? 'md' : false)"></i><span v-if="button.title" class="d-none d-md-inline">{{ translate(button.title) }}</span>
               </span>
             </button>
             <ul class="dropdown-menu">
@@ -190,8 +190,8 @@
                         column: column,
                         table: this,
                       })
-                      : getButtonIconClassByAction(button.action))"></i>
-                  {{ translate(button.title) }}
+                      : getButtonIconClassByAction(button.action), !!button.title)"></i>
+                  <template v-if="button.title">{{ translate(button.title) }}</template>
                 </button>
               </span>
             </th>
@@ -217,7 +217,7 @@
           <template v-for="(item, index) in this.items" :key="item.id">
             <tr class="align-middle">
               <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :data-collapsed="column.collapsed || null" :key="column.name"
-                :data-label="translate(column.title ? column.title : column.name)" :width="column.collapsed ? null : column.width" :class="getValueOrFunction(column.class, {
+                :data-label="columnLabel(column)" :width="column.collapsed ? null : column.width" :class="getValueOrFunction(column.class, {
                   column: column,
                   item: item,
                 })
@@ -322,11 +322,11 @@
                             item: item,
                             table: this,
                           })
-                          : getButtonIconClassByAction(button.action))"></i>
+                          : getButtonIconClassByAction(button.action), hasButtonLabel(button))"></i>
 
                       <span v-if="button.template" v-html="tableCellTemplate(button.template, item, index, column)
                         "></span>
-                      <span v-else>{{ translate(button.title) }}</span>
+                      <span v-else-if="button.title">{{ translate(button.title) }}</span>
                     </button>
                   </span>
                 </span>
@@ -377,7 +377,7 @@
         </tbody>
         <tfoot>
           <tr v-if="selected.length > 0" class="vua-table-bulk border-info">
-            <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :data-collapsed="column.collapsed || null" :key="column.name" :data-label="column.title" :width="column.collapsed ? null : column.width"
+            <td v-for="column in settings.table.columns" :style="[column.hidden ? 'display: none' : '']" :data-collapsed="column.collapsed || null" :key="column.name" :data-label="columnLabel(column)" :width="column.collapsed ? null : column.width"
               :class="column.class">
               <div class="d-inline-block w-100 px-1" v-if="column.index">
                 <span v-cloak class="cursor-pointer d-inline-block badge border badge-index-toggle active py-1 px-2 me-1 my-2 w-100" @click="toggleSelectedAll()">
@@ -425,13 +425,11 @@
                           column: column,
                           table: this,
                         })
-                        : getButtonIconClassByAction(button.action))"></i>
+                        : getButtonIconClassByAction(button.action), hasButtonLabel(button))"></i>
 
                     <span v-if="button.template" v-html="tableCellTemplate(button.template, bulkitem, null, column)
                       "></span>
-                    <span v-else>
-                      {{ translate(button.title) }}
-                    </span>
+                    <span v-else-if="button.title">{{ translate(button.title) }}</span>
                   </button>
                 </span>
               </span>
@@ -1142,8 +1140,26 @@ export default {
       return resolveButtonIcon(action);
     },
 
-    buttonIconClass(icon) {
-      return withButtonIconMe1(icon);
+    // label: the button has a text after the icon (true | false | 'md' = shown from md only)
+    buttonIconClass(icon, label) {
+      return withButtonIconMe1(icon, label);
+    },
+    // a button's text: its template or its title
+    hasButtonLabel(button) {
+      return !!(button && (button.template || button.title));
+    },
+
+    // the label of a cell in the mobile (card) layout: the column title as plain text (it may hold HTML, e.g.
+    // 'Name <span>( username )</span>'); none when the header has no title (header.title: null, e.g. buttons)
+    columnLabel(column) {
+      if (column.header && column.header.title === null) {
+        return null;
+      }
+      const text = String(this.translate(column.title ? column.title : column.name) || "");
+      const plain = text.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+        .replace(/\s+/g, " ").trim();
+      return plain || null;
     },
 
     tableCellValue(path, item, index, column) {
@@ -3043,7 +3059,7 @@ export default {
       padding-bottom: 0;
     }
 
-    .vua-table-responsive td::before {
+    .vua-table-responsive td[data-label]::before {
       content: attr(data-label) ": ";
       font-size: 0.75rem;
       font-weight: 600;

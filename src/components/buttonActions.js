@@ -29,16 +29,18 @@ export function getButtonClassByAction(action) {
   }
 }
 
-/** Ensure form/table button icons always have Bootstrap me-1 spacing. */
-export function withButtonIconMe1(iconClass) {
+/**
+ * Form / table button icon spacing: me-1 when a label follows the icon. label: true (default) | false (an icon only
+ * button: no margin, so the icon stays in the middle) | 'md' (the label is shown from md only: me-md-1).
+ */
+export function withButtonIconMe1(iconClass, label = true) {
   if (iconClass == null || iconClass === false) return iconClass;
   if (typeof iconClass !== 'string') return iconClass;
   const trimmed = iconClass.trim();
   if (!trimmed) return trimmed;
-  if (/\bme-\d+\b/.test(trimmed)) {
-    return trimmed.replace(/\bme-\d+\b/g, 'me-1');
-  }
-  return `${trimmed} me-1`;
+  const bare = trimmed.replace(/\bme-(?:[a-z]{2,3}-)?\d+\b/g, '').replace(/\s+/g, ' ').trim();
+  if (!label) return bare;
+  return `${bare} ${label === 'md' ? 'me-md-1' : 'me-1'}`;
 }
 
 export function getButtonIconClassByAction(action) {

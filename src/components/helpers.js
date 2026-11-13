@@ -34,17 +34,73 @@ export function safeUrl(url) {
     return ['http', 'https', 'mailto', 'tel'].includes(protocol[1]) ? value : '';
 }
 
+// the initials of a user (first + last name, else the first two letters of the username / e-mail), upper case:
+// monogram({ firstName: 'Emily', lastName: 'Johnson' }) → 'EJ'
+export function monogram(user) {
+    if (!user) {
+        return '';
+    }
+    const initial = (value) => (typeof value === 'string' && value.trim() ? Array.from(value.trim())[0] : '');
+    const letters = initial(user.firstName) + initial(user.lastName);
+    if (letters) {
+        return letters.toLocaleUpperCase();
+    }
+    const name = String(user.username || user.email || '').replace(/[^\p{L}\p{N}]/gu, '');
+    return Array.from(name).slice(0, 2).join('').toLocaleUpperCase();
+}
+
+const MONOGRAM_COLORS = ['primary', 'success', 'danger', 'warning', 'info', 'secondary', 'dark'];
+
+// a round badge with the user's initials (HTML, escaped): monogramBadge(user) → a color picked by the user's name
+// (the same user always gets the same one), monogramBadge(user, { color: 'primary', class: 'me-1' })
+export function monogramBadge(user, options = {}) {
+    const text = monogram(user);
+    const name = user ? [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.username || user.email || '' : '';
+    let color = options.color;
+    if (!color) {
+        let hash = 0;
+        const key = String(name || text);
+        for (let i = 0; i < key.length; i++) {
+            hash = (hash * 31 + key.charCodeAt(i)) | 0;
+        }
+        color = MONOGRAM_COLORS[Math.abs(hash) % MONOGRAM_COLORS.length];
+    }
+    const classes = ['vua-monogram', 'badge', 'rounded-circle', 'text-bg-' + String(color).replace(/[^a-z-]/gi, '')];
+    if (options.class) {
+        classes.push(String(options.class).replace(/[^a-z0-9 _-]/gi, ''));
+    }
+    return '<span class="' + classes.join(' ') + '" aria-hidden="true">' + escapeHtml(text || '?') + '</span>';
+}
+
 // entity configs (window.VuEntities) are not modules, so the helpers are also available globally
 if (typeof window !== 'undefined') {
     window.VuAdminHelpers = Object.assign(window.VuAdminHelpers || {}, {
         escapeHtml,
         safeUrl,
+        monogram,
+        monogramBadge,
         // translate('Sign out') / translate(key, vars) with the built-in dictionary and the current language
         translate: (key, vars, language) => translate(key, null, vars, language),
         getLanguage,
         setLanguage,
         availableLanguages,
     });
+}
+
+// like deepMerge, but an array (or any non plain object value) of `source` replaces the one of `target` instead of being
+// merged index by index: an override's `buttons: []` empties the list, `limits: [5, 10]` replaces the options
+export function overrideMerge(target, source) {
+    const result = target && typeof target === 'object' ? target : {};
+    for (const key in source) {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+        const value = source[key];
+        const isPlain = value && typeof value === 'object' && !Array.isArray(value);
+        const current = result[key];
+        result[key] = isPlain && current && typeof current === 'object' && !Array.isArray(current)
+            ? overrideMerge(current, value)
+            : value;
+    }
+    return result;
 }
 
 export function deepMerge(target, source) {

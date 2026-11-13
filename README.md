@@ -16,7 +16,7 @@
 - **Events** — lifecycle hooks: `beforeItemSave`, `afterItemSave`, `beforeItemDelete`, `afterItemDelete`, `afterItemsLoad`, `beforeItemsLoad`, etc.
 - **i18n** — built-in Hungarian translations, browser language detection, language switch in the user menu (stored in localStorage), overridable per entity
 - **Themes** — Bootstrap `light` / `dark` per entity, light / dark / system switch in the user menu (stored in localStorage)
-- **Mock server** — zero-backend dev environment with seed data, full CRUD, auth, SVG avatars
+- **Mock server** — zero-backend dev environment with seed data, full CRUD, auth
 
 ---
 
@@ -93,6 +93,7 @@ vu-admin/
 │   │   ├── formUploadHelpers.js    # save / upload / persist logic
 │   │   ├── VuAdminHtmlEditor.vue   # TipTap rich-text editor
 │   │   ├── VuAuth.vue              # auth modal (login / register / …)
+│   │   ├── VuAuthProfile.vue       # profile panel: own data (name, e-mail, phone, …)
 │   │   └── VuUserButton.vue        # nav button with role switcher
 │   └── index.js
 ├── mock/
@@ -258,7 +259,7 @@ dashboard: {
     { type: 'group', class: 'col-12', items: [                    // full width
       { type: 'count', entity: 'user', title: 'Users' },           // alone: fills the row
     ] },
-    { type: 'group', class: 'col-12', title: 'Latest', itemClass: 'col-lg-4', items: [
+    { type: 'group', class: 'col-12', title: 'Latest', itemClass: 'col-xl-6', items: [
       { entity: 'user',  title: 'Latest users', limit: 10 },
       { entity: 'todos', title: 'Open todos',   limit: 10 },
       { entity: 'post',  title: 'Latest posts', limit: 10 },
@@ -291,7 +292,8 @@ Table items (default `type`):
 | `pages` | number of page buttons in the pagination (default: the entity's own) |
 | `limits` | page size options, e.g. `[5, 10, 20]`; `null` hides the selector (default: the entity's own) |
 | `order` | default sort, replaces the entity's own: `{ field: 'ASC' \| 'DESC' }` in priority order, or the full `{ field: { dir, idx, fixed } }` form |
-| `settings` | any further entity config override, deep-merged (e.g. `{ table: { control: { buttons: [] } } }`) |
+| `toolbar` | `false` hides the table toolbar (Columns, Reload, New, Export, …) |
+| `settings` | any further entity config override, deep-merged; arrays replace the entity's own (e.g. `{ table: { control: { buttons: [] } } }` empties the toolbar) |
 | `preset` | passed to the entity function (default: `'dashboard'`); also the localStorage table state key, so the widget's paging / sort does not mix with the full entity view — give two widgets of the same entity different presets |
 | `roles` | only for these roles, e.g. `['admin', 'editor']` — the user's active role (`auth.user.role`, switchable in the user menu) |
 | `disabled` | `true` hides the widget |
@@ -1116,11 +1118,15 @@ This is the UI side only: the API must check the permissions as well.
 
 If `api.profile` is set, VuAuth calls it on every mount using the stored token header. On success the response is merged into `auth.user` and localStorage is refreshed. If the user now has a role but `auth.settings` was not previously set (e.g. role was assigned after first login), `onSuccess.profile` can populate `auth.settings` at this point. On failure (401, network error) the user is logged out automatically.
 
-### Profile — password change
+### Profile — own data and password change
 
-The built-in `BUTTON_PROFILE` item of the user menu opens the `profile` panel of VuAuth: the signed-in user (avatar,
-name, e-mail, role) and a password change form — current password, new password and its repeat, with the same
-`password` rules (pattern, minlength, help) as the registration.
+The built-in `BUTTON_PROFILE` item of the user menu opens the `profile` panel of VuAuth: the signed-in user's name
+as the title (username and role under it) and two tabs:
+
+- **Personal data** (`VuAuthProfile`) — first name, last name, e-mail, phone (`profile.fields`); an avatar upload
+  only when `profile.avatar` is set;
+- **Password** — current password, new password and its repeat, with the same `password` rules (pattern, minlength,
+  help) as the registration.
 
 ```js
 window.VuSettings.button.login.dropdowns = [
@@ -1135,12 +1141,54 @@ Not every site needs it: `auth.profile.enabled: false` hides the item and the pa
 
 ```js
 auth: {
-  profile: { enabled: true },                              // default
-  api: { changePassword: '/api/auth/password' },          // default
+  profile: {
+    enabled: true,                                         // default
+    data: true,                                            // false → no "Personal data" tab (password change only)
+    // the shown / editable keys of auth.user, in this order (default: firstName, lastName, email, phone)
+    fields: [
+      { name: 'username', label: 'Username', readonly: true },          // shown only: not editable, not sent
+      { name: 'firstName', label: 'First name', required: true, maxlength: 50, autocomplete: 'given-name' },
+      { name: 'lastName', label: 'Last name', required: true, maxlength: 50, autocomplete: 'family-name' },
+      { name: 'email', label: 'E-mail', type: 'email', required: true, maxlength: 100, autocomplete: 'email',
+        help: 'A new address changes after its confirmation link is opened.' },
+      { name: 'phone', label: 'Phone', type: 'tel', maxlength: 30, autocomplete: 'tel' },
+      { name: 'birthDate', label: 'Date of birth', type: 'date' },
+      { name: 'gender', label: 'Gender', type: 'select', options: [{ value: 'female', label: 'Female' }, { value: 'male', label: 'Male' }] },
+    ],
+    avatar: { size: 256, maxSize: 5 * 1024 * 1024, type: 'image/jpeg' },  // or true; default: no avatar upload
+  },
+  api: {
+    changePassword: '/api/auth/password',                  // default
+    updateProfile:  '/api/auth/profile',                   // default
+    confirmEmail:   '/api/auth/email-confirm',             // default
+  },
   onSuccess: { changePassword: (auth) => { /* … */ } },   // optional
   onError:   { changePassword: (auth) => { /* … */ } },   // optional
 }
 ```
+
+Field keys: `name` (key of `auth.user`, required), `label` (translation key), `type` (`text` default, `email`, `tel`,
+`date`, `number`, `textarea`, `select` with `options: [{ value, label }]` or plain values), `required`, `maxlength`,
+`min` / `max`, `pattern` (RegExp source) with `patternMessage`, `help` (a line under the field), `readonly` (shown,
+not editable, never sent), `hidden: true` (left out), `autocomplete`, `class` (the field's column: default
+`col-12 col-md-6` — two fields in a row from md, a textarea `col-12`), `rows` (textarea). The profile panel is wider
+than the other panels of the auth modal.
+
+**Personal data.** The form checks the required fields, the e-mail / phone format, the select options and `pattern`,
+then sends **only the changed values**: `POST api.updateProfile` with the login header, body e.g. `{ firstName, phone, image }`. A new avatar (with `profile.avatar`) is
+cropped to a square and resized in the browser (`avatar.size` px) and sent as a `data:image/…;base64` URL in `image`.
+Answer: 2xx → the user object (it is merged into `auth.user` and the stored session, so the header's user button
+follows), `message` optional; 4xx → `message`, and `errors: { field: 'message' }` marks the fields (translated when
+they are dictionary keys).
+
+**E-mail change.** The backend should not change the address right away: it keeps it as `pendingEmail` (returned
+in the user object, shown under the field) and sends a link to the new address:
+`/?vuparams={"panel":"emailConfirm","inputs":{"token":"…"}}`. Opening it, VuAuth sends `POST api.confirmEmail`
+`{ token }` → `{ email, message }`, and shows the result on the profile panel (signed in) or on the sign in panel.
+Sending the current address again drops the pending change. The backend must validate everything again (lengths,
+formats, the image type and size, a taken e-mail address) and accept **only its own list of editable fields** — the
+settings only shape the form (the mock accepts any short value except the protected keys: id, username, password,
+role(s), createdAt, …).
 
 Request: `POST api.changePassword` with the login header, body `{ currentPassword, password }` — both hashed like at
 sign-in (`password.hash`). Answer: 2xx → success, 4xx → error; the `message` of the answer is shown (translated when
@@ -1163,10 +1211,13 @@ form field `type: 'template'`, list `elementDef.template`, user button `label` /
 Helpers (exported from the package and available globally as `window.VuAdminHelpers`, because entity configs are not modules):
 
 ```js
-const { escapeHtml, safeUrl } = window.VuAdminHelpers;   // or: import { escapeHtml, safeUrl } from 'vu-admin'
+const { escapeHtml, safeUrl, monogram } = window.VuAdminHelpers;   // or: import { escapeHtml, safeUrl, monogram } from 'vu-admin'
 
 escapeHtml('<b>"x"</b>')          // '&lt;b&gt;&quot;x&quot;&lt;/b&gt;'  — null/undefined → ''
 safeUrl('javascript:alert(1)')    // ''  — allows http(s), mailto, tel, relative URLs, data:image/* (not SVG)
+monogram(auth.user)               // 'EJ' — initials of firstName + lastName (else of the username / e-mail)
+monogramBadge(item.user)          // '<span class="vua-monogram badge rounded-circle text-bg-…">EJ</span>' — the color
+                                  // follows the name (the same user, the same color); { color: 'primary', class: 'me-1' }
 
 template: (value, item) =>
   '<a href="' + escapeHtml(safeUrl(item.url)) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(value) + '</a>'
@@ -1326,6 +1377,11 @@ npm run mock:reset  # write empty arrays to all db/ files
 | `POST` | `/api/auth/login` | Verify credentials; returns `200` with token or `202` if 2FA required |
 | `POST` | `/api/auth/register` | Create user (no default role); 409 if email exists |
 | `GET`  | `/api/auth/me` | Return current user by stored token |
+| `POST` | `/api/auth/profile` | Own data: changed fields (+ `image` data URL); a new e-mail → `pendingEmail` + confirmation link in the server log |
+| `POST` | `/api/auth/email-confirm` | `{ token }` of the e-mail change link → the new address |
+| `POST` | `/api/auth/password` | Password change of the signed-in user |
+| `POST` | `/api/auth/forgot` | Reset link (in the server log); the same answer for unknown addresses |
+| `POST` | `/api/auth/reset` | `{ token, password }` of the reset link |
 | `POST` | `/api/auth/activate` | Activate account, return token |
 | `POST` | `/api/auth/twofa` | Submit 2FA code; returns token on success |
 | `POST` | `/api/auth/twofa-resend` | Re-generate and re-send email OTP (5-min TTL) |
@@ -1336,7 +1392,6 @@ npm run mock:reset  # write empty arrays to all db/ files
 | `DELETE` | `/api/{entity}/{id}` | Remove |
 | `POST` | `/api/upload` | Multipart file upload (`file` + `json` parts); returns `{ url, files, meta }` |
 | `GET`  | `/mock/uploads/{filename}` | Serve uploaded mock files |
-| `GET`  | `/mock/avatar/{initials}` | Colored SVG avatar circle |
 | `GET`  | `/mock/thumb/{label}` | Colored SVG thumbnail |
 
 ### Filter query format

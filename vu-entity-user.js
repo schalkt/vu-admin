@@ -70,21 +70,6 @@ window.VuEntities.user = (preset) => {
 					}
 				},
 				{
-					name: 'image',
-					title: 'Avatar',
-					sortable: false,
-					template: function (image, item) {
-
-						if (!image) {
-							return;
-						}
-
-						let img = '<img class="rounded" height="24" src="' + escapeHtml(safeUrl(image)) + '" alt="' + escapeHtml(item['username']) + '" />';
-
-						return img;
-					},
-				},
-				{
 					name: 'firstName',
 					title: 'Name <span class="text-muted ms-1 fw-light">( username )</span>',
 					template: (firstName, item) => {
@@ -531,17 +516,6 @@ window.VuEntities.user = (preset) => {
 					title: 'Personal data',
 					class: 'border rounded p-4 col-md-5',
 					fields: [
-						{
-							type: 'template',
-							name: 'image',
-							label: null,
-							class: 'col-md-12 text-center mb-2',
-							template: ({ field, item }) => {
-								const src = item[field.name] || '/mock/avatar/??';
-								const name = (item.firstName || '') + ' ' + (item.lastName || '');
-								return '<img src="' + escapeHtml(safeUrl(src)) + '" height="64" width="64" class="rounded-circle border shadow mb-1"><br><small class="text-muted">' + escapeHtml(name.trim()) + '</small>';
-							},
-						},
 						{
 							type: 'text',
 							name: 'firstName',

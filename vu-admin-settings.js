@@ -79,17 +79,17 @@ const ADMIN_SETTINGS = () => ({
                     },
                 ],
             },
-            // tables: three columns side by side from lg
+            // tables: two side by side from xl (1200 px); three would need about 1900 px
             {
                 type: 'group',
                 class: 'col-12',
                 title: 'Latest',
-                itemClass: 'col-lg-4',
+                itemClass: 'col-xl-6',
                 items: [
                     {
                         entity: 'user',        // key of `entities` (hidden without access to it: entities.user.roles)
                         title: 'Latest users', // table title (translation key), default: the entity's own
-                        columns: ['image', 'firstName', 'createdAt', '#buttons'],  // visible columns in this order (by `name`, unnamed ones by `title`)
+                        columns: ['firstName', 'createdAt', '#buttons'],  // visible columns in this order (by `name`, unnamed ones by `title`)
                         filters: false,        // hide the filter row (default: shown)
                         limit: 10,             // initial rows per page, the page size selector stays
                         limits: [5, 10, 20, 50],  // page size options (null hides the selector), default: the entity's own
@@ -105,7 +105,7 @@ const ADMIN_SETTINGS = () => ({
                         limits: [5, 10, 20, 50],
                         pages: 5,
                         order: { completed: 'ASC', id: 'DESC' },
-                        // settings: { ... }   // any further entity config override (deep-merged)
+                        // settings: { ... }   // any further entity config override (deep-merged, arrays replaced)
                         // preset: 'dashboard' // passed to the entity function; also the localStorage state key
                     },
                     {
@@ -117,7 +117,8 @@ const ADMIN_SETTINGS = () => ({
                         limits: [5, 10, 20, 50],
                         pages: 5,
                         order: { id: 'DESC' },
-                        // class: 'col-lg-4',  // default: the group's itemClass
+                        toolbar: false,        // no table toolbar (Columns, Reload, New, Export, ...)
+                        // class: 'col-12',  // default: the group's itemClass
                     },
                 ],
             },
@@ -246,6 +247,14 @@ window.VuSettings = {
             'Completed todos': 'Elvégzett teendők',
             'Latest': 'Legutóbbiak',
             'Latest posts': 'Legújabb bejegyzések',
+            // profile window (own data)
+            'Username': 'Felhasználónév',
+            'Date of birth': 'Születési dátum',
+            'Gender': 'Nem',
+            'Female': 'Nő',
+            'Male': 'Férfi',
+            'Other': 'Egyéb',
+            'A new address changes after its confirmation link is opened.': 'Az új cím a megerősítő link megnyitása után lép érvénybe.',
             'Created': 'Létrehozva',
             'User': 'Felhasználó',
             'Age': 'Kor',
@@ -276,12 +285,13 @@ window.VuSettings = {
                     return 'Sign in';
                 }
 
-                const { escapeHtml, safeUrl } = window.VuAdminHelpers;
+                const { escapeHtml, monogramBadge } = window.VuAdminHelpers;
                 let fullName = escapeHtml([self.auth.user.firstName, self.auth.user.lastName].join(' '));
                 let role = self.auth.user.role ? ` (${escapeHtml(self.auth.user.role)})` : '';
-                let img = `<img class='img-fluid rounded me-2' width='22' src='${escapeHtml(safeUrl(self.auth.user.image))}' />`;
+                // the user's initials in a round badge (instead of an avatar image)
+                let badge = monogramBadge(self.auth.user, { color: 'primary', class: 'me-2' });
 
-                return img + fullName + role;
+                return badge + fullName + role;
 
             },
             dropdowns: [
@@ -338,6 +348,26 @@ window.VuSettings = {
         // user menu "Profile" (profile panel: user data, password change); false → no menu item, no panel
         profile: {
             enabled: true,
+            // the "Personal data" tab: shown / editable own data (keys of auth.user), in this order.
+            // readonly: shown only (not editable, not sent); hidden: true leaves a field out; without `fields`:
+            // first name, last name, e-mail, phone. data: false → no "Personal data" tab
+            fields: [
+                // two columns from md (class: 'col-12 col-md-6' by default; class: 'col-12' → a full row)
+                { name: 'username', label: 'Username', readonly: true },
+                { name: 'email', label: 'E-mail', type: 'email', required: true, maxlength: 100, autocomplete: 'email',
+                    help: 'A new address changes after its confirmation link is opened.' },
+                { name: 'firstName', label: 'First name', required: true, maxlength: 50, autocomplete: 'given-name' },
+                { name: 'lastName', label: 'Last name', required: true, maxlength: 50, autocomplete: 'family-name' },
+                { name: 'phone', label: 'Phone', type: 'tel', maxlength: 30, autocomplete: 'tel' },
+                { name: 'birthDate', label: 'Date of birth', type: 'date' },
+                { name: 'gender', label: 'Gender', type: 'select', options: [
+                    { value: 'female', label: 'Female' },
+                    { value: 'male', label: 'Male' },
+                    { value: 'other', label: 'Other' },
+                ] },
+            ],
+            // no avatar upload (the header shows a monogram); turn it on with:
+            // avatar: { size: 256, maxSize: 5 * 1024 * 1024, type: 'image/jpeg' },
         },
         registrationEnabled: true,
         // the icon captcha is off: it bothers the users more than the bots (see README "Sign in protection");

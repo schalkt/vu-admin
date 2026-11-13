@@ -175,13 +175,20 @@ test.describe('dashboard', () => {
     const widths = await groups.nth(0).locator('.vu-admin-dashboard-count').evaluateAll((items) => items.map((item) => Math.round(item.getBoundingClientRect().width)));
     expect(new Set(widths).size).toBe(1);
 
-    // tables: titled group, three col-lg-4 tables side by side
+    // tables: titled group, itemClass 'col-xl-6' → two side by side, the third in the next row
     await expect(groups.nth(1).locator('.vu-admin-dashboard-group-title')).toHaveText('Latest');
     const tables = groups.nth(1).locator('.vu-admin-dashboard-table');
     await expect(tables).toHaveCount(3);
-    await expect(tables.nth(2)).toHaveClass(/col-lg-4/);
+    await expect(tables.nth(2)).toHaveClass(/col-xl-6/);
     const tops = await tables.evaluateAll((items) => items.map((item) => Math.round(item.getBoundingClientRect().top)));
-    expect(new Set(tops).size).toBe(1);
+    expect(tops[0]).toBe(tops[1]);
+    expect(tops[2]).toBeGreaterThan(tops[0]);
+    // no table is wider than its column (no horizontal scroll)
+    const overflow = await tables.evaluateAll((items) => items.map((item) => {
+      const scroller = item.querySelector('.table-responsive') || item;
+      return scroller.scrollWidth - scroller.clientWidth;
+    }));
+    expect(overflow.every((value) => value <= 1)).toBe(true);
 
     // without access to users: one counter and one table less, the others fill the rows
     await userMenuButton(page, 'editor');
@@ -194,8 +201,20 @@ test.describe('dashboard', () => {
     const users = widget(page, 'table', 'user');
     const todos = widget(page, 'table', 'todos');
 
-    expect(await visibleColumns(users)).toEqual(['Avatar', 'Name ( username )', 'Created', '']);
+    expect(await visibleColumns(users)).toEqual(['Name ( username )', 'Created', '']);
     expect(await visibleColumns(todos)).toEqual(['Todo', 'User', 'Completed', '']);
+
+    // the user column: a monogram badge (no avatar image), the same user always in the same color
+    await expect(todos.locator('tbody img')).toHaveCount(0);
+    const badges = todos.locator('tbody .vua-monogram');
+    await expect(badges.first()).toHaveText(/^[A-Z]{2}$/);
+    const colors = await todos.locator('tbody tr').evaluateAll((items) => items.map((row) => {
+      const badge = row.querySelector('.vua-monogram');
+      return badge ? [badge.textContent, [...badge.classList].find((name) => name.startsWith('text-bg-'))] : null;
+    }).filter(Boolean));
+    const byUser = {};
+    colors.forEach(([text, color]) => { byUser[text] = byUser[text] || new Set(); byUser[text].add(color); });
+    expect(Object.values(byUser).every((set) => set.size === 1)).toBe(true);
 
     await expect(rows(users)).toHaveCount(10);
     await expect(rows(todos)).toHaveCount(10);
@@ -211,6 +230,26 @@ test.describe('dashboard', () => {
     await expect(users.locator('nav .dropdown-menu .dropdown-item')).toHaveText(['5', '10', '20', '50'].map((v) => new RegExp(v)));
 
     await expect(users.locator('.vua-table-title-link')).toHaveAttribute('href', '#user');
+
+    // icon only buttons: no margin after the icon, the icon is in the middle of the button
+    const editButton = rows(users).first().locator('button:has(i.bi-pencil-square)');
+    await expect(editButton.locator('i')).not.toHaveClass(/\bme-/);
+    const [button, icon] = [await editButton.boundingBox(), await editButton.locator('i').boundingBox()];
+    expect(Math.abs((icon.x + icon.width / 2) - (button.x + button.width / 2))).toBeLessThan(1.5);
+    // a labeled button keeps the margin (Todos)
+    await expect(rows(users).first().locator('button', { hasText: 'Todos' }).locator('i')).toHaveClass(/\bme-1\b/);
+
+    // the cell labels of the mobile (card) layout: plain text of the column title, none for the buttons column
+    const labels = await rows(users).first().locator('td').evaluateAll((cells) => cells.map((cell) => cell.getAttribute('data-label')));
+    expect(labels).toContain('Name ( username )');
+    expect(labels.some((label) => label && label.includes('<'))).toBe(false);
+    await expect(rows(users).first().locator('td:has(button:has(i.bi-pencil-square))')).not.toHaveAttribute('data-label');
+
+    // toolbar: false → the posts widget has no table toolbar, the others keep theirs
+    const posts = widget(page, 'table', 'post');
+    await expect(rows(posts)).toHaveCount(10);
+    await expect(posts.locator('.vua-table-control')).toHaveCount(0);
+    await expect(users.locator('.vua-table-control')).toHaveCount(1);
 
     // entity color (entities.user.color: 'primary'): table top line + title, nav icon
     await expect(users.locator('.vua-table-container')).toHaveClass(/vua-accent/);
@@ -306,6 +345,19 @@ test.describe('dashboard', () => {
   });
 });
 
+// a 2x1 px PNG (red, blue): the avatar is cropped to a square and resized in the browser
+const PNG_2x1 = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAD0lEQVR4nGP4z8DAwPAfAAcAAf9+CLHQAAAAAElFTkSuQmCC', 'base64');
+
+async function openProfile(page) {
+  await openDashboard(page);
+  await page.locator('.vua-user-button .dropdown-toggle').click();
+  await page.locator('.vua-user-button .dropdown-menu li', { hasText: 'Profile' }).click();
+  const panel = page.locator('.vua-auth');
+  // the title is the user's name
+  await expect(panel.locator('h1')).toHaveText('Emily Johnson');
+  return panel;
+}
+
 test.describe('user menu', () => {
   test('theme switch applies everywhere and is kept after reload', async ({ page }) => {
     await openDashboard(page);
@@ -327,9 +379,13 @@ test.describe('user menu', () => {
     await page.locator('.vua-user-button .dropdown-menu li', { hasText: 'Profile' }).click();
 
     const panel = page.locator('.vua-auth');
-    await expect(panel.locator('h1')).toHaveText('Profile');
-    await expect(panel.locator('.vua-auth-profile')).toContainText('Emily Johnson');
+    // the title is the user's name, the username and the role under it
+    await expect(panel.locator('h1')).toHaveText('Emily Johnson');
+    await expect(panel.locator('.vua-auth-profile')).toContainText('emilys');
+    await expect(panel.locator('.vua-auth-profile .badge')).toHaveText('admin');
     await expect(panel.locator('#email')).toHaveCount(0);
+    // the password change is the second tab
+    await panel.getByRole('tab', { name: 'Password' }).click();
 
     const submit = async (current, next) => {
       await panel.locator('#password_current').fill(current);
@@ -361,6 +417,157 @@ test.describe('user menu', () => {
     await panel.locator('button', { hasText: 'Cancel' }).click();
     await expect(panel).toHaveCount(0);
     await expect(widget(page, 'table', 'user')).toBeVisible();
+  });
+
+  test('profile: own data — edit, validation, avatar; the header follows', async ({ page }) => {
+    const panel = await openProfile(page);
+    const data = panel.locator('.vua-auth-profile-data');
+    await expect(panel.getByRole('tab', { name: 'Personal data' })).toHaveAttribute('aria-selected', 'true');
+    await expect(data.locator('#vua-profile-firstName')).toHaveValue('Emily');
+    await expect(data.locator('#vua-profile-lastName')).toHaveValue('Johnson');
+    await expect(data.locator('#vua-profile-email')).toHaveValue('emily.johnson@example.com');
+
+    // nothing changed: no request
+    let requests = 0;
+    page.on('request', (request) => { if (request.url().includes('/api/auth/profile')) requests++; });
+    await data.locator('button[type="submit"]').click();
+    await expect(data.locator('.vua-auth-profile-message')).toHaveText('Nothing to save');
+
+    // validation in the browser: no request
+    await data.locator('#vua-profile-firstName').fill('');
+    await data.locator('#vua-profile-phone').fill('abc');
+    await data.locator('button[type="submit"]').click();
+    await expect(data.locator('#vua-profile-firstName')).toHaveClass(/is-invalid/);
+    await expect(data.locator('#vua-profile-phone')).toHaveClass(/is-invalid/);
+    expect(requests).toBe(0);
+
+    // no avatar upload by default (the header shows a monogram)
+    await expect(data.locator('input[type="file"][name="avatar"]')).toHaveCount(0);
+    const userButton = page.locator('.vua-user-button .dropdown-toggle');
+    await expect(userButton.locator('.vua-monogram')).toHaveText('EJ');
+    await expect(userButton.locator('img')).toHaveCount(0);
+
+    // name + phone: saved, the header's user button (name and monogram) and the title follow
+    await data.locator('#vua-profile-firstName').fill('Olivia');
+    await data.locator('#vua-profile-phone').fill('+36 30 123 4567');
+    await data.locator('button[type="submit"]').click();
+    await expect(data.locator('.vua-auth-profile-message')).toHaveText('Profile saved');
+    expect(requests).toBe(1);
+    await expect(userButton).toContainText('Olivia Johnson');
+    await expect(userButton.locator('.vua-monogram')).toHaveText('OJ');
+    await expect(panel.locator('h1')).toHaveText('Olivia Johnson');
+
+    // stored by the mock server
+    const me = await (await page.request.get('/api/auth/me')).json();
+    expect(me).toMatchObject({ firstName: 'Olivia', phone: '+36 30 123 4567' });
+
+    // back to the original name (other tests expect it)
+    await data.locator('#vua-profile-firstName').fill('Emily');
+    await data.locator('button[type="submit"]').click();
+    await expect(userButton).toContainText('Emily Johnson');
+  });
+
+  test('profile: avatar upload when turned on (profile.avatar)', async ({ page }) => {
+    await page.route('**/vu-admin-settings.js', async (route) => {
+      const response = await route.fetch();
+      const body = (await response.text()).replace('// avatar: { size: 256', 'avatar: { size: 256');
+      await route.fulfill({ response, body });
+    });
+    const panel = await openProfile(page);
+    const data = panel.locator('.vua-auth-profile-data');
+    await data.locator('input[type="file"][name="avatar"]').setInputFiles({ name: 'me.png', mimeType: 'image/png', buffer: PNG_2x1 });
+    await expect(data.locator('img.vua-auth-profile-avatar')).toHaveAttribute('src', /^data:image\/jpeg;base64,/);
+    await data.locator('button[type="submit"]').click();
+    await expect(data.locator('.vua-auth-profile-message')).toHaveText('Profile saved');
+    await expect(data.locator('img.vua-auth-profile-avatar')).toHaveAttribute('src', /\/mock\/uploads\/avatar-1-/);
+    // stored by the mock server (a 256 px square image)
+    const me = await (await page.request.get('/api/auth/me')).json();
+    const avatar = await page.request.get(me.image);
+    expect(avatar.headers()['content-type']).toMatch(/image/);
+  });
+
+  test('profile: the fields come from auth.profile.fields (readonly, date, select)', async ({ page }) => {
+    const panel = await openProfile(page);
+    const data = panel.locator('.vua-auth-profile-data');
+    // the order of the settings
+    expect(await data.locator('[data-field]').evaluateAll((items) => items.map((item) => item.dataset.field)))
+      .toEqual(['username', 'email', 'firstName', 'lastName', 'phone', 'birthDate', 'gender']);
+    // desktop: two fields in a row (username | e-mail, first | last name), the panel is wider than the sign in one
+    const top = async (name) => Math.round((await data.locator(`[data-field="${name}"]`).boundingBox()).y);
+    expect(await top('username')).toBe(await top('email'));
+    expect(await top('firstName')).toBe(await top('lastName'));
+    expect(await top('firstName')).toBeGreaterThan(await top('username'));
+    expect((await panel.locator('.card').boundingBox()).width).toBeGreaterThan(700);
+
+    // readonly: shown, not editable, not sent
+    await expect(data.locator('#vua-profile-username')).toHaveValue('emilys');
+    await expect(data.locator('#vua-profile-username')).toHaveAttribute('readonly', '');
+    await expect(data.locator('#vua-profile-birthDate')).toHaveValue('1996-05-30');
+    await expect(data.locator('#vua-profile-gender')).toHaveValue('female');
+
+    let sent = null;
+    page.on('request', (request) => {
+      if (request.url().includes('/api/auth/profile')) sent = request.postDataJSON();
+    });
+    await data.locator('#vua-profile-gender').selectOption('other');
+    await data.locator('#vua-profile-birthDate').fill('1996-06-01');
+    await data.locator('button[type="submit"]').click();
+    await expect(data.locator('.vua-auth-profile-message')).toHaveText('Profile saved');
+    expect(sent).toEqual({ gender: 'other', birthDate: '1996-06-01' });
+    const me = await (await page.request.get('/api/auth/me')).json();
+    expect(me).toMatchObject({ gender: 'other', birthDate: '1996-06-01', username: 'emilys' });
+
+    // back to the original values
+    await data.locator('#vua-profile-gender').selectOption('female');
+    await data.locator('#vua-profile-birthDate').fill('1996-05-30');
+    await data.locator('button[type="submit"]').click();
+    await expect(data.locator('.vua-auth-profile-message')).toHaveText('Profile saved');
+  });
+
+  test('profile: the Cancel button follows the dark theme', async ({ page }) => {
+    await page.addInitScript(() => { if (!localStorage.getItem('vu-theme')) localStorage.setItem('vu-theme', 'dark'); });
+    const panel = await openProfile(page);
+    const cancel = panel.locator('button', { hasText: 'Cancel' });
+    await expect(cancel).toHaveClass(/btn-secondary/);
+    await expect(cancel).not.toHaveClass(/btn-light/);
+  });
+
+  test('profile: e-mail change waits for the confirmation link', async ({ page }) => {
+    const panel = await openProfile(page);
+    const data = panel.locator('.vua-auth-profile-data');
+    const email = data.locator('#vua-profile-email');
+
+    // an address of another user is refused by the server (field error)
+    await email.fill('michael.williams@example.com');
+    await data.locator('button[type="submit"]').click();
+    await expect(email).toHaveClass(/is-invalid/);
+    await expect(data.locator('.invalid-feedback')).toHaveText('This e-mail address is already taken');
+
+    // a new address: pending, the current one stays
+    await email.fill('emily.new@example.com');
+    await data.locator('button[type="submit"]').click();
+    await expect(data.locator('.vua-auth-profile-message')).toContainText('We sent a confirmation link to emily.new@example.com');
+    await expect(email).toHaveValue('emily.johnson@example.com');
+    await expect(data.locator('.vua-auth-profile-pending')).toContainText('emily.new@example.com');
+
+    // the link (its answer faked: the mock's token goes to the server log only) → the profile shows the result
+    await page.route('**/api/auth/email-confirm', (route) => route.fulfill({
+      status: 200, json: { email: 'emily.new@example.com', message: 'Your e-mail address has been changed.' },
+    }));
+    await page.goto('/?vuparams=' + encodeURIComponent(JSON.stringify({ panel: 'emailConfirm', inputs: { token: 'abc' } })));
+    const after = page.locator('.vua-auth');
+    await expect(after.locator('.vua-auth-profile-message')).toHaveText('Your e-mail address has been changed.');
+    await expect(after.locator('#vua-profile-email')).toHaveValue('emily.new@example.com');
+    await expect(after.locator('.vua-auth-profile-pending')).toHaveCount(0);
+
+    // the mock: an unknown token is refused
+    const refused = await page.request.post('/api/auth/email-confirm', { data: { token: 'nope' } });
+    expect(refused.status()).toBe(400);
+
+    // back to the original address on the server (drops the pending change)
+    const reset = await page.request.post('/api/auth/profile', { data: { email: 'emily.johnson@example.com' } });
+    expect(reset.status()).toBe(200);
+    expect((await reset.json()).pendingEmail).toBeUndefined();
   });
 
   test('profile: the menu item can be turned off in the settings', async ({ page }) => {
