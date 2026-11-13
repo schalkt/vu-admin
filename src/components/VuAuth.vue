@@ -68,7 +68,7 @@
                                     </span>
                                     <input id="password" name="password" :type="settings.password.type" v-model="password" class="form-control"
                                         :class="{ 'rounded-bottom-0': newPasswordPanel && settings.password.help }" :placeholder="translate(settings.password.placeholder)"
-                                        :pattern="settings.password.pattern" :minlength="auth.panel == 'registration' || auth.panel == 'profile' ? settings.password.minlength : 1" required
+                                        :pattern="newPasswordPanel ? settings.password.pattern : undefined" :minlength="newPasswordPanel ? settings.password.minlength : 1" required
                                         :disabled="loading" />
                                     <span v-if="newPasswordPanel" class="input-group-text"
                                         :class="{ 'rounded-bottom-0': newPasswordPanel && settings.password.help }">
@@ -169,9 +169,9 @@
                             </div>
                         </div>
 
-                        <!-- Honeypot (bots fill this in, humans don't see it) -->
-                        <input type="text" name="vu_b4t" tabindex="-1" autocomplete="new-password" aria-hidden="true"
-                            v-model="honeypot" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+                        <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;opacity:0">
+                            <input type="text" id="vua-website" name="website" tabindex="-1" autocomplete="off" v-model="honeypot" />
+                        </div>
 
                         <div class="mb-4 text-center" v-if="auth.panel == 'login' && settings.password.forgot">
                             <button type="button" class="btn btn-link p-0 text-decoration-none text-nowrap" @click.stop="toggleForgotPassword" v-html="translate(settings.password.forgot)">
@@ -321,6 +321,10 @@ const VuAuth = {
             currentPasswordType: "password",
             accepts: {},
             inputs: {},
+            // honeypot: the off screen "website" field of the form (bots fill it in, humans don't see it). Explained here,
+            // not in the template, so the page source does not reveal it. An ordinary field name so targeted bots do not
+            // recognize it; autocomplete off so browsers / password managers do not fill it in (that would block real
+            // users); the wrapper hides it from screen readers (aria-hidden on a focusable input is invalid)
             honeypot: '',
             twofaCode: '',
             twofaSession: '',

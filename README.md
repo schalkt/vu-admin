@@ -160,8 +160,8 @@ window.VuSettings = {
       register:   '/api/auth/register',
       profile:    '/api/auth/me',     // called on every page load to restore session
       activation: '/api/auth/activate',
-      forgot:     '/api/password/forgot',
-      password:   '/api/password/update',
+      forgot:     '/api/auth/forgot',  // sends the reset link
+      password:   '/api/auth/reset',   // new password with the token of the reset link
     },
     onSuccess: {
       login: (auth) => {
@@ -1008,8 +1008,8 @@ window.VuSettings.auth = {
     register:    '/api/auth/register',
     profile:     '/api/auth/me',
     activation:  '/api/auth/activate',
-    forgot:      '/api/password/forgot',
-    password:    '/api/password/update',
+    forgot:      '/api/auth/forgot',      // sends the reset link
+    password:    '/api/auth/reset',       // new password with the token of the reset link
     twofa:       '/api/auth/twofa',       // 2FA code verification
     twofaResend: '/api/auth/twofa-resend',// resend email OTP
   },
@@ -1026,6 +1026,8 @@ window.VuSettings.auth = {
     error: 'Invalid code, please try again.',
   },
   username: { type: 'text', label: 'Username or e-mail', icon: 'bi bi-envelope' },
+  // pattern / minlength / help apply only where a new password is set (registration, new password, profile);
+  // sign in accepts any password, so the rules are not revealed to an attacker
   password: { type: 'password', label: 'Password', minlength: 4 },
   inputs: {
     // extra fields shown on specific panels
@@ -1449,7 +1451,9 @@ VU Admin includes a built-in **click-captcha** and **honeypot** — no Google re
 2. The user clicks the **1 correct icon** highlighted in the question.
 3. On form submit the browser sends `captchaAnswer` (array with 1 icon id) and `captchaToken` (the signed token from step 1).
 4. The backend recomputes the HMAC for the submitted id and compares — no session or database required.
-5. A hidden **honeypot** field is silently sent alongside; bots that fill it in are rejected server-side.
+5. A hidden **honeypot** field (`name="website"`, off screen, `autocomplete="off"`, hidden from screen readers) is
+   sent alongside as `honeypot` on login / register / forgot; bots that fill it in are rejected server-side.
+   A filled honeypot is dropped in the browser too (no request).
 
 Time-limited to **5-minute windows** (two consecutive windows accepted to avoid boundary failures).
 
@@ -1498,7 +1502,7 @@ function verifyCaptcha(answers, token) {
   return signCaptcha(list, b) === token || signCaptcha(list, b - 1) === token;
 }
 
-// In your login / register handler:
+// In your login / register / forgot handler:
 if (body.honeypot) return res.status(401).json({ message: 'Error' });
 if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) {
   return res.status(422).json({ message: 'Invalid captcha' });
@@ -1524,7 +1528,7 @@ function verify_captcha(array $answers, string $token, int $bucket, string $secr
     return $ok1 || $ok2;
 }
 
-// In your login / register endpoint (JSON body):
+// In your login / register / forgot endpoint (JSON body):
 $body     = json_decode(file_get_contents('php://input'), true);
 $answers  = (array) ($body['captchaAnswer'] ?? []);
 $token    = $body['captchaToken'] ?? '';

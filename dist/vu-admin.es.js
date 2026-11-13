@@ -26963,17 +26963,27 @@ var pH = {
 	for: "twofa_trust",
 	class: "form-label text-primary"
 }, pU = ["disabled"], mU = ["value"], hU = ["innerHTML"], gU = { class: "text-end mt-2" }, _U = ["disabled"], vU = {
+	"aria-hidden": "true",
+	style: {
+		position: "absolute",
+		left: "-9999px",
+		width: "1px",
+		height: "1px",
+		overflow: "hidden",
+		opacity: "0"
+	}
+}, yU = {
 	key: 5,
 	class: "mb-4 text-center"
-}, yU = ["innerHTML"], bU = {
+}, bU = ["innerHTML"], xU = {
 	key: 6,
 	class: "d-flex mb-4"
-}, xU = ["innerHTML"], SU = { class: "row" }, CU = { class: "mb-3" }, wU = ["for", "innerHTML"], TU = { class: "input-group" }, EU = ["innerHTML"], DU = [
+}, SU = ["innerHTML"], CU = { class: "row" }, wU = { class: "mb-3" }, TU = ["for", "innerHTML"], EU = { class: "input-group" }, DU = ["innerHTML"], OU = [
 	"disabled",
 	"required",
 	"onUpdate:modelValue",
 	"multiple"
-], OU = ["value", "innerHTML"], kU = [
+], kU = ["value", "innerHTML"], AU = [
 	"id",
 	"name",
 	"type",
@@ -26981,29 +26991,29 @@ var pH = {
 	"placeholder",
 	"required",
 	"disabled"
-], AU = ["innerHTML"], jU = ["innerHTML"], MU = {
+], jU = ["innerHTML"], MU = ["innerHTML"], NU = {
 	key: 0,
 	class: "form-check"
-}, NU = [
+}, PU = [
 	"id",
 	"name",
 	"onUpdate:modelValue",
 	"required",
 	"disabled"
-], PU = ["for", "innerHTML"], FU = {
+], FU = ["for", "innerHTML"], IU = {
 	key: 7,
 	class: "mt-4"
-}, IU = ["innerHTML"], LU = {
+}, LU = ["innerHTML"], RU = {
 	key: 8,
 	class: "mt-3 text-center"
-}, RU = { class: "mt-4 d-flex justify-content-between" }, zU = ["disabled"], BU = ["disabled"], VU = ["disabled"], HU = {
+}, zU = { class: "mt-4 d-flex justify-content-between" }, BU = ["disabled"], VU = ["disabled"], HU = ["disabled"], UU = {
 	key: 0,
 	class: "bi bi-person-plus mx-1"
-}, UU = {
+}, WU = {
 	key: 1,
 	class: "bi bi-arrow-right-square mx-1"
-}, WU = { class: "mt-2 text-end" }, GU = ["disabled"], KU = ["id"], qU = { class: "modal-dialog modal-xl" }, JU = { class: "modal-content h-100" };
-function YU(t, s, c, l, u, d) {
+}, GU = { class: "mt-2 text-end" }, KU = ["disabled"], qU = ["id"], JU = { class: "modal-dialog modal-xl" }, YU = { class: "modal-content h-100" };
+function XU(t, s, c, l, u, d) {
 	let f = b("VuAdminForm");
 	return t.auth && t.auth.visible ? (_(), i("div", {
 		key: 0,
@@ -27092,8 +27102,8 @@ function YU(t, s, c, l, u, d) {
 							"onUpdate:modelValue": s[4] ||= (e) => t.password = e,
 							class: m(["form-control", { "rounded-bottom-0": t.newPasswordPanel && t.settings.password.help }]),
 							placeholder: t.translate(t.settings.password.placeholder),
-							pattern: t.settings.password.pattern,
-							minlength: t.auth.panel == "registration" || t.auth.panel == "profile" ? t.settings.password.minlength : 1,
+							pattern: t.newPasswordPanel ? t.settings.password.pattern : void 0,
+							minlength: t.newPasswordPanel ? t.settings.password.minlength : 1,
 							required: "",
 							disabled: t.loading
 						}, null, 10, VH), [[T, t.password]]),
@@ -27218,47 +27228,40 @@ function YU(t, s, c, l, u, d) {
 					disabled: t.loading
 				}, [s[25] ||= a("i", { class: "bi bi-arrow-repeat me-1" }, null, -1), o(S(t.translate(t.settings.submit.resend)), 1)], 8, _U)])
 			])) : r("", !0),
-			k(a("input", {
+			a("div", vU, [k(a("input", {
 				type: "text",
-				name: "vu_b4t",
+				id: "vua-website",
+				name: "website",
 				tabindex: "-1",
-				autocomplete: "new-password",
-				"aria-hidden": "true",
-				"onUpdate:modelValue": s[12] ||= (e) => t.honeypot = e,
-				style: {
-					position: "absolute",
-					left: "-9999px",
-					width: "1px",
-					height: "1px",
-					opacity: "0"
-				}
-			}, null, 512), [[D, t.honeypot]]),
-			t.auth.panel == "login" && t.settings.password.forgot ? (_(), i("div", vU, [a("button", {
+				autocomplete: "off",
+				"onUpdate:modelValue": s[12] ||= (e) => t.honeypot = e
+			}, null, 512), [[D, t.honeypot]])]),
+			t.auth.panel == "login" && t.settings.password.forgot ? (_(), i("div", yU, [a("button", {
 				type: "button",
 				class: "btn btn-link p-0 text-decoration-none text-nowrap",
 				onClick: s[13] ||= j((...e) => t.toggleForgotPassword && t.toggleForgotPassword(...e), ["stop"]),
 				innerHTML: t.translate(t.settings.password.forgot)
-			}, null, 8, yU)])) : r("", !0),
-			t.auth.panel == "forgot" && t.settings.help && t.settings.help.forgot ? (_(), i("div", bU, [a("small", {
+			}, null, 8, bU)])) : r("", !0),
+			t.auth.panel == "forgot" && t.settings.help && t.settings.help.forgot ? (_(), i("div", xU, [a("small", {
 				class: "text-muted",
 				innerHTML: t.translate(t.settings.help.forgot)
-			}, null, 8, xU)])) : r("", !0),
-			a("div", SU, [(_(!0), i(e, null, y(t.settings.inputs, (n, o) => (_(), i(e, { key: o }, [n.panels.indexOf(t.auth.panel) >= 0 && !n.hidden ? (_(), i("div", {
+			}, null, 8, SU)])) : r("", !0),
+			a("div", CU, [(_(!0), i(e, null, y(t.settings.inputs, (n, o) => (_(), i(e, { key: o }, [n.panels.indexOf(t.auth.panel) >= 0 && !n.hidden ? (_(), i("div", {
 				key: 0,
 				class: m([n.colclass ? n.colclass : "col-md-12"])
-			}, [a("div", CU, [
+			}, [a("div", wU, [
 				n.label ? (_(), i("label", {
 					key: 0,
 					for: o,
 					class: m(["form-label text-primary", { required: n.required }]),
 					innerHTML: t.translate(t.getValueOrFunction(n.label))
-				}, null, 10, wU)) : r("", !0),
-				a("div", TU, [
+				}, null, 10, TU)) : r("", !0),
+				a("div", EU, [
 					n.prefix ? (_(), i("span", {
 						key: 0,
 						class: m(["input-group-text", { "rounded-bottom-0": n.help }]),
 						innerHTML: t.translate(t.getValueOrFunction(n.prefix))
-					}, null, 10, EU)) : r("", !0),
+					}, null, 10, DU)) : r("", !0),
 					n.type == "select" ? k((_(), i("select", {
 						key: 1,
 						class: "form-select",
@@ -27270,7 +27273,7 @@ function YU(t, s, c, l, u, d) {
 						key: e,
 						value: e.value,
 						innerHTML: t.translate(t.getValueOrFunction(e.label))
-					}, null, 8, OU))), 128))], 8, DU)), [[E, t.inputs[o]]]) : k((_(), i("input", {
+					}, null, 8, kU))), 128))], 8, OU)), [[E, t.inputs[o]]]) : k((_(), i("input", {
 						key: 2,
 						id: o,
 						name: o,
@@ -27280,20 +27283,20 @@ function YU(t, s, c, l, u, d) {
 						placeholder: t.translate(n.placeholder),
 						required: n.required,
 						disabled: t.loading
-					}, null, 10, kU)), [[T, t.inputs[o]]]),
+					}, null, 10, AU)), [[T, t.inputs[o]]]),
 					n.suffix ? (_(), i("span", {
 						key: 3,
 						class: m(["input-group-text", { "rounded-bottom-0": n.help }]),
 						innerHTML: t.translate(t.getValueOrFunction(n.suffix))
-					}, null, 10, AU)) : r("", !0)
+					}, null, 10, jU)) : r("", !0)
 				]),
 				n.help ? (_(), i("small", {
 					key: 1,
 					class: "d-block border border-top-0 rounded-bottom p-2 text-muted",
 					innerHTML: t.translate(t.getValueOrFunction(n.help))
-				}, null, 8, jU)) : r("", !0)
+				}, null, 8, MU)) : r("", !0)
 			])], 2)) : r("", !0)], 64))), 128))]),
-			(_(!0), i(e, null, y(t.settings.accepts, (e) => (_(), i("div", { key: e }, [e.panels.indexOf(t.auth.panel) >= 0 ? (_(), i("div", MU, [k(a("input", {
+			(_(!0), i(e, null, y(t.settings.accepts, (e) => (_(), i("div", { key: e }, [e.panels.indexOf(t.auth.panel) >= 0 ? (_(), i("div", NU, [k(a("input", {
 				type: "checkbox",
 				class: "form-check-input",
 				id: "accept_" + e.name,
@@ -27301,35 +27304,35 @@ function YU(t, s, c, l, u, d) {
 				"onUpdate:modelValue": (n) => t.accepts[e.name] = n,
 				required: e.required,
 				disabled: t.loading
-			}, null, 8, NU), [[w, t.accepts[e.name]]]), e.label ? (_(), i("label", {
+			}, null, 8, PU), [[w, t.accepts[e.name]]]), e.label ? (_(), i("label", {
 				key: 0,
 				class: "form-check-label",
 				for: "accept_" + e.name,
 				innerHTML: t.translate(t.getValueOrFunction(e.label))
-			}, null, 8, PU)) : r("", !0)])) : r("", !0)]))), 128)),
-			t.auth.panel == "registration" && t.settings.help && t.settings.help.registration ? (_(), i("div", FU, [a("div", { innerHTML: t.translate(t.getValueOrFunction(t.settings.help.registration)) }, null, 8, IU)])) : r("", !0),
-			t.auth.response.message ? (_(), i("div", LU, [a("div", {
+			}, null, 8, FU)) : r("", !0)])) : r("", !0)]))), 128)),
+			t.auth.panel == "registration" && t.settings.help && t.settings.help.registration ? (_(), i("div", IU, [a("div", { innerHTML: t.translate(t.getValueOrFunction(t.settings.help.registration)) }, null, 8, LU)])) : r("", !0),
+			t.auth.response.message ? (_(), i("div", RU, [a("div", {
 				class: m({
 					"text-danger": !t.auth.response.ok,
 					"text-success": t.auth.response.ok
 				}),
 				style: { "white-space": "pre-line" }
 			}, S(t.translate(t.auth.response.message)), 3)])) : r("", !0),
-			a("div", RU, [
+			a("div", zU, [
 				t.auth.panel != "login" && t.auth.panel != "activation" && t.auth.panel != "profile" ? (_(), i("button", {
 					key: 0,
 					type: "button",
 					onClick: s[14] ||= j((...e) => t.toggleClear && t.toggleClear(...e), ["stop"]),
 					class: "btn btn-secondary w-100 me-2 text-nowrap",
 					disabled: t.loading
-				}, [s[27] ||= a("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.login)), 1)], 8, zU)) : r("", !0),
+				}, [s[27] ||= a("i", { class: "bi bi-arrow-left-square mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.login)), 1)], 8, BU)) : r("", !0),
 				t.auth.panel == "login" && t.settings.registrationEnabled !== !1 ? (_(), i("button", {
 					key: 1,
 					type: "button",
 					class: "btn btn-warning w-100 me-2 text-nowrap",
 					onClick: s[15] ||= j((...e) => t.toggleNewRegistration && t.toggleNewRegistration(...e), ["stop"]),
 					disabled: t.loading
-				}, [s[28] ||= a("i", { class: "bi bi-person-plus mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.registration)), 1)], 8, BU)) : r("", !0),
+				}, [s[28] ||= a("i", { class: "bi bi-person-plus mx-1" }, null, -1), o(" " + S(t.translate(t.settings.submit.registration)), 1)], 8, VU)) : r("", !0),
 				a("button", {
 					type: "submit",
 					class: m(["btn w-100 text-nowrap", {
@@ -27337,20 +27340,20 @@ function YU(t, s, c, l, u, d) {
 						"btn-warning": t.auth.panel == "registration"
 					}]),
 					disabled: t.loading
-				}, [o(S(t.translate(t.panelText("submit"))) + " ", 1), t.auth.panel == "registration" ? (_(), i("i", HU)) : (_(), i("i", UU))], 10, VU)
+				}, [o(S(t.translate(t.panelText("submit"))) + " ", 1), t.auth.panel == "registration" ? (_(), i("i", UU)) : (_(), i("i", WU))], 10, HU)
 			]),
-			a("div", WU, [a("button", {
+			a("div", GU, [a("button", {
 				type: "button",
 				onClick: s[16] ||= j((...e) => t.close && t.close(...e), ["stop"]),
 				class: "btn btn-light border w-100 me-1",
 				disabled: t.loading
-			}, [o(S(t.translate(t.settings.submit.cancel)) + " ", 1), s[29] ||= a("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, GU)])
+			}, [o(S(t.translate(t.settings.submit.cancel)) + " ", 1), s[29] ||= a("i", { class: "bi bi-x-square mx-1" }, null, -1)], 8, KU)])
 		], 32)
 	])])]), a("div", {
 		class: "modal shadow",
 		id: t.modalId,
 		tabindex: "-1"
-	}, [a("div", qU, [a("div", JU, [t.settings.form && t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
+	}, [a("div", JU, [a("div", YU, [t.settings.form && t.settings.form.visible && t.settings.form.groups ? (_(), n(f, {
 		key: 0,
 		modelValue: t.item,
 		"onUpdate:modelValue": s[21] ||= (e) => t.item = e,
@@ -27372,12 +27375,12 @@ function YU(t, s, c, l, u, d) {
 		"deleteItem",
 		"reloadTable",
 		"fetchRelation"
-	])) : r("", !0)])])], 8, KU)], 8, mH)) : r("", !0);
+	])) : r("", !0)])])], 8, qU)], 8, mH)) : r("", !0);
 }
-var XU = /*#__PURE__*/ kA(pH, [["render", YU]]);
+var ZU = /*#__PURE__*/ kA(pH, [["render", XU]]);
 // src/components/VuUserButton.vue
 Nc();
-var ZU = {
+var QU = {
 	name: "VuUserButton",
 	props: {
 		modelValue: Object,
@@ -27462,60 +27465,60 @@ var ZU = {
 	beforeUnmount() {
 		window.removeEventListener(Fc, this._onLanguageChange), window.removeEventListener(WV, this._onThemeChange);
 	}
-}, QU = ["data-bs-theme"], $U = {
+}, $U = ["data-bs-theme"], eW = {
 	key: 0,
 	class: "dropdown"
-}, eW = ["innerHTML"], tW = {
+}, tW = ["innerHTML"], nW = {
 	class: "dropdown-menu dropdown-menu-end",
 	"aria-labelledby": "userDropdown"
-}, nW = ["innerHTML"], rW = ["onClick"], iW = ["innerHTML"], aW = ["onClick", "title"], oW = ["innerHTML"], sW = [
+}, rW = ["innerHTML"], iW = ["onClick"], aW = ["innerHTML"], oW = ["onClick", "title"], sW = ["innerHTML"], cW = [
 	"onClick",
 	"title",
 	"aria-label"
-], cW = { key: 1 }, lW = ["innerHTML"], uW = ["onClick", "innerHTML"], dW = {
+], lW = { key: 1 }, uW = ["innerHTML"], dW = ["onClick", "innerHTML"], fW = {
 	key: 1,
 	class: "d-inline-block"
-}, fW = ["innerHTML"];
-function pW(t, n, s, c, l, u) {
+}, pW = ["innerHTML"];
+function mW(t, n, s, c, l, u) {
 	return (t.panel != "registration" || t.registrationEnabled) && (!t.auth.user && t.panel != "login" || t.panel == "login") ? (_(), i("div", {
 		key: 0,
 		class: "vua-user-button d-inline-block",
 		"data-bs-theme": [t.theme]
-	}, [t.auth.user ? (_(), i("div", $U, [a("button", {
+	}, [t.auth.user ? (_(), i("div", eW, [a("button", {
 		class: m(["dropdown-toggle", [t.settings.class]]),
 		type: "button",
 		id: "userDropdown",
 		"data-bs-toggle": "dropdown",
 		"aria-expanded": "false"
-	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, eW)], 2), a("ul", tW, [(_(!0), i(e, null, y(t.visibleDropdowns, (r) => (_(), i(e, { key: r }, [r.action == "BUTTON_ROLES" ? (_(), i("li", {
+	}, [a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, tW)], 2), a("ul", nW, [(_(!0), i(e, null, y(t.visibleDropdowns, (r) => (_(), i(e, { key: r }, [r.action == "BUTTON_ROLES" ? (_(), i("li", {
 		key: 0,
 		class: m([[r.class], "d-flex items-align-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(r.label)),
 		class: "me-2"
-	}, null, 8, nW), (_(!0), i(e, null, y(t.auth.user.roles, (e) => (_(), i("button", {
+	}, null, 8, rW), (_(!0), i(e, null, y(t.auth.user.roles, (e) => (_(), i("button", {
 		key: e,
 		onClick: (n) => t.setSelectedRole(e),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e == t.auth.user.role }])
-	}, S(e), 11, rW))), 128))], 2)) : r.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
+	}, S(e), 11, iW))), 128))], 2)) : r.action == "BUTTON_LANGUAGE" ? (_(), i("li", {
 		key: 1,
 		class: m([[r.class], "d-flex align-items-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(r.label === void 0 ? "Language" : r.label)),
 		class: "me-2"
-	}, null, 8, iW), (_(!0), i(e, null, y(t.languages(r), (e) => (_(), i("button", {
+	}, null, 8, aW), (_(!0), i(e, null, y(t.languages(r), (e) => (_(), i("button", {
 		key: e.value,
 		type: "button",
 		onClick: j((n) => t.changeLanguage(e.value), ["stop"]),
 		class: m(["btn btn-sm btn-secondary p-0 px-1 me-1", { "bg-primary text-light": e.value == t.language }]),
 		title: e.label
-	}, S(e.short || e.value.toUpperCase()), 11, aW))), 128))], 2)) : r.action == "BUTTON_THEME" ? (_(), i("li", {
+	}, S(e.short || e.value.toUpperCase()), 11, oW))), 128))], 2)) : r.action == "BUTTON_THEME" ? (_(), i("li", {
 		key: 2,
 		class: m([[r.class], "d-flex align-items-center"])
 	}, [a("span", {
 		innerHTML: t.translate(t.getValueOrFunction(r.label === void 0 ? "Theme" : r.label)),
 		class: "me-2"
-	}, null, 8, oW), (_(!0), i(e, null, y(t.themes(r), (e) => (_(), i("button", {
+	}, null, 8, sW), (_(!0), i(e, null, y(t.themes(r), (e) => (_(), i("button", {
 		key: e.value,
 		type: "button",
 		onClick: j((n) => t.changeTheme(e.value), ["stop"]),
@@ -27525,28 +27528,28 @@ function pW(t, n, s, c, l, u) {
 	}, [e.icon ? (_(), i("i", {
 		key: 0,
 		class: m(e.icon)
-	}, null, 2)) : (_(), i("span", cW, S(t.translate(e.label)), 1))], 10, sW))), 128))], 2)) : r.action == "BUTTON_PROFILE" ? (_(), i("li", {
+	}, null, 2)) : (_(), i("span", lW, S(t.translate(e.label)), 1))], 10, cW))), 128))], 2)) : r.action == "BUTTON_PROFILE" ? (_(), i("li", {
 		key: 3,
 		class: m([r.class]),
 		onClick: n[0] ||= (e) => t.showProfilModal()
 	}, [r.label === void 0 ? (_(), i(e, { key: 1 }, [n[2] ||= a("i", { class: "bi bi-person me-1" }, null, -1), o(" " + S(t.translate("Profile")), 1)], 64)) : (_(), i("span", {
 		key: 0,
 		innerHTML: t.translate(t.getValueOrFunction(r.label))
-	}, null, 8, lW))], 2)) : (_(), i("li", {
+	}, null, 8, uW))], 2)) : (_(), i("li", {
 		key: 4,
 		class: m([r.class]),
 		onClick: (e) => t.dropdownAction(r),
 		innerHTML: t.translate(t.getValueOrFunction(r.label))
-	}, null, 10, uW))], 64))), 128))])])) : (_(), i("div", dW, [a("button", {
+	}, null, 10, dW))], 64))), 128))])])) : (_(), i("div", fW, [a("button", {
 		class: m([t.settings.class]),
 		type: "button",
 		onClick: n[1] ||= (...e) => t.togglePanel && t.togglePanel(...e)
 	}, [t.settings.icon ? (_(), i("i", {
 		key: 0,
 		class: m([t.settings.icon])
-	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, fW)], 2)]))], 8, QU)) : r("", !0);
+	}, null, 2)) : r("", !0), a("span", { innerHTML: t.translate(t.getValueOrFunction(t.settings.label)) }, null, 8, pW)], 2)]))], 8, $U)) : r("", !0);
 }
-var mW = /*#__PURE__*/ kA(ZU, [["render", pW]]), hW = {
+var hW = /*#__PURE__*/ kA(QU, [["render", mW]]), gW = {
 	name: "VuAdminNav",
 	props: {
 		modelValue: Object,
@@ -27791,20 +27794,20 @@ var mW = /*#__PURE__*/ kA(ZU, [["render", pW]]), hW = {
 			}
 		}
 	}
-}, gW = {
+}, _W = {
 	key: 0,
 	class: "dropdown-divider"
-}, _W = ["disabled", "onClick"], vW = [
+}, vW = ["disabled", "onClick"], yW = [
 	"aria-current",
 	"target",
 	"rel",
 	"href"
-], yW = ["disabled", "onClick"], bW = [
+], bW = ["disabled", "onClick"], xW = [
 	"aria-current",
 	"target",
 	"rel",
 	"href"
-], xW = {
+], SW = {
 	key: 1,
 	class: "vu-admin-nav-result position-fixed bottom-0 end-0 m-3 shadow",
 	style: {
@@ -27812,14 +27815,14 @@ var mW = /*#__PURE__*/ kA(ZU, [["render", pW]]), hW = {
 		"max-width": "640px",
 		width: "calc(100% - 2rem)"
 	}
-}, SW = { class: "d-flex align-items-start gap-2" }, CW = { class: "me-auto" }, wW = {
+}, CW = { class: "d-flex align-items-start gap-2" }, wW = { class: "me-auto" }, TW = {
 	key: 0,
 	class: "spinner-border spinner-border-sm ms-2",
 	"aria-hidden": "true"
-}, TW = {
+}, EW = {
 	key: 1,
 	class: "ms-2"
-}, EW = ["aria-label", "disabled"], DW = {
+}, DW = ["aria-label", "disabled"], OW = {
 	key: 0,
 	class: "mt-2 mb-0 small overflow-auto",
 	style: {
@@ -27827,7 +27830,7 @@ var mW = /*#__PURE__*/ kA(ZU, [["render", pW]]), hW = {
 		"white-space": "pre-wrap"
 	}
 };
-function OW(t, n, s, c, l, u) {
+function kW(t, n, s, c, l, u) {
 	return _(), i(e, null, [t.auth && t.auth.success && t.visibleItems.length ? (_(), i("ul", {
 		key: 0,
 		class: m(["navbar-nav flex-grow-1 mb-2 mb-lg-0", t.menuClass])
@@ -27842,7 +27845,7 @@ function OW(t, n, s, c, l, u) {
 		key: 0,
 		class: m(t.iconClass(n.icon)),
 		style: h(t.iconStyle(n))
-	}, null, 6)) : r("", !0), a("span", null, S(t.translate(n.name)), 1)], 2), a("ul", { class: m(["dropdown-menu", n.menuClass]) }, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [e.divider ? (_(), i("hr", gW)) : e.header ? (_(), i("h6", {
+	}, null, 6)) : r("", !0), a("span", null, S(t.translate(n.name)), 1)], 2), a("ul", { class: m(["dropdown-menu", n.menuClass]) }, [(_(!0), i(e, null, y(t.visibleChildren(n), (e, n) => (_(), i("li", { key: n }, [e.divider ? (_(), i("hr", _W)) : e.header ? (_(), i("h6", {
 		key: 1,
 		class: m(["dropdown-header", e.class])
 	}, [t.iconClass(e.icon) ? (_(), i("i", {
@@ -27859,7 +27862,7 @@ function OW(t, n, s, c, l, u) {
 		key: 0,
 		class: m(t.iconClass(e.icon)),
 		style: h(t.iconStyle(e))
-	}, null, 6)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, _W)) : (_(), i("a", {
+	}, null, 6)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, vW)) : (_(), i("a", {
 		key: 3,
 		class: m(["dropdown-item", [e.class, { active: t.isActive(e) }]]),
 		"aria-current": t.isActive(e) ? "page" : null,
@@ -27870,7 +27873,7 @@ function OW(t, n, s, c, l, u) {
 		key: 0,
 		class: m(t.iconClass(e.icon)),
 		style: h(t.iconStyle(e))
-	}, null, 6)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, vW))]))), 128))], 2)], 2)) : (_(), i("li", {
+	}, null, 6)) : r("", !0), o(" " + S(t.translate(e.name)), 1)], 10, yW))]))), 128))], 2)], 2)) : (_(), i("li", {
 		key: 1,
 		class: m(["nav-item", n.itemClass])
 	}, [n.api ? (_(), i("button", {
@@ -27883,7 +27886,7 @@ function OW(t, n, s, c, l, u) {
 		key: 0,
 		class: m(t.iconClass(n.icon)),
 		style: h(t.iconStyle(n))
-	}, null, 6)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, yW)) : (_(), i("a", {
+	}, null, 6)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, bW)) : (_(), i("a", {
 		key: 1,
 		class: m(["nav-link scrollto", [n.class, { active: t.isActive(n) }]]),
 		"aria-current": t.isActive(n) ? "page" : null,
@@ -27894,18 +27897,18 @@ function OW(t, n, s, c, l, u) {
 		key: 0,
 		class: m(t.iconClass(n.icon)),
 		style: h(t.iconStyle(n))
-	}, null, 6)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, bW))], 2))], 64))), 128))], 2)) : r("", !0), t.result ? (_(), i("div", xW, [a("div", {
+	}, null, 6)) : r("", !0), o(" " + S(t.translate(n.name)), 1)], 10, xW))], 2))], 64))), 128))], 2)) : r("", !0), t.result ? (_(), i("div", SW, [a("div", {
 		class: m(["alert mb-0", t.result.running ? "alert-secondary" : t.result.ok ? "alert-success" : "alert-danger"]),
 		role: "status"
-	}, [a("div", SW, [a("strong", CW, [o(S(t.translate(t.result.name)) + " ", 1), t.result.running ? (_(), i("span", wW)) : (_(), i("span", TW, "— " + S(t.result.ok ? t.translate("Done") : t.translate("Error")) + " (" + S(t.result.status) + ")", 1))]), a("button", {
+	}, [a("div", CW, [a("strong", wW, [o(S(t.translate(t.result.name)) + " ", 1), t.result.running ? (_(), i("span", TW)) : (_(), i("span", EW, "— " + S(t.result.ok ? t.translate("Done") : t.translate("Error")) + " (" + S(t.result.status) + ")", 1))]), a("button", {
 		type: "button",
 		class: "btn-close",
 		"aria-label": t.translate("Close"),
 		disabled: t.result.running,
 		onClick: n[0] ||= (e) => t.result = null
-	}, null, 8, EW)]), t.result.running ? r("", !0) : (_(), i("pre", DW, S(t.result.output), 1))], 2)])) : r("", !0)], 64);
+	}, null, 8, DW)]), t.result.running ? r("", !0) : (_(), i("pre", OW, S(t.result.output), 1))], 2)])) : r("", !0)], 64);
 }
-var kW = /*#__PURE__*/ kA(hW, [["render", OW]]), AW = {
+var AW = /*#__PURE__*/ kA(gW, [["render", kW]]), jW = {
 	title: "",
 	documentTitle: "{view} | {title}",
 	logo: "",
@@ -27929,7 +27932,7 @@ var kW = /*#__PURE__*/ kA(hW, [["render", OW]]), AW = {
 		groups: null
 	}
 };
-function jW(e, t) {
+function MW(e, t) {
 	let n = {};
 	return Object.keys(e).forEach((t) => {
 		let r = e[t];
@@ -27939,14 +27942,14 @@ function jW(e, t) {
 		n[e] = r && typeof r == "object" && !Array.isArray(r) && n[e] && typeof n[e] == "object" ? Object.assign(n[e], r) : r;
 	}), n;
 }
-function MW() {
+function NW() {
 	try {
 		return !!(localStorage.getItem("vu-user") && localStorage.getItem("vu-header"));
 	} catch {
 		return !1;
 	}
 }
-var NW = {
+var PW = {
 	name: "VuAdminApp",
 	props: { session: {
 		type: Object,
@@ -27956,10 +27959,10 @@ var NW = {
 		let e = typeof window < "u" && window.VuSettings && window.VuSettings.app ? window.VuSettings.app : {};
 		return {
 			auth: this.session || { inputs: {} },
-			settings: jW(AW, e),
+			settings: MW(jW, e),
 			language: Hc(),
 			hash: typeof window < "u" ? window.location.hash : "",
-			restoring: !this.session && MW(),
+			restoring: !this.session && NW(),
 			themeChoice: JV(),
 			themeTick: 0
 		};
@@ -28027,20 +28030,20 @@ var NW = {
 	},
 	components: {
 		VuAdmin: dH,
-		VuAuth: XU,
-		VuUserButton: mW,
-		VuAdminNav: kW
+		VuAuth: ZU,
+		VuUserButton: hW,
+		VuAdminNav: AW
 	}
-}, PW = ["data-bs-theme"], FW = ["href"], IW = [
+}, FW = ["data-bs-theme"], IW = ["href"], LW = [
 	"src",
 	"alt",
 	"height",
 	"width"
-], LW = { key: 1 }, RW = {
+], RW = { key: 1 }, zW = {
 	key: 0,
 	class: "vu-admin-app-loading d-flex justify-content-center align-items-center py-5 text-secondary"
 };
-function zW(e, t, o, c, l, u) {
+function BW(e, t, o, c, l, u) {
 	let d = b("vu-admin-nav"), f = b("vu-user-button"), p = b("vu-admin"), h = b("vu-auth");
 	return _(), i("div", { class: m(["vu-admin-app", e.settings.container]) }, [
 		a("header", {
@@ -28058,7 +28061,7 @@ function zW(e, t, o, c, l, u) {
 				height: e.settings.brand.height || null,
 				width: e.settings.brand.width || null,
 				class: m(["d-inline-block", { "me-2": e.settings.title }])
-			}, null, 10, IW)) : r("", !0), e.settings.title ? (_(), i("span", LW, S(e.translate(e.settings.title)), 1)) : r("", !0)], 10, FW)) : r("", !0),
+			}, null, 10, LW)) : r("", !0), e.settings.title ? (_(), i("span", RW, S(e.translate(e.settings.title)), 1)) : r("", !0)], 10, IW)) : r("", !0),
 			s(d, {
 				modelValue: e.auth,
 				"onUpdate:modelValue": t[0] ||= (t) => e.auth = t,
@@ -28084,8 +28087,8 @@ function zW(e, t, o, c, l, u) {
 				"onUpdate:modelValue": t[2] ||= (t) => e.auth = t,
 				panel: "login"
 			}, null, 8, ["modelValue"])
-		], 10, PW),
-		a("main", { class: m(e.settings.main.class) }, [e.restoring ? (_(), i("div", RW, [t[4] ||= a("span", {
+		], 10, FW),
+		a("main", { class: m(e.settings.main.class) }, [e.restoring ? (_(), i("div", zW, [t[4] ||= a("span", {
 			class: "spinner-border spinner-border-sm me-2",
 			"aria-hidden": "true"
 		}, null, -1), a("span", null, S(e.translate("Loading...")), 1)])) : r("", !0), s(p, { auth: e.auth }, null, 8, ["auth"])], 2),
@@ -28097,5 +28100,5 @@ function zW(e, t, o, c, l, u) {
 		}, null, 8, ["modelValue"]))
 	], 2);
 }
-var BW = /*#__PURE__*/ kA(NW, [["render", zW]]);
-export { dH as VuAdmin, BW as VuAdminApp, HV as VuAdminCount, kW as VuAdminNav, XU as VuAuth, mW as VuUserButton, Rc as availableLanguages, KV as availableThemes, Gc as escapeHtml, Hc as getLanguage, JV as getTheme, Kc as safeUrl, Uc as setLanguage, eH as setTheme, _l as translate, Lc as translations };
+var VW = /*#__PURE__*/ kA(PW, [["render", BW]]);
+export { dH as VuAdmin, VW as VuAdminApp, HV as VuAdminCount, AW as VuAdminNav, ZU as VuAuth, hW as VuUserButton, Rc as availableLanguages, KV as availableThemes, Gc as escapeHtml, Hc as getLanguage, JV as getTheme, Kc as safeUrl, Uc as setLanguage, eH as setTheme, _l as translate, Lc as translations };

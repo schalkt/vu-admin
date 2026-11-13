@@ -74,6 +74,9 @@ function tokenUserId(token) {
   }
 }
 
+// --- password reset tokens (in-memory, TTL 1 hour): forgot → e-mailed link → reset ---
+const resetStore = new Map();
+
 // --- 2FA session store (in-memory, TTL 5 min) ---
 const twoFaStore = new Map();
 
@@ -391,6 +394,42 @@ export function createMockMiddleware(server, { delay = 500, mockErrors: mockErro
       writeDb('users', users);
       const { password: _, ...safeUser } = newUser;
       return send(res, { ...safeUser, message: 'Registration successful! The activation e-mail has been sent.' }, 200, delay);
+    }
+
+    // forgot password: { username, honeypot, captchaToken, captchaAnswer } → always the same answer, so it does not
+    // reveal whether the e-mail address exists (the mock sends no e-mail)
+    if (action === 'forgot' && req.method === 'POST') {
+      const body = await readBody(req);
+      if (body.honeypot) return send(res, { message: 'Request failed' }, 400, delay);
+      if (!verifyCaptcha(body.captchaAnswer, body.captchaToken)) return send(res, { message: 'Invalid captcha answer' }, 422, delay);
+      const users = readDb('users') || [];
+      const user = users.find(u => u.username === body.username || u.email === body.username);
+      if (user) {
+        // the "e-mail": the link opens the 'password' panel of VuAuth with the token as an input
+        const token = crypto.randomBytes(32).toString('hex');
+        resetStore.set(token, { userId: user.id, expires: Date.now() + 60 * 60 * 1000 });
+        const params = encodeURIComponent(JSON.stringify({ panel: 'password', inputs: { token } }));
+        console.log(`[mock forgot] reset link for ${user.email}: /?vuparams=${params}`);
+      }
+      return send(res, { message: 'If the address exists, the e-mail has been sent.' }, 200, delay);
+    }
+
+    // new password with the token of the reset link: { token, password } → the token is single use
+    if (action === 'reset' && req.method === 'POST') {
+      const body = await readBody(req);
+      const entry = body.token ? resetStore.get(body.token) : null;
+      if (!entry || entry.expires < Date.now()) {
+        if (entry) resetStore.delete(body.token);
+        return send(res, { message: 'The link is invalid or has expired' }, 400, delay);
+      }
+      if (!body.password) return send(res, { message: 'The new password is required' }, 422, delay);
+      const users = readDb('users') || [];
+      const user = users.find(u => u.id === entry.userId);
+      resetStore.delete(body.token);
+      if (!user) return send(res, { message: 'The link is invalid or has expired' }, 400, delay);
+      user.password = body.password;
+      writeDb('users', users);
+      return send(res, { message: 'Your password has been changed, you can sign in now.' }, 200, delay);
     }
 
     // password change of the signed-in user (profile): { currentPassword, password }

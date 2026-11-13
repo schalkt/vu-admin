@@ -208,6 +208,10 @@ window.VuSettings = {
             // server (mock API) messages
             'Invalid username or password': 'Hibás felhasználónév vagy jelszó',
             'Invalid captcha answer': 'Érvénytelen captcha megoldás',
+            'If the address exists, the e-mail has been sent.': 'Ha a cím létezik, elküldtük rá az e-mailt.',
+            'The link is invalid or has expired': 'A link érvénytelen vagy lejárt',
+            'The new password is required': 'Az új jelszó megadása kötelező',
+            'Your password has been changed, you can sign in now.': 'A jelszavad megváltozott, most már bejelentkezhetsz.',
             'Registration failed': 'Sikertelen regisztráció',
             'This e-mail address is already taken': 'Ez az e-mail cím már foglalt',
             'Registration successful! The activation e-mail has been sent.': 'Sikeres regisztráció! Az aktiváló e-mailt elküldtük.',
@@ -382,8 +386,8 @@ window.VuSettings = {
             login: '/api/auth/login',
             profile: '/api/auth/me',
             register: '/api/auth/register',
-            forgot: '/password/forgot',
-            password: '/password/update',
+            forgot: '/api/auth/forgot',
+            password: '/api/auth/reset',           // new password after the e-mailed reset link (token)
             changePassword: '/api/auth/password',  // profile → password change of the signed-in user
             activation: '/api/auth/activate',
             twofa: '/api/auth/twofa',
