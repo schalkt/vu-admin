@@ -1,19 +1,43 @@
 <template>
     <div v-cloak class="vu-admin-app" :class="settings.container">
 
-        <header :class="settings.header.class" :data-bs-theme="headerTheme">
+        <!-- signed out: no header, the page name in the middle with the sign in button and the registration link -->
+        <div v-if="landing" class="vu-admin-landing position-relative d-flex flex-column justify-content-center align-items-center text-center"
+            :class="settings.landing.class">
+            <!-- language switch (more than one language offered, landing.languages !== false) -->
+            <div v-if="landingLanguages.length > 1" class="vu-admin-landing-languages position-absolute top-0 end-0 p-3 d-flex gap-1">
+                <button v-for="item in landingLanguages" :key="item.value" type="button" class="btn btn-sm"
+                    :class="item.value == language ? 'btn-secondary' : 'btn-outline-secondary'" :title="item.label"
+                    :aria-label="item.label" :aria-pressed="item.value == language ? 'true' : 'false'" @click="changeLanguage(item.value)">
+                    {{ item.short || item.value.toUpperCase() }}
+                </button>
+            </div>
+            <img v-if="logo" :src="logoFor(pageTheme).src" :style="logoFor(pageTheme).style" alt=""
+                :height="settings.landing.logoHeight || null" class="vu-admin-landing-logo mb-3">
+            <h1 v-if="settings.title" class="vu-admin-landing-title h3 mb-2">{{ translate(settings.title) }}</h1>
+            <p v-if="settings.landing.text" class="vu-admin-landing-text text-secondary mb-0" v-html="translate(settings.landing.text)"></p>
+            <button type="button" class="vu-admin-landing-sign-in mt-4" :class="settings.landing.buttonClass" @click="openAuth('login')">
+                <i v-if="settings.landing.buttonIcon" :class="settings.landing.buttonIcon"></i>{{ translate(settings.landing.signIn) }}
+            </button>
+            <p v-if="registrationEnabled" class="vu-admin-landing-register small mt-3 mb-0">
+                <span v-if="settings.landing.registerText" class="text-secondary me-1">{{ translate(settings.landing.registerText) }}</span>
+                <a href="#" class="text-decoration-none" @click.prevent="openAuth('registration')">{{ translate(settings.landing.register) }}</a>
+            </p>
+        </div>
+
+        <header v-else :class="settings.header.class" :data-bs-theme="headerTheme">
             <a v-if="logo || settings.title" class="navbar-brand d-flex align-items-center me-3" :class="settings.brand.class" :href="safeUrl(settings.brand.href)">
-                <img v-if="logo" :src="logo" :alt="translate(settings.title || '')" :height="settings.brand.height || null"
+                <img v-if="logo" :src="logoFor(headerTheme || pageTheme).src" :style="logoFor(headerTheme || pageTheme).style"
+                    :alt="translate(settings.title || '')" :height="settings.brand.height || null"
                     :width="settings.brand.width || null" class="d-inline-block" :class="{ 'me-2': settings.title }">
                 <span v-if="settings.title">{{ translate(settings.title) }}</span>
             </a>
             <vu-admin-nav v-model="auth" :url="settings.nav.url || undefined" :menu="settings.nav.menu || undefined"
                 :source="settings.nav.source || undefined" :groups="settings.nav.groups || undefined"></vu-admin-nav>
-            <vu-user-button v-if="!session" v-model="auth" :panel="'registration'"></vu-user-button>
             <vu-user-button v-model="auth" :panel="'login'"></vu-user-button>
         </header>
 
-        <main :class="settings.main.class">
+        <main v-if="!landing" :class="settings.main.class">
             <!-- stored session is being restored (profile request): instead of an empty, signed-out looking page -->
             <div v-if="restoring" class="vu-admin-app-loading d-flex justify-content-center align-items-center py-5 text-secondary">
                 <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
@@ -33,7 +57,7 @@ import VuAuth from "./VuAuth.vue";
 import VuUserButton from "./VuUserButton.vue";
 import VuAdminNav from "./VuAdminNav.vue";
 import { safeUrl, translate } from "./helpers";
-import { getLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
+import { availableLanguages, getLanguage, setLanguage, LANGUAGE_CHANGE_EVENT } from "../i18n.js";
 import { getTheme, resolveTheme, THEME_CHANGE_EVENT } from "../theme.js";
 
 // window.VuSettings.app – every key is optional
@@ -44,6 +68,9 @@ const DEFAULTS = {
     documentTitle: "{view} | {title}",
     // brand logo URL (relative, http(s) or data:image)
     logo: "",
+    // logo in the dark theme: an own URL, or 'invert' (the logo with inverted colors, for a one-color dark logo);
+    // empty → the logo is used as it is
+    logoDark: "",
     // favicon URL (empty → the one in the HTML stays)
     favicon: "",
     brand: {
@@ -61,6 +88,22 @@ const DEFAULTS = {
     },
     main: {
         class: "",
+    },
+    // the page while signed out (no header): logo, title, text, sign in button, registration link;
+    // enabled: false → the header with the sign in / register buttons, as before
+    landing: {
+        enabled: true,
+        class: "min-vh-100 py-5",
+        logoHeight: 64,
+        // optional line under the title (translation key, HTML)
+        text: "",
+        signIn: "Sign in",
+        buttonClass: "btn btn-primary btn-lg px-5",
+        buttonIcon: "bi bi-box-arrow-in-right me-2",
+        registerText: "Don't have an account?",
+        register: "Register",
+        // language switch in the top right corner (when more than one language is offered)
+        languages: true,
     },
     nav: {
         // 'api' (backend, default) | 'entities' (auth.settings.entities) | 'merge' (both)
@@ -122,6 +165,24 @@ const VuAdminApp = {
         };
     },
     computed: {
+        // signed out (not while a stored session is being restored, never with a fixed session)
+        landing() {
+            return !this.session && !this.restoring && this.settings.landing.enabled !== false && !(this.auth && this.auth.user);
+        },
+        // the theme of the page: the user's choice, else the theme set on the document, else light
+        pageTheme() {
+            this.themeTick;
+            const documentTheme = typeof document !== "undefined" ? document.documentElement.getAttribute("data-bs-theme") : null;
+            return resolveTheme(this.themeChoice) || (documentTheme === "dark" ? "dark" : "light");
+        },
+        landingLanguages() {
+            return this.settings.landing.languages === false ? [] : availableLanguages();
+        },
+        // window.VuSettings.auth.registrationEnabled: false → no registration link
+        registrationEnabled() {
+            const auth = typeof window !== "undefined" && window.VuSettings ? window.VuSettings.auth : null;
+            return !(auth && auth.registrationEnabled === false);
+        },
         // the user's theme choice wins over header.theme
         headerTheme() {
             this.themeTick;
@@ -204,6 +265,28 @@ const VuAdminApp = {
     },
     methods: {
         safeUrl,
+        changeLanguage(language) {
+            setLanguage(language);
+        },
+        // the logo in a theme: { src, style }; logoDark: an own URL or 'invert'
+        logoFor(theme) {
+            const dark = this.settings.logoDark;
+            if (theme === "dark" && dark) {
+                if (dark === "invert") {
+                    return { src: this.logo, style: { filter: "invert(1)" } };
+                }
+                const src = safeUrl(dark);
+                if (src) {
+                    return { src, style: null };
+                }
+            }
+            return { src: this.logo, style: null };
+        },
+        // opens the VuAuth panel ('login' | 'registration')
+        openAuth(panel) {
+            this.auth.panel = panel;
+            this.auth.visible = true;
+        },
         translate(key) {
             return translate(key, null, null, this.language);
         },

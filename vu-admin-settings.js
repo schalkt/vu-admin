@@ -133,6 +133,7 @@ window.VuSettings = {
         title: 'VU Admin',                     // brand text + browser tab title (translation key)
         documentTitle: '{view} | {title}',     // tab title, {view} = active view; can be a function: (title, view) => ...
         logo: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/icons/grid-3x3-gap-fill.svg',
+        logoDark: 'invert',                    // dark theme: own URL, or 'invert' (the black icon becomes white)
         favicon: '',                           // empty → the one in the HTML stays
         brand: { href: '#', height: 24 },
         container: 'container-fluid',

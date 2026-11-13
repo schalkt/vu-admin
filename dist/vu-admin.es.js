@@ -3092,6 +3092,7 @@ var Pc = "vu-language", Fc = "vu-language-change", Ic = [{
 	Language: "Nyelv",
 	"Sign in": "Bejelentkezés",
 	Register: "Regisztráció",
+	"Don't have an account?": "Még nincs fiókod?",
 	"Sign out": "Kijelentkezés",
 	Profile: "Profil",
 	"Switch role": "Szerepkör váltás",
@@ -27912,6 +27913,7 @@ var AW = /*#__PURE__*/ kA(gW, [["render", kW]]), jW = {
 	title: "",
 	documentTitle: "{view} | {title}",
 	logo: "",
+	logoDark: "",
 	favicon: "",
 	brand: {
 		href: "#",
@@ -27925,6 +27927,18 @@ var AW = /*#__PURE__*/ kA(gW, [["render", kW]]), jW = {
 		theme: ""
 	},
 	main: { class: "" },
+	landing: {
+		enabled: !0,
+		class: "min-vh-100 py-5",
+		logoHeight: 64,
+		text: "",
+		signIn: "Sign in",
+		buttonClass: "btn btn-primary btn-lg px-5",
+		buttonIcon: "bi bi-box-arrow-in-right me-2",
+		registerText: "Don't have an account?",
+		register: "Register",
+		languages: !0
+	},
 	nav: {
 		source: "api",
 		url: "",
@@ -27968,6 +27982,21 @@ var PW = {
 		};
 	},
 	computed: {
+		landing() {
+			return !this.session && !this.restoring && this.settings.landing.enabled !== !1 && !(this.auth && this.auth.user);
+		},
+		pageTheme() {
+			this.themeTick;
+			let e = typeof document < "u" ? document.documentElement.getAttribute("data-bs-theme") : null;
+			return XV(this.themeChoice) || (e === "dark" ? "dark" : "light");
+		},
+		landingLanguages() {
+			return this.settings.landing.languages === !1 ? [] : Rc();
+		},
+		registrationEnabled() {
+			let e = typeof window < "u" && window.VuSettings ? window.VuSettings.auth : null;
+			return !(e && e.registrationEnabled === !1);
+		},
 		headerTheme() {
 			return this.themeTick, XV(this.themeChoice) || this.settings.header.theme || null;
 		},
@@ -28018,6 +28047,30 @@ var PW = {
 	},
 	methods: {
 		safeUrl: Kc,
+		changeLanguage(e) {
+			Uc(e);
+		},
+		logoFor(e) {
+			let t = this.settings.logoDark;
+			if (e === "dark" && t) {
+				if (t === "invert") return {
+					src: this.logo,
+					style: { filter: "invert(1)" }
+				};
+				let e = Kc(t);
+				if (e) return {
+					src: e,
+					style: null
+				};
+			}
+			return {
+				src: this.logo,
+				style: null
+			};
+		},
+		openAuth(e) {
+			this.auth.panel = e, this.auth.visible = !0;
+		},
 		translate(e) {
 			return _l(e, null, null, this.language);
 		},
@@ -28034,41 +28087,100 @@ var PW = {
 		VuUserButton: hW,
 		VuAdminNav: AW
 	}
-}, FW = ["data-bs-theme"], IW = ["href"], LW = [
+}, FW = {
+	key: 0,
+	class: "vu-admin-landing-languages position-absolute top-0 end-0 p-3 d-flex gap-1"
+}, IW = [
+	"title",
+	"aria-label",
+	"aria-pressed",
+	"onClick"
+], LW = ["src", "height"], RW = {
+	key: 2,
+	class: "vu-admin-landing-title h3 mb-2"
+}, zW = ["innerHTML"], BW = {
+	key: 4,
+	class: "vu-admin-landing-register small mt-3 mb-0"
+}, VW = {
+	key: 0,
+	class: "text-secondary me-1"
+}, HW = ["data-bs-theme"], UW = ["href"], WW = [
 	"src",
 	"alt",
 	"height",
 	"width"
-], RW = { key: 1 }, zW = {
+], GW = { key: 1 }, KW = {
 	key: 0,
 	class: "vu-admin-app-loading d-flex justify-content-center align-items-center py-5 text-secondary"
 };
-function BW(e, t, o, c, l, u) {
-	let d = b("vu-admin-nav"), f = b("vu-user-button"), p = b("vu-admin"), h = b("vu-auth");
-	return _(), i("div", { class: m(["vu-admin-app", e.settings.container]) }, [
-		a("header", {
-			class: m(e.settings.header.class),
-			"data-bs-theme": e.headerTheme
+function qW(t, c, l, u, d, f) {
+	let p = b("vu-admin-nav"), g = b("vu-user-button"), v = b("vu-admin"), x = b("vu-auth");
+	return _(), i("div", { class: m(["vu-admin-app", t.settings.container]) }, [
+		t.landing ? (_(), i("div", {
+			key: 0,
+			class: m(["vu-admin-landing position-relative d-flex flex-column justify-content-center align-items-center text-center", t.settings.landing.class])
 		}, [
-			e.logo || e.settings.title ? (_(), i("a", {
+			t.landingLanguages.length > 1 ? (_(), i("div", FW, [(_(!0), i(e, null, y(t.landingLanguages, (e) => (_(), i("button", {
+				key: e.value,
+				type: "button",
+				class: m(["btn btn-sm", e.value == t.language ? "btn-secondary" : "btn-outline-secondary"]),
+				title: e.label,
+				"aria-label": e.label,
+				"aria-pressed": e.value == t.language ? "true" : "false",
+				onClick: (n) => t.changeLanguage(e.value)
+			}, S(e.short || e.value.toUpperCase()), 11, IW))), 128))])) : r("", !0),
+			t.logo ? (_(), i("img", {
+				key: 1,
+				src: t.logoFor(t.pageTheme).src,
+				style: h(t.logoFor(t.pageTheme).style),
+				alt: "",
+				height: t.settings.landing.logoHeight || null,
+				class: "vu-admin-landing-logo mb-3"
+			}, null, 12, LW)) : r("", !0),
+			t.settings.title ? (_(), i("h1", RW, S(t.translate(t.settings.title)), 1)) : r("", !0),
+			t.settings.landing.text ? (_(), i("p", {
+				key: 3,
+				class: "vu-admin-landing-text text-secondary mb-0",
+				innerHTML: t.translate(t.settings.landing.text)
+			}, null, 8, zW)) : r("", !0),
+			a("button", {
+				type: "button",
+				class: m(["vu-admin-landing-sign-in mt-4", t.settings.landing.buttonClass]),
+				onClick: c[0] ||= (e) => t.openAuth("login")
+			}, [t.settings.landing.buttonIcon ? (_(), i("i", {
 				key: 0,
-				class: m(["navbar-brand d-flex align-items-center me-3", e.settings.brand.class]),
-				href: e.safeUrl(e.settings.brand.href)
-			}, [e.logo ? (_(), i("img", {
+				class: m(t.settings.landing.buttonIcon)
+			}, null, 2)) : r("", !0), o(S(t.translate(t.settings.landing.signIn)), 1)], 2),
+			t.registrationEnabled ? (_(), i("p", BW, [t.settings.landing.registerText ? (_(), i("span", VW, S(t.translate(t.settings.landing.registerText)), 1)) : r("", !0), a("a", {
+				href: "#",
+				class: "text-decoration-none",
+				onClick: c[1] ||= j((e) => t.openAuth("registration"), ["prevent"])
+			}, S(t.translate(t.settings.landing.register)), 1)])) : r("", !0)
+		], 2)) : (_(), i("header", {
+			key: 1,
+			class: m(t.settings.header.class),
+			"data-bs-theme": t.headerTheme
+		}, [
+			t.logo || t.settings.title ? (_(), i("a", {
 				key: 0,
-				src: e.logo,
-				alt: e.translate(e.settings.title || ""),
-				height: e.settings.brand.height || null,
-				width: e.settings.brand.width || null,
-				class: m(["d-inline-block", { "me-2": e.settings.title }])
-			}, null, 10, LW)) : r("", !0), e.settings.title ? (_(), i("span", RW, S(e.translate(e.settings.title)), 1)) : r("", !0)], 10, IW)) : r("", !0),
-			s(d, {
-				modelValue: e.auth,
-				"onUpdate:modelValue": t[0] ||= (t) => e.auth = t,
-				url: e.settings.nav.url || void 0,
-				menu: e.settings.nav.menu || void 0,
-				source: e.settings.nav.source || void 0,
-				groups: e.settings.nav.groups || void 0
+				class: m(["navbar-brand d-flex align-items-center me-3", t.settings.brand.class]),
+				href: t.safeUrl(t.settings.brand.href)
+			}, [t.logo ? (_(), i("img", {
+				key: 0,
+				src: t.logoFor(t.headerTheme || t.pageTheme).src,
+				style: h(t.logoFor(t.headerTheme || t.pageTheme).style),
+				alt: t.translate(t.settings.title || ""),
+				height: t.settings.brand.height || null,
+				width: t.settings.brand.width || null,
+				class: m(["d-inline-block", { "me-2": t.settings.title }])
+			}, null, 14, WW)) : r("", !0), t.settings.title ? (_(), i("span", GW, S(t.translate(t.settings.title)), 1)) : r("", !0)], 10, UW)) : r("", !0),
+			s(p, {
+				modelValue: t.auth,
+				"onUpdate:modelValue": c[2] ||= (e) => t.auth = e,
+				url: t.settings.nav.url || void 0,
+				menu: t.settings.nav.menu || void 0,
+				source: t.settings.nav.source || void 0,
+				groups: t.settings.nav.groups || void 0
 			}, null, 8, [
 				"modelValue",
 				"url",
@@ -28076,29 +28188,26 @@ function BW(e, t, o, c, l, u) {
 				"source",
 				"groups"
 			]),
-			e.session ? r("", !0) : (_(), n(f, {
-				key: 1,
-				modelValue: e.auth,
-				"onUpdate:modelValue": t[1] ||= (t) => e.auth = t,
-				panel: "registration"
-			}, null, 8, ["modelValue"])),
-			s(f, {
-				modelValue: e.auth,
-				"onUpdate:modelValue": t[2] ||= (t) => e.auth = t,
+			s(g, {
+				modelValue: t.auth,
+				"onUpdate:modelValue": c[3] ||= (e) => t.auth = e,
 				panel: "login"
 			}, null, 8, ["modelValue"])
-		], 10, FW),
-		a("main", { class: m(e.settings.main.class) }, [e.restoring ? (_(), i("div", zW, [t[4] ||= a("span", {
+		], 10, HW)),
+		t.landing ? r("", !0) : (_(), i("main", {
+			key: 2,
+			class: m(t.settings.main.class)
+		}, [t.restoring ? (_(), i("div", KW, [c[5] ||= a("span", {
 			class: "spinner-border spinner-border-sm me-2",
 			"aria-hidden": "true"
-		}, null, -1), a("span", null, S(e.translate("Loading...")), 1)])) : r("", !0), s(p, { auth: e.auth }, null, 8, ["auth"])], 2),
-		e.session ? r("", !0) : (_(), n(h, {
-			key: 0,
-			modelValue: e.auth,
-			"onUpdate:modelValue": t[3] ||= (t) => e.auth = t,
+		}, null, -1), a("span", null, S(t.translate("Loading...")), 1)])) : r("", !0), s(v, { auth: t.auth }, null, 8, ["auth"])], 2)),
+		t.session ? r("", !0) : (_(), n(x, {
+			key: 3,
+			modelValue: t.auth,
+			"onUpdate:modelValue": c[4] ||= (e) => t.auth = e,
 			settings: "auth"
 		}, null, 8, ["modelValue"]))
 	], 2);
 }
-var VW = /*#__PURE__*/ kA(PW, [["render", BW]]);
-export { dH as VuAdmin, VW as VuAdminApp, HV as VuAdminCount, AW as VuAdminNav, ZU as VuAuth, hW as VuUserButton, Rc as availableLanguages, KV as availableThemes, Gc as escapeHtml, Hc as getLanguage, JV as getTheme, Kc as safeUrl, Uc as setLanguage, eH as setTheme, _l as translate, Lc as translations };
+var JW = /*#__PURE__*/ kA(PW, [["render", qW]]);
+export { dH as VuAdmin, JW as VuAdminApp, HV as VuAdminCount, AW as VuAdminNav, ZU as VuAuth, hW as VuUserButton, Rc as availableLanguages, KV as availableThemes, Gc as escapeHtml, Hc as getLanguage, JV as getTheme, Kc as safeUrl, Uc as setLanguage, eH as setTheme, _l as translate, Lc as translations };

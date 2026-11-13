@@ -232,6 +232,7 @@ export const translations = {
     Language: "Nyelv",
     "Sign in": "Bejelentkezés",
     Register: "Regisztráció",
+    "Don't have an account?": "Még nincs fiókod?",
     "Sign out": "Kijelentkezés",
     Profile: "Profil",
     "Switch role": "Szerepkör váltás",

@@ -317,7 +317,7 @@ column scrolls horizontally.
 
 #### Whole admin page — `<vu-admin-app>`
 
-`<vu-admin-app></vu-admin-app>` renders the complete page: header (brand, `VuAdminNav`, user buttons), every entity
+`<vu-admin-app></vu-admin-app>` renders the complete page: header (brand, `VuAdminNav`, user menu), every entity
 (`<vu-admin :auth>` above) and the auth modal. It is configured by `window.VuSettings.app` (every key is optional):
 
 ```js
@@ -326,15 +326,34 @@ window.VuSettings = {
     title: 'VU Admin',                  // brand text + browser tab title (translation key)
     documentTitle: '{view} | {title}',  // tab title, {view} = active entity's `title`; or (title, view) => string
     logo: '/img/logo.svg',              // brand logo URL (relative, http(s) or data:image)
+    logoDark: '',                       // dark theme: own URL ('/img/logo-white.svg') or 'invert'; empty → logo
     favicon: '/favicon.ico',            // empty → the one in the HTML stays
     brand: { href: '#', height: 28, class: '' },
     container: 'container-fluid',
     header: { class: 'sticky-top navbar navbar-expand p-2 border shadow bg-body-tertiary', theme: '' },
     main: { class: '' },
     nav: { source: 'api', url: '/api/navs', menu: 'admin', groups: null },  // source: see "Menu source" below
+    // the page while signed out, see below; enabled: false → the header with the sign in button
+    landing: {
+      enabled: true,
+      class: 'min-vh-100 py-5',
+      logoHeight: 64,
+      text: '',                          // optional line under the title (translation key, HTML)
+      signIn: 'Sign in',
+      buttonClass: 'btn btn-primary btn-lg px-5',
+      buttonIcon: 'bi bi-box-arrow-in-right me-2',
+      registerText: "Don't have an account?",
+      register: 'Register',              // the link is hidden with auth.registrationEnabled: false
+      languages: true,                   // language switch in the top right corner (more than one language)
+    },
   },
 };
 ```
+
+Signed out, the page has no header: the logo, the title (`app.title`) and the optional `landing.text` in the middle
+of the screen, a sign in button and a registration link under it; both open the auth modal. The header has no
+register button (the sign in panel of the auth modal links to the registration as well). After sign in the header
+and the views appear; after sign out the landing is back.
 
 The `{view}` of the tab title is the entity's `title` (`entities: { user: { url: '/vu-entity-user.js', title: 'Users' } }`),
 or the capitalized entity name.
@@ -343,7 +362,7 @@ While a stored session is being restored (the profile request), the page shows a
 empty, signed-out looking page.
 
 `session` prop — a ready auth object instead of the built-in sign-in (a demo, or an app that signs in elsewhere).
-The auth modal and the register button are not rendered and nothing is read from / written to localStorage
+The auth modal is not rendered and nothing is read from / written to localStorage
 (see `demo/app.html`):
 
 ```html
